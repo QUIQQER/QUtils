@@ -10,4 +10,21 @@ class OrthosTest extends PHPUnit_Framework_TestCase
             $this->fail( '\QUI\Utils\Security\Orthos::clear fail' );
          }
      }
+
+     public function testClearArray()
+     {
+         $result = \QUI\Utils\Security\Orthos::clearArray(array(
+             'a test string \' %%% **',
+             'support@pcsg.de',
+         ));
+
+
+         if ( $result[0] != 'a test string  %%% **' ) {
+             $this->fail( '\QUI\Utils\Security\Orthos::testClearArray fail' );
+         }
+
+         if ( $result[1] != 'support@pcsg.de' ) {
+             $this->fail( '\QUI\Utils\Security\Orthos::testClearArray fail' );
+         }
+     }
 }
