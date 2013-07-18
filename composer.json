@@ -2,7 +2,7 @@
     "name" : "quiqqer/utils",
     "type" : "library",
     "description" : "QUIQQER Utils - Helper Classes",
-    "version" : "DEV-MASTER",
+    "version" : "dev-master",
     "license" : "GPL-3.0+",
 
     "authors" : [{
