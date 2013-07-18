@@ -6,6 +6,5 @@ Diese Klassen sollen auch unabhängig von QUIQQER funktionieren.
 ## PHPUnits execution
 
 ```bash
-cd phpunit
-phpunit -c tests.xml
+phpunit  -c phpunit/tests.xml
 ```
