@@ -30,19 +30,19 @@ class Convert
      */
     static function formPrice($price, $type=1)
     {
-        switch ($type)
+        switch ( $type )
         {
             case 2:
-                $price = number_format(round($price, 2), '2', ',', '.');
-                break;
+                $price = number_format( round($price, 2), '2', ',', '.' );
+            break;
 
             case 3:
-                $price = number_format(round($price, 2), '2', '.', ',');
-                break;
+                $price = number_format( round($price, 2), '2', '.', ',' );
+            break;
 
             default:
-                $price = round($price, 2);
-                break;
+                $price = round( $price, 2 );
+            break;
         }
 
         return $price;
@@ -56,16 +56,16 @@ class Convert
      */
     static function convertChars($conv)
     {
-        $conv = str_replace("Ä", chr(196), $conv);
-        $conv = str_replace("ä", chr(228), $conv);
-        $conv = str_replace("Ö", chr(214), $conv);
-        $conv = str_replace("ö", chr(246), $conv);
-        $conv = str_replace("Ü", chr(220), $conv);
-        $conv = str_replace("ü", chr(252), $conv);
-        $conv = str_replace("ß", chr(223), $conv);
-        $conv = str_replace("'", chr(39),  $conv);
-        $conv = str_replace("´", chr(180), $conv);
-        $conv = str_replace("`", chr(96),  $conv);
+        $conv = str_replace( "Ä", chr(196), $conv );
+        $conv = str_replace( "ä", chr(228), $conv );
+        $conv = str_replace( "Ö", chr(214), $conv );
+        $conv = str_replace( "ö", chr(246), $conv );
+        $conv = str_replace( "Ü", chr(220), $conv );
+        $conv = str_replace( "ü", chr(252), $conv );
+        $conv = str_replace( "ß", chr(223), $conv );
+        $conv = str_replace( "'", chr(39),  $conv );
+        $conv = str_replace( "´", chr(180), $conv );
+        $conv = str_replace( "`", chr(96),  $conv );
 
         return $conv;
     }
@@ -78,11 +78,11 @@ class Convert
      */
     static function convertMySqlDatetime($str)
     {
-        list($date, $time)            = explode(' ', $str);
-        list($year, $month, $day)     = explode('-', $date);
-        list($hour, $minute, $second) = explode(':', $time);
+        list( $date, $time )            = explode( ' ', $str );
+        list( $year, $month, $day )     = explode( '-', $date );
+        list( $hour, $minute, $second ) = explode( ':', $time );
 
-        $timestamp = mktime($hour, $minute, $second, $month, $day, $year);
+        $timestamp = mktime( $hour, $minute, $second, $month, $day, $year );
 
         return $timestamp;
     }
@@ -97,26 +97,26 @@ class Convert
      */
     static function convertUrlChars($conv, $code=0)
     {
-        if ($code == 0)
+        if ( $code == 0 )
         {
-            $conv = str_replace("Ä", "Ae", $conv);
-            $conv = str_replace("ä", "ae", $conv);
-            $conv = str_replace("Ö", "Oe", $conv);
-            $conv = str_replace("ö", "oe", $conv);
-            $conv = str_replace("Ü", "Ue", $conv);
-            $conv = str_replace("ü", "ue", $conv);
-            $conv = str_replace("ß", "sz", $conv);
+            $conv = str_replace( "Ä", "Ae", $conv );
+            $conv = str_replace( "ä", "ae", $conv );
+            $conv = str_replace( "Ö", "Oe", $conv );
+            $conv = str_replace( "ö", "oe", $conv );
+            $conv = str_replace( "Ü", "Ue", $conv );
+            $conv = str_replace( "ü", "ue", $conv );
+            $conv = str_replace( "ß", "sz", $conv );
 
             return $conv;
         }
 
-        $conv = str_replace("Ae", "Ä", $conv);
-        $conv = str_replace("ae", "ä", $conv);
-        $conv = str_replace("Oe", "Ö", $conv);
-        $conv = str_replace("oe", "ö", $conv);
-        $conv = str_replace("Ue", "Ü", $conv);
-        $conv = str_replace("ue", "ü", $conv);
-        $conv = str_replace("sz", "ß", $conv);
+        $conv = str_replace( "Ae", "Ä", $conv );
+        $conv = str_replace( "ae", "ä", $conv );
+        $conv = str_replace( "Oe", "Ö", $conv );
+        $conv = str_replace( "oe", "ö", $conv );
+        $conv = str_replace( "Ue", "Ü", $conv );
+        $conv = str_replace( "ue", "ü", $conv );
+        $conv = str_replace( "sz", "ß", $conv );
 
         return $conv;
     }

@@ -60,10 +60,6 @@ class QDOM
      */
     public function setAttribute($name, $val)
     {
-        if ( !isset( $val ) ) {
-            return;
-        }
-
         $this->_attributes[ $name ] = $val;
 
         return $this;

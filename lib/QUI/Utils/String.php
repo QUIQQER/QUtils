@@ -42,7 +42,7 @@ class String
      */
     static function JSString($value)
     {
-        if (is_string($value)) {
+        if ( is_string( $value ) ) {
             return $value;
         }
 
@@ -58,13 +58,13 @@ class String
      */
     static function pathinfo($path, $options=false)
     {
-        if (!file_exists($path)) {
-            throw new QException('File '. $path .' not exists');
+        if ( !file_exists( $path ) ) {
+            throw new \QUI\Exception( 'File '. $path .' not exists' );
         }
 
-        $info = pathinfo($path);
+        $info = pathinfo( $path );
 
-        switch ($options)
+        switch ( $options )
         {
             case PATHINFO_DIRNAME:
                 return $info['dirname'];
@@ -95,7 +95,7 @@ class String
      */
     static function replaceDblSlashes($path)
     {
-        return preg_replace('/[\/]{2,}/', "/", $path);
+        return preg_replace( '/[\/]{2,}/', "/", $path );
     }
 
     /**
@@ -107,7 +107,7 @@ class String
      */
     static function removeLineBreaks($text, $replace=' ')
     {
-        $str = preg_replace('/([\t]){2,}/', "\t", $text);
+        $str = preg_replace( '/([\t]){2,}/', "\t", $text );
 
         $str = str_replace(
             array("\r\n","\n","\r", "\t"),
@@ -116,8 +116,8 @@ class String
         );
 
         // doppelte leerzeichen raus
-        if ($replace === ' ') {
-            $str = preg_replace('/([ ]){2,}/', "\t", $text);
+        if ( $replace === ' ' ) {
+            $str = preg_replace( '/([ ]){2,}/', "\t", $text );
         }
 
         return $str;
@@ -133,19 +133,19 @@ class String
     {
         $_str = $str;
 
-        for ($i = 0, $len = mb_strlen($str); $i < $len; $i++)
+        for ( $i = 0, $len = mb_strlen($str); $i < $len; $i++ )
         {
-            $char = mb_substr($str, $i, 1);
+            $char = mb_substr( $str, $i, 1 );
 
-            if (empty($char)) {
+            if ( empty( $char ) ) {
                 continue;
             }
 
-            if ($char === '/') {
+            if ( $char === '/' ) {
                 $char = '\\'. $char;
             }
 
-            $_str = preg_replace('/(['. $char .']){2,}/', "$1", $_str);
+            $_str = preg_replace( '/(['. $char .']){2,}/', "$1", $_str );
         }
 
         return $_str;
@@ -244,7 +244,7 @@ class String
      */
     static function toUTF8($str)
     {
-         if ( !self::isValidUTF8($str) ) {
+         if ( !self::isValidUTF8( $str ) ) {
             return utf8_encode( $str );
          }
 
@@ -297,12 +297,12 @@ class String
      */
     static function filterText($word)
     {
-        if ( strlen($word) <= 1 ) {
+        if ( strlen( $word ) <= 1 ) {
             return false;
         }
 
         // Kleingeschriebene Wörter raus
-        if ( strtolower($word{0}) == $word{0} ) {
+        if ( strtolower( $word{0} ) == $word{0} ) {
             return false;
         }
 
@@ -417,9 +417,9 @@ class String
      */
     static function sentence($text)
     {
-        if ( strpos($text, '.') === false &&
-             strpos($text, '!') === false &&
-             strpos($text, '?') === false )
+        if ( strpos( $text, '.' ) === false &&
+             strpos( $text, '!' ) === false &&
+             strpos( $text, '?' ) === false )
         {
             return '';
         }
@@ -438,18 +438,18 @@ class String
      */
     static function parseFloat($str)
     {
-        if ( is_float($str) ) {
+        if ( is_float( $str ) ) {
             return $str;
         }
 
-        if ( empty($str) ) {
+        if ( empty( $str ) ) {
             return 0;
         }
         // @todo lokaliesierung richtig prüfen localeconv()
-        if ( strstr((string)$str, ",") )
+        if ( strstr( (string)$str, "," ) )
         {
-            $str = str_replace(".", "", (string)$str);
-            $str = str_replace(",", ".", (string)$str);
+            $str = str_replace( ".", "", (string)$str );
+            $str = str_replace( ",", ".", (string)$str );
         }
 
         $minus = false;
@@ -458,7 +458,7 @@ class String
             $minus = true;
         }
 
-        if ( preg_match("#([0-9\.]+)#", $str, $match) )
+        if ( preg_match( "#([0-9\.]+)#", $str, $match ) )
         {
             $result = floatval( $match[0] );
           } else
@@ -494,7 +494,7 @@ class String
 
         $replace = array('.', '.', '', '', '', '');
 
-        return str_replace($search, $replace, $value);
+        return str_replace( $search, $replace, $value );
     }
 
     /**
@@ -508,7 +508,7 @@ class String
      */
     static function tagCloud($tags, $start=26, $min=10)
     {
-        if ( !is_array($tags) ) {
+        if ( !is_array( $tags ) ) {
             $tags = array();
         }
 
@@ -549,7 +549,7 @@ class String
             return $att;
         }
 
-        $att_ = explode('&', $url[1]);
+        $att_ = explode( '&', $url[1] );
 
         foreach ( $att_ as $a )
         {
@@ -599,7 +599,7 @@ class String
         {
             $att_ = explode( ':', $att );
 
-            if ( isset($att_[0]) && isset($att_[1]) ) {
+            if ( isset( $att_[0] ) && isset( $att_[1] ) ) {
                 $attributes[ strtolower( $att_[0] ) ] = $att_[1];
             }
         }
@@ -616,7 +616,7 @@ class String
      */
     static function replaceLast($search, $replace, $string)
     {
-        if ( strpos($string, $search) === false ) {
+        if ( strpos( $string, $search ) === false ) {
             return $string;
         }
 

@@ -93,6 +93,14 @@ class Orthos
     /**
      * Befreit einen MySQL Command String von Schadcode
      *
+     * If you are using this function to build SQL statements,
+     * you are strongly recommended to use PDO::prepare() to prepare
+     * SQL statements with bound parameters instead of using PDO::quote()
+     * to interpolate user input into an SQL statement. Prepared statements with
+     * bound parameters are not only more portable, more convenient, immune to SQL injection,
+     * but are often much faster to execute than interpolated queries,
+     * as both the server and client side can cache a compiled form of the query.
+     *
      * @param String $str - Command
      * @param Bool $escape - Escape the String (true or false}
      * @return String
@@ -106,7 +114,7 @@ class Orthos
         }
 
         if ( $escape && class_exists( 'QUI' ) ) {
-            $str = QUI::getPDO()->quote( $str );
+            $str = \QUI::getPDO()->quote( $str );
         }
 
         return $str;
@@ -160,46 +168,34 @@ class Orthos
      *
      * @return Integer
      */
-    static function date($val, $type)
+    static function date($val, $type='DAY')
     {
-        switch ($type)
+        if ( $type == 'MONTH' )
         {
-            default:
-            case 'DAY':
+            $val = self::parseInt( $val );
 
-                $val = self::parseInt( $val );
+            // Wenn Monat nicht zwischen 1 und 12 liegt
+            if ( $val < 1 || $val > 12 ) {
+                return 0;
+            }
 
-                // Wenn Tag nicht zwischen 1 und 31 liegt
-                if ( $val < 1 || $val > 31 ) {
-                    return 0;
-                }
-
-                return $val;
-
-            break;
-
-            case 'MONTH':
-                $val = self::parseInt( $val );
-
-                // Wenn Monat nicht zwischen 1 und 12 liegt
-                if ( $val < 1 || $val > 12 ) {
-                    return 0;
-                }
-
-                return $val;
-            break;
-
-            case 'YEAR':
-                $val = self::parseInt( $val );
-
-                // Wenn Jahr nicht eine Länge von 4 hat
-                if ( !is_numeric( $val ) || strlen( $val ) != 4 ) {
-                    return 0;
-                }
-
-                return $val;
-            break;
+            return $val;
         }
+
+
+        if ( $type == 'YEAR' ) {
+            return self::parseInt( $val );
+        }
+
+
+        $val = self::parseInt( $val );
+
+        // Wenn Tag nicht zwischen 1 und 31 liegt
+        if ( $val < 1 || $val > 31 ) {
+            return 0;
+        }
+
+        return $val;
     }
 
     /**
@@ -235,7 +231,7 @@ class Orthos
      */
     static function removeLineBreaks($text)
     {
-        return \QUI\Utils\String::removeLineBreaks($text, ' ');
+        return \QUI\Utils\String::removeLineBreaks($text, '');
     }
 
     /**
@@ -419,6 +415,7 @@ class Orthos
      *
      * @param String $str
      * @return String
+     * @deprecated
      */
     static function encrypt($str)
     {
@@ -433,6 +430,7 @@ class Orthos
      *
      * @param String $str
      * @return String
+     * @deprecated
      */
     static function decrypt($str)
     {

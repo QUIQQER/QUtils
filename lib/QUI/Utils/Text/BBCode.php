@@ -16,7 +16,7 @@ namespace QUI\Utils\Text;
  * @todo docu translation
  */
 
-class BBCode extends QDOM
+class BBCode extends \QUI\QDOM
 {
     /**
      * the project string
@@ -310,7 +310,7 @@ class BBCode extends QDOM
                             $Project = new Project($project);
                             $this->_projects[ $project ] = $Project;
 
-                        } catch (QException $e)
+                        } catch (\QUI\Exception $e)
                         {
                             return '';
                         }
@@ -322,7 +322,7 @@ class BBCode extends QDOM
                     try
                     {
                         $Image = $Media->get( (int)$id ); /* @var $Image MF_Image */
-                    } catch (QException $e)
+                    } catch (\QUI\Exception $e)
                     {
                         return '';
                     }
@@ -428,7 +428,7 @@ class BBCode extends QDOM
     public function parseToHTML($bbcode, $delete_html=true)
     {
         if ($delete_html) {
-            $bbcode = QUI\Utils\Security\Orthos::removeHTML($bbcode);
+            $bbcode = \QUI\Utils\Security\Orthos::removeHTML($bbcode);
         }
 
         // Normal HTML Elemente
