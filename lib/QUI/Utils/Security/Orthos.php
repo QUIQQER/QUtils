@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains the Utils_Security_Orthos
+ * This file contains the QUI\Utils\Security\Orthos
  */
 
 namespace QUI\Utils\Security;

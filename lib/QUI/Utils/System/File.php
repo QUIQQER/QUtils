@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains Utils_System_File
+ * This file contains QUI\Utils\System\File
  */
 
 namespace QUI\Utils\System;
@@ -643,7 +643,7 @@ class File
         if ( !file_exists($file) )
         {
             throw new \QUI\Exception(
-                'Utils_System_File::getInfo()  File "'. $file .'" does not exist',
+                '\QUI\Utils\System\File::getInfo()  File "'. $file .'" does not exist',
                 500
             );
         }
@@ -752,7 +752,7 @@ class File
      * @param Integer $new_width
      * @param Integer $new_height
      * @return Bool
-     * @deprecated Use Utils_Image::resize
+     * @deprecated Use \QUI\Utils\Image::resize
      */
     static function resize($original, $new_image, $new_width=0, $new_height=0)
     {
@@ -768,7 +768,7 @@ class File
      * @param Integer $top
      * @param Integer $left
      *
-     * @deprecated Use Utils_Image::watermark
+     * @deprecated Use \QUI\Utils\Image::watermark
      */
     static function watermark($image, $watermark, $newImage=false, $top=0, $left=0)
     {
@@ -779,7 +779,7 @@ class File
      * Wandelt ein Bild in TrueColor um
      *
      * @param String $image - Path zum Bild
-     * @deprecated Use Utils_Image::convertToTrueColor
+     * @deprecated Use \QUI\Utils\Image::convertToTrueColor
      */
     static function convertToTrueColor($image)
     {
@@ -1126,7 +1126,7 @@ class File
                 }
             }
 
-            $p_tmp = Utils_String::replaceDblSlashes( $p_tmp );
+            $p_tmp = \QUI\Utils\String::replaceDblSlashes( $p_tmp );
 
             if ( !self::checkOpenBaseDir( $p_tmp ) ) {
                 continue;

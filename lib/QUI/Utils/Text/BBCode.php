@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains Utils_Text_BBCode
+ * This file contains QUI\Utils\Text\BBCode
  */
 
 namespace QUI\Utils\Text;

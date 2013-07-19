@@ -18,13 +18,13 @@ class DB extends \QUI\QDOM
 {
     /**
      * PDO Object
-     * @var PDO
+     * @var \PDO
      */
     protected $_PDO = null;
 
     /**
      * DBTable Object
-     * @var Utils_DbTables
+     * @var \QUI\Database\Tables
      */
     protected $_Tables = null;
 
@@ -256,7 +256,7 @@ class DB extends \QUI\QDOM
         // debuging
         if ( isset( $params['debug'] ) )
         {
-            System_Log::writeRecursive(array(
+            \QUI\Log::writeRecursive(array(
                 'query'   => $query,
                 'prepare' => $prepare
             ));
