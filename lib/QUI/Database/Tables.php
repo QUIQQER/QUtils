@@ -135,16 +135,16 @@ class Tables
     }
 
     /**
-     * Erstellt eine Tabelle mit Feldern
+     * Creates a table with the specific fields
      *
      * @param String $table
-     * @param String $fields
+     * @param Array $fields
      *
      * @return Bool - if table exists or not
      */
     public function create($table, $fields)
     {
-        if ( !isset( $fields ) || !is_array( $fields ) )
+        if ( !is_array( $fields ) )
         {
             throw new \QUI\Database\Exception(
                 'No Array given \QUI\Database\Tables->createTable'
@@ -593,6 +593,10 @@ class Tables
     public function setAutoIncrement($table, $index)
     {
         $column = $this->getColumn( $table, $index );
+
+        if ( !$this->issetIndex($table, $index) ) {
+            $this->setIndex( $table, $index );
+        }
 
         $query  = 'ALTER TABLE `'. $table .'`';
         $query .= 'MODIFY COLUMN `'. $index .'`';

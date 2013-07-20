@@ -4,15 +4,20 @@ use \QUI\Database\DB as DB;
 
 class DBTest extends PHPUnit_Framework_TestCase
 {
-    public function testDB()
+    public function getDBConection()
     {
-        $DataBase = new DB(array(
+        return new DB(array(
             'driver'   => $GLOBALS['DB_DRIVER'],
             'host'     => $GLOBALS['DB_HOST'],
             'user'     => $GLOBALS['DB_USER'],
             'password' => $GLOBALS['DB_PASSWD'],
             'dbname'   => $GLOBALS['DB_DBNAME']
         ));
+    }
+
+    public function testDB()
+    {
+        $DataBase = $this->getDBConection();
 
         $Table  = $DataBase->Table();
         $tables = $Table->getTables();
@@ -203,6 +208,116 @@ class DBTest extends PHPUnit_Framework_TestCase
         if ( count( $result ) != 0 ) {
             $this->fail( 'Error on db select. where LIKE%' );
         }
+
+
+        $Table->delete( $table );
+    }
+
+    public function testCreateTable()
+    {
+        try
+        {
+            $DataBase = $this->getDBConection();
+            $Table    = $DataBase->Table();
+            $Table->create( 'test', '' );
+
+            $this->fail( 'no exception on Table->create thrown.' );
+
+        } catch ( \QUI\Database\Exception $Exception ) {
+
+        }
+    }
+
+    public function testPrimaryKey()
+    {
+        $DataBase = $this->getDBConection();
+        $Table    = $DataBase->Table();
+
+        $table = 'test';
+
+        $Table->create( $table, array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
+
+
+        if ( $Table->issetPrimaryKey($table, 'id') ) {
+            $this->fail( 'id in test table cant be a PrimaryKey' );
+        }
+
+        $Table->setPrimaryKey( $table, 'id' );
+
+        if ( !$Table->issetPrimaryKey($table, 'id') ) {
+            $this->fail( 'id in test table i no PrimaryKey' );
+        }
+
+        $Table->delete( $table );
+    }
+
+    public function testIndex()
+    {
+        $DataBase = $this->getDBConection();
+        $Table    = $DataBase->Table();
+
+        $table = 'test';
+
+        $Table->create( $table, array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
+
+
+        if ( $Table->issetIndex($table, 'id') ) {
+            $this->fail( 'id in test table cant be a index' );
+        }
+
+        $Table->setIndex( $table, 'id' );
+
+        if ( !$Table->issetIndex($table, 'id') ) {
+            $this->fail( 'id in test table i no index' );
+        }
+
+        $Table->delete( $table );
+    }
+
+    public function testSetAutoIncrement()
+    {
+        $DataBase = $this->getDBConection();
+        $Table    = $DataBase->Table();
+
+        $table = 'test';
+
+        $Table->create( $table, array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
+
+        $Table->setAutoIncrement($table, 'id');
+
+
+        $Table->delete( $table );
+    }
+
+    public function testSetFulltext()
+    {
+        $DataBase = $this->getDBConection();
+        $Table    = $DataBase->Table();
+
+        $table = 'test';
+
+        $Table->create( $table, array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
+
+        $Table->setFulltext($table, 'txt');
+
+        if ( !$Table->issetFulltext( $table, 'txt' ) ) {
+            $this->fail( 'txt must be fulltext' );
+        }
+
+
+        $Table->delete( $table );
     }
 
     public function testDBException()
