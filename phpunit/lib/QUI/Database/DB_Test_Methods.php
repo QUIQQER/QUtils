@@ -2,19 +2,8 @@
 
 use \QUI\Database\DB as DB;
 
-class DBTest extends PHPUnit_Framework_TestCase
+class DB_Test_Methods extends PHPUnit_Framework_TestCase
 {
-    public function getDBConection()
-    {
-        return new DB(array(
-            'driver'   => $GLOBALS['DB_DRIVER'],
-            'host'     => $GLOBALS['DB_HOST'],
-            'user'     => $GLOBALS['DB_USER'],
-            'password' => $GLOBALS['DB_PASSWD'],
-            'dbname'   => $GLOBALS['DB_DBNAME']
-        ));
-    }
-
     public function testDB()
     {
         $DataBase = $this->getDBConection();
@@ -86,6 +75,12 @@ class DBTest extends PHPUnit_Framework_TestCase
         ));
 
         $fields = $Table->getFields( $table );
+
+        if ( $DataBase->isSQLite() ) {
+
+
+        }
+
 
         if ( !isset( $fields[2] ) || $fields[2] != 'third_field' ) {
             $this->fail( 'something went wrong on appendFields' );
@@ -211,6 +206,10 @@ class DBTest extends PHPUnit_Framework_TestCase
 
 
         $Table->delete( $table );
+
+        if ( $Table->exist( $table ) ) {
+            $this->fail( 'Drop Table failed' );
+        }
     }
 
     public function testCreateTable()
@@ -233,8 +232,14 @@ class DBTest extends PHPUnit_Framework_TestCase
         $DataBase = $this->getDBConection();
         $Table    = $DataBase->Table();
 
+        // You can't modify SQLite tables in any significant way after they have been created
+        if ( $DataBase->isSQLite() ) {
+            return;
+        }
+
         $table = 'test';
 
+        $Table->delete( $table );
         $Table->create( $table, array(
             'id'  => 'int(10)',
             'txt' => 'text'
@@ -248,7 +253,7 @@ class DBTest extends PHPUnit_Framework_TestCase
         $Table->setPrimaryKey( $table, 'id' );
 
         if ( !$Table->issetPrimaryKey($table, 'id') ) {
-            $this->fail( 'id in test table i no PrimaryKey' );
+            $this->fail( 'id in test table is no PrimaryKey' );
         }
 
         $Table->delete( $table );
@@ -261,6 +266,7 @@ class DBTest extends PHPUnit_Framework_TestCase
 
         $table = 'test';
 
+        $Table->delete( $table );
         $Table->create( $table, array(
             'id'  => 'int(10)',
             'txt' => 'text'
@@ -274,7 +280,7 @@ class DBTest extends PHPUnit_Framework_TestCase
         $Table->setIndex( $table, 'id' );
 
         if ( !$Table->issetIndex($table, 'id') ) {
-            $this->fail( 'id in test table i no index' );
+            $this->fail( 'id in test table is no index' );
         }
 
         $Table->delete( $table );
@@ -285,8 +291,13 @@ class DBTest extends PHPUnit_Framework_TestCase
         $DataBase = $this->getDBConection();
         $Table    = $DataBase->Table();
 
+        if ( $DataBase->isSQLite() ) {
+            return;
+        }
+
         $table = 'test';
 
+        $Table->delete( $table );
         $Table->create( $table, array(
             'id'  => 'int(10)',
             'txt' => 'text'
@@ -303,8 +314,13 @@ class DBTest extends PHPUnit_Framework_TestCase
         $DataBase = $this->getDBConection();
         $Table    = $DataBase->Table();
 
+        if ( $DataBase->isSQLite() ) {
+            return;
+        }
+
         $table = 'test';
 
+        $Table->delete( $table );
         $Table->create( $table, array(
             'id'  => 'int(10)',
             'txt' => 'text'
@@ -320,23 +336,91 @@ class DBTest extends PHPUnit_Framework_TestCase
         $Table->delete( $table );
     }
 
-    public function testDBException()
+    public function testGetTable()
     {
-        try
-        {
-            $DataBase = new DB(array(
-                'driver'   => $GLOBALS['DB_DRIVER'],
-                'host'     => $GLOBALS['DB_HOST'],
-                'user'     => '__unknown',
-                'password' => '',
-                'dbname'   => $GLOBALS['DB_DBNAME']
-            ));
+        $DataBase = $this->getDBConection();
+        $Table    = $DataBase->Table();
 
-            $this->fail( 'no exception thrown by bad DB data' );
+        // create some tables
+        $Table->delete( 'test1' );
+        $Table->create( 'test1', array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
 
-        } catch ( \QUI\Database\Exception $Exception )
-        {
+        $Table->delete( 'test2' );
+        $Table->create( 'test2', array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
 
+        $Table->delete( 'test3' );
+        $Table->create( 'test3', array(
+            'id'  => 'int(10)',
+            'txt' => 'text'
+        ) );
+
+        $list = $Table->getTables();
+
+        if ( !in_array( 'test1' , $list ) ) {
+            $this->fail( 'test1 table is missing' );
         }
+
+        if ( !in_array( 'test2' , $list ) ) {
+            $this->fail( 'test2 table is missing' );
+        }
+
+        if ( !in_array( 'test3' , $list ) ) {
+            $this->fail( 'test3 table is missing' );
+        }
+
+        $Table->delete( 'test1' );
+        $Table->delete( 'test2' );
+        $Table->delete( 'test3' );
+    }
+
+    public function testTruncate()
+    {
+        $DataBase = $this->getDBConection();
+        $Table    = $DataBase->Table();
+
+        $table = 'test1';
+
+        // create some tables
+        $Table->delete( $table );
+        $Table->create( $table, array(
+            'id'  => 'int(10)',
+            'val' => 'text'
+        ) );
+
+        $DataBase->insert($table, array(
+            'id'  => 2,
+            'val' => 'text für id 2'
+        ));
+
+        $DataBase->insert($table, array(
+            'id'  => 3,
+            'val' => 'text für id 3'
+        ));
+
+        $DataBase->insert($table, array(
+            'id'  => 4,
+            'val' => 'text für id 4'
+        ));
+
+        $Table->truncate( $table );
+
+        $result = $DataBase->fetch(array(
+            'from' => $table
+        ));
+
+        if ( count( $result ) ) {
+            $this->fail( 'Table->truncate not working' );
+        }
+
+        $Table->delete( $table );
+
+
+        $Table->truncate( $table );
     }
 }

@@ -33,6 +33,16 @@ class Tables
     }
 
     /**
+     * Is the DB a sqlite db?
+     *
+     * @return Bool
+     */
+    protected function _isSQLite()
+    {
+        return $this->_DB->isSQLite();
+    }
+
+    /**
      * Returns all tables in the database
      *
      * @return Array
@@ -41,7 +51,7 @@ class Tables
     {
         $tables = array();
 
-        if ( $this->_DB->isSQLite() )
+        if ( $this->_isSQLite() )
         {
             $result = $this->_DB->getPDO()->query(
                 "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
@@ -69,6 +79,10 @@ class Tables
      */
     public function optimize($tables)
     {
+        if ( $this->_isSQLite() ) {
+            return;
+        }
+
         if ( is_string( $tables ) ) {
             $tables = array( $tables );
         }
@@ -86,7 +100,7 @@ class Tables
      */
     public function exist($table)
     {
-        if ( $this->_DB->isSQLite() )
+        if ( $this->_isSQLite() )
         {
             $data = $this->_DB->getPDO()->query(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name ='". $table ."'"
@@ -129,7 +143,22 @@ class Tables
             return;
         }
 
-        return $this->_DB->getPDO()->query(
+        if ( $this->_isSQLite() )
+        {
+            $result = $this->_DB->getPDO()->query(
+                "SELECT sql FROM sqlite_master
+                WHERE tbl_name = '". $table ."' AND type = 'table'"
+            )->fetchAll();
+
+            $create = $result[0]['sql'];
+
+            $this->delete( $table );
+            $this->_DB->getPDO()->query( $create );
+
+            return;
+        }
+
+        $this->_DB->getPDO()->query(
             'TRUNCATE TABLE `'. $table .'`'
         );
     }
@@ -151,7 +180,15 @@ class Tables
             );
         }
 
-        $sql = 'CREATE TABLE `'. $this->_DB->getAttribute('dbname') .'`.`'. $table .'` (';
+        if ( $this->_isSQLite() )
+        {
+            $sql = 'CREATE TABLE `'. $table .'` (';
+        } else
+        {
+            $sql = 'CREATE TABLE `'. $this->_DB->getAttribute('dbname') .'`.`'. $table .'` (';
+        }
+
+
 
         if ( \QUI\Utils\ArrayHelper::isAssoc( $fields ) )
         {
@@ -174,7 +211,13 @@ class Tables
             }
         }
 
-        $sql .= ') ENGINE = MYISAM DEFAULT CHARSET = utf8;';
+        if ( $this->_isSQLite() )
+        {
+            $sql .= ');';
+        } else
+        {
+            $sql .= ') ENGINE = MYISAM DEFAULT CHARSET = utf8;';
+        }
 
         $this->_DB->getPDO()->exec( $sql );
 
@@ -195,7 +238,7 @@ class Tables
     {
         $PDO = $this->_DB->getPDO();
 
-        if ( $this->_DB->isSQLite() )
+        if ( $this->_isSQLite() )
         {
             $result = $PDO->query(
                 "SELECT sql FROM sqlite_master
@@ -206,13 +249,26 @@ class Tables
                 return array();
             }
 
-            preg_match("/\((.*?)\)/", $result[0]['sql'], $matches);
+            $pos  = mb_strpos( $result[0]['sql'], '(' );
+            $data = mb_substr( $result[0]['sql'], $pos+1 );
 
             $fields = array();
-            $expl    = explode( ',', $matches[1] );
+            $expl    = explode( ',', $data );
 
-            foreach ( $expl as $part ) {
-                $fields[] = trim( $part, ' "' );
+            foreach ( $expl as $part )
+            {
+                $part = str_replace( '"', '', $part );
+
+                if ( strpos( $part, '`' ) !== false )
+                {
+                    preg_match("/`(.*?)`/", $part, $matches);
+
+                    if ( isset( $matches[1] ) ) {
+                        $part = $matches[1];
+                    }
+                }
+
+                $fields[] = $part;
             }
 
             return $fields;
@@ -251,6 +307,15 @@ class Tables
         {
             if ( !in_array( $field, $tbl_fields ) )
             {
+                if ( $this->_isSQLite() )
+                {
+                    $this->_DB->getPDO()->exec(
+                        'ALTER TABLE "'. $table .'" ADD COLUMN `'. $field .'` '. strtoupper($type) .';'
+                    );
+
+                    continue;
+                }
+
                 $this->_DB->getPDO()->exec(
                     'ALTER TABLE `'. $table .'` ADD `'. $field .'` '. $type .';'
                 );
@@ -314,7 +379,7 @@ class Tables
      */
     public function existColumnInTable($table, $row)
     {
-        if ( $this->_DB->isSQLite() == false )
+        if ( $this->_isSQLite() == false )
         {
             $data = $this->_DB->getPDO()->query(
                 'SHOW COLUMNS FROM `'. $table .'` LIKE "'. $row .'"'
@@ -345,7 +410,7 @@ class Tables
      */
     public function getColumns($table)
     {
-        if ( $this->_DB->isSQLite() ) {
+        if ( $this->_isSQLite() ) {
             return $this->getFields( $table );
         }
 
@@ -362,6 +427,17 @@ class Tables
      */
     public function getColumn($table, $column)
     {
+        if ( $this->_isSQLite() )
+        {
+            $result =  $this->_DB->getPDO()->query(
+                'PRAGMA table_info(`'. $table .'`);'
+            )->fetch();
+
+
+            var_dump($result['name']);
+
+        }
+
         return $this->_DB->getPDO()->query(
             'SHOW COLUMNS FROM `'. $table .'` LIKE "'. $column .'"'
         )->fetch();
@@ -401,6 +477,10 @@ class Tables
      */
     public function getKeys($table)
     {
+        if ( $this->_isSQLite() ) {
+            return array();
+        }
+
         return $this->_DB->getPDO()->query(
             'SHOW KEYS FROM `'. $table .'`'
         )->fetchAll();
@@ -466,6 +546,12 @@ class Tables
      */
     public function setPrimaryKey($table, $key)
     {
+        // You can't modify SQLite tables in any significant way after they have been created
+        if ( $this->_isSQLite() ) {
+            return true;
+        }
+
+
         if ( $this->issetPrimaryKey( $table, $key ) ) {
             return true;
         }
@@ -528,6 +614,22 @@ class Tables
     {
         $i = $this->getIndex( $table );
 
+        if ( !$i || empty( $i ) ) {
+            return false;
+        }
+
+        if ( $this->_isSQLite() )
+        {
+            foreach ( $i as $key => $value )
+            {
+                if ( $value ==  $key ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         foreach ( $i as $entry )
         {
             if ( isset( $entry['Column_name'] ) &&
@@ -548,6 +650,22 @@ class Tables
      */
     public function getIndex($table)
     {
+        if ( $this->_isSQLite() )
+        {
+            try
+            {
+                $result = $this->_DB->getPDO()->query(
+                    "SELECT * FROM sqlite_master WHERE type = 'index'"
+                )->fetch();
+
+            } catch ( \PDOException $Exception )
+            {
+                return array();
+            }
+
+            return $result;
+        }
+
         return $this->_DB->getPDO()->query(
             'SHOW INDEX FROM `'. $table .'`'
         )->fetchAll();
@@ -557,7 +675,7 @@ class Tables
      * Setzt einen Index
      *
      * @param String $table
-     * @param String || Array $index
+     * @param String || Array $index - Array not working on SQLite
      *
      * @return Bool
      */
@@ -577,7 +695,16 @@ class Tables
              $in = "`". $index ."`";
         }
 
-        $result = $this->_DB->getPDO()->exec(
+        if ( $this->_isSQLite() )
+        {
+            $this->_DB->getPDO()->exec(
+                'CREATE INDEX '. $in .' ON '. $table .' ('. $in .')'
+            );
+
+            return $this->issetIndex( $table, $index );
+        }
+
+        $this->_DB->getPDO()->exec(
             'ALTER TABLE `'. $table .'` ADD INDEX('. $in .')'
         );
 
@@ -592,6 +719,13 @@ class Tables
      */
     public function setAutoIncrement($table, $index)
     {
+        if ( $this->_isSQLite() )
+        {
+            throw new \QUI\Exception(
+                'You can\'t modify SQLite tables in any significant way after they have been created in SQLite'
+            );
+        }
+
         $column = $this->getColumn( $table, $index );
 
         if ( !$this->issetIndex($table, $index) ) {
@@ -630,6 +764,11 @@ class Tables
      */
     public function setFulltext($table, $index)
     {
+        // no fulltext in sqlite
+        if ( $this->_isSQLite() ) {
+            throw new \QUI\Exception( 'Use USING fts4 for SQLite' );
+        }
+
         if ( $this->issetFulltext( $table, $index ) ) {
             return true;
         }
@@ -651,7 +790,6 @@ class Tables
         return $this->issetFulltext( $table, $index );
     }
 
-
     /**
      * Prüft ob ein Fulltext auf das Feld gesetzt ist
      *
@@ -662,6 +800,10 @@ class Tables
      */
     public function issetFulltext($table, $key)
     {
+        if ( $this->_isSQLite() ) {
+            throw new \QUI\Exception( 'Use USING fts4 for SQLite' );
+        }
+
         if ( is_array( $key ) )
         {
             foreach ( $key as $entry )

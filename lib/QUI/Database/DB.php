@@ -184,8 +184,21 @@ class DB extends \QUI\QDOM
         /**
          * Start Block
          */
-        if ( isset( $params['insert'] ) && !empty( $params['insert'] ) ) {
-            $query = $this->createQueryInsert( $params['insert'] );
+        if ( isset( $params['insert'] ) && !empty( $params ) )
+        {
+            if ( $this->isSQLite() && isset( $params['set'] ) )
+            {
+                $insert = $this->createQuerySQLiteInsert( $params );
+
+                $query   = $insert['insert'];
+                $prepare = array_merge( $prepare, $insert['prepare'] );
+
+                unset( $params['set'] );
+
+            } else
+            {
+                $query = $this->createQueryInsert( $params['insert'] );
+            }
         }
 
         if ( isset( $params['update'] ) && !empty( $params['update'] ) ) {
@@ -208,14 +221,18 @@ class DB extends \QUI\QDOM
         }
 
         /**
-         * Where Block
+         * set & where Block
          */
-        if ( isset( $params['set'] ) && !empty( $params['set'] ) )
+        if ( isset( $params['set'] ) &&
+             !empty( $params['set'] ))
         {
-             $set = $this->createQuerySet( $params['set'] );
+            $set = $this->createQuerySet(
+                $params['set'],
+                $this->getAttribute( 'driver' )
+            );
 
-             $query  .= $set['set'];
-             $prepare = array_merge( $prepare, $set['prepare'] );
+            $query  .= $set['set'];
+            $prepare = array_merge( $prepare, $set['prepare'] );
         }
 
         if ( isset( $params['where'] ) && !empty( $params['where'] ) )
@@ -283,7 +300,7 @@ class DB extends \QUI\QDOM
             \QUI\Log::writeRecursive( $query );
         }
 
-        $Statement = $this->getPDO()->prepare( $query['query'] );
+        $Statement = $this->getPDO()->prepare( $query['query'] .';' );
 
         foreach ( $query['prepare'] as $key => $val )
         {
@@ -656,9 +673,10 @@ class DB extends \QUI\QDOM
      * SET Query Abschnitt
      *
      * @param String || Array $params
+     * @param String
      * @return Array
      */
-    static function createQuerySet($params)
+    static function createQuerySet($params, $driver=false)
     {
         if ( is_string( $params ) )
         {
@@ -668,6 +686,44 @@ class DB extends \QUI\QDOM
             );
         }
 
+        // SQLITE
+        /*
+        if ( $driver == 'sqlite' )
+        {
+            $sql = ' SET ';
+            $max = count( $params ) - 1;
+
+            $fields = array();
+            $values = array();
+
+            $i = 0;
+
+            $sql .= ' (';
+
+            foreach ( $params as $key => $value )
+            {
+                $sql .= '`'. $key .'`';
+
+                if ( $max > $i ) {
+                    $sql .= ', ';
+                }
+
+                $values[] = ':v'. $i;
+
+                $prepare['v'. $i] = $value;
+
+                $i++;
+            }
+
+            $sql .= ') VALUES ('. implode( ',', $values ) .')';
+
+            return array(
+                'set'     => $sql,
+                'prepare' => $prepare
+            );
+        }
+        */
+        // Standard SQL
         $prepare = array();
         $sql     = '';
 
@@ -695,6 +751,49 @@ class DB extends \QUI\QDOM
 
         return array(
             'set'     => $sql,
+            'prepare' => $prepare
+        );
+    }
+
+    /**
+     * The insert for SQLite
+     *
+     * @param array $params - the set params
+     * @return array
+     */
+    static function createQuerySQLiteInsert($params)
+    {
+        $set_params = $params['set'];
+
+        $max = count( $set_params ) - 1;
+
+        $fields = array();
+        $values = array();
+
+        $i = 0;
+
+        $sql  = self::createQueryInsert( $params['insert'] );
+        $sql .= ' (';
+
+        foreach ( $set_params as $key => $value )
+        {
+            $sql .= '`'. $key .'`';
+
+            if ( $max > $i ) {
+                $sql .= ', ';
+            }
+
+            $values[] = ':v'. $i;
+
+            $prepare['v'. $i] = $value;
+
+            $i++;
+        }
+
+        $sql .= ') VALUES ('. implode( ',', $values ) .')';
+
+        return array(
+            'insert'  => $sql,
             'prepare' => $prepare
         );
     }
