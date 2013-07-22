@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<phpdoc>
+    <title><![CDATA[quiqqer/utils]]></title>
+    <template name="responsive" />
+
+    <files>
+        <directory>lib</directory>
+    </files>
+
+    <parser>
+        <target>phpdoc</target>
+    </parser>
+
+    <transformer>
+        <target>phpdoc</target>
+    </transformer>
+
+</phpdoc>
