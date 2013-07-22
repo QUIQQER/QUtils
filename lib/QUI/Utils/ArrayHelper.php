@@ -85,17 +85,8 @@ class ArrayHelper
      */
     static function arrayToObject($array=array())
     {
-        if ( empty( $array ) ) {
-            return false;
-        }
-
-        $data = false;
-
-        foreach ( $array as $akey => $aval ) {
-            $data->{$akey} = $aval;
-        }
-
-        return $data;
+        // its the easiest way
+        return (object)$array;
     }
 }
 

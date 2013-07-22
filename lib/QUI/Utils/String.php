@@ -64,25 +64,23 @@ class String
 
         $info = pathinfo( $path );
 
-        switch ( $options )
-        {
-            case PATHINFO_DIRNAME:
-                return $info['dirname'];
-            breaK;
-
-            case PATHINFO_BASENAME:
-                return $info['basename'];
-            breaK;
-
-            case PATHINFO_EXTENSION:
-                return $info['extension'];
-            breaK;
-
-            case false:
-            default:
-                return $info;
-            break;
+        if ( $options == PATHINFO_DIRNAME ) {
+            return $info['dirname'];
         }
+
+        if ( $options == PATHINFO_BASENAME ) {
+            return $info['basename'];
+        }
+
+        if (  $options == PATHINFO_EXTENSION ) {
+            return $info['extension'];
+        }
+
+        if (  $options == PATHINFO_FILENAME ) {
+            return $info['filename'];
+        }
+
+        return $info;
     }
 
     /**
