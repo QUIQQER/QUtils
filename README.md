@@ -13,7 +13,7 @@ Diese Klassen sollen auch unabhängig von QUIQQER funktionieren.
     }],
 
     "require": {
-        "php" : "quiqqer/utils"
+        "quiqqer/utils" : "1.*"
     }
 }
 ```
