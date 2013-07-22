@@ -11,7 +11,7 @@ namespace QUI\Database;
  *
  * @uses PDO
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  */
 
 class DB extends \QUI\QDOM

@@ -10,7 +10,7 @@ namespace QUI;
  * The Main Exception class for QUIQQER CMS and QUI Utils
  *
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui
+ * @package com.pcsg.qutils
  */
 
 class Exception extends \Exception

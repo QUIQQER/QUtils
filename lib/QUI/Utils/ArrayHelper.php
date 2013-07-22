@@ -10,7 +10,7 @@ namespace QUI\Utils;
  * Helper for array handling
  *
  * @author www.pcsg.de (Henning Leutz
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  */
 
 class ArrayHelper

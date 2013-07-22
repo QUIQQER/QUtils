@@ -12,7 +12,7 @@ namespace QUI;
  * The QDOM class emulate similar methods
  * like a DOMNode, its the main parent factory class
  *
- * @package com.pcsg.qui
+ * @package com.pcsg.qutils
  * @author www.pcsg.de (Henning Leutz)
  */
 
@@ -101,10 +101,9 @@ class QDOM
 
     /**
      * Return all attributes
-     * @see QDOM::getAttributes()
      *
      * @return Array
-     * @deprecated use getAttributes()
+     * @deprecated getAllAttributes is depricated use getAttributes()
      */
     public function getAllAttributes()
     {

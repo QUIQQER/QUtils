@@ -11,10 +11,7 @@ namespace QUI;
  *
  * @author www.pcsg.de (Moritz Scholz)
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui
- *
- * @copyright  2008 PCSG
- * @since      Class available since Release QUIQQER 0.1
+ * @package com.pcsg.qutils
  *
  * @todo translate the docu
  */

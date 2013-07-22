@@ -10,7 +10,7 @@ namespace QUI;
  * Writes Logs into the logdir
  *
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.system
+ * @package com.pcsg.qutils
  */
 
 class Log

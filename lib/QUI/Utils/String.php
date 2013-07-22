@@ -12,7 +12,7 @@ mb_internal_encoding('UTF-8');
  * Helper for string handling
  *
  * @author www.pcsg.de (Henning Leutz
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  *
  * @todo doku translation
  */

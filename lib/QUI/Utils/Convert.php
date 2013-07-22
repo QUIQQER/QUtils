@@ -10,7 +10,7 @@ namespace QUI\Utils;
  * Convert class, helper for converting different values
  *
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  */
 
 class Convert

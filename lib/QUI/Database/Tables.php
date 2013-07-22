@@ -11,7 +11,7 @@ namespace QUI\Database;
  *
  * @uses PDO
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  */
 
 class Tables
@@ -25,7 +25,7 @@ class Tables
     /**
      * Konstruktor
      *
-     * @param QUI\Database\DB $DB
+     * @param \QUI\Database\DB $DB
      */
     public function __construct(\QUI\Database\DB $DB)
     {

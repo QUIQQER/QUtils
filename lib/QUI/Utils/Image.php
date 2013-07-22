@@ -29,7 +29,7 @@ if (class_exists('Imagick'))
      * GDLIB          = GDLib is via php available;
      * false          = no image library is available :(
      *
-     * @package com.pcsg.qui.utils.image
+     * @package com.pcsg.qutils.image
      */
     define('IMAGE_LIBRARY', false);
 }
@@ -43,7 +43,7 @@ if (class_exists('Imagick'))
  * @uses imagick on the shell, if it enabled
  *
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  *
  * @todo docu translation
  */

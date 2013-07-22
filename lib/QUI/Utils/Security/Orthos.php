@@ -15,10 +15,7 @@ namespace QUI\Utils\Security;
  * @author www.pcsg.de (Henning Leutz)
  * @author www.pcsg.de (Moritz Scholz)
  *
- * @package com.pcsg.qui.utils.security
- *
- * @copyright  2008 PCSG
- * @version    1.0
+ * @package com.pcsg.qutils
  */
 
 class Orthos

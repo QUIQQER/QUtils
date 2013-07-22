@@ -10,11 +10,15 @@ namespace QUI\Utils;
  * Helper class for the system variables
  *
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils
+ * @package com.pcsg.qutils
  */
 
 class System
 {
+    /**
+     * The max memory limit for memUsageToHigh(), look at ::memUsageToHigh()
+     * @var Integer
+     */
     static $memory_limit = 128;
 
     /**
@@ -49,7 +53,7 @@ class System
      * Checks the memory consumption
      *
      * If 80% of consumption was given returns true
-     * If self::$memory_limit is not set, will always return false
+     * If self::$memory_limit is not set | false | null, than always return false
      *
      * @return Bool
      */

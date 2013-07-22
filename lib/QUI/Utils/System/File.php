@@ -13,7 +13,7 @@ namespace QUI\Utils\System;
  * @author www.pcsg.de (Henning Leutz)
  * @author www.pcsg.de (Moritz Leutz)
  *
- * @package com.pcsg.qui.utils.system
+ * @package com.pcsg.qutils
  */
 
 class File
