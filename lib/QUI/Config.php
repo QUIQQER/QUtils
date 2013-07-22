@@ -62,13 +62,13 @@ class Config
     }
 
     /**
-     * Return the ini as json decode
+     * Return the ini as json encode
      *
      * @return String
      */
     public function toJSON()
     {
-        return json_decode( $this->_iniParsedArray, true );
+        return json_encode( $this->_iniParsedArray );
     }
 
     /**
@@ -133,20 +133,23 @@ class Config
      * Setzt eine komplette Sektion
      *
      * @param String $section
-     * @param Array|String $array
+     * @param Array $array
      * @return unknown
      */
     public function setSection($section=false, $array)
     {
-        if ( !isset( $array ) || !is_array( $array ) ) {
+        if ( !is_array( $array ) ) {
             return false;
         }
 
-        if ( $section ) {
-            return $this->_iniParsedArray[ $section ] = $array;
+        if ( $section )
+        {
+            $this->_iniParsedArray[ $section ] = $array;
+            return true;
         }
 
-        return $this->_iniParsedArray[] = $array;
+        $this->_iniParsedArray[] = $array;
+        return true;
     }
 
     /**
