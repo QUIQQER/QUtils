@@ -58,4 +58,66 @@ class StringTest extends PHPUnit_Framework_TestCase
             $this->fail( 'PATHINFO_DIRNAME is wrong' );
         }
     }
+
+    public function testReplaceDblSlashes()
+    {
+        $this->assertEquals(
+            '/var/www/vhosts/',
+            String::replaceDblSlashes('//var//www/vhosts/')
+        );
+    }
+
+    public function testRemoveLineBreaks()
+    {
+        $this->assertEquals(
+            '   ',
+            String::removeLineBreaks("\n  ", " ")
+        );
+    }
+
+    public function testRemoveDblSigns()
+    {
+        $this->assertEquals(
+            'abc',
+            String::removeDblSigns('aabbccc')
+        );
+
+        $this->assertEquals(
+            '/',
+            String::removeDblSigns('///')
+        );
+    }
+
+    public function testRemoveLastSlash()
+    {
+        $this->assertEquals(
+            '/var/www/vhosts',
+            String::removeLastSlash('/var/www/vhosts/')
+        );
+    }
+
+    public function testFirstToUpper()
+    {
+        $this->assertEquals(
+            'Atesttest',
+            String::firstToUpper('ATestTest')
+        );
+    }
+
+    public function testToUpper()
+    {
+        $this->assertEquals(
+            'ÖLLAMPE',
+            String::toUpper('öllampe')
+        );
+    }
+
+    public function testcountImportantWords()
+    {
+        $list = String::countImportantWords('Dies ist das Haus vom Nikolaus Nikolaus');
+
+        $this->assertEquals( 2, count( $list ) );
+        $this->assertEquals( 2, $list['Nikolaus'] );
+        $this->assertEquals( 1, $list['Haus'] );
+    }
 }

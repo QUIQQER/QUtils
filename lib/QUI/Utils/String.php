@@ -6,7 +6,7 @@
 
 namespace QUI\Utils;
 
-mb_internal_encoding('UTF-8');
+mb_internal_encoding( 'UTF-8' );
 
 /**
  * Helper for string handling
@@ -105,20 +105,11 @@ class String
      */
     static function removeLineBreaks($text, $replace=' ')
     {
-        $str = preg_replace( '/([\t]){2,}/', "\t", $text );
-
-        $str = str_replace(
+        return str_replace(
             array("\r\n","\n","\r", "\t"),
             $replace,
-            $str
+            $text
         );
-
-        // doppelte leerzeichen raus
-        if ( $replace === ' ' ) {
-            $str = preg_replace( '/([ ]){2,}/', "\t", $text );
-        }
-
-        return $str;
     }
 
     /**
@@ -250,12 +241,12 @@ class String
     }
 
     /**
-     * Zählt die wichtig Wörter eines deutschen Textes
+     * Zählt die wichtigen Wörter eines deutschen Textes
      *
      * @param String $text
      * @return Array
      */
-    static function countWords($text)
+    static function countImportantWords($text)
     {
         $str = $text;
 
@@ -272,7 +263,7 @@ class String
             }
 
             // sammeln
-            if ( isset( $result[$entry] ) )
+            if ( isset( $result[ $entry ] ) )
             {
                 $result[$entry]++;
                 continue;
