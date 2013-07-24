@@ -86,6 +86,11 @@ class StringTest extends PHPUnit_Framework_TestCase
             '/',
             String::removeDblSigns('///')
         );
+
+        $this->assertEquals(
+            '/ ',
+            String::removeDblSigns('/// ')
+        );
     }
 
     public function testRemoveLastSlash()
@@ -112,12 +117,100 @@ class StringTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testcountImportantWords()
+    public function testGetUrlAttributes()
     {
-        $list = String::countImportantWords('Dies ist das Haus vom Nikolaus Nikolaus');
+        $attr = String::getUrlAttributes( 'index.php?id=1&param1=test&param2=hallo' );
 
-        $this->assertEquals( 2, count( $list ) );
-        $this->assertEquals( 2, $list['Nikolaus'] );
-        $this->assertEquals( 1, $list['Haus'] );
+        $this->assertArrayHasKey ( 'id', $attr );
+        $this->assertArrayHasKey ( 'param1', $attr );
+        $this->assertArrayHasKey ( 'param2', $attr );
+
+        $attr = String::getUrlAttributes( 'index.php' );
+
+        $this->assertEquals( 0, count($attr) );
+    }
+
+    public function testGetHTMLAttributes()
+    {
+        $attr = String::getHTMLAttributes(
+            '<img class="cssclass" id="unique" src="image.png" style="border: 1px solid red;" />'
+        );
+
+        $this->assertArrayHasKey ( 'class', $attr );
+        $this->assertArrayHasKey ( 'id', $attr );
+        $this->assertArrayHasKey ( 'src', $attr );
+        $this->assertArrayHasKey ( 'style', $attr );
+    }
+
+    public function testSplitStyleAttributes()
+    {
+        $attr = String::getHTMLAttributes(
+            '<img src="image.png" style="border: 1px solid red; margin: 10px; padding: 10px;" />'
+        );
+
+        $style = String::splitStyleAttributes( $attr['style'] );
+
+        $this->assertArrayHasKey ( 'border', $style );
+        $this->assertArrayHasKey ( 'margin', $style );
+        $this->assertArrayHasKey ( 'padding', $style );
+
+        $this->assertEquals( '1px solid red', $style['border'] );
+        $this->assertEquals( '10px', $style['margin'] );
+        $this->assertEquals( '10px', $style['padding'] );
+    }
+
+    public function testReplaceLast()
+    {
+        $result = String::replaceLast( 'one', 'three', 'one two one' );
+
+        $this->assertEquals( 'one two three', $result );
+
+        $this->assertEquals(
+            'one two one',
+            String::replaceLast( 'three', 'three', 'one two one' )
+        );
+    }
+
+    public function testUTF8()
+    {
+        $no_utf8 = utf8_decode( 'müll' );
+
+        $this->assertEquals( false, String::isValidUTF8(  utf8_decode( 'müll' ) ) );
+        $this->assertEquals( true, String::isValidUTF8(  utf8_encode( 'müll' ) ) );
+
+        $this->assertEquals(
+            'müll',
+            String::toUTF8( utf8_decode( 'müll' ) )
+        );
+
+        $this->assertEquals(
+            'müll',
+            String::toUTF8( 'müll' )
+        );
+    }
+
+    public function testSentence()
+    {
+        $text = '
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr.
+            sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum!
+            Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet?
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
+            ut labore et dolore magna aliquyam erat, sed diam voluptua.
+            At vero eos et accusam et justo duo dolores et ea rebum.
+            Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
+
+        $sentence = String::sentence( $text );
+
+        $this->assertEquals(
+            'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
+            String::sentence( $text )
+        );
+
+        $this->assertEquals(
+            false,
+            String::sentence( 'Lorem ipsum dolor sit amet' )
+        );
     }
 }
