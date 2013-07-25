@@ -182,7 +182,6 @@ class File
 
             '.jpg'  => 'image/jpeg',
             '.jpeg' => 'image/jpeg',
-            '.jpg'  => 'image/jpeg',
             '.jfif' => 'image/jpeg',
             '.jfif-tbnl' => 'image/jpeg',
 
@@ -730,18 +729,15 @@ class File
      * @param String $mime
      * @return String
      */
-    static function getEndingByMimeType($mime)
+    static function getEndingByMimeType($ending)
     {
         $mimetypes = self::getMimeTypes();
 
-        foreach ( $mimetypes as $ending => $mimetype )
-        {
-            if ( $mimetype == $mime ) {
-                return $ending;
-            }
+        if ( strpos( $ending, '.' ) === false ) {
+            $ending = '.'. $ending;
         }
 
-        return '';
+        return isset( $mimetypes[ $ending ] ) ? $mimetypes[ $ending ] : false;
     }
 
     /**
@@ -1184,7 +1180,7 @@ class File
     {
         $fp = fopen( $file, 'a' );
 
-        fwrite( $fp, $line ."\n" );
+        fwrite( $fp, "\n".$line );
         fclose( $fp );
     }
 

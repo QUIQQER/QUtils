@@ -103,10 +103,10 @@ class String
      * @param String $replace - Mit was ersetzt werden soll
      * @return String
      */
-    static function removeLineBreaks($text, $replace=' ')
+    static function removeLineBreaks($text, $replace='')
     {
         return str_replace(
-            array("\r\n","\n","\r", "\t"),
+            array( "\r\n", "\n\r", "\n", "\r" ),
             $replace,
             $text
         );
