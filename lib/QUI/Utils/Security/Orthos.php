@@ -406,34 +406,4 @@ class Orthos
 
         return $value;
     }
-
-    /**
-     * Verschlüsselung auf Basis des CMS Salt
-     *
-     * @param String $str
-     * @return String
-     * @deprecated
-     */
-    static function encrypt($str)
-    {
-        return Utils_Security_Encryption::blowfishEncrypt(
-            $str,
-            QUI::conf('globals', 'salt')
-        );
-    }
-
-    /**
-     * Entschlüsselung auf Basis des CMS Salt
-     *
-     * @param String $str
-     * @return String
-     * @deprecated
-     */
-    static function decrypt($str)
-    {
-        return Utils_Security_Encryption::blowfishDecrypt(
-            $str,
-            QUI::conf('globals', 'salt')
-        );
-    }
 }
