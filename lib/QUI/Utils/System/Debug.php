@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\Utils\System\Debug
+ * This file contains \QUI\Utils\System\Debug
  */
 
 namespace QUI\Utils\System;
