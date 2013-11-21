@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains the QUI\Database\DB
+ * This file contains the \QUI\Database\DB
  */
 
 namespace QUI\Database;
