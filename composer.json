@@ -24,7 +24,7 @@
 
     "require": {
         "php" : ">=5.3",
-        "t7systems/blowfish": "dev-master"
+        "t7systems/blowfish": "1.*"
     },
 
     "autoload": {
