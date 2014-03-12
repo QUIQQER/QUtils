@@ -500,7 +500,7 @@ class Tables
         {
             foreach ( $key as $entry )
             {
-                if ( $this->_issetPrimaryKey( $table, $entry  == false ) ) {
+                if ( $this->_issetPrimaryKey( $table, $entry ) == false ) {
                     return false;
                 }
             }
@@ -526,9 +526,7 @@ class Tables
 
         foreach ( $keys as $entry )
         {
-            if ( isset($entry['Column_name'] ) &&
-                $entry['Column_name'] == $key)
-            {
+            if ( isset( $entry['Column_name'] ) && $entry['Column_name'] == $key) {
                 return true;
             }
         }
@@ -550,7 +548,6 @@ class Tables
         if ( $this->_isSQLite() ) {
             return true;
         }
-
 
         if ( $this->issetPrimaryKey( $table, $key ) ) {
             return true;
