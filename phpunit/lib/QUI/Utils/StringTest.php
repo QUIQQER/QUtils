@@ -91,6 +91,16 @@ class StringTest extends PHPUnit_Framework_TestCase
             '/ ',
             String::removeDblSigns('/// ')
         );
+
+        $this->assertEquals(
+            '##',
+            String::removeDblSigns('#')
+        );
+
+        $this->assertEquals(
+            '[[]]',
+            String::removeDblSigns('[]')
+        );
     }
 
     public function testRemoveLastSlash()

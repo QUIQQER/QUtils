@@ -21,6 +21,7 @@ class File
     /**
      * Return a array with all available mime types and they endings
      *
+     * @todo use mime.types http://svn.apache.org/viewvc/httpd/httpd/branches/2.2.x/docs/conf/mime.types?revision=1576707&view=co
      * @return array
      */
     static function getMimeTypes()
@@ -724,20 +725,31 @@ class File
     }
 
     /**
+     * @deprecated use ::getExtensionByMimeType
+     */
+    static function getEndingByMimeType($mime_type)
+    {
+        return self::getExtensionByMimeType( $mime_type );
+    }
+
+    /**
      * Return the file ending for a mimetype
      *
      * @param String $mime
      * @return String
      */
-    static function getEndingByMimeType($ending)
+    static function getExtensionByMimeType($mime_type)
     {
-        $mimetypes = self::getMimeTypes();
+        $list = self::getMimeTypes();
 
-        if ( strpos( $ending, '.' ) === false ) {
-            $ending = '.'. $ending;
+        foreach ( $list as $ending => $type )
+        {
+            if ( $type == $mime_type ) {
+                return $ending;
+            }
         }
 
-        return isset( $mimetypes[ $ending ] ) ? $mimetypes[ $ending ] : false;
+        return '';
     }
 
     /**

@@ -56,9 +56,9 @@ class Zip
     {
         self::check();
 
-        $Zip = new ZipArchive();
+        $Zip = new \ZipArchive();
 
-        if ( $Zip->open( $zipfile, ZIPARCHIVE::CREATE ) !== true ) {
+        if ( $Zip->open( $zipfile, \ZIPARCHIVE::CREATE ) !== true ) {
             throw new \QUI\Exception( 'cannot open '. $zipfile );
         }
 
@@ -116,7 +116,7 @@ class Zip
             );
         }
 
-        $Zip = new ZipArchive();
+        $Zip = new \ZipArchive();
 
         if ( $Zip->open( $zipfile ) === true )
         {

@@ -121,17 +121,29 @@ class String
     static function removeDblSigns($str)
     {
         $_str = $str;
+        $_str = utf8_decode($_str);
 
-        for ( $i = 0, $len = mb_strlen($str); $i < $len; $i++ )
+        for ( $i = 0, $len = mb_strlen( $str ); $i < $len; $i++ )
         {
             $char = mb_substr( $str, $i, 1 );
 
-            if ( $char === '/' ) {
+            if ( empty( $char ) ) {
+                continue;
+            }
+
+            $char  = addslashes( $char );
+            $char  = preg_quote( $char );
+
+            if ( $char === '#' ) {
                 $char = '\\'. $char;
             }
 
-            $_str = preg_replace( '/(['. $char .']){2,}/', "$1", $_str );
+            $regex = '#(['. $char .']){2,}#';
+
+            $_str = preg_replace($regex, "$1", $_str);
         }
+
+        $_str = utf8_encode($_str);
 
         return $_str;
     }
