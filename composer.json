@@ -23,8 +23,7 @@
     }],
 
     "require": {
-        "php" : ">=5.3",
-        "t7systems/blowfish": "1.*"
+        "php" : ">=5.3"
     },
 
     "autoload": {
