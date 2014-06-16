@@ -38,6 +38,10 @@ class Config
      */
     public function __construct($filename='')
     {
+        if ( substr( $filename, -4 ) !== '.php' ) {
+            $filename .= '.php';
+        }
+
         if ( !file_exists( $filename ) ) {
             return false;
         }
@@ -262,6 +266,9 @@ class Config
         }
 
         $SFfdescriptor = fopen( $filename, "w" );
+
+        fwrite( $SFfdescriptor, ";<?php exit; ?>\n" ); // php security
+
 
         foreach ( $this->_iniParsedArray as $section => $array )
         {
