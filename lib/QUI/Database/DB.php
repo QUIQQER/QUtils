@@ -106,7 +106,7 @@ class DB extends \QUI\QDOM
     /**
      * PDO Objekt bekommen
      *
-     * @return PDO
+     * @return \PDO
      */
     public function getPDO()
     {
