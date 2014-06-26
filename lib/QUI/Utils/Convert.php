@@ -49,6 +49,25 @@ class Convert
     }
 
     /**
+     * Format a byte number in human readable format
+     *
+     * @param Integer $bytes
+     * @return string
+     */
+    static function formatBytes($bytes)
+    {
+        if ( !$bytes ) {
+            return '0 B';
+        }
+
+        $units = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+
+        return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' ' . $units[$power];
+    }
+
+
+    /**
      * Converts some Umlauts
      *
      * @param String $conv
@@ -159,8 +178,8 @@ class Convert
             'ß' => 'ss'
         );
 
-        foreach ($signs as $from => $to) {
-            $str = str_replace($from, $to, $str);
+        foreach ( $signs as $from => $to ) {
+            $str = str_replace( $from, $to, $str );
         }
 
         return $str;
