@@ -261,8 +261,13 @@ class Config
             $filename = $this->_iniFilename;
         }
 
-        if ( !is_writeable( $filename ) ) {
-            throw new \QUI\Exception( 'Config is not writable' );
+        if ( !is_writeable( $filename ) )
+        {
+            $filename = \QUI\Utils\Security\Orthos::clear( $filename );
+
+            throw new \QUI\Exception(
+                'Config '. $filename .' is not writable'
+            );
         }
 
         $SFfdescriptor = fopen( $filename, "w" );
