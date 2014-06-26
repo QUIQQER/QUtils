@@ -38,6 +38,10 @@ class Config
      */
     public function __construct($filename='')
     {
+        if ( substr( $filename, -4 ) !== '.php' ) {
+            $filename .= '.php';
+        }
+
         if ( !file_exists( $filename ) ) {
             return false;
         }
@@ -257,11 +261,19 @@ class Config
             $filename = $this->_iniFilename;
         }
 
-        if ( !is_writeable( $filename ) ) {
-            throw new \QUI\Exception( 'Config is not writable' );
+        if ( !is_writeable( $filename ) )
+        {
+            $filename = \QUI\Utils\Security\Orthos::clear( $filename );
+
+            throw new \QUI\Exception(
+                'Config '. $filename .' is not writable'
+            );
         }
 
         $SFfdescriptor = fopen( $filename, "w" );
+
+        fwrite( $SFfdescriptor, ";<?php exit; ?>\n" ); // php security
+
 
         foreach ( $this->_iniParsedArray as $section => $array )
         {

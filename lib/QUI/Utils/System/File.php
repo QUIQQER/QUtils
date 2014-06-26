@@ -21,7 +21,6 @@ class File
     /**
      * Return a array with all available mime types and they endings
      *
-     * @todo use mime.types http://svn.apache.org/viewvc/httpd/httpd/branches/2.2.x/docs/conf/mime.types?revision=1576707&view=co
      * @return array
      */
     static function getMimeTypes()
@@ -183,6 +182,7 @@ class File
 
             '.jpg'  => 'image/jpeg',
             '.jpeg' => 'image/jpeg',
+            '.jpg'  => 'image/jpeg',
             '.jfif' => 'image/jpeg',
             '.jfif-tbnl' => 'image/jpeg',
 
@@ -725,26 +725,18 @@ class File
     }
 
     /**
-     * @deprecated use ::getExtensionByMimeType
-     */
-    static function getEndingByMimeType($mime_type)
-    {
-        return self::getExtensionByMimeType( $mime_type );
-    }
-
-    /**
      * Return the file ending for a mimetype
      *
      * @param String $mime
      * @return String
      */
-    static function getExtensionByMimeType($mime_type)
+    static function getEndingByMimeType($mime)
     {
-        $list = self::getMimeTypes();
+        $mimetypes = self::getMimeTypes();
 
-        foreach ( $list as $ending => $type )
+        foreach ( $mimetypes as $ending => $mimetype )
         {
-            if ( $type == $mime_type ) {
+            if ( $mimetype == $mime ) {
                 return $ending;
             }
         }
@@ -798,20 +790,35 @@ class File
      * Dateien rekursiv aus einem Ordner lesen
      *
      * @param String $folder - Pfad zum Ordner
+     * @param Bool $flatten - no assoziativ folder array, return the array as flat array
      * @return Array
      */
-    public function readDirRecursiv($folder)
+    public function readDirRecursiv($folder, $flatten=false)
     {
-        if (substr($folder, strlen($folder)-1) != '/') {
+        if ( substr( $folder, strlen($folder)-1 ) != '/' ) {
             $folder .= '/';
         }
 
         $this->_files        = array();
         $this->_start_folder = $folder;
 
-        $this->_readDirRecursiv($folder);
+        $this->_readDirRecursiv( $folder );
 
-        ksort($this->_files);
+        ksort( $this->_files );
+
+        if ( $flatten )
+        {
+            $list = array();
+
+            foreach ( $this->_files as $dir => $files )
+            {
+                foreach ( $files as $file ) {
+                    $list[] = $dir . $file;
+                }
+            }
+
+            return $list;
+        }
 
         return $this->_files;
     }
@@ -1192,7 +1199,7 @@ class File
     {
         $fp = fopen( $file, 'a' );
 
-        fwrite( $fp, "\n".$line );
+        fwrite( $fp, $line ."\n" );
         fclose( $fp );
     }
 
