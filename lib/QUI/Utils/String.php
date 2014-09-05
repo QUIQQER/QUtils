@@ -396,6 +396,7 @@ class String
      */
     static function getUrlAttributes($url)
     {
+        $url = str_replace( '&amp;' , '&', $url );
         $url = explode( '?', $url );
         $att = array();
 
