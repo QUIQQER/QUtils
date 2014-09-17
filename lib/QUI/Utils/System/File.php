@@ -795,14 +795,14 @@ class File
      */
     public function readDirRecursiv($folder, $flatten=false)
     {
-        if ( substr( $folder, strlen($folder)-1 ) != '/' ) {
+        if (substr($folder, strlen($folder)-1) != '/') {
             $folder .= '/';
         }
 
         $this->_files        = array();
         $this->_start_folder = $folder;
 
-        $this->_readDirRecursiv( $folder );
+        $this->_readDirRecursiv($folder);
 
         ksort( $this->_files );
 

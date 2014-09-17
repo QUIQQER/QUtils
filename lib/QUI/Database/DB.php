@@ -106,7 +106,7 @@ class DB extends \QUI\QDOM
     /**
      * PDO Objekt bekommen
      *
-     * @return \PDO
+     * @return PDO
      */
     public function getPDO()
     {
@@ -323,14 +323,15 @@ class DB extends \QUI\QDOM
         try
         {
             $Statement->execute();
-        } catch ( \PDOException $e )
+
+        } catch ( \PDOException $Exception )
         {
-            $message  = $e->getMessage();
+            $message  = $Exception->getMessage();
             $message .= print_r( $query, true );
 
             throw new \QUI\Database\Exception(
                 $message,
-                $e->getCode()
+                $Exception->getCode()
             );
         }
 
@@ -850,6 +851,7 @@ class DB extends \QUI\QDOM
             );
 
             $sql .= ':limit1';
+
         } else
         {
             $limit = explode( ',', $params );
@@ -872,7 +874,7 @@ class DB extends \QUI\QDOM
                 \PDO::PARAM_INT
             );
 
-            $sql .= ':limit1, :limit2';
+            $sql .= ':limit1,:limit2';
         }
 
         return array(
