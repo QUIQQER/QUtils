@@ -8,6 +8,14 @@ namespace QUI\Utils;
 
 mb_internal_encoding( 'UTF-8' );
 
+if ( !function_exists('fnmatch') )
+{
+    define('FNM_PATHNAME', 1);
+    define('FNM_NOESCAPE', 2);
+    define('FNM_PERIOD', 4);
+    define('FNM_CASEFOLD', 16);
+}
+
 /**
  * Helper for string handling
  *
@@ -486,5 +494,61 @@ class String
             strrpos($string, $search),
             strlen($search)
         );
+    }
+
+    /**
+     * Match String against a pattern
+     *
+     * @param String $pattern - The shell wildcard pattern.
+     * @param String $string - The tested string.
+     * @param number $flags - The value of flags can be any combination of the following flags,
+     * 					      joined with the binary OR (|) operator. ( http://php.net/manual/de/function.fnmatch.php )
+     * @return boolean
+     */
+    static function match($pattern, $string, $flags=0)
+    {
+        if ( function_exists('fnmatch') ) {
+            return fnmatch( $pattern, $string, $flags );
+        }
+
+        // solution if fnmatch doesn't exist
+        // found on http://php.net/manual/de/function.fnmatch.php
+        $modifiers = null;
+        $transforms = array(
+            '\*'    => '.*',
+            '\?'    => '.',
+            '\[\!'    => '[^',
+            '\['    => '[',
+            '\]'    => ']',
+            '\.'    => '\.',
+            '\\'    => '\\\\'
+        );
+
+        // Forward slash in string must be in pattern:
+        if ($flags & FNM_PATHNAME) {
+            $transforms['\*'] = '[^/]*';
+        }
+
+        // Back slash should not be escaped:
+        if ($flags & FNM_NOESCAPE) {
+            unset($transforms['\\']);
+        }
+
+        // Perform case insensitive match:
+        if ($flags & FNM_CASEFOLD) {
+            $modifiers .= 'i';
+        }
+
+        // Period at start must be the same as pattern:
+        if ($flags & FNM_PERIOD) {
+            if (strpos($string, '.') === 0 && strpos($pattern, '.') !== 0) return false;
+        }
+
+        $pattern = '#^'
+            . strtr(preg_quote($pattern, '#'), $transforms)
+            . '$#'
+            . $modifiers;
+
+        return (boolean)preg_match($pattern, $string);
     }
 }
