@@ -1,0 +1,115 @@
+<?php
+
+/**
+ * This file includes \QUI\Control
+ */
+
+namespace QUI;
+
+/**
+ * QUI Control
+ * PHP counterpart to the \QUI\Control JavaScript class
+ *
+ * @author www.pcsg.de (Henning Leutz)
+ */
+class Control extends \QUI\QDOM
+{
+    /**
+     * List of CSS files
+     * @var array
+     */
+    protected $_cssFiles = array();
+
+    /**
+     * Constructor
+     * @param Array $attributes
+     */
+    public function __construct( $attributes=array() )
+    {
+        $this->setAttributes( $attributes );
+    }
+
+    /**
+     * Return the DOM Node string
+     *
+     * @return String
+     */
+    public function create()
+    {
+        $attributes = $this->getAttributes();
+        $params     = '';
+
+        foreach ( $attributes as $key => $value )
+        {
+            if ( $key == 'qui-class' ) {
+                continue;
+            }
+
+            if ( is_object( $value ) ) {
+                continue;
+            }
+
+            $key = \QUI\Utils\Security\Orthos::clear( $key );
+
+            $params .= $key .'="'. htmlentities( $value ) .'"';
+        }
+
+        // css files
+        $cssHtml = '<style>';
+
+        foreach ( $this->_cssFiles as $file )
+        {
+            if ( substr( $file, -4 ) !== '.css' ) {
+                continue;
+            }
+
+            if ( !file_exists( $file ) ) {
+                continue;
+            }
+
+            $cssHtml .= file_get_contents( $file );
+        }
+
+        $cssHtml .= '</style>';
+
+        // qui class
+        $quiClass = '';
+
+        if ( $this->getAttribute('qui-class') ) {
+            $quiClass = 'data-qui="'. $this->getAttribute('qui-class') .'" ';
+        }
+
+        return $cssHtml . '<div '. $quiClass . $params .'>'.
+            $this->getBody() .
+        '</div>';
+    }
+
+    /**
+     * Return the inner body of the element
+     * Can be overwritten
+     *
+     * @return String
+     */
+    public function getBody()
+    {
+        return '';
+    }
+
+    /**
+     * Add a css file to the control
+     * @param String $file
+     */
+    public function addCSSFile($file)
+    {
+        $this->_cssFiles[] = $file;
+    }
+
+    /**
+     * Return the css file list
+     * @return Array
+     */
+    public function getCSSFiles()
+    {
+        return $this->_cssFiles;
+    }
+}
