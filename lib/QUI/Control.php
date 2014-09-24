@@ -15,12 +15,6 @@ namespace QUI;
 class Control extends \QUI\QDOM
 {
     /**
-     * List of CSS files
-     * @var array
-     */
-    protected $_cssFiles = array();
-
-    /**
      * Constructor
      * @param Array $attributes
      */
@@ -51,26 +45,20 @@ class Control extends \QUI\QDOM
 
             $key = \QUI\Utils\Security\Orthos::clear( $key );
 
-            $params .= $key .'="'. htmlentities( $value ) .'"';
-        }
+            switch ( $key )
+            {
+                case 'alt':
+                case 'class':
+                case 'style':
+                case 'title':
+                break;
 
-        // css files
-        $cssHtml = '<style>';
-
-        foreach ( $this->_cssFiles as $file )
-        {
-            if ( substr( $file, -4 ) !== '.css' ) {
-                continue;
+                default:
+                    $key = 'data-'. $key;
             }
 
-            if ( !file_exists( $file ) ) {
-                continue;
-            }
-
-            $cssHtml .= file_get_contents( $file );
+            $params .= ' '. $key .'="'. htmlentities( $value ) .'"';
         }
-
-        $cssHtml .= '</style>';
 
         // qui class
         $quiClass = '';
@@ -101,15 +89,6 @@ class Control extends \QUI\QDOM
      */
     public function addCSSFile($file)
     {
-        $this->_cssFiles[] = $file;
-    }
-
-    /**
-     * Return the css file list
-     * @return Array
-     */
-    public function getCSSFiles()
-    {
-        return $this->_cssFiles;
+        \QUI\Control\Manager::addCSSFile( $file );
     }
 }
