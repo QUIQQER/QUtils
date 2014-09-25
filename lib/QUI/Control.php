@@ -67,7 +67,7 @@ class Control extends \QUI\QDOM
             $quiClass = 'data-qui="'. $this->getAttribute('qui-class') .'" ';
         }
 
-        return $cssHtml . '<div '. $quiClass . $params .'>'.
+        return '<div '. $quiClass . $params .'>'.
             $this->getBody() .
         '</div>';
     }
