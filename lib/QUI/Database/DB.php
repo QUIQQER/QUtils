@@ -592,7 +592,11 @@ class DB extends \QUI\QDOM
             {
                 $key = '`'. str_replace( '.', '`.`', $key ) .'`';
 
-                if ( !is_array( $value ) )
+                if ( is_null( $value ) )
+                {
+                    $sql .= $key .' IS NULL ';
+
+                } else if ( !is_array( $value ) )
                 {
                     if ( strpos( $value, '`' ) !== false )
                     {
@@ -605,12 +609,17 @@ class DB extends \QUI\QDOM
 
                     $sql .= $key .' = '. $value;
 
-                } elseif ( isset( $value['value'] ) &&
-                           isset( $value['type'] ) &&
-                           $value['type'] == 'NOT' )
+                } elseif ( isset( $value['type'] ) && $value['type'] == 'NOT' )
                 {
-                    $prepare['wherev'. $i] = $value['value'];
-                    $sql .= $key .' != :wherev'. $i;
+                    if ( is_null( $value['value'] ) )
+                    {
+                        $sql .= $key .' IS NOT NULL ';
+
+                    } else
+                    {
+                        $prepare['wherev'. $i] = $value['value'];
+                        $sql .= $key .' != :wherev'. $i;
+                    }
 
                 } else
                 {
