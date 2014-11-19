@@ -14,8 +14,6 @@ namespace QUI\Utils\Security;
  *
  * @author www.pcsg.de (Henning Leutz)
  * @author www.pcsg.de (Moritz Scholz)
- *
- * @package com.pcsg.qutils
  */
 
 class Orthos
@@ -35,6 +33,18 @@ class Orthos
         $str = htmlspecialchars( $str );
 
         return $str;
+    }
+
+    /**
+     * Remove all none characters in the string.
+     * none characters are no a-z A-z or 0-9
+     *
+     * @param String $str
+     * @return String
+     */
+    static function clearNoneCharacters($str='')
+    {
+        return preg_replace( "/[^a-zA-Z0-9]/", "", $str );
     }
 
     /**
