@@ -113,7 +113,7 @@ class Config
      *
      * @param String $section
      * @param String || NULL $key (optional)
-     * @return String || Array
+     * @return String|Array
      */
     public function get($section, $key=null)
     {
@@ -136,9 +136,9 @@ class Config
     /**
      * Setzt eine komplette Sektion
      *
-     * @param String $section
+     * @param String|Bool $section
      * @param Array $array
-     * @return unknown
+     * @return Bool
      */
     public function setSection($section=false, $array)
     {

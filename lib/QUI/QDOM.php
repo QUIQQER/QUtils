@@ -40,7 +40,7 @@ class QDOM
      * if the attribute is not set, it returns false
      *
      * @param String $name
-     * @return unknown_type
+     * @return mixed
      */
     public function getAttribute($name)
     {
@@ -55,8 +55,8 @@ class QDOM
      * set an attribute
      *
      * @param String $name - name of the attribute
-     * @param unknown_type $val - value of the attribute
-     * @return this
+     * @param String|Bool|Array|Object $val - value of the attribute
+     * @return QDOM this
      */
     public function setAttribute($name, $val)
     {
@@ -69,12 +69,12 @@ class QDOM
      * If you want to set more than one attribute
      *
      * @param Array $attributes
-     * @return this
+     * @return QDOM this
      */
     public function setAttributes($attributes)
     {
         if ( !is_array( $attributes ) ) {
-            return;
+            return $this;
         }
 
         foreach ( $attributes as $key => $value ) {

@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Security;
 
+use QUI\Utils\String as QUIString;
+
 /**
  * Orthos - Security class
  *
@@ -79,7 +81,7 @@ class Orthos
      * Säubert eine Pfadangabe von eventuellen Änderungen des Pfades
      *
      * @param String $path
-     * @return String
+     * @return String|Bool
      */
     static function clearPath($path)
     {
@@ -89,8 +91,8 @@ class Orthos
     /**
      * Enfernt HTML aus dem Text
      *
-     * @param unknown_type $text
-     * @return unknown
+     * @param String $text
+     * @return String
      */
     static function removeHTML($text)
     {
@@ -235,10 +237,11 @@ class Orthos
      * @see \QUI\Utils\String::removeLineBreaks
      * @deprecated use \QUI\Utils\String::removeLineBreaks
      * @param String $text
+     * @return string
      */
     static function removeLineBreaks($text)
     {
-        return \QUI\Utils\String::removeLineBreaks($text, '');
+        return QUIString::removeLineBreaks($text, '');
     }
 
     /**

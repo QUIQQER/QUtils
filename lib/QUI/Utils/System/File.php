@@ -1162,7 +1162,7 @@ class File
     /**
      * Erstellt eine Datei
      *
-     * @param unknown_type $file
+     * @param String $file - path to the file
      * @return Bool
      */
     static function mkfile($file)
