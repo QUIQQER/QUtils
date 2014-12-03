@@ -6,19 +6,20 @@
 
 namespace QUI\Database;
 
+use QUI;
+
 /**
  * QUIQQER DataBase Layer for table operations
  *
  * @uses PDO
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
+ * @package quiqqer/utils
  */
-
 class Tables
 {
     /**
      * internal db object
-     * @var QUI\Database\DB
+     * @var \QUI\Database\DB
      */
     protected $_DB = null;
 
@@ -27,7 +28,7 @@ class Tables
      *
      * @param \QUI\Database\DB $DB
      */
-    public function __construct(\QUI\Database\DB $DB)
+    public function __construct(DB $DB)
     {
         $this->_DB = $DB;
     }
@@ -75,7 +76,8 @@ class Tables
     /**
      * Optimiert Tabellen
      *
-     * @param String || Array $tables
+     * @param string|Array $tables
+     * @return void
      */
     public function optimize($tables)
     {
@@ -87,9 +89,10 @@ class Tables
             $tables = array( $tables );
         }
 
-        return $this->_DB->getPDO()->query(
+        $this->_DB->getPDO()->query(
             'OPTIMIZE TABLE `'. implode('`,`', $tables) .'`'
         )->fetchAll();
+
     }
 
     /**
@@ -119,6 +122,7 @@ class Tables
      * Delete a table
      *
      * @param String $table
+     * @return void
      */
     public function delete($table)
     {
@@ -126,7 +130,7 @@ class Tables
             return;
         }
 
-        return $this->_DB->getPDO()->query(
+        $this->_DB->getPDO()->query(
             'DROP TABLE `'. $table .'`'
         );
     }
@@ -168,14 +172,14 @@ class Tables
      *
      * @param String $table
      * @param Array $fields
-     *
      * @return Bool - if table exists or not
+     * @throws QUI\Database\Exception
      */
     public function create($table, $fields)
     {
         if ( !is_array( $fields ) )
         {
-            throw new \QUI\Database\Exception(
+            throw new QUI\Database\Exception(
                 'No Array given \QUI\Database\Tables->createTable'
             );
         }
@@ -189,8 +193,7 @@ class Tables
         }
 
 
-
-        if ( \QUI\Utils\ArrayHelper::isAssoc( $fields ) )
+        if ( QUI\Utils\ArrayHelper::isAssoc( $fields ) )
         {
             foreach ( $fields as $key => $type ) {
                 $sql .= '`'.$key.'` '.$type.',';
@@ -326,19 +329,20 @@ class Tables
     /**
      * Löscht ein Feld / Spalte aus der Tabelle
      *
-     * @param unknown_type $table
-     * @param unknown_type $fields
+     * @param string $table
+     * @param array $fields
+     * @return void
      */
     public function deleteFields($table, $fields)
     {
-        $table = \QUI\Utils\Security\Orthos::clearMySQL( $table );
+        $table = $this->_DB->getPDO()->quote( $table );
 
         if ( $this->exist( $table ) == false) {
-            return true;
+            return;
         }
 
         $tbl_fields   = $this->getFields( $table );
-        $table_fields = \QUI\Utils\ArrayHelper::toAssoc( $tbl_fields );
+        $table_fields = QUI\Utils\ArrayHelper::toAssoc( $tbl_fields );
 
         // prüfen ob die Tabelle leer wäre wenn alle Felder gelöscht werden
         // wenn ja, Tabelle löschen
@@ -360,7 +364,7 @@ class Tables
         foreach ( $fields as $field => $type )
         {
             if ( in_array( $field, $tbl_fields ) ) {
-                $this->deleteColum( $table, $field );
+                $this->deleteColumn( $table, $field );
             }
         }
     }
@@ -372,9 +376,8 @@ class Tables
     /**
      * Prüft ob eine Spalte in der Tabelle existiert
      *
-     * @param unknown_type $table
-     * @param unknown_type $row
-     *
+     * @param string $table
+     * @param array $row
      * @return Bool
      */
     public function existColumnInTable($table, $row)
@@ -424,18 +427,20 @@ class Tables
      *
      * @param String $table - Table name
      * @param String $column - Row name
+     * @return array
      */
     public function getColumn($table, $column)
     {
+        $table = $this->_DB->getPDO()->quote( $table );
+
         if ( $this->_isSQLite() )
         {
-            $result =  $this->_DB->getPDO()->query(
+            $result = $this->_DB->getPDO()->query(
                 'PRAGMA table_info(`'. $table .'`);'
             )->fetch();
 
 
-            var_dump($result['name']);
-
+            return $result;
         }
 
         return $this->_DB->getPDO()->query(
@@ -446,16 +451,17 @@ class Tables
     /**
      * Löscht eine Spalte aus der Tabelle
      *
-     * @param unknown_type $table
-     * @param unknown_type $row
+     * @param string $table
+     * @param string $row
+     * @return bool
      */
     public function deleteColumn($table, $row)
     {
-        $table = \QUI\Utils\Security\Orthos::clearMySQL( $table );
-        $row   = \QUI\Utils\Security\Orthos::clearMySQL( $row );
+        $table = $this->_DB->getPDO()->quote( $table );
+        $row   = $this->_DB->getPDO()->quote( $row );
 
         if ( !$this->existColumnInTable( $table, $row ) ) {
-            return;
+            return true;
         }
 
         $data = $this->_DB->getPDO()->query(
@@ -472,7 +478,7 @@ class Tables
     /**
      * Schlüssel der Tabelle bekommen
      *
-     * @param unknown_type $table
+     * @param string $table
      * @return Array
      */
     public function getKeys($table)
@@ -480,6 +486,8 @@ class Tables
         if ( $this->_isSQLite() ) {
             return array();
         }
+
+        $table = $this->_DB->getPDO()->quote( $table );
 
         return $this->_DB->getPDO()->query(
             'SHOW KEYS FROM `'. $table .'`'
@@ -490,8 +498,7 @@ class Tables
      * Prüft ob der PrimaryKey gesetzt ist
      *
      * @param String $table
-     * @param String || Array $key
-     *
+     * @param String|Array $key
      * @return Bool
      */
     public function issetPrimaryKey($table, $key)
@@ -517,7 +524,6 @@ class Tables
      *
      * @param String $table
      * @param String $key
-     *
      * @return Bool
      */
     protected function _issetPrimaryKey($table, $key)
@@ -539,7 +545,6 @@ class Tables
      *
      * @param String $table
      * @param String|Array $key
-     *
      * @return Bool
      */
     public function setPrimaryKey($table, $key)
@@ -552,8 +557,6 @@ class Tables
         if ( $this->issetPrimaryKey( $table, $key ) ) {
             return true;
         }
-
-        $k = $key;
 
         if ( is_array( $key ) )
         {
@@ -577,8 +580,8 @@ class Tables
     /**
      * Prüft ob ein Index gesetzt ist
      *
-     * @param unknown_type $table
-     * @param String | Integer $key
+     * @param string $table
+     * @param String|Integer $key
      *
      * @return Bool
      */
@@ -604,7 +607,6 @@ class Tables
      *
      * @param String $table
      * @param String $key
-     *
      * @return Bool
      */
     protected function _issetIndex($table, $key)
@@ -643,7 +645,7 @@ class Tables
      * Liefert die Indexes einer Tabelle
      *
      * @param String $table
-     * @return unknown
+     * @return array
      */
     public function getIndex($table)
     {
@@ -672,8 +674,7 @@ class Tables
      * Setzt einen Index
      *
      * @param String $table
-     * @param String || Array $index - Array not working on SQLite
-     *
+     * @param String|Array $index - Array not working on SQLite
      * @return Bool
      */
     public function setIndex($table, $index)
@@ -681,8 +682,6 @@ class Tables
         if ( $this->issetIndex( $table, $index ) ) {
             return true;
         }
-
-        $in = $index;
 
         if ( is_array( $index ) )
         {
@@ -713,12 +712,13 @@ class Tables
      *
      * @param String $table
      * @param String $index
+     * @throws QUI\Exception
      */
     public function setAutoIncrement($table, $index)
     {
         if ( $this->_isSQLite() )
         {
-            throw new \QUI\Exception(
+            throw new QUI\Exception(
                 'You can\'t modify SQLite tables in any significant way after they have been created in SQLite'
             );
         }
@@ -756,28 +756,26 @@ class Tables
      *
      * @param String $table
      * @param String || Array $index
-     *
      * @return Bool
+     * @throws QUI\Exception
      */
     public function setFulltext($table, $index)
     {
         // no fulltext in sqlite
         if ( $this->_isSQLite() ) {
-            throw new \QUI\Exception( 'Use USING fts4 for SQLite' );
+            throw new QUI\Exception( 'Use USING fts4 for SQLite' );
         }
 
         if ( $this->issetFulltext( $table, $index ) ) {
             return true;
         }
 
-        $in = $index;
-
         if ( is_array( $index ) )
         {
             $in = "`". implode("`,`", $index) ."`";
         } else
         {
-             $in = "`". $index ."`";
+            $in = "`". $index ."`";
         }
 
         $this->_DB->getPDO()->exec(
@@ -792,13 +790,13 @@ class Tables
      *
      * @param String $table
      * @param String|Integer $key
-     *
      * @return Bool
+     * @throws QUI\Exception
      */
     public function issetFulltext($table, $key)
     {
         if ( $this->_isSQLite() ) {
-            throw new \QUI\Exception( 'Use USING fts4 for SQLite' );
+            throw new QUI\Exception( 'Use USING fts4 for SQLite' );
         }
 
         if ( is_array( $key ) )
@@ -821,6 +819,7 @@ class Tables
      *
      * @param String $table
      * @param String $key
+     * @return bool
      */
     protected function _issetFulltext($table, $key)
     {

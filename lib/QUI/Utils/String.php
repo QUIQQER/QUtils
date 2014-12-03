@@ -6,6 +6,8 @@
 
 namespace QUI\Utils;
 
+use QUI;
+
 mb_internal_encoding( 'UTF-8' );
 
 if ( !function_exists('fnmatch') )
@@ -61,13 +63,14 @@ class String
      * Verinfachtes Pathinfo
      *
      * @param String $path		- path to file
-     * @param Integer $options 	- PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
+     * @param Integer|bool $options 	- PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      * @return Array|String
+     * @throws \QUI\Exception
      */
     static function pathinfo($path, $options=false)
     {
         if ( !file_exists( $path ) ) {
-            throw new \QUI\Exception( 'File '. $path .' not exists' );
+            throw new QUI\Exception( 'File '. $path .' not exists' );
         }
 
         $info = pathinfo( $path );
@@ -174,8 +177,8 @@ class String
     /**
      * Erstes Zeichen eines Wortes gross schreiben alle anderen klein
      *
-     * @param unknown_type $str
-     * @return unknown
+     * @param string $str
+     * @return string
      */
     static function firstToUpper($str)
     {
@@ -185,7 +188,7 @@ class String
     /**
      * Schreibt den String klein
      *
-     * @param unknown_type $string
+     * @param string $string
      * @return String
      */
     static function toLower($string)
@@ -196,7 +199,7 @@ class String
     /**
      * Schreibt den String gross
      *
-     * @param unknown_type $string
+     * @param string $string
      * @return String
      */
     static function toUpper($string)
@@ -339,7 +342,7 @@ class String
     /**
      * Wandelt eine Zahl in das passende Format für eine Datenbank um
      *
-     * @param unknown_type $value
+     * @param string $value
      * @return number
      */
     static function number2db($value)
@@ -362,11 +365,11 @@ class String
     /**
      * Enter description here...
      *
-     * @param unknown_type $tags
+     * @param array $tags
      * @param Integer $start
      * @param Integer $min
      *
-     * @return unknown
+     * @return string
      */
     static function tagCloud($tags, $start=26, $min=10)
     {
@@ -481,6 +484,7 @@ class String
      * @param String $search
      * @param String $replace
      * @param String $string
+     * @return string
      */
     static function replaceLast($search, $replace, $string)
     {
@@ -501,7 +505,7 @@ class String
      *
      * @param String $pattern - The shell wildcard pattern.
      * @param String $string - The tested string.
-     * @param number $flags - The value of flags can be any combination of the following flags,
+     * @param integer $flags - The value of flags can be any combination of the following flags,
      * 					      joined with the binary OR (|) operator. ( http://php.net/manual/de/function.fnmatch.php )
      * @return boolean
      */

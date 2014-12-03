@@ -10,7 +10,7 @@ namespace QUI\Database;
  * The Exception class for database operations
  *
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
+ * @package quiqqer/utils
  */
 
 class Exception extends \QUI\Exception

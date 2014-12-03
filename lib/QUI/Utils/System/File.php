@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\System;
 
+use QUI;
+
 /**
  * File Objekt
  * Contains methods for file operations
@@ -15,9 +17,18 @@ namespace QUI\Utils\System;
  *
  * @package com.pcsg.qutils
  */
-
 class File
 {
+    /**
+     * @var array
+     */
+    protected $_files;
+
+    /**
+     * @var String
+     */
+    protected $_start_folder;
+
     /**
      * Return a array with all available mime types and they endings
      *
@@ -36,7 +47,6 @@ class File
             '.afl'   => 'video/animaflex',
             '.ai'    => 'application/postscript',
             '.aif'   => 'audio/aiff',
-            '.aif'   => 'audio/x-aiff',
             '.aifc'  => 'audio/aiff',
             '.aiff'  => 'audio/aiff',
             '.aim'   => 'application/x-aim',
@@ -74,7 +84,6 @@ class File
             '.cco'   => 'application/x-cocoa',
             '.cdf'   => 'application/cdf',
             '.cer'   => 'application/pkix-cert',
-            '.cer'   => 'application/x-x509-ca-cert',
             '.cha'   => 'application/x-chat',
             '.chat'  => 'application/x-chat',
             '.class' => 'application/java',
@@ -85,7 +94,6 @@ class File
             '.cpt'   => 'application/x-cpt',
             '.crl'   => 'application/pkix-crl',
             '.crt'   => 'application/pkix-cert',
-            '.crt'   => 'application/x-x509-user-cert',
             '.csh'   => 'application/x-csh',
             '.css'   => 'text/css',
             '.cxx'   => 'text/plain',
@@ -133,7 +141,6 @@ class File
             '.g3'    => 'image/g3fax',
             '.gif'   => 'image/gif',
             '.gl'    => 'video/gl',
-            '.gl'    => 'video/x-gl',
             '.gsd'   => 'audio/x-gsm',
             '.gsm'   => 'audio/x-gsm',
             '.gsp'   => 'application/x-gsp',
@@ -182,7 +189,6 @@ class File
 
             '.jpg'  => 'image/jpeg',
             '.jpeg' => 'image/jpeg',
-            '.jpg'  => 'image/jpeg',
             '.jfif' => 'image/jpeg',
             '.jfif-tbnl' => 'image/jpeg',
 
@@ -195,14 +201,11 @@ class File
             '.lam'    => 'audio/x-liveaudio',
             '.latex'  => 'application/x-latex',
             '.lha'    => 'application/lha',
-            '.lha'    => 'application/x-lha',
             '.lhx'    => 'application/octet-stream',
             '.list'   => 'text/plain',
             '.lma'    => 'audio/nspaudio',
-            '.lma'    => 'audio/x-nspaudio',
             '.log'    => 'text/plain',
             '.lsp'    => 'application/x-lisp',
-            '.lsp'    => 'text/x-script.lisp',
             '.lst'    => 'text/plain',
             '.lsx'    => 'text/x-la-asf',
             '.ltx'    => 'application/x-latex',
@@ -300,8 +303,6 @@ class File
             '.pm5' => 'application/x-pagemaker',
             '.png' => 'image/png',
             '.pnm' => 'application/x-portable-anymap',
-            '.pnm' => 'image/x-portable-anymap',
-            '.pot' => 'application/mspowerpoint',
             '.pot' => 'application/vnd.ms-powerpoint',
             '.pov' => 'model/x-pov',
             '.ppa' => 'application/vnd.ms-powerpoint',
@@ -360,10 +361,8 @@ class File
             '.sh'    => 'application/x-sh',
             '.shar'  => 'application/x-shar',
             '.shtml' => 'text/html',
-            '.shtml' => 'text/x-server-parsed-html',
             '.sid' => 'audio/x-psid',
             '.sit' => 'application/x-sit',
-            '.sit' => 'application/x-stuffit',
             '.skd' => 'application/x-koan',
             '.skm' => 'application/x-koan',
             '.skp' => 'application/x-koan',
@@ -372,7 +371,6 @@ class File
             '.smi'    => 'application/smil',
             '.smil'   => 'application/smil',
             '.snd'    => 'audio/basic',
-            '.snd'    => 'audio/x-adpcm',
             '.sol'    => 'application/solids',
             '.spc'    => 'text/x-speech',
             '.spl'    => 'application/futuresplash',
@@ -483,7 +481,6 @@ class File
             '.xml' => 'text/xml',
             '.xmz' => 'xgl/movie',
             '.xpix'  => 'application/x-vnd.ls-xpix',
-            '.xpm'   => 'image/x-xpixmap',
             '.xpm'   => 'image/xpm',
             '.x-png' => 'image/png',
             '.xsr' => 'video/x-amt-showrun',
@@ -523,6 +520,8 @@ class File
      */
     static function getBytes($val)
     {
+        $last = '';
+
         if ( is_string( $val ) )
         {
             $val  = trim( $val );
@@ -552,7 +551,7 @@ class File
      * @param String $file - Pfad zur Datei
      * @return Bool
      *
-     * @throws \QUI\Exception
+     * @throws QUI\Exception
      */
     static function unlink($file)
     {
@@ -580,6 +579,8 @@ class File
      *
      * @param String $from - original file
      * @param String $to   - target
+     * @return Bool
+     * @throws QUI\Exception
      */
     static function move($from, $to)
     {
@@ -589,7 +590,7 @@ class File
             return true;
         }
 
-        throw new \QUI\Exception(
+        throw new QUI\Exception(
             "Can't move File: ". $from .' -> '. $to,
             500
         );
@@ -602,14 +603,14 @@ class File
      * @param String $from
      * @param String $to
      *
-     * @throws \QUI\Exception
+     * @throws QUI\Exception
      * @return Bool
      */
     static function copy($from, $to)
     {
         if ( file_exists($to) )
         {
-            throw new \QUI\Exception(
+            throw new QUI\Exception(
                 'Can\'t copy File. File exists '. $to,
                 500
             );
@@ -617,7 +618,7 @@ class File
 
         if ( !file_exists($from) )
         {
-            throw new \QUI\Exception(
+            throw new QUI\Exception(
                 'Can\'t copy File. File not exists '. $from,
                 500
             );
@@ -635,15 +636,15 @@ class File
      * 	imagesize=Bildgrösse;
      *  mime_type=mime_type
      *
-     *  @throws \QUI\Exception
+     *  @throws QUI\Exception
      *  @return array
      */
-    static function getInfo($file, $params=false)
+    static function getInfo($file, $params=array())
     {
         if ( !file_exists($file) )
         {
-            throw new \QUI\Exception(
-                '\QUI\Utils\System\File::getInfo()  File "'. $file .'" does not exist',
+            throw new QUI\Exception(
+                'QUI\Utils\System\File::getInfo()  File "'. $file .'" does not exist',
                 500
             );
         }
@@ -752,11 +753,11 @@ class File
      * @param Integer $new_width
      * @param Integer $new_height
      * @return Bool
-     * @deprecated Use \QUI\Utils\Image::resize
+     * @deprecated Use QUI\Utils\Image::resize
      */
     static function resize($original, $new_image, $new_width=0, $new_height=0)
     {
-        return \QUI\Utils\Image::resize($original, $new_image, $new_width, $new_height);
+        return QUI\Utils\Image::resize($original, $new_image, $new_width, $new_height);
     }
 
     /**
@@ -768,22 +769,22 @@ class File
      * @param Integer $top
      * @param Integer $left
      *
-     * @deprecated Use \QUI\Utils\Image::watermark
+     * @deprecated Use QUI\Utils\Image::watermark
      */
     static function watermark($image, $watermark, $newImage=false, $top=0, $left=0)
     {
-        return \QUI\Utils\Image::watermark($image, $watermark, $newImage, $top, $left);
+        QUI\Utils\Image::watermark($image, $watermark, $newImage, $top, $left);
     }
 
     /**
      * Wandelt ein Bild in TrueColor um
      *
      * @param String $image - Path zum Bild
-     * @deprecated Use \QUI\Utils\Image::convertToTrueColor
+     * @deprecated Use QUI\Utils\Image::convertToTrueColor
      */
     static function convertToTrueColor($image)
     {
-        return \QUI\Utils\Image::convertToTrueColor($image);
+        QUI\Utils\Image::convertToTrueColor($image);
     }
 
     /**
@@ -912,8 +913,8 @@ class File
     /**
      * Löscht ein Verzeichnis rekursiv
      *
-     * @param unknown_type $dir
-     * @return unknown
+     * @param String $dir - path to dir
+     * @return bool
      */
     static function deleteDir($dir)
     {
@@ -944,16 +945,18 @@ class File
     }
 
     /**
-     * Ladet eine Datei per HTTP herrunter und legt diese an einen bestimmten Ort
+     * Lädt eine Datei per HTTP herrunter und legt diese an einen bestimmten Ort
      *
      * @param String $host
      * @param String $path
      * @param String $local
+     * @return Bool
+     * @throws QUI\Exception
      */
     static function download($host, $path, $local)
     {
         if ( file_exists( $local ) ) {
-            throw new \QUI\Exception( 'Conflicting Request; Local File exist;', 409 );
+            throw new QUI\Exception( 'Conflicting Request; Local File exist;', 409 );
         }
 
         $content = file_get_contents( 'http://'.$host.'/'.$path );
@@ -963,7 +966,7 @@ class File
             return true;
         }
 
-        throw new \QUI\Exception( $errstr, $errno );
+        throw new QUI\Exception( 'Could not download the file' );
     }
 
     /**
@@ -972,6 +975,7 @@ class File
      * @param string $filePath
      * @param int $rate speedlimit in KB/s
      * @return void
+     * @throws QUI\Exception
      *
      * found on:
      * http://www.phpgangsta.de/dateidownload-via-php-mit-speedlimit-und-resume
@@ -980,7 +984,7 @@ class File
     {
         // Check if file exists
         if (!is_file($filePath)) {
-            throw new \QUI\Exception('File not found.');
+            throw new QUI\Exception('File not found.');
         }
 
         // get more information about the file
@@ -1067,13 +1071,13 @@ class File
      */
     static function dircopy($srcdir, $dstdir)
     {
-        \QUI\Utils\System\File::mkdir( $dstdir );
+        QUI\Utils\System\File::mkdir( $dstdir );
 
         if ( substr( $dstdir, -1 ) != '/' ) {
             $dstdir = $dstdir .'/';
         }
 
-        $File    = new \QUI\Utils\System\File();
+        $File    = new QUI\Utils\System\File();
         $Files   = $File->readDirRecursiv( $srcdir );
         $errors  = array();
 
@@ -1090,7 +1094,7 @@ class File
                 try
                 {
                     self::copy( $from, $to );
-                } catch ( \QUI\Exception $e )
+                } catch ( QUI\Exception $e )
                 {
                     $errors[] = $e->getMessage();
                 }
@@ -1141,7 +1145,7 @@ class File
                 }
             }
 
-            $p_tmp = \QUI\Utils\String::replaceDblSlashes( $p_tmp );
+            $p_tmp = QUI\Utils\String::replaceDblSlashes( $p_tmp );
 
             if ( !self::checkOpenBaseDir( $p_tmp ) ) {
                 continue;
@@ -1207,6 +1211,7 @@ class File
      * Prüft ob die Datei innerhalb von open_basedir ist
      *
      * @param String $path - Pfad der geprüft werden soll
+     * @return Bool
      */
     static function checkOpenBaseDir($path)
     {
@@ -1230,12 +1235,13 @@ class File
     /**
      * Enter description here...
      *
-     * @param unknown_type $file
+     * @param String $file
+     * @throws QUI\Exception
      */
     static function downloadHeader($file)
     {
         if ( !file_exists( $file ) ) {
-            throw new \QUI\Exception( 'File not exist '.$file, 404 );
+            throw new QUI\Exception( 'File not exist '.$file, 404 );
         }
 
         $finfo = self::getInfo( $file );
@@ -1255,12 +1261,12 @@ class File
      * Send a header for the file
      *
      * @param String $file - Path to file
-     * @throws \QUI\Exception
+     * @throws QUI\Exception
      */
     static function fileHeader($file)
     {
         if ( !file_exists( $file ) ) {
-            throw new \QUI\Exception( 'File not exist '. $file, 404 );
+            throw new QUI\Exception( 'File not exist '. $file, 404 );
         }
 
         $finfo = self::getInfo( $file );
@@ -1288,7 +1294,7 @@ class File
      * FileSize einer Datei bekommen (auch über eine URL)
      *
      * @param String $url
-     * @return bytes
+     * @return Integer
      */
     static function getFileSize($url)
     {

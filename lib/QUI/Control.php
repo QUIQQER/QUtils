@@ -12,7 +12,7 @@ namespace QUI;
  *
  * @author www.pcsg.de (Henning Leutz)
  */
-class Control extends \QUI\QDOM
+class Control extends QDOM
 {
     /**
      * Constructor
@@ -43,7 +43,7 @@ class Control extends \QUI\QDOM
                 continue;
             }
 
-            $key = \QUI\Utils\Security\Orthos::clear( $key );
+            $key = Utils\Security\Orthos::clear( $key );
 
             switch ( $key )
             {
@@ -89,6 +89,6 @@ class Control extends \QUI\QDOM
      */
     public function addCSSFile($file)
     {
-        \QUI\Control\Manager::addCSSFile( $file );
+        Control\Manager::addCSSFile( $file );
     }
 }

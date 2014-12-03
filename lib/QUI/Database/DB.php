@@ -6,15 +6,17 @@
 
 namespace QUI\Database;
 
+use QUI;
+
 /**
  * QUIQQER DataBase Layer
  *
  * @uses PDO
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
+ * @package quiqqer/utils
  */
 
-class DB extends \QUI\QDOM
+class DB extends QUI\QDOM
 {
     /**
      * PDO Object
@@ -93,14 +95,14 @@ class DB extends \QUI\QDOM
             }
         } catch ( \PDOException $Exception )
         {
-            throw new \QUI\Database\Exception(
+            throw new QUI\Database\Exception(
                 $Exception->getMessage(),
                 $Exception->getCode()
             );
         }
 
         $this->_PDO->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-        $this->Tables = new \QUI\Database\Tables( $this );
+        $this->Tables = new Tables( $this );
     }
 
     /**
@@ -120,7 +122,7 @@ class DB extends \QUI\QDOM
     public function Table()
     {
         if ( is_null( $this->_Tables ) ) {
-            $this->_Tables = new \QUI\Database\Tables( $this );
+            $this->_Tables = new Tables( $this );
         }
 
         return $this->_Tables;
@@ -273,7 +275,7 @@ class DB extends \QUI\QDOM
         // debuging
         if ( isset( $params['debug'] ) )
         {
-            \QUI\Log::writeRecursive(array(
+            QUI\Log::writeRecursive(array(
                 'query'   => $query,
                 'prepare' => $prepare
             ));
@@ -290,14 +292,15 @@ class DB extends \QUI\QDOM
      * (Prepare Statement)
      *
      * @param array $params (see at createQuery())
-     * @return PDOStatement
+     * @return \PDOStatement
+     * @throws QUI\Database\Exception
      */
     public function exec(array $params=array())
     {
         $query = $this->createQuery( $params );
 
         if ( isset( $params['debug'] ) ) {
-            \QUI\Log::writeRecursive( $query );
+            QUI\Log::writeRecursive( $query );
         }
 
         $Statement = $this->getPDO()->prepare( $query['query'] .';' );
@@ -329,10 +332,7 @@ class DB extends \QUI\QDOM
             $message  = $Exception->getMessage();
             $message .= print_r( $query, true );
 
-            throw new \QUI\Database\Exception(
-                $message,
-                $Exception->getCode()
-            );
+            throw new QUI\Database\Exception( $message, $Exception->getCode() );
         }
 
         return $Statement;
@@ -342,8 +342,7 @@ class DB extends \QUI\QDOM
      * Query ausführen und als die Ergebnisse bekommen
      *
      * @param array $params (see at createQuery())
-     * @param PDO::FETCH $FETCH_STYLE
-     *
+     * @param Integer $FETCH_STYLE - \PDO::FETCH*
      * @return Array
      */
     public function fetch(array $params=array(), $FETCH_STYLE=\PDO::FETCH_ASSOC)
@@ -373,8 +372,7 @@ class DB extends \QUI\QDOM
      * Besser ->fetch() nutzen und die Parameter als Array übergeben
      *
      * @param String $query
-     * @param PDO::FETCH $FETCH_STYLE
-     *
+     * @param Integer $FETCH_STYLE - \PDO::FETCH*
      * @return Array
      */
     public function fetchSQL($query, $FETCH_STYLE=\PDO::FETCH_ASSOC)
@@ -405,7 +403,7 @@ class DB extends \QUI\QDOM
      * @param Array $data
      * @param Array $where
      *
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     public function update($table, $data, $where)
     {
@@ -422,7 +420,7 @@ class DB extends \QUI\QDOM
      * @param String $table
      * @param Array $data
      *
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     public function insert($table, $data)
     {
@@ -438,7 +436,7 @@ class DB extends \QUI\QDOM
      * @param String $table - Name of the Database Table
      * @param Array $where	- data field, where statement
      *
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     public function delete($table, $where)
     {
@@ -683,7 +681,7 @@ class DB extends \QUI\QDOM
      * SET Query Abschnitt
      *
      * @param String || Array $params
-     * @param String
+     * @param String $driver - depricated
      * @return Array
      */
     static function createQuerySet($params, $driver=false)
@@ -776,11 +774,10 @@ class DB extends \QUI\QDOM
         $set_params = $params['set'];
 
         $max = count( $set_params ) - 1;
+        $i   = 0;
 
-        $fields = array();
-        $values = array();
-
-        $i = 0;
+        $prepare = array();
+        $values  = array();
 
         $sql  = self::createQueryInsert( $params['insert'] );
         $sql .= ' (';
@@ -811,8 +808,8 @@ class DB extends \QUI\QDOM
     /**
      * Order Query Abschnitt
      *
-     * @param unknown_type $params
-     * @return String
+     * @param array|string $params
+     * @return string
      */
     static function createQueryOrder($params)
     {
@@ -844,7 +841,7 @@ class DB extends \QUI\QDOM
     /**
      * Limit Query Abschnitt
      *
-     * @param unknown_type $params
+     * @param string|integer $params
      * @return Array
      */
     static function createQueryLimit($params)

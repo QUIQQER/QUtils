@@ -27,7 +27,7 @@ class PSpell extends \QUI\QDOM
 {
     /**
      * internal pspell object
-     * @var pspell_new
+     * @var $_Spell
      */
     protected $_Spell;
 
@@ -67,7 +67,8 @@ class PSpell extends \QUI\QDOM
     /**
      * Check if pspell is installed
      *
-     * @return Bool|throw \QUI\Exception
+     * @return Bool
+     * @throws \QUI\Exception
      */
     static function check()
     {
@@ -81,7 +82,8 @@ class PSpell extends \QUI\QDOM
     /**
      * Translate a String
      *
-     * @param String $word
+     * @param string $word
+     * @return string
      */
     public function translate($word)
     {

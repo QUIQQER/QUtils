@@ -38,7 +38,7 @@ class Debug
     /**
      * Set a Debug Marker
      *
-     * @param String $step
+     * @param String|Bool $step - (optional)
      */
     static function marker($step=false)
     {
@@ -47,10 +47,14 @@ class Debug
         }
 
         $params = array();
-        $params['time'] = microtime(true);
+        $params['time'] = microtime( true );
 
         if ( self::$debug_memory ) {
             $params['memory'] = ' MEMORY: ' . memory_get_usage();
+        }
+
+        if ( is_string( $step ) ) {
+            $params['step'] = $step;
         }
 
         self::$times[] = $params;
@@ -81,7 +85,7 @@ class Debug
                 $before_time = $params['time'];
                 $before_key  = $key;
 
-                $start = $time;
+                $start = $params['time'];
                 continue;
             }
 
@@ -92,7 +96,7 @@ class Debug
             $before_key  = $key;
         }
 
-        $str .= "\nOverall: ". sprintf( '%.3f', ($time - $start) ) ." Sekunden\n\n";
+        $str .= "\nOverall: ". sprintf( '%.3f', ($before_time - $start) ) ." Sekunden\n\n";
 
         return $str;
     }
