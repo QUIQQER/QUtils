@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Request;
 
+use QUI;
+
 /**
  * Executes a request to a URL
  *
@@ -26,30 +28,31 @@ class Url
      *
      * @param String $url		- Url
      * @param array $curlparams - Curl parameter
+     * @return resource
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
     static function Curl($url, $curlparams=array())
     {
-        if (isset(self::$Curls[$url]) && self::$Curls[$url]) {
-            return self::$Curls[$url];
+        if ( isset( self::$Curls[ $url ] ) && self::$Curls[ $url ] ) {
+            return self::$Curls[ $url ];
         }
 
         $Curl = curl_init();
-        curl_setopt($Curl, CURLOPT_URL, $url);
-        curl_setopt($Curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt( $Curl, CURLOPT_URL, $url );
+        curl_setopt( $Curl, CURLOPT_RETURNTRANSFER, true );
 
         // ssl
-        curl_setopt($Curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($Curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt( $Curl, CURLOPT_SSL_VERIFYPEER, 0 );
+        curl_setopt( $Curl, CURLOPT_SSL_VERIFYHOST, 0 );
 
-        curl_setopt($Curl, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($Curl, CURLOPT_TIMEOUT, 10);
+        curl_setopt( $Curl, CURLOPT_CONNECTTIMEOUT, 10 );
+        curl_setopt( $Curl, CURLOPT_TIMEOUT, 10 );
 
-        foreach ($curlparams as $k => $v) {
-            curl_setopt($Curl, $k, $v);
+        foreach ( $curlparams as $k => $v ) {
+            curl_setopt( $Curl, $k, $v );
         }
 
-        self::$Curls[$url] = $Curl;
+        self::$Curls[ $url ] = $Curl;
 
         return $Curl;
     }
@@ -59,17 +62,18 @@ class Url
      *
      * @param String $url
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
+     * @return array
+     * @throws \QUI\Exception
      */
     static function get($url, $curlparams=array())
     {
-        $Curl = self::Curl($url, $curlparams);
-        $data = self::exec($Curl);
+        $Curl = self::Curl( $url, $curlparams );
+        $data = self::exec( $Curl );
 
-        $http_code = curl_getinfo($Curl, CURLINFO_HTTP_CODE);
-        $error     = curl_error($Curl);
+        $error = curl_error( $Curl );
 
-        if ($error) {
-            throw new \QUI\Exception('Fehler bei der Anfrage '. $error);
+        if ( $error ) {
+            throw new QUI\Exception('Fehler bei der Anfrage '. $error);
         }
 
         curl_close($Curl);
@@ -88,38 +92,39 @@ class Url
      */
     static function search($url, $search, $curlparams=array())
     {
-        $content = self::get($url, $curlparams);
+        $content = self::get( $url, $curlparams );
 
-        return strpos($content, $search) === false ? false : true;
+        return strpos( $content, $search ) === false ? false : true;
     }
 
     /**
      * Get a header information of the url
      *
      * @param String $url
-     * @param CURL OPT $info
+     * @param bool $info
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
+     * @return mixed
+     * @throws \QUI\Exception
      */
     static function getInfo($url, $info=false, $curlparams=array())
     {
-        $Curl = self::Curl($url, $curlparams);
-        $data = self::exec($Curl);
+        $Curl = self::Curl( $url, $curlparams );
 
-        if ($info)
+        if ( $info )
         {
-            $result = curl_getinfo($Curl, $info);
+            $result = curl_getinfo( $Curl, $info );
         } else
         {
-            $result = curl_getinfo($Curl);
+            $result = curl_getinfo( $Curl );
         }
 
-        $error = curl_error($Curl);
+        $error = curl_error( $Curl );
 
-        if ($error) {
-            throw new \QUI\Exception('Fehler bei der Anfrage '. $error);
+        if ( $error ) {
+            throw new QUI\Exception( 'Fehler bei der Anfrage '. $error );
         }
 
-        curl_close($Curl);
+        curl_close( $Curl );
 
         return $result;
     }
@@ -127,8 +132,8 @@ class Url
     /**
      * exec the curl object
      *
-     * @param curl_init $Curl
-     * @return curl_init
+     * @param resource $Curl
+     * @return resource
      */
     static function exec($Curl)
     {
