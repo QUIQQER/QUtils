@@ -334,13 +334,15 @@ class Tables
 
         foreach ( $fields as $field => $type )
         {
+            $type = strtoupper($type);
+
             if ( !in_array( $field, $tblFields ) )
             {
                 if ( $this->_isSQLite() )
                 {
                     $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN :field :type");
                     $Stmnt->bindParam( ':field', $field, \PDO::PARAM_STR );
-                    $Stmnt->bindParam( ':type', strtoupper($type), \PDO::PARAM_STR );
+                    $Stmnt->bindParam( ':type', $type, \PDO::PARAM_STR );
                     $Stmnt->execute();
 
                     continue;
@@ -348,7 +350,7 @@ class Tables
 
                 $Stmnt = $PDO->prepare( "ALTER TABLE `{$table}` ADD :field :type" );
                 $Stmnt->bindParam( ':field', $field, \PDO::PARAM_STR );
-                $Stmnt->bindParam( ':type', strtoupper($type), \PDO::PARAM_STR );
+                $Stmnt->bindParam( ':type', $type, \PDO::PARAM_STR );
                 $Stmnt->execute();
             }
         }
