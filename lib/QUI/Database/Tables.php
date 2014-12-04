@@ -889,7 +889,7 @@ class Tables
      */
     protected function _parseFieldType($fieldType)
     {
-        $fieldType = preg_replace( "/[^a-zA-Z0-9()]/", "", $fieldType );
+        $fieldType = preg_replace( "/[^a-zA-Z0-9() ]/", "", $fieldType );
         $fieldType = strtoupper( $fieldType );
 
         return $fieldType;
