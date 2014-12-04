@@ -334,23 +334,20 @@ class Tables
 
         foreach ( $fields as $field => $type )
         {
-            $type = strtoupper($type);
+            $field = $this->_clear( $field );
+            $type  = $this->_parseFieldType( $type );
 
             if ( !in_array( $field, $tblFields ) )
             {
                 if ( $this->_isSQLite() )
                 {
-                    $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN :field :type");
-                    $Stmnt->bindParam( ':field', $field, \PDO::PARAM_STR );
-                    $Stmnt->bindParam( ':type', $type, \PDO::PARAM_STR );
+                    $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN `{$field}` {$type}");
                     $Stmnt->execute();
 
                     continue;
                 }
 
-                $Stmnt = $PDO->prepare( "ALTER TABLE `{$table}` ADD :field :type" );
-                $Stmnt->bindParam( ':field', $field, \PDO::PARAM_STR );
-                $Stmnt->bindParam( ':type', $type, \PDO::PARAM_STR );
+                $Stmnt = $PDO->prepare( "ALTER TABLE `{$table}` ADD `{$field}` {$type}" );
                 $Stmnt->execute();
             }
         }
@@ -882,6 +879,20 @@ class Tables
     protected function _clear($str)
     {
         return str_replace( array('\\',"\0" ,'`'), '', $str );
+    }
+
+    /**
+     * Parse a mysql field type, and return the clean type
+     *
+     * @param String $fieldType
+     * @return String
+     */
+    protected function _parseFieldType($fieldType)
+    {
+        $fieldType = preg_replace( "/[^a-zA-Z0-9()]/", "", $fieldType );
+        $fieldType = strtoupper( $fieldType );
+
+        return $fieldType;
     }
 
     /**
