@@ -716,13 +716,13 @@ class Tables
 
         $PDO = $this->_DB->getPDO();
 
-        $queryTable = $PDO->quote( $table );
+        $queryTable = $this->_clear( $table );
         $inList     = $this->_inList( $index );
 
 
         if ( $this->_isSQLite() )
         {
-            $Stmnt = $PDO->prepare( "CREATE INDEX {$inList} ON {$queryTable} ({$inList})" );
+            $Stmnt = $PDO->prepare( "CREATE INDEX {$inList} ON `{$queryTable}` ({$inList})" );
             $Stmnt->execute();
 
             return $this->issetIndex( $table, $index );
