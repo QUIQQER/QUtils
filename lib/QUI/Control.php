@@ -91,4 +91,25 @@ class Control extends QDOM
     {
         Control\Manager::addCSSFile( $file );
     }
+
+    /**
+     * Return the Project
+     * @return \QUI\Projects\Project
+     */
+    protected function _getProject()
+    {
+        if ( $this->getAttribute('Project') ) {
+            return $this->getAttribute('Project');
+        }
+
+        $Project = \QUI::getRewrite()->getProject();
+
+        if ( !$Project ) {
+            $Project = \QUI::getProjectManager()->get();
+        }
+
+        $this->setAttribute( 'Project', $Project );
+
+        return $Project;
+    }
 }
