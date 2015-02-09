@@ -44,9 +44,15 @@ class Orthos
      * @param String $str
      * @return String
      */
-    static function clearNoneCharacters($str='')
+    static function clearNoneCharacters($str='', $allowedList=array())
     {
-        return preg_replace( "/[^a-zA-Z0-9]/", "", $str );
+        $chars = 'a-zA-Z0-9';
+
+        if ( is_array( $allowedList ) ) {
+            $chars .= implode( $allowedList );
+        }
+
+        return preg_replace( "/[^{$chars}]/", "", $str );
     }
 
     /**
