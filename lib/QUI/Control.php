@@ -35,7 +35,7 @@ class Control extends QDOM
 
         foreach ( $attributes as $key => $value )
         {
-            if ( $key == 'qui-class' ) {
+            if ( strpos( $key, 'data-' ) === false ) {
                 continue;
             }
 
@@ -44,19 +44,6 @@ class Control extends QDOM
             }
 
             $key = Utils\Security\Orthos::clear( $key );
-
-            switch ( $key )
-            {
-                case 'alt':
-                case 'class':
-                case 'style':
-                case 'title':
-                break;
-
-                default:
-                    $key = 'data-'. $key;
-            }
-
             $params .= ' '. $key .'="'. htmlentities( $value ) .'"';
         }
 
@@ -65,6 +52,10 @@ class Control extends QDOM
 
         if ( $this->getAttribute('qui-class') ) {
             $quiClass = 'data-qui="'. $this->getAttribute('qui-class') .'" ';
+        }
+
+        if ( $this->getAttribute('class') ) {
+            $quiClass .= 'class="'. $this->getAttribute('class') .'" ';
         }
 
         return '<div '. $quiClass . $params .'>'.
