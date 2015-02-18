@@ -247,10 +247,17 @@ class DB extends QUI\QDOM
 
         if ( isset( $params['where_or'] ) && !empty( $params['where_or'] ) )
         {
-             $where = $this->createQueryWhereOr( $params['where_or'] );
+            $where = $this->createQueryWhereOr( $params['where_or'] );
 
-             $query  .= $where['where'];
-             $prepare = array_merge( $prepare, $where['prepare'] );
+            if ( strpos( $query, 'WHERE' ) === false )
+            {
+                $query .= $where['where'];
+            } else
+            {
+                $query .= ' AND ('. str_replace( 'WHERE', '', $where['where'] ) .')';
+            }
+
+            $prepare = array_merge( $prepare, $where['prepare'] );
         }
 
         /**
@@ -300,7 +307,7 @@ class DB extends QUI\QDOM
         $query = $this->createQuery( $params );
 
         if ( isset( $params['debug'] ) ) {
-            QUI\Log::writeRecursive( $query );
+            QUI\System\Log::writeRecursive( $query );
         }
 
         $Statement = $this->getPDO()->prepare( $query['query'] .';' );
@@ -618,6 +625,34 @@ class DB extends QUI\QDOM
                         $prepare['wherev'. $i] = $value['value'];
                         $sql .= $key .' != :wherev'. $i;
                     }
+
+                } elseif ( isset( $value['type'] ) && $value['type'] == 'IN' )
+                {
+                    $sql .= $key .' IN (';
+
+                    if ( !is_array( $value['value'] ) )
+                    {
+                        $prepare[ 'in'. $i ] = $value['value'];
+                        $sql .= ':in'. $i;
+
+                    } else
+                    {
+                        $in = 0;
+
+                        foreach ( $value['value'] as $val )
+                        {
+                            $prepare['in'. $in] = $val;
+
+                            if ( $in != 0 ) {
+                                $sql .= ', ';
+                            }
+
+                            $sql .= ':in'. $in;
+                            $in++;
+                        }
+                    }
+
+                    $sql .= ') ';
 
                 } else
                 {
