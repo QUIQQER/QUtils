@@ -261,42 +261,57 @@ class Tables
 
         if ( $this->_isSQLite() )
         {
-            $Stmnt = $PDO->prepare(
-                "SELECT sql FROM sqlite_master
-                WHERE tbl_name = `{$table}` AND type = 'table'"
-            );
-
-            $Stmnt->execute();
-            $result = $Stmnt->fetchAll();
-
-
-            if ( !isset( $result[0] ) && !isset( $result[0] ) ) {
-                return array();
-            }
-
-            $pos  = mb_strpos( $result[0]['sql'], '(' );
-            $data = mb_substr( $result[0]['sql'], $pos+1 );
-
             $fields = array();
-            $expl    = explode( ',', $data );
 
-            foreach ( $expl as $part )
+            $Stmt = $PDO->prepare( "PRAGMA table_info(`{$table}`)" );
+            $Stmt->execute();
+            $result = $Stmt->fetchAll();
+
+            foreach ( $result as $k => $row )
             {
-                $part = str_replace( '"', '', $part );
-
-                if ( strpos( $part, '`' ) !== false )
-                {
-                    preg_match("/`(.*?)`/", $part, $matches);
-
-                    if ( isset( $matches[1] ) ) {
-                        $part = $matches[1];
-                    }
+                if ( isset( $row[ 'name' ] ) ) {
+                    $fields[] = $row[ 'name' ];
                 }
-
-                $fields[] = $part;
             }
 
             return $fields;
+
+//            $Stmnt = $PDO->prepare(
+//                "SELECT sql FROM sqlite_master
+//                WHERE tbl_name = `{$table}` AND type = 'table'"
+//            );
+//
+//            $Stmnt->execute();
+//
+//            $result = $Stmnt->fetchAll();
+//
+//            if ( !isset( $result[0] ) && !isset( $result[0] ) ) {
+//                return array();
+//            }
+//
+//            $pos  = mb_strpos( $result[0]['sql'], '(' );
+//            $data = mb_substr( $result[0]['sql'], $pos+1 );
+//
+//            $fields = array();
+//            $expl    = explode( ',', $data );
+//
+//            foreach ( $expl as $part )
+//            {
+//                $part = str_replace( '"', '', $part );
+//
+//                if ( strpos( $part, '`' ) !== false )
+//                {
+//                    preg_match("/`(.*?)`/", $part, $matches);
+//
+//                    if ( isset( $matches[1] ) ) {
+//                        $part = $matches[1];
+//                    }
+//                }
+//
+//                $fields[] = $part;
+//            }
+//
+//            return $fields;
         }
 
         $Stmnt = $PDO->prepare( "SHOW COLUMNS FROM `{$table}`" );
@@ -512,17 +527,32 @@ class Tables
      */
     public function getKeys($table)
     {
-        if ( $this->_isSQLite() ) {
-            return array();
-        }
-
         $PDO   = $this->_DB->getPDO();
         $table = $this->_clear( $table );
 
-        $Stmt = $PDO->prepare( "SHOW KEYS FROM `{$table}`" );
+        if ( $this->_isSQLite() )
+        {
+            $Stmt = $PDO->prepare( "PRAGMA table_info(`{$table}`)" );
+        } else
+        {
+            $Stmt = $PDO->prepare( "SHOW KEYS FROM `{$table}`" );
+        }
+
         $Stmt->execute();
 
-        return $Stmt->fetchAll();
+        $result = $Stmt->fetchAll();
+
+        if ( $this->_isSQLite() )
+        {
+            foreach ( $result as $k => $row )
+            {
+                if ( isset( $row[ 'pk' ] ) && $row[ 'pk' ] != 1 ) {
+                    unset( $result[ $k ] );
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -561,6 +591,20 @@ class Tables
     {
         $keys = $this->getKeys( $table );
 
+        if ( $this->_isSQLite() )
+        {
+            foreach ( $keys as $entry )
+            {
+                if ( isset( $entry[ 'name' ] ) && $entry[ 'name' ] == $key &&
+                     isset( $entry[ 'pk' ] ) && $entry[ 'pk' ] == 1 )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
         foreach ( $keys as $entry )
         {
             if ( isset( $entry['Column_name'] ) && $entry['Column_name'] == $key) {
@@ -593,6 +637,9 @@ class Tables
         $queryTable = $this->_clear( $table );
 
         $PDO   = $this->_DB->getPDO();
+
+        \QUI\System\Log::writeRecursive( $queryKeys );
+
         $Stmnt = $PDO->prepare( "ALTER TABLE `{$queryTable}` ADD PRIMARY KEY({$queryKeys})" );
         $Stmnt->execute();
 
