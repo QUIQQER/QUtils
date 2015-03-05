@@ -121,4 +121,15 @@ class System
 
         return '';
     }
+
+    /**
+     * Check if a shell function is callable
+     *
+     * @param String $func - Name of the shell function, eq: ls
+     * @return Bool
+     */
+    static function isShellFunctionEnabled($func)
+    {
+        return is_callable($func) && false === stripos(ini_get('disable_functions'), $func);
+    }
 }
