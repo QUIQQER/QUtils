@@ -458,14 +458,7 @@ class Tables
      */
     public function getColumns($table)
     {
-        if ( $this->_isSQLite() ) {
-            return $this->getFields( $table );
-        }
-
-        $PDO   = $this->_DB->getPDO();
-        $table = $this->_clear( $table );
-
-        return $PDO->prepare( "SHOW COLUMNS FROM `{$table}`" )->fetchAll();
+        return $this->getFields( $table );
     }
 
     /**
@@ -480,8 +473,11 @@ class Tables
         $PDO   = $this->_DB->getPDO();
         $table = $this->_clear( $table );
 
-        if ( $this->_isSQLite() ) {
-            return $PDO->prepare( "PRAGMA table_info(`{$table}`);" )->fetch();
+        if ( $this->_isSQLite() )
+        {
+            $Stmnt = $PDO->prepare( "PRAGMA table_info(`{$table}`);" );
+            $Stmnt->execute();
+            return $Stmnt->fetch();
         }
 
         $Stmnt = $PDO->prepare( "SHOW COLUMNS FROM `{$table}` LIKE :column" );
