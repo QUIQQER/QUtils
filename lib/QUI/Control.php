@@ -58,9 +58,15 @@ class Control extends QDOM
             $quiClass .= 'class="'. $this->getAttribute('class') .'" ';
         }
 
-        return '<div '. $quiClass . $params .'>'.
+        $nodeName = 'div';
+
+        if ( $this->getAttribute( 'nodeName' ) ) {
+            $nodeName = $this->getAttribute( 'nodeName' );
+        }
+
+        return "<{$nodeName} {$quiClass}{$params}>".
             $this->getBody() .
-        '</div>';
+        "</{$nodeName}>";
     }
 
     /**
