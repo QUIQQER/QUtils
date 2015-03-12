@@ -252,9 +252,10 @@ class Tables
      * Tabellen Felder
      *
      * @param String $table
+     * @param bool $fieldNamesOnly (optional) - nur die Feldnamen zurückgeben (sonst alle Informationen) [default: true]
      * @return Array
      */
-    public function getFields($table)
+    public function getFields($table, $fieldNamesOnly=true)
     {
         $PDO   = $this->_DB->getPDO();
         $table = $this->_clear( $table );
@@ -269,9 +270,13 @@ class Tables
 
             foreach ( $result as $k => $row )
             {
-                if ( isset( $row[ 'name' ] ) ) {
+                if ( $fieldNamesOnly && isset( $row[ 'name' ] ) )
+                {
                     $fields[] = $row[ 'name' ];
+                    continue;
                 }
+
+                $fields[] = $row;
             }
 
             return $fields;
@@ -320,8 +325,15 @@ class Tables
         $result = $Stmnt->fetchAll( \PDO::FETCH_ASSOC );
         $fields = array();
 
-        foreach ( $result as $entry ) {
-            $fields[] = $entry['Field'];
+        foreach ( $result as $entry )
+        {
+            if ( $fieldNamesOnly )
+            {
+                $fields[] = $entry['Field'];
+                continue;
+            }
+
+            $fields[] = $entry;
         }
 
         return $fields;
@@ -519,12 +531,15 @@ class Tables
      * Schlüssel der Tabelle bekommen
      *
      * @param string $table
+     * @param bool $keyNamesOnly (optional) - Nur die Namen der Schlüssel (sonst alle Spalten-Informationen) [default: true]
+     * @param bool $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
      * @return array
      */
-    public function getKeys($table)
+    public function getKeys($table, $keyNamesOnly=true, $primaryKeysOnly=false)
     {
         $PDO   = $this->_DB->getPDO();
         $table = $this->_clear( $table );
+        $keys  = array();
 
         if ( $this->_isSQLite() )
         {
@@ -538,17 +553,41 @@ class Tables
 
         $result = $Stmt->fetchAll();
 
+        foreach ( $result as $columnInfo )
+        {
+            if ( $primaryKeysOnly && $columnInfo[ 'Key_name' ] !== 'PRIMARY' ) {
+                continue;
+            }
+
+            if ( $keyNamesOnly )
+            {
+                $keys[] = $columnInfo[ 'Column_name' ];
+                continue;
+            }
+
+            $keys[] = $columnInfo;
+        }
+
+        // @todo nur unique keys filtern
         if ( $this->_isSQLite() )
         {
             foreach ( $result as $k => $row )
             {
                 if ( isset( $row[ 'pk' ] ) && $row[ 'pk' ] != 1 ) {
-                    unset( $result[ $k ] );
+                    continue;
                 }
+
+                if ( $keyNamesOnly )
+                {
+                    $keys[] = $row[ 'name' ];
+                    continue;
+                }
+
+                $keys[] = $row;
             }
         }
 
-        return $result;
+        return $keys;
     }
 
     /**
@@ -585,7 +624,7 @@ class Tables
      */
     protected function _issetPrimaryKey($table, $key)
     {
-        $keys = $this->getKeys( $table );
+        $keys = $this->getKeys( $table, false, true );
 
         if ( $this->_isSQLite() )
         {
@@ -633,8 +672,6 @@ class Tables
         $queryTable = $this->_clear( $table );
 
         $PDO   = $this->_DB->getPDO();
-
-        \QUI\System\Log::writeRecursive( $queryKeys );
 
         $Stmnt = $PDO->prepare( "ALTER TABLE `{$queryTable}` ADD PRIMARY KEY({$queryKeys})" );
         $Stmnt->execute();
