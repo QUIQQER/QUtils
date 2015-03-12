@@ -405,8 +405,13 @@ class Orthos
             foreach ( $value as $key => $entry ) {
                 $value[$key] = self::clearFormRequest( $entry ); // htmlspecialchars_decode($entry);
             }
+
         } else
         {
+            if ( !is_string( $value ) ) {
+                return '';
+            }
+
             $value = htmlspecialchars_decode($value);
         }
         // alle zeichen undd HEX codes werden mit leer ersetzt
