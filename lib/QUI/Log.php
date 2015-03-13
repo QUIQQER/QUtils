@@ -35,7 +35,7 @@ class Log
         $file = $dir . $filename . date('-Y-m-d').'.log';
 
         // Log Verzeichnis erstellen
-        \QUI\Utils\System\File::mkdir( $dir );
+        Utils\System\File::mkdir( $dir );
 
         error_log( $message."\n", 3, $file );
     }
@@ -43,7 +43,7 @@ class Log
     /**
      * Writes with print_r the object into a log file
      *
-     * @param Object $object
+     * @param mixed $object
      * @param String $filename
      */
     static function writeRecursive($object, $filename='messages')
@@ -54,7 +54,7 @@ class Log
     /**
      * Writes an Exception to a log file
      *
-     * @param QEcxeption|exception $Exception
+     * @param \Exception|\QUI\Exception $Exception
      * @param String $filename
      */
     static function writeException($Exception, $filename='error')

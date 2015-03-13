@@ -6,7 +6,17 @@
 
 namespace QUI\Utils;
 
+use QUI;
+
 mb_internal_encoding( 'UTF-8' );
+
+if ( !function_exists('fnmatch') )
+{
+    define('FNM_PATHNAME', 1);
+    define('FNM_NOESCAPE', 2);
+    define('FNM_PERIOD', 4);
+    define('FNM_CASEFOLD', 16);
+}
 
 /**
  * Helper for string handling
@@ -53,13 +63,14 @@ class String
      * Verinfachtes Pathinfo
      *
      * @param String $path		- path to file
-     * @param Integer $options 	- PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
+     * @param Integer|bool $options 	- PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      * @return Array|String
+     * @throws \QUI\Exception
      */
     static function pathinfo($path, $options=false)
     {
         if ( !file_exists( $path ) ) {
-            throw new \QUI\Exception( 'File '. $path .' not exists' );
+            throw new QUI\Exception( 'File '. $path .' not exists' );
         }
 
         $info = pathinfo( $path );
@@ -166,8 +177,8 @@ class String
     /**
      * Erstes Zeichen eines Wortes gross schreiben alle anderen klein
      *
-     * @param unknown_type $str
-     * @return unknown
+     * @param string $str
+     * @return string
      */
     static function firstToUpper($str)
     {
@@ -177,7 +188,7 @@ class String
     /**
      * Schreibt den String klein
      *
-     * @param unknown_type $string
+     * @param string $string
      * @return String
      */
     static function toLower($string)
@@ -188,7 +199,7 @@ class String
     /**
      * Schreibt den String gross
      *
-     * @param unknown_type $string
+     * @param string $string
      * @return String
      */
     static function toUpper($string)
@@ -331,7 +342,7 @@ class String
     /**
      * Wandelt eine Zahl in das passende Format für eine Datenbank um
      *
-     * @param unknown_type $value
+     * @param string $value
      * @return number
      */
     static function number2db($value)
@@ -354,11 +365,11 @@ class String
     /**
      * Enter description here...
      *
-     * @param unknown_type $tags
+     * @param array $tags
      * @param Integer $start
      * @param Integer $min
      *
-     * @return unknown
+     * @return string
      */
     static function tagCloud($tags, $start=26, $min=10)
     {
@@ -396,6 +407,7 @@ class String
      */
     static function getUrlAttributes($url)
     {
+        $url = str_replace( '&amp;' , '&', $url );
         $url = explode( '?', $url );
         $att = array();
 
@@ -472,6 +484,7 @@ class String
      * @param String $search
      * @param String $replace
      * @param String $string
+     * @return string
      */
     static function replaceLast($search, $replace, $string)
     {
@@ -485,5 +498,61 @@ class String
             strrpos($string, $search),
             strlen($search)
         );
+    }
+
+    /**
+     * Match String against a pattern
+     *
+     * @param String $pattern - The shell wildcard pattern.
+     * @param String $string - The tested string.
+     * @param integer $flags - The value of flags can be any combination of the following flags,
+     * 					      joined with the binary OR (|) operator. ( http://php.net/manual/de/function.fnmatch.php )
+     * @return boolean
+     */
+    static function match($pattern, $string, $flags=0)
+    {
+        if ( function_exists('fnmatch') ) {
+            return fnmatch( $pattern, $string, $flags );
+        }
+
+        // solution if fnmatch doesn't exist
+        // found on http://php.net/manual/de/function.fnmatch.php
+        $modifiers = null;
+        $transforms = array(
+            '\*'    => '.*',
+            '\?'    => '.',
+            '\[\!'    => '[^',
+            '\['    => '[',
+            '\]'    => ']',
+            '\.'    => '\.',
+            '\\'    => '\\\\'
+        );
+
+        // Forward slash in string must be in pattern:
+        if ($flags & FNM_PATHNAME) {
+            $transforms['\*'] = '[^/]*';
+        }
+
+        // Back slash should not be escaped:
+        if ($flags & FNM_NOESCAPE) {
+            unset($transforms['\\']);
+        }
+
+        // Perform case insensitive match:
+        if ($flags & FNM_CASEFOLD) {
+            $modifiers .= 'i';
+        }
+
+        // Period at start must be the same as pattern:
+        if ($flags & FNM_PERIOD) {
+            if (strpos($string, '.') === 0 && strpos($pattern, '.') !== 0) return false;
+        }
+
+        $pattern = '#^'
+            . strtr(preg_quote($pattern, '#'), $transforms)
+            . '$#'
+            . $modifiers;
+
+        return (boolean)preg_match($pattern, $string);
     }
 }

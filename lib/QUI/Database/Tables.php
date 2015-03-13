@@ -6,19 +6,20 @@
 
 namespace QUI\Database;
 
+use QUI;
+
 /**
  * QUIQQER DataBase Layer for table operations
  *
  * @uses PDO
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
+ * @package quiqqer/utils
  */
-
 class Tables
 {
     /**
      * internal db object
-     * @var QUI\Database\DB
+     * @var \QUI\Database\DB
      */
     protected $_DB = null;
 
@@ -27,7 +28,7 @@ class Tables
      *
      * @param \QUI\Database\DB $DB
      */
-    public function __construct(\QUI\Database\DB $DB)
+    public function __construct(DB $DB)
     {
         $this->_DB = $DB;
     }
@@ -50,16 +51,17 @@ class Tables
     public function getTables()
     {
         $tables = array();
+        $PDO    = $this->_DB->getPDO();
 
         if ( $this->_isSQLite() )
         {
-            $result = $this->_DB->getPDO()->query(
+            $result = $PDO->query(
                 "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
             )->fetchAll();
 
         } else
         {
-            $result = $this->_DB->getPDO()->query("SHOW tables")->fetchAll();
+            $result = $PDO->query("SHOW tables")->fetchAll();
         }
 
         foreach ( $result as $entry )
@@ -75,7 +77,8 @@ class Tables
     /**
      * Optimiert Tabellen
      *
-     * @param String || Array $tables
+     * @param string|Array $tables
+     * @return void
      */
     public function optimize($tables)
     {
@@ -83,34 +86,42 @@ class Tables
             return;
         }
 
-        if ( is_string( $tables ) ) {
-            $tables = array( $tables );
-        }
+        $inList = $this->_inList( $tables );
 
-        return $this->_DB->getPDO()->query(
-            'OPTIMIZE TABLE `'. implode('`,`', $tables) .'`'
-        )->fetchAll();
+        $PDO = $this->_DB->getPDO();
+        $PDO->prepare( "OPTIMIZE TABLE {$inList}" )->execute();
     }
 
     /**
-     * Prüft ob eine Tabelle existiert
+     * Exist the table?
      *
-     * @param String $table - Tabellenname welcher gesucht wird
-     * @return Bool
+     * @param string $table - Tabellenname welcher gesucht wird
+     * @return bool
      */
     public function exist($table)
     {
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
+
         if ( $this->_isSQLite() )
         {
-            $data = $this->_DB->getPDO()->query(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name ='". $table ."'"
-            )->fetchAll();
+            $Stmnt = $PDO->prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name = :table"
+            );
+
         } else
         {
-            $data = $this->_DB->getPDO()->query(
-                'SHOW TABLES FROM `'. $this->_DB->getAttribute('dbname') .'` LIKE "'. $table .'"'
-            )->fetchAll();
+            $dbname = $this->_DB->getAttribute('dbname');
+
+            $Stmnt = $PDO->prepare(
+                "SHOW TABLES FROM `{$dbname}` LIKE :table"
+            );
         }
+
+        $Stmnt->bindParam( ':table', $table, \PDO::PARAM_STR );
+        $Stmnt->execute();
+
+        $data = $Stmnt->fetchAll();
 
         return count( $data ) > 0 ? true : false;
     }
@@ -119,6 +130,7 @@ class Tables
      * Delete a table
      *
      * @param String $table
+     * @return void
      */
     public function delete($table)
     {
@@ -126,9 +138,10 @@ class Tables
             return;
         }
 
-        return $this->_DB->getPDO()->query(
-            'DROP TABLE `'. $table .'`'
-        );
+        $table = $this->_clear( $table );
+        $PDO   = $this->_DB->getPDO();
+
+        $PDO->prepare( "DROP TABLE `{$table}`" )->execute();
     }
 
     /**
@@ -143,24 +156,29 @@ class Tables
             return;
         }
 
+        $PDO = $this->_DB->getPDO();
+
+        $queryTable = $this->_clear( $table );
+
         if ( $this->_isSQLite() )
         {
-            $result = $this->_DB->getPDO()->query(
+            $Stmnt = $PDO->prepare(
                 "SELECT sql FROM sqlite_master
-                WHERE tbl_name = '". $table ."' AND type = 'table'"
-            )->fetchAll();
+                WHERE tbl_name = '{$queryTable}' AND type = 'table'"
+            );
 
+            $Stmnt->execute();
+
+            $result = $Stmnt->fetchAll();
             $create = $result[0]['sql'];
 
             $this->delete( $table );
-            $this->_DB->getPDO()->query( $create );
+            $PDO->query( $create );
 
             return;
         }
 
-        $this->_DB->getPDO()->query(
-            'TRUNCATE TABLE `'. $table .'`'
-        );
+        $PDO->prepare( "TRUNCATE TABLE `{$queryTable}`" )->execute();
     }
 
     /**
@@ -168,29 +186,31 @@ class Tables
      *
      * @param String $table
      * @param Array $fields
-     *
      * @return Bool - if table exists or not
+     * @throws QUI\Database\Exception
+     * @todo check mysql injection
      */
     public function create($table, $fields)
     {
         if ( !is_array( $fields ) )
         {
-            throw new \QUI\Database\Exception(
+            throw new QUI\Database\Exception(
                 'No Array given \QUI\Database\Tables->createTable'
             );
         }
 
+        $_table = $this->_clear( $table );
+
         if ( $this->_isSQLite() )
         {
-            $sql = 'CREATE TABLE `'. $table .'` (';
+            $sql = 'CREATE TABLE `'. $_table .'` (';
         } else
         {
-            $sql = 'CREATE TABLE `'. $this->_DB->getAttribute('dbname') .'`.`'. $table .'` (';
+            $sql = 'CREATE TABLE `'. $this->_DB->getAttribute('dbname') .'`.`'. $_table .'` (';
         }
 
 
-
-        if ( \QUI\Utils\ArrayHelper::isAssoc( $fields ) )
+        if ( QUI\Utils\ArrayHelper::isAssoc( $fields ) )
         {
             foreach ( $fields as $key => $type ) {
                 $sql .= '`'.$key.'` '.$type.',';
@@ -232,55 +252,88 @@ class Tables
      * Tabellen Felder
      *
      * @param String $table
+     * @param bool $fieldNamesOnly (optional) - nur die Feldnamen zurückgeben (sonst alle Informationen) [default: true]
      * @return Array
      */
-    public function getFields($table)
+    public function getFields($table, $fieldNamesOnly=true)
     {
-        $PDO = $this->_DB->getPDO();
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
 
         if ( $this->_isSQLite() )
         {
-            $result = $PDO->query(
-                "SELECT sql FROM sqlite_master
-                WHERE tbl_name = '". $table ."' AND type = 'table'"
-            )->fetchAll();
-
-            if ( !isset( $result[0] ) && !isset( $result[0] ) ) {
-                return array();
-            }
-
-            $pos  = mb_strpos( $result[0]['sql'], '(' );
-            $data = mb_substr( $result[0]['sql'], $pos+1 );
-
             $fields = array();
-            $expl    = explode( ',', $data );
 
-            foreach ( $expl as $part )
+            $Stmt = $PDO->prepare( "PRAGMA table_info(`{$table}`)" );
+            $Stmt->execute();
+            $result = $Stmt->fetchAll();
+
+            foreach ( $result as $k => $row )
             {
-                $part = str_replace( '"', '', $part );
-
-                if ( strpos( $part, '`' ) !== false )
+                if ( $fieldNamesOnly && isset( $row[ 'name' ] ) )
                 {
-                    preg_match("/`(.*?)`/", $part, $matches);
-
-                    if ( isset( $matches[1] ) ) {
-                        $part = $matches[1];
-                    }
+                    $fields[] = $row[ 'name' ];
+                    continue;
                 }
 
-                $fields[] = $part;
+                $fields[] = $row;
             }
 
             return $fields;
+
+//            $Stmnt = $PDO->prepare(
+//                "SELECT sql FROM sqlite_master
+//                WHERE tbl_name = `{$table}` AND type = 'table'"
+//            );
+//
+//            $Stmnt->execute();
+//
+//            $result = $Stmnt->fetchAll();
+//
+//            if ( !isset( $result[0] ) && !isset( $result[0] ) ) {
+//                return array();
+//            }
+//
+//            $pos  = mb_strpos( $result[0]['sql'], '(' );
+//            $data = mb_substr( $result[0]['sql'], $pos+1 );
+//
+//            $fields = array();
+//            $expl    = explode( ',', $data );
+//
+//            foreach ( $expl as $part )
+//            {
+//                $part = str_replace( '"', '', $part );
+//
+//                if ( strpos( $part, '`' ) !== false )
+//                {
+//                    preg_match("/`(.*?)`/", $part, $matches);
+//
+//                    if ( isset( $matches[1] ) ) {
+//                        $part = $matches[1];
+//                    }
+//                }
+//
+//                $fields[] = $part;
+//            }
+//
+//            return $fields;
         }
 
+        $Stmnt = $PDO->prepare( "SHOW COLUMNS FROM `{$table}`" );
+        $Stmnt->execute();
 
-        $Stmnt  = $PDO->query( "SHOW COLUMNS FROM `" . $table ."`" );
         $result = $Stmnt->fetchAll( \PDO::FETCH_ASSOC );
         $fields = array();
 
-        foreach ( $result as $entry ) {
-            $fields[] = $entry['Field'];
+        foreach ( $result as $entry )
+        {
+            if ( $fieldNamesOnly )
+            {
+                $fields[] = $entry['Field'];
+                continue;
+            }
+
+            $fields[] = $entry;
         }
 
         return $fields;
@@ -301,24 +354,28 @@ class Tables
             return;
         }
 
-        $tbl_fields = $this->getFields( $table );
+        $tblFields = $this->getFields( $table );
+
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
 
         foreach ( $fields as $field => $type )
         {
-            if ( !in_array( $field, $tbl_fields ) )
+            $field = $this->_clear( $field );
+            $type  = $this->_parseFieldType( $type );
+
+            if ( !in_array( $field, $tblFields ) )
             {
                 if ( $this->_isSQLite() )
                 {
-                    $this->_DB->getPDO()->exec(
-                        'ALTER TABLE "'. $table .'" ADD COLUMN `'. $field .'` '. strtoupper($type) .';'
-                    );
+                    $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN `{$field}` {$type}");
+                    $Stmnt->execute();
 
                     continue;
                 }
 
-                $this->_DB->getPDO()->exec(
-                    'ALTER TABLE `'. $table .'` ADD `'. $field .'` '. $type .';'
-                );
+                $Stmnt = $PDO->prepare( "ALTER TABLE `{$table}` ADD `{$field}` {$type}" );
+                $Stmnt->execute();
             }
         }
     }
@@ -326,19 +383,18 @@ class Tables
     /**
      * Löscht ein Feld / Spalte aus der Tabelle
      *
-     * @param unknown_type $table
-     * @param unknown_type $fields
+     * @param string $table
+     * @param array $fields
+     * @return void
      */
     public function deleteFields($table, $fields)
     {
-        $table = \QUI\Utils\Security\Orthos::clearMySQL( $table );
-
         if ( $this->exist( $table ) == false) {
-            return true;
+            return;
         }
 
         $tbl_fields   = $this->getFields( $table );
-        $table_fields = \QUI\Utils\ArrayHelper::toAssoc( $tbl_fields );
+        $table_fields = QUI\Utils\ArrayHelper::toAssoc( $tbl_fields );
 
         // prüfen ob die Tabelle leer wäre wenn alle Felder gelöscht werden
         // wenn ja, Tabelle löschen
@@ -360,7 +416,7 @@ class Tables
         foreach ( $fields as $field => $type )
         {
             if ( in_array( $field, $tbl_fields ) ) {
-                $this->deleteColum( $table, $field );
+                $this->deleteColumn( $table, $field );
             }
         }
     }
@@ -372,18 +428,22 @@ class Tables
     /**
      * Prüft ob eine Spalte in der Tabelle existiert
      *
-     * @param unknown_type $table
-     * @param unknown_type $row
-     *
+     * @param string $table
+     * @param string $row
      * @return Bool
      */
     public function existColumnInTable($table, $row)
     {
         if ( $this->_isSQLite() == false )
         {
-            $data = $this->_DB->getPDO()->query(
-                'SHOW COLUMNS FROM `'. $table .'` LIKE "'. $row .'"'
-            )->fetchAll();
+            $PDO   = $this->_DB->getPDO();
+            $table = $this->_clear( $table );
+
+            $Stmnt = $PDO->prepare( "SHOW COLUMNS FROM `{$table}` LIKE :row" );
+            $Stmnt->bindParam( ':row', $row, \PDO::PARAM_STR );
+            $Stmnt->execute();
+
+            $data = $Stmnt->fetchAll();
 
             return count($data) > 0 ? true : false;
         }
@@ -410,13 +470,7 @@ class Tables
      */
     public function getColumns($table)
     {
-        if ( $this->_isSQLite() ) {
-            return $this->getFields( $table );
-        }
-
-        return $this->_DB->getPDO()->query(
-            'SHOW COLUMNS FROM `'. $table .'`'
-        )->fetchAll();
+        return $this->getFields( $table );
     }
 
     /**
@@ -424,45 +478,49 @@ class Tables
      *
      * @param String $table - Table name
      * @param String $column - Row name
+     * @return array
      */
     public function getColumn($table, $column)
     {
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
+
         if ( $this->_isSQLite() )
         {
-            $result =  $this->_DB->getPDO()->query(
-                'PRAGMA table_info(`'. $table .'`);'
-            )->fetch();
-
-
-            var_dump($result['name']);
-
+            $Stmnt = $PDO->prepare( "PRAGMA table_info(`{$table}`);" );
+            $Stmnt->execute();
+            return $Stmnt->fetch();
         }
 
-        return $this->_DB->getPDO()->query(
-            'SHOW COLUMNS FROM `'. $table .'` LIKE "'. $column .'"'
-        )->fetch();
+        $Stmnt = $PDO->prepare( "SHOW COLUMNS FROM `{$table}` LIKE :column" );
+        $Stmnt->bindParam( ':column', $column, \PDO::PARAM_STR );
+        $Stmnt->execute();
+
+        return $Stmnt->fetch();
     }
 
     /**
      * Löscht eine Spalte aus der Tabelle
      *
-     * @param unknown_type $table
-     * @param unknown_type $row
+     * @param string $table
+     * @param string $row
+     * @return bool
      */
     public function deleteColumn($table, $row)
     {
-        $table = \QUI\Utils\Security\Orthos::clearMySQL( $table );
-        $row   = \QUI\Utils\Security\Orthos::clearMySQL( $row );
-
         if ( !$this->existColumnInTable( $table, $row ) ) {
-            return;
+            return true;
         }
 
-        $data = $this->_DB->getPDO()->query(
-            'ALTER TABLE `'. $table .'` DROP `'. $row .'`'
-        )->fetch();
+        $PDO = $this->_DB->getPDO();
 
-        return $data ? true : false;
+        $table = $this->_clear( $table );
+        $row   = $this->_clear( $row );
+
+        $Stmnt = $PDO->prepare( "ALTER TABLE `{$table}` DROP `{$row}`" );
+        $Stmnt->execute();
+
+        return $Stmnt->fetch() ? true : false;
     }
 
     /**
@@ -472,26 +530,71 @@ class Tables
     /**
      * Schlüssel der Tabelle bekommen
      *
-     * @param unknown_type $table
-     * @return Array
+     * @param string $table
+     * @param bool $keyNamesOnly (optional) - Nur die Namen der Schlüssel (sonst alle Spalten-Informationen) [default: true]
+     * @param bool $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
+     * @return array
      */
-    public function getKeys($table)
+    public function getKeys($table, $keyNamesOnly=true, $primaryKeysOnly=false)
     {
-        if ( $this->_isSQLite() ) {
-            return array();
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
+        $keys  = array();
+
+        if ( $this->_isSQLite() )
+        {
+            $Stmt = $PDO->prepare( "PRAGMA table_info(`{$table}`)" );
+        } else
+        {
+            $Stmt = $PDO->prepare( "SHOW KEYS FROM `{$table}`" );
         }
 
-        return $this->_DB->getPDO()->query(
-            'SHOW KEYS FROM `'. $table .'`'
-        )->fetchAll();
+        $Stmt->execute();
+
+        $result = $Stmt->fetchAll();
+
+        foreach ( $result as $columnInfo )
+        {
+            if ( $primaryKeysOnly && $columnInfo[ 'Key_name' ] !== 'PRIMARY' ) {
+                continue;
+            }
+
+            if ( $keyNamesOnly )
+            {
+                $keys[] = $columnInfo[ 'Column_name' ];
+                continue;
+            }
+
+            $keys[] = $columnInfo;
+        }
+
+        // @todo nur unique keys filtern
+        if ( $this->_isSQLite() )
+        {
+            foreach ( $result as $k => $row )
+            {
+                if ( isset( $row[ 'pk' ] ) && $row[ 'pk' ] != 1 ) {
+                    continue;
+                }
+
+                if ( $keyNamesOnly )
+                {
+                    $keys[] = $row[ 'name' ];
+                    continue;
+                }
+
+                $keys[] = $row;
+            }
+        }
+
+        return $keys;
     }
 
     /**
      * Prüft ob der PrimaryKey gesetzt ist
      *
      * @param String $table
-     * @param String || Array $key
-     *
+     * @param String|Array $key
      * @return Bool
      */
     public function issetPrimaryKey($table, $key)
@@ -517,13 +620,26 @@ class Tables
      *
      * @param String $table
      * @param String $key
-     *
      * @return Bool
      */
     protected function _issetPrimaryKey($table, $key)
     {
-        $keys = $this->getKeys( $table );
+        $keys = $this->getKeys( $table, false, true );
 
+        if ( $this->_isSQLite() )
+        {
+            foreach ( $keys as $entry )
+            {
+                if ( isset( $entry[ 'name' ] ) && $entry[ 'name' ] == $key &&
+                     isset( $entry[ 'pk' ] ) && $entry[ 'pk' ] == 1 )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
         foreach ( $keys as $entry )
         {
             if ( isset( $entry['Column_name'] ) && $entry['Column_name'] == $key) {
@@ -539,7 +655,6 @@ class Tables
      *
      * @param String $table
      * @param String|Array $key
-     *
      * @return Bool
      */
     public function setPrimaryKey($table, $key)
@@ -553,19 +668,13 @@ class Tables
             return true;
         }
 
-        $k = $key;
+        $queryKeys  = $this->_inList( $key );
+        $queryTable = $this->_clear( $table );
 
-        if ( is_array( $key ) )
-        {
-            $k = "`". implode("`,`", $key) ."`";
-        } else
-        {
-            $k = "`". $key ."`";
-        }
+        $PDO   = $this->_DB->getPDO();
 
-        $this->_DB->getPDO()->exec(
-            'ALTER TABLE `'. $table .'` ADD PRIMARY KEY('. $k .')'
-        );
+        $Stmnt = $PDO->prepare( "ALTER TABLE `{$queryTable}` ADD PRIMARY KEY({$queryKeys})" );
+        $Stmnt->execute();
 
         return $this->issetPrimaryKey( $table, $key );
     }
@@ -577,8 +686,8 @@ class Tables
     /**
      * Prüft ob ein Index gesetzt ist
      *
-     * @param unknown_type $table
-     * @param String | Integer $key
+     * @param string $table
+     * @param String|Integer $key
      *
      * @return Bool
      */
@@ -604,7 +713,6 @@ class Tables
      *
      * @param String $table
      * @param String $key
-     *
      * @return Bool
      */
     protected function _issetIndex($table, $key)
@@ -643,15 +751,17 @@ class Tables
      * Liefert die Indexes einer Tabelle
      *
      * @param String $table
-     * @return unknown
+     * @return array
      */
     public function getIndex($table)
     {
+        $PDO = $this->_DB->getPDO();
+
         if ( $this->_isSQLite() )
         {
             try
             {
-                $result = $this->_DB->getPDO()->query(
+                $result = $PDO->query(
                     "SELECT * FROM sqlite_master WHERE type = 'index'"
                 )->fetch();
 
@@ -663,17 +773,19 @@ class Tables
             return $result;
         }
 
-        return $this->_DB->getPDO()->query(
-            'SHOW INDEX FROM `'. $table .'`'
-        )->fetchAll();
+        $table = $this->_clear( $table );
+
+        $Stmnt = $PDO->prepare( "SHOW INDEX FROM `{$table}`" );
+        $Stmnt->execute();
+
+        return $Stmnt->fetchAll();
     }
 
     /**
      * Setzt einen Index
      *
      * @param String $table
-     * @param String || Array $index - Array not working on SQLite
-     *
+     * @param String|Array $index - Array not working on SQLite
      * @return Bool
      */
     public function setIndex($table, $index)
@@ -682,28 +794,22 @@ class Tables
             return true;
         }
 
-        $in = $index;
+        $PDO = $this->_DB->getPDO();
 
-        if ( is_array( $index ) )
-        {
-            $in = "`". implode( "`,`", $index ) ."`";
-        } else
-        {
-             $in = "`". $index ."`";
-        }
+        $queryTable = $this->_clear( $table );
+        $inList     = $this->_inList( $index );
+
 
         if ( $this->_isSQLite() )
         {
-            $this->_DB->getPDO()->exec(
-                'CREATE INDEX '. $in .' ON '. $table .' ('. $in .')'
-            );
+            $Stmnt = $PDO->prepare( "CREATE INDEX {$inList} ON `{$queryTable}` ({$inList})" );
+            $Stmnt->execute();
 
             return $this->issetIndex( $table, $index );
         }
 
-        $this->_DB->getPDO()->exec(
-            'ALTER TABLE `'. $table .'` ADD INDEX('. $in .')'
-        );
+        $Stmnt = $PDO->prepare( "ALTER TABLE `{$queryTable}` ADD INDEX({$inList})" );
+        $Stmnt->execute();
 
         return $this->issetIndex( $table, $index );
     }
@@ -713,12 +819,13 @@ class Tables
      *
      * @param String $table
      * @param String $index
+     * @throws QUI\Exception
      */
     public function setAutoIncrement($table, $index)
     {
         if ( $this->_isSQLite() )
         {
-            throw new \QUI\Exception(
+            throw new QUI\Exception(
                 'You can\'t modify SQLite tables in any significant way after they have been created in SQLite'
             );
         }
@@ -729,22 +836,30 @@ class Tables
             $this->setIndex( $table, $index );
         }
 
-        $query  = 'ALTER TABLE `'. $table .'`';
-        $query .= 'MODIFY COLUMN `'. $index .'`';
+        // prepare
+        $table = $this->_clear( $table );
+        $index = $this->_clear( $index );
 
-        $query .= ' '. $column['Type'];
+        $columnType = $column['Type'];
 
         if ( $column['Null'] === 'No' )
         {
-            $query .= ' NOT NULL';
+            $columnValue = ' NOT NULL';
         } else
         {
-            $query .= ' NULL';
+            $columnValue = ' NULL';
         }
 
-        $query .= ' AUTO_INCREMENT';
+        $query  = "
+            ALTER TABLE `{$table}`
+            MODIFY COLUMN `{$index}`
+            {$columnType} {$columnValue} AUTO_INCREMENT
+        ";
 
-        $this->_DB->getPDO()->exec( $query );
+        $PDO   = $this->_DB->getPDO();
+        $Stmnt = $PDO->prepare( $query );
+
+        $Stmnt->execute();
     }
 
     /**
@@ -755,34 +870,28 @@ class Tables
      * Setzt einen Fulltext
      *
      * @param String $table
-     * @param String || Array $index
-     *
+     * @param String|Array $index
      * @return Bool
+     * @throws QUI\Exception
      */
     public function setFulltext($table, $index)
     {
         // no fulltext in sqlite
         if ( $this->_isSQLite() ) {
-            throw new \QUI\Exception( 'Use USING fts4 for SQLite' );
+            throw new QUI\Exception( 'Use USING fts4 for SQLite' );
         }
 
         if ( $this->issetFulltext( $table, $index ) ) {
             return true;
         }
 
-        $in = $index;
+        $fulltext = $this->_inList( $index );
 
-        if ( is_array( $index ) )
-        {
-            $in = "`". implode("`,`", $index) ."`";
-        } else
-        {
-             $in = "`". $index ."`";
-        }
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
 
-        $this->_DB->getPDO()->exec(
-            'ALTER TABLE `'. $table .'` ADD FULLTEXT('. $in .')'
-        );
+        $Stmnt = $PDO->prepare( "ALTER TABLE `{$table}` ADD FULLTEXT({$fulltext})" );
+        $Stmnt->execute();
 
         return $this->issetFulltext( $table, $index );
     }
@@ -792,13 +901,13 @@ class Tables
      *
      * @param String $table
      * @param String|Integer $key
-     *
      * @return Bool
+     * @throws QUI\Exception
      */
     public function issetFulltext($table, $key)
     {
         if ( $this->_isSQLite() ) {
-            throw new \QUI\Exception( 'Use USING fts4 for SQLite' );
+            throw new QUI\Exception( 'Use USING fts4 for SQLite' );
         }
 
         if ( is_array( $key ) )
@@ -821,6 +930,7 @@ class Tables
      *
      * @param String $table
      * @param String $key
+     * @return bool
      */
     protected function _issetFulltext($table, $key)
     {
@@ -838,5 +948,57 @@ class Tables
         }
 
         return false;
+    }
+
+    /**
+     * Clear the table, column or field name
+     *
+     * @param string $str
+     * @return string
+     */
+    protected function _clear($str)
+    {
+        return str_replace( array('\\',"\0" ,'`'), '', $str );
+    }
+
+    /**
+     * Parse a mysql field type, and return the clean type
+     *
+     * @param String $fieldType
+     * @return String
+     */
+    protected function _parseFieldType($fieldType)
+    {
+        $fieldType = preg_replace( "/[^a-zA-Z0-9() ]/", "", $fieldType );
+        $fieldType = strtoupper( $fieldType );
+
+        return $fieldType;
+    }
+
+    /**
+     * Prepare a array or a string for an IN LIST() argument
+     *
+     * @param array|string $index
+     * @return string
+     */
+    protected function _inList($index)
+    {
+        if ( is_array( $index ) )
+        {
+            foreach ( $index as $k => $v ) {
+                $index[ $k ] = $this->_clear( $v );
+            }
+        }
+
+        if ( is_array( $index ) )
+        {
+            $fulltext = "`". implode("`,`", $index) ."`";
+        } else
+        {
+            $index    = $this->_clear( $index );
+            $fulltext = "`{$index}`";
+        }
+
+        return $fulltext;
     }
 }

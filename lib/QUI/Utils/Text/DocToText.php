@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Text;
 
+use QUI;
+
 /**
  * Extract content from various file formats to text
  *
@@ -23,22 +25,22 @@ class DocToText
      *
      * @param String $file - path to file
      *
-     * @throws QException
+     * @throws QUI\Exception
      * @return String
      */
     static function convert($file)
     {
         if ( !file_exists( $file ) ) {
-            throw new \QUI\Exception( 'File could not be read.', 404 );
+            throw new QUI\Exception( 'File could not be read.', 404 );
         }
 
         $Zip = new \ZipArchive();
 
         if ( $Zip->open( $file ) === false ) {
-            throw new \QUI\Exception( 'File could not be read.', 404 );
+            throw new QUI\Exception( 'File could not be read.', 404 );
         }
 
-        $data = \QUI\Utils\System\File::getInfo($file, array(
+        $data = QUI\Utils\System\File::getInfo($file, array(
             'mime_type' => true
         ));
 
@@ -57,7 +59,7 @@ class DocToText
             break;
 
             default:
-                throw new \QUI\Exception( 'Unbekanntes Format.' );
+                throw new QUI\Exception( 'Unbekanntes Format.' );
         }
 
         if ( ( $index = $Zip->locateName( $ln ) ) !== false )
@@ -88,16 +90,16 @@ class DocToText
      *
      * @param String $filename - Path to filename
      * @return String
-     * @throws QException
+     * @throws QUI\Exception
      */
     static function convertDoc($filename)
     {
         if ( !file_exists( $filename ) ) {
-            throw new \QUI\Exception('File could not be read.', 404);
+            throw new QUI\Exception('File could not be read.', 404);
         }
 
         if ( !($fh = fopen($filename, 'r')) ) {
-            throw new \QUI\Exception('File could not be read.', 404);
+            throw new QUI\Exception('File could not be read.', 404);
         }
 
         $headers = fread($fh, 0xA00);

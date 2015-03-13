@@ -5,13 +5,14 @@
  */
 
 namespace QUI;
+use QUI\Utils\Bool;
 
 /**
  * Class for handling ini files
  *
  * @author www.pcsg.de (Moritz Scholz)
  * @author www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
+ * @package quiqqer/utils
  *
  * @todo translate the docu
  */
@@ -33,8 +34,7 @@ class Config
     /**
      * constructor
      *
-     * @param String $filename
-     * @return Bool
+     * @param String $filename - (optional) Path to the config
      */
     public function __construct($filename='')
     {
@@ -43,16 +43,16 @@ class Config
         }
 
         if ( !file_exists( $filename ) ) {
-            return false;
+            return;
         }
 
         $this->_iniFilename = $filename;
 
         if ( $this->_iniParsedArray = parse_ini_file( $filename, true ) ) {
-            return true;
+            return;
         }
 
-        return false;
+        return;
     }
 
     /**
@@ -113,7 +113,7 @@ class Config
      *
      * @param String $section
      * @param String || NULL $key (optional)
-     * @return String || Array
+     * @return String|Array
      */
     public function get($section, $key=null)
     {
@@ -136,9 +136,9 @@ class Config
     /**
      * Setzt eine komplette Sektion
      *
-     * @param String $section
+     * @param String|Bool $section
      * @param Array $array
-     * @return unknown
+     * @return Bool
      */
     public function setSection($section=false, $array)
     {
@@ -187,7 +187,8 @@ class Config
      * exist the section or value?
      *
      * @param String $section
-     * @param String $key
+     * @param String $key - (optional)
+     * @return Bool
      */
     public function existValue($section, $key=null)
     {
@@ -205,10 +206,10 @@ class Config
     /**
      * Setzt einen neuen Wert in einer Sektion oder eine gesamte neue Sektion
      *
-     * @param String $section
-     * @param String $key
-     * @param String $value
-     * @return Bool
+     * @param string|bool $section - (optional)
+     * @param string $key - (optional)
+     * @param string $value - (optional)
+     * @return mixed
      */
     public function set($section=false, $key=null, $value=null)
     {
@@ -252,8 +253,9 @@ class Config
     /**
      * Speichert die Einträge in die INI Datei
      *
-     * @param String $filename - Pfad zur Datei
+     * @param String $filename - (optional) Pfad zur Datei
      * @return Bool
+     * @throws \QUI\Exception
      */
     public function save($filename=null)
     {
@@ -263,9 +265,9 @@ class Config
 
         if ( !is_writeable( $filename ) )
         {
-            $filename = \QUI\Utils\Security\Orthos::clear( $filename );
+            $filename = Utils\Security\Orthos::clear( $filename );
 
-            throw new \QUI\Exception(
+            throw new Exception(
                 'Config '. $filename .' is not writable'
             );
         }

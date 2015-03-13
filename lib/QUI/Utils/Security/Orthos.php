@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Security;
 
+use QUI\Utils\String as QUIString;
+
 /**
  * Orthos - Security class
  *
@@ -14,8 +16,6 @@ namespace QUI\Utils\Security;
  *
  * @author www.pcsg.de (Henning Leutz)
  * @author www.pcsg.de (Moritz Scholz)
- *
- * @package com.pcsg.qutils
  */
 
 class Orthos
@@ -35,6 +35,24 @@ class Orthos
         $str = htmlspecialchars( $str );
 
         return $str;
+    }
+
+    /**
+     * Remove all none characters in the string.
+     * none characters are no a-z A-z or 0-9
+     *
+     * @param String $str
+     * @return String
+     */
+    static function clearNoneCharacters($str='', $allowedList=array())
+    {
+        $chars = 'a-zA-Z0-9';
+
+        if ( is_array( $allowedList ) ) {
+            $chars .= implode( $allowedList );
+        }
+
+        return preg_replace( "/[^{$chars}]/", "", $str );
     }
 
     /**
@@ -69,7 +87,7 @@ class Orthos
      * Säubert eine Pfadangabe von eventuellen Änderungen des Pfades
      *
      * @param String $path
-     * @return String
+     * @return String|Bool
      */
     static function clearPath($path)
     {
@@ -79,8 +97,8 @@ class Orthos
     /**
      * Enfernt HTML aus dem Text
      *
-     * @param unknown_type $text
-     * @return unknown
+     * @param String $text
+     * @return String
      */
     static function removeHTML($text)
     {
@@ -225,10 +243,11 @@ class Orthos
      * @see \QUI\Utils\String::removeLineBreaks
      * @deprecated use \QUI\Utils\String::removeLineBreaks
      * @param String $text
+     * @return string
      */
     static function removeLineBreaks($text)
     {
-        return \QUI\Utils\String::removeLineBreaks($text, '');
+        return QUIString::removeLineBreaks($text, '');
     }
 
     /**
@@ -386,8 +405,13 @@ class Orthos
             foreach ( $value as $key => $entry ) {
                 $value[$key] = self::clearFormRequest( $entry ); // htmlspecialchars_decode($entry);
             }
+
         } else
         {
+            if ( !is_string( $value ) ) {
+                return '';
+            }
+
             $value = htmlspecialchars_decode($value);
         }
         // alle zeichen undd HEX codes werden mit leer ersetzt

@@ -29,11 +29,39 @@ class System
      */
     static function getProtocol()
     {
-        if ( !isset( $_SERVER['HTTPS'] ) || $_SERVER['HTTPS'] != "on" ) {
-              return 'http://';
+        if ( self::isProtocolSecure() ) {
+            return 'https://';
         }
 
-        return 'https://';
+        return 'http://';
+    }
+
+    /**
+     * Return true if the used protocol is https
+     * @return boolean
+     */
+    static function isProtocolSecure()
+    {
+        if ( isset( $_SERVER['HTTPS'] ) )
+        {
+            $https = strtolower( $_SERVER['HTTPS'] );
+
+            if ( $https == 'on' ) {
+                return true;
+            }
+
+            if ( $https == '1' ) {
+                return true;
+            }
+
+        } elseif ( isset( $_SERVER['SERVER_PORT'] ) )
+        {
+            if ( $_SERVER['SERVER_PORT'] == '443' ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -92,5 +120,16 @@ class System
         }
 
         return '';
+    }
+
+    /**
+     * Check if a shell function is callable
+     *
+     * @param String $func - Name of the shell function, eq: ls
+     * @return Bool
+     */
+    static function isShellFunctionEnabled($func)
+    {
+        return is_callable($func) && false === stripos(ini_get('disable_functions'), $func);
     }
 }

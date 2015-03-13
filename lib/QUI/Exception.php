@@ -64,7 +64,7 @@ class Exception extends \Exception
      * if the attribute is not set, it returns false
      *
      * @param String $name
-     * @return unknown_type
+     * @return mixed
      */
     public function getAttribute($name)
     {
@@ -79,8 +79,8 @@ class Exception extends \Exception
      * set an attribute
      *
      * @param String $name - name of the attribute
-     * @param unknown_type $val - value of the attribute
-     * @return this
+     * @param mixed $val - value of the attribute
+     * @return \QUI\Exception this
      */
     public function setAttribute($name, $val)
     {
@@ -93,12 +93,12 @@ class Exception extends \Exception
      * If you want to set more than one attribute
      *
      * @param Array $attributes
-     * @return this
+     * @return \QUI\Exception
      */
     public function setAttributes($attributes)
     {
         if ( !is_array( $attributes ) ) {
-            return;
+            return $this;
         }
 
         foreach ( $attributes as $key => $value ) {

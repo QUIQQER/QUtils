@@ -53,8 +53,8 @@ class ArrayHelper
     /**
      * Converts an object to an array
      *
-     * @param Object $obj
-     * @return Array
+     * @param object|array $obj
+     * @return array
      */
     static function objectToArray($obj)
     {
@@ -89,5 +89,3 @@ class ArrayHelper
         return (object)$array;
     }
 }
-
-?>

@@ -343,8 +343,8 @@ class Image
             $w_size = getimagesize( $watermark );
 
             // TrueColor Fix
-            \QUI\Utils\System\File::convertToTrueColor( $image );
-            \QUI\Utils\System\File::convertToTrueColor( $watermark );
+            self::convertToTrueColor( $image );
+            self::convertToTrueColor( $watermark );
 
             switch ($size[2])
             {
