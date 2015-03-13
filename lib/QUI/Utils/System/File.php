@@ -788,6 +788,46 @@ class File
     }
 
     /**
+     * Find files via fnmatch
+     *
+     * @param String $path
+     * @param String $find
+     * @return Array
+     */
+    static function find($path, $find)
+    {
+        if ( !is_dir( $path ) ) {
+            return array();
+        }
+
+        $dh     = opendir( $path );
+        $result = array();
+
+        while ( ( $file = readdir( $dh ) ) !== false )
+        {
+            if (substr($file, 0, 1) == '.') {
+                continue;
+            }
+
+            $rfile = "{$path}/{$file}";
+
+            if ( is_dir( $rfile ) )
+            {
+                $result = array_merge( $result, self::find( $rfile, $find ) );
+                continue;
+            }
+
+            if ( fnmatch( $find, $file ) ) {
+                $result[] = $rfile;
+            }
+        }
+
+        closedir($dh);
+
+        return $result;
+    }
+
+    /**
      * Dateien rekursiv aus einem Ordner lesen
      *
      * @param String $folder - Pfad zum Ordner
