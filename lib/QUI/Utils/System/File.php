@@ -1215,6 +1215,8 @@ class File
             return true;
         }
 
+        self::mkdir( dirname( $file ) );
+
         return file_put_contents( $file, '' );
     }
 
