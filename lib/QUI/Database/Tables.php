@@ -252,10 +252,9 @@ class Tables
      * Tabellen Felder
      *
      * @param String $table
-     * @param bool $fieldNamesOnly (optional) - nur die Feldnamen zurückgeben (sonst alle Informationen) [default: true]
      * @return Array
      */
-    public function getFields($table, $fieldNamesOnly=true)
+    public function getFields($table)
     {
         $PDO   = $this->_DB->getPDO();
         $table = $this->_clear( $table );
@@ -268,15 +267,8 @@ class Tables
             $Stmt->execute();
             $result = $Stmt->fetchAll();
 
-            foreach ( $result as $k => $row )
-            {
-                if ( $fieldNamesOnly && isset( $row[ 'name' ] ) )
-                {
-                    $fields[] = $row[ 'name' ];
-                    continue;
-                }
-
-                $fields[] = $row;
+            foreach ( $result as $k => $row ) {
+                $fields[] = $row[ 'name' ];
             }
 
             return $fields;
@@ -325,15 +317,8 @@ class Tables
         $result = $Stmnt->fetchAll( \PDO::FETCH_ASSOC );
         $fields = array();
 
-        foreach ( $result as $entry )
-        {
-            if ( $fieldNamesOnly )
-            {
-                $fields[] = $entry['Field'];
-                continue;
-            }
-
-            $fields[] = $entry;
+        foreach ( $result as $entry ) {
+            $fields[] = $entry['Field'];
         }
 
         return $fields;
@@ -535,11 +520,16 @@ class Tables
      * @param bool $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
      * @return array
      */
-    public function getKeys($table, $keyNamesOnly=true, $primaryKeysOnly=false)
+    /**
+     * Schlüssel der Tabelle bekommen
+     *
+     * @param string $table
+     * @return array
+     */
+    public function getKeys($table)
     {
         $PDO   = $this->_DB->getPDO();
         $table = $this->_clear( $table );
-        $keys  = array();
 
         if ( $this->_isSQLite() )
         {
@@ -553,41 +543,17 @@ class Tables
 
         $result = $Stmt->fetchAll();
 
-        foreach ( $result as $columnInfo )
-        {
-            if ( $primaryKeysOnly && $columnInfo[ 'Key_name' ] !== 'PRIMARY' ) {
-                continue;
-            }
-
-            if ( $keyNamesOnly )
-            {
-                $keys[] = $columnInfo[ 'Column_name' ];
-                continue;
-            }
-
-            $keys[] = $columnInfo;
-        }
-
-        // @todo nur unique keys filtern
         if ( $this->_isSQLite() )
         {
             foreach ( $result as $k => $row )
             {
                 if ( isset( $row[ 'pk' ] ) && $row[ 'pk' ] != 1 ) {
-                    continue;
+                    unset( $result[ $k ] );
                 }
-
-                if ( $keyNamesOnly )
-                {
-                    $keys[] = $row[ 'name' ];
-                    continue;
-                }
-
-                $keys[] = $row;
             }
         }
 
-        return $keys;
+        return $result;
     }
 
     /**
@@ -624,7 +590,7 @@ class Tables
      */
     protected function _issetPrimaryKey($table, $key)
     {
-        $keys = $this->getKeys( $table, false, true );
+        $keys = $this->getKeys( $table );
 
         if ( $this->_isSQLite() )
         {
