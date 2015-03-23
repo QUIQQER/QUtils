@@ -249,7 +249,7 @@ class Tables
      */
 
     /**
-     * Tabellen Felder
+     * Tabellen-Spalten mit weiterführenden Informationen
      *
      * @param String $table
      * @return Array
@@ -322,6 +322,30 @@ class Tables
         }
 
         return $fields;
+    }
+
+    /**
+     * Tabellen-Spalten mit detailliertern Spalten-Informationen
+     *
+     * @param String $table - Tabelle
+     * @return array
+     */
+    public function getFieldsInfos($table)
+    {
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear( $table );
+
+        if ( $this->_isSQLite() )
+        {
+            $Stmnt = $PDO->prepare( "PRAGMA table_info(`{$table}`)" );
+        } else
+        {
+            $Stmnt = $PDO->prepare( "SHOW COLUMNS FROM `{$table}`" );
+        }
+
+        $Stmnt->execute();
+
+        return $Stmnt->fetchAll( \PDO::FETCH_ASSOC );
     }
 
     /**
