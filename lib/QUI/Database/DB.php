@@ -386,6 +386,18 @@ class DB extends QUI\QDOM
     {
         $Statement = $this->getPDO()->prepare( $query );
 
+        try
+        {
+            $Statement->execute();
+
+        } catch ( \PDOException $Exception )
+        {
+            $message  = $Exception->getMessage();
+            $message .= print_r( $query, true );
+
+            throw new QUI\Database\Exception( $message, $Exception->getCode() );
+        }
+
         switch ( $FETCH_STYLE )
         {
             case \PDO::FETCH_ASSOC:
