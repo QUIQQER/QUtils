@@ -2,7 +2,7 @@
 
 class SystemTest extends PHPUnit_Framework_TestCase
 {
-    static function testGetProtocol()
+    public function testGetProtocol()
     {
         $protocol = \QUI\Utils\System::getProtocol();
 
@@ -18,7 +18,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    static function testGetUploadMaxFileSize()
+    public function testGetUploadMaxFileSize()
     {
         $max = \QUI\Utils\System::getUploadMaxFileSize();
 
@@ -27,14 +27,14 @@ class SystemTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    static function testMemUsageToHigh()
+    public function testMemUsageToHigh()
     {
         if (\QUI\Utils\System::memUsageToHigh()) {
             $this->fail('memUsageToHigh is to high');
         }
     }
 
-    static function testGetClientIP()
+    public function testGetClientIP()
     {
         $cl_ip = \QUI\Utils\System::getClientIP();
 
