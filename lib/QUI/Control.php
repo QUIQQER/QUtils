@@ -16,11 +16,12 @@ class Control extends QDOM
 {
     /**
      * Constructor
+     *
      * @param Array $attributes
      */
-    public function __construct( $attributes=array() )
+    public function __construct($attributes = array())
     {
-        $this->setAttributes( $attributes );
+        $this->setAttributes($attributes);
     }
 
     /**
@@ -31,41 +32,40 @@ class Control extends QDOM
     public function create()
     {
         $attributes = $this->getAttributes();
-        $params     = '';
+        $params = '';
 
-        foreach ( $attributes as $key => $value )
-        {
-            if ( strpos( $key, 'data-' ) === false ) {
+        foreach ($attributes as $key => $value) {
+            if (strpos($key, 'data-') === false) {
                 continue;
             }
 
-            if ( is_object( $value ) ) {
+            if (is_object($value)) {
                 continue;
             }
 
-            $key = Utils\Security\Orthos::clear( $key );
-            $params .= ' '. $key .'="'. htmlentities( $value ) .'"';
+            $key = Utils\Security\Orthos::clear($key);
+            $params .= ' '.$key.'="'.htmlentities($value).'"';
         }
 
         // qui class
         $quiClass = '';
 
-        if ( $this->getAttribute('qui-class') ) {
-            $quiClass = 'data-qui="'. $this->getAttribute('qui-class') .'" ';
+        if ($this->getAttribute('qui-class')) {
+            $quiClass = 'data-qui="'.$this->getAttribute('qui-class').'" ';
         }
 
-        if ( $this->getAttribute('class') ) {
-            $quiClass .= 'class="'. $this->getAttribute('class') .'" ';
+        if ($this->getAttribute('class')) {
+            $quiClass .= 'class="'.$this->getAttribute('class').'" ';
         }
 
         $nodeName = 'div';
 
-        if ( $this->getAttribute( 'nodeName' ) ) {
-            $nodeName = $this->getAttribute( 'nodeName' );
+        if ($this->getAttribute('nodeName')) {
+            $nodeName = $this->getAttribute('nodeName');
         }
 
         return "<{$nodeName} {$quiClass}{$params}>".
-            $this->getBody() .
+        $this->getBody().
         "</{$nodeName}>";
     }
 
@@ -82,30 +82,32 @@ class Control extends QDOM
 
     /**
      * Add a css file to the control
+     *
      * @param String $file
      */
     public function addCSSFile($file)
     {
-        Control\Manager::addCSSFile( $file );
+        Control\Manager::addCSSFile($file);
     }
 
     /**
      * Return the Project
+     *
      * @return \QUI\Projects\Project
      */
     protected function _getProject()
     {
-        if ( $this->getAttribute('Project') ) {
+        if ($this->getAttribute('Project')) {
             return $this->getAttribute('Project');
         }
 
         $Project = \QUI::getRewrite()->getProject();
 
-        if ( !$Project ) {
+        if (!$Project) {
             $Project = \QUI::getProjectManager()->get();
         }
 
-        $this->setAttribute( 'Project', $Project );
+        $this->setAttribute('Project', $Project);
 
         return $Project;
     }

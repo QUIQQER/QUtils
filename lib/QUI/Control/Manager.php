@@ -15,6 +15,7 @@ class Manager
 {
     /**
      * Lst of CSS Files
+     *
      * @var Array
      */
     static protected $cssFilesloaded = array();
@@ -26,7 +27,7 @@ class Manager
      */
     static function getCSSFiles()
     {
-        return array_keys( self::$cssFilesloaded );
+        return array_keys(self::$cssFilesloaded);
     }
 
     /**
@@ -39,13 +40,12 @@ class Manager
         $files = self::getCSSFiles();
         $result = '<style>';
 
-        foreach ( $files as $file )
-        {
-            if ( !file_exists( $file ) ) {
+        foreach ($files as $file) {
+            if (!file_exists($file)) {
                 continue;
             }
 
-            $css     = file_get_contents( $file );
+            $css = file_get_contents($file);
             $result .= $css;
         }
 
@@ -61,27 +61,28 @@ class Manager
      */
     static function addCSSFile($file)
     {
-        self::$cssFilesloaded[ $file ] = true;
+        self::$cssFilesloaded[$file] = true;
     }
 
     /**
      * Insert the CSS Files in the <head></head> of a html
      *
      * @param String $html - complete html
+     *
      * @return String
      */
     static function setCSSToHead($html)
     {
         // letzte head ersetzen
-        $string  = $html;
-        $search  = '</head>';
+        $string = $html;
+        $search = '</head>';
         $replace = self::getCSS();
 
         return substr_replace(
             $html,
-            $replace .'</head>',
-            strrpos( $string, $search ),
-            strlen( $search )
+            $replace.'</head>',
+            strrpos($string, $search),
+            strlen($search)
         );
     }
 }

@@ -10,8 +10,8 @@ class DBSQLiteTest extends DB_Test_Methods
     {
         // pdo db
         return new DB(array(
-            'driver'   => 'sqlite',
-            'dbname'   => 'test.sqlite'
+            'driver' => 'sqlite',
+            'dbname' => 'test.sqlite'
         ));
     }
 }

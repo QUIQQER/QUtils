@@ -6,15 +6,15 @@ class SystemTest extends PHPUnit_Framework_TestCase
     {
         $protocol = \QUI\Utils\System::getProtocol();
 
-        if ( $protocol !== 'http://' && $protocol !== 'https://' ) {
-            $this->fail( 'unknown protocol' );
+        if ($protocol !== 'http://' && $protocol !== 'https://') {
+            $this->fail('unknown protocol');
         }
 
         $_SERVER['HTTPS'] = 'on';
-        $protocol         = \QUI\Utils\System::getProtocol();
+        $protocol = \QUI\Utils\System::getProtocol();
 
-        if ( $protocol !== 'https://' ) {
-            $this->fail( 'no https' );
+        if ($protocol !== 'https://') {
+            $this->fail('no https');
         }
     }
 
@@ -22,15 +22,15 @@ class SystemTest extends PHPUnit_Framework_TestCase
     {
         $max = \QUI\Utils\System::getUploadMaxFileSize();
 
-        if ( !$max ) {
-            $this->fail( 'something went wrong at \QUI\Utils\System::getUploadMaxFileSize' );
+        if (!$max) {
+            $this->fail('something went wrong at \QUI\Utils\System::getUploadMaxFileSize');
         }
     }
 
     static function testMemUsageToHigh()
     {
-        if ( \QUI\Utils\System::memUsageToHigh() ) {
-            $this->fail( 'memUsageToHigh is to high' );
+        if (\QUI\Utils\System::memUsageToHigh()) {
+            $this->fail('memUsageToHigh is to high');
         }
     }
 

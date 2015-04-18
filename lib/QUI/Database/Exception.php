@@ -9,7 +9,7 @@ namespace QUI\Database;
 /**
  * The Exception class for database operations
  *
- * @author www.pcsg.de (Henning Leutz)
+ * @author  www.pcsg.de (Henning Leutz)
  * @package quiqqer/utils
  */
 

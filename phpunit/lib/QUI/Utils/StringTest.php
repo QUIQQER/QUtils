@@ -11,51 +11,51 @@ class StringTest extends PHPUnit_Framework_TestCase
 
     public function testPathinfo()
     {
-        try
-        {
-            $test = String::pathinfo( 'nothing' );
+        try {
+            $test = String::pathinfo('nothing');
 
             $this->fail(
                 'QUI\Utils\String::pathinfo throws no exception on a none existing file'
             );
 
-        } catch ( \QUI\Exception $Exception )
-        {
+        } catch (\QUI\Exception $Exception) {
 
         }
 
 
-        $path = String::pathinfo( __FILE__ );
+        $path = String::pathinfo(__FILE__);
 
-        if ( !isset( $path['dirname'] ) ) {
-            $this->fail( 'no dir name' );
+        if (!isset($path['dirname'])) {
+            $this->fail('no dir name');
         }
 
-        if ( !isset( $path['basename'] ) || $path['basename'] != 'StringTest.php' ) {
-            $this->fail( 'basename is wrong' );
+        if (!isset($path['basename'])
+            || $path['basename'] != 'StringTest.php'
+        ) {
+            $this->fail('basename is wrong');
         }
 
-        if ( !isset( $path['filename'] ) || $path['filename'] != 'StringTest' ) {
-            $this->fail( 'filename is wrong' );
+        if (!isset($path['filename']) || $path['filename'] != 'StringTest') {
+            $this->fail('filename is wrong');
         }
 
 
-        if ( String::pathinfo( __FILE__, PATHINFO_BASENAME ) != 'StringTest.php' ) {
-            $this->fail( 'PATHINFO_BASENAME is wrong' );
+        if (String::pathinfo(__FILE__, PATHINFO_BASENAME) != 'StringTest.php') {
+            $this->fail('PATHINFO_BASENAME is wrong');
         }
 
-        if ( String::pathinfo( __FILE__, PATHINFO_EXTENSION ) != 'php' ) {
-            $this->fail( 'PATHINFO_EXTENSION is wrong' );
+        if (String::pathinfo(__FILE__, PATHINFO_EXTENSION) != 'php') {
+            $this->fail('PATHINFO_EXTENSION is wrong');
         }
 
-        if ( String::pathinfo( __FILE__, PATHINFO_FILENAME ) != 'StringTest' ) {
-            $this->fail( 'PATHINFO_FILENAME is wrong' );
+        if (String::pathinfo(__FILE__, PATHINFO_FILENAME) != 'StringTest') {
+            $this->fail('PATHINFO_FILENAME is wrong');
         }
 
-        $dirname = String::pathinfo( __FILE__, PATHINFO_DIRNAME );
+        $dirname = String::pathinfo(__FILE__, PATHINFO_DIRNAME);
 
-        if ( $path['dirname'] != $dirname ) {
-            $this->fail( 'PATHINFO_DIRNAME is wrong' );
+        if ($path['dirname'] != $dirname) {
+            $this->fail('PATHINFO_DIRNAME is wrong');
         }
     }
 
@@ -129,15 +129,16 @@ class StringTest extends PHPUnit_Framework_TestCase
 
     public function testGetUrlAttributes()
     {
-        $attr = String::getUrlAttributes( 'index.php?id=1&param1=test&param2=hallo' );
+        $attr
+            = String::getUrlAttributes('index.php?id=1&param1=test&param2=hallo');
 
-        $this->assertArrayHasKey ( 'id', $attr );
-        $this->assertArrayHasKey ( 'param1', $attr );
-        $this->assertArrayHasKey ( 'param2', $attr );
+        $this->assertArrayHasKey('id', $attr);
+        $this->assertArrayHasKey('param1', $attr);
+        $this->assertArrayHasKey('param2', $attr);
 
-        $attr = String::getUrlAttributes( 'index.php' );
+        $attr = String::getUrlAttributes('index.php');
 
-        $this->assertEquals( 0, count($attr) );
+        $this->assertEquals(0, count($attr));
     }
 
     public function testGetHTMLAttributes()
@@ -146,10 +147,10 @@ class StringTest extends PHPUnit_Framework_TestCase
             '<img class="cssclass" id="unique" src="image.png" style="border: 1px solid red;" />'
         );
 
-        $this->assertArrayHasKey ( 'class', $attr );
-        $this->assertArrayHasKey ( 'id', $attr );
-        $this->assertArrayHasKey ( 'src', $attr );
-        $this->assertArrayHasKey ( 'style', $attr );
+        $this->assertArrayHasKey('class', $attr);
+        $this->assertArrayHasKey('id', $attr);
+        $this->assertArrayHasKey('src', $attr);
+        $this->assertArrayHasKey('style', $attr);
     }
 
     public function testSplitStyleAttributes()
@@ -158,50 +159,51 @@ class StringTest extends PHPUnit_Framework_TestCase
             '<img src="image.png" style="border: 1px solid red; margin: 10px; padding: 10px;" />'
         );
 
-        $style = String::splitStyleAttributes( $attr['style'] );
+        $style = String::splitStyleAttributes($attr['style']);
 
-        $this->assertArrayHasKey ( 'border', $style );
-        $this->assertArrayHasKey ( 'margin', $style );
-        $this->assertArrayHasKey ( 'padding', $style );
+        $this->assertArrayHasKey('border', $style);
+        $this->assertArrayHasKey('margin', $style);
+        $this->assertArrayHasKey('padding', $style);
 
-        $this->assertEquals( '1px solid red', $style['border'] );
-        $this->assertEquals( '10px', $style['margin'] );
-        $this->assertEquals( '10px', $style['padding'] );
+        $this->assertEquals('1px solid red', $style['border']);
+        $this->assertEquals('10px', $style['margin']);
+        $this->assertEquals('10px', $style['padding']);
     }
 
     public function testReplaceLast()
     {
-        $result = String::replaceLast( 'one', 'three', 'one two one' );
+        $result = String::replaceLast('one', 'three', 'one two one');
 
-        $this->assertEquals( 'one two three', $result );
+        $this->assertEquals('one two three', $result);
 
         $this->assertEquals(
             'one two one',
-            String::replaceLast( 'three', 'three', 'one two one' )
+            String::replaceLast('three', 'three', 'one two one')
         );
     }
 
     public function testUTF8()
     {
-        $no_utf8 = utf8_decode( 'müll' );
+        $no_utf8 = utf8_decode('müll');
 
-        $this->assertEquals( false, String::isValidUTF8(  utf8_decode( 'müll' ) ) );
-        $this->assertEquals( true, String::isValidUTF8(  utf8_encode( 'müll' ) ) );
+        $this->assertEquals(false, String::isValidUTF8(utf8_decode('müll')));
+        $this->assertEquals(true, String::isValidUTF8(utf8_encode('müll')));
 
         $this->assertEquals(
             'müll',
-            String::toUTF8( utf8_decode( 'müll' ) )
+            String::toUTF8(utf8_decode('müll'))
         );
 
         $this->assertEquals(
             'müll',
-            String::toUTF8( 'müll' )
+            String::toUTF8('müll')
         );
     }
 
     public function testSentence()
     {
-        $text = '
+        $text
+            = '
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr.
             sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
             sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum!
@@ -211,16 +213,16 @@ class StringTest extends PHPUnit_Framework_TestCase
             At vero eos et accusam et justo duo dolores et ea rebum.
             Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
 
-        $sentence = String::sentence( $text );
+        $sentence = String::sentence($text);
 
         $this->assertEquals(
             'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
-            String::sentence( $text )
+            String::sentence($text)
         );
 
         $this->assertEquals(
             false,
-            String::sentence( 'Lorem ipsum dolor sit amet' )
+            String::sentence('Lorem ipsum dolor sit amet')
         );
     }
 }
