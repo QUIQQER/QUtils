@@ -66,4 +66,38 @@ class Math
             2 => $var2
         );
     }
+
+    /**
+     * Round to the multiple of x
+     * 50 outputs 50, 52 outputs 55, 50.25 outputs 50
+     *
+     * found via http://stackoverflow.com/a/4133893
+     *
+     * @param Integer|Float $n - value to round
+     * @param Integer       $x - Rount step -> default=10
+     *
+     * @return Integer
+     */
+    static function roundUp($n, $x = 10)
+    {
+        return (round($n) % $x === 0) ? round($n)
+            : round(($n + $x / 2) / $x) * $x;
+    }
+
+    /**
+     * Ceil up to the multiple of x
+     * 50 outputs 50, 52 outputs 55, 50.25 outputs 55
+     *
+     * found via http://stackoverflow.com/a/4133893
+     *
+     * @param Integer|Float $n - value to round
+     * @param Integer       $x - Rount step -> default=10
+     *
+     * @return Integer
+     */
+    static function ceilUp($n, $x = 10)
+    {
+        return (ceil($n) % $x === 0) ? ceil($n)
+            : round(($n + $x / 2) / $x) * $x;
+    }
 }
