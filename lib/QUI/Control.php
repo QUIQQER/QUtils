@@ -14,6 +14,8 @@ namespace QUI;
  */
 class Control extends QDOM
 {
+    protected $_cssClasses = array();
+
     /**
      * Constructor
      *
@@ -54,8 +56,16 @@ class Control extends QDOM
             $quiClass = 'data-qui="'.$this->getAttribute('qui-class').'" ';
         }
 
+        $cssClasses = array();
+
         if ($this->getAttribute('class')) {
-            $quiClass .= 'class="'.$this->getAttribute('class').'" ';
+            $cssClasses[] = $this->getAttribute('class');
+        }
+
+        $cssClasses = array_merge(array_keys($this->_cssClasses), $cssClasses);
+
+        if (!empty($cssClasses)) {
+            $quiClass .= 'class="'.implode($cssClasses, ' ').'" ';
         }
 
         $nodeName = 'div';
@@ -78,6 +88,28 @@ class Control extends QDOM
     public function getBody()
     {
         return '';
+    }
+
+    /**
+     * Add a css class
+     *
+     * @param String $cssClass
+     */
+    public function addCSSClass($cssClass)
+    {
+        $this->_cssClasses[$cssClass] = true;
+    }
+
+    /**
+     * Remove a css class from the CSS list
+     *
+     * @param String $cssClass
+     */
+    public function removeCSSClass($cssClass)
+    {
+        if (isset($this->_cssClasses[$cssClass])) {
+            unset($this->_cssClasses[$cssClass]);
+        }
     }
 
     /**
