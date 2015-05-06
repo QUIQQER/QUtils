@@ -410,9 +410,8 @@ class Tables
             return;
         }
 
-
         // Einzeln die Felder löschen
-        foreach ($fields as $field => $type) {
+        foreach ($fields as $field) {
             if (in_array($field, $tbl_fields)) {
                 $this->deleteColumn($table, $field);
             }
@@ -518,9 +517,8 @@ class Tables
         $row = $this->_clear($row);
 
         $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` DROP `{$row}`");
-        $Stmnt->execute();
 
-        return $Stmnt->fetch() ? true : false;
+        return $Stmnt->execute();
     }
 
     /**
