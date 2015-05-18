@@ -34,8 +34,10 @@ class Url
      */
     static function Curl($url, $curlparams = array())
     {
-        if (isset(self::$Curls[$url]) && self::$Curls[$url]) {
-            return self::$Curls[$url];
+        $hash = md5(serialize($url).serialize($curlparams));
+
+        if (isset(self::$Curls[$hash]) && self::$Curls[$hash]) {
+            return self::$Curls[$hash];
         }
 
         $Curl = curl_init();
