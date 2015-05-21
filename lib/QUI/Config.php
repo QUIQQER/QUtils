@@ -293,15 +293,19 @@ class Config
                 fwrite($SFfdescriptor, "[".$section."]\n");
 
                 foreach ($array as $key => $value) {
-                    fwrite($SFfdescriptor,
-                        $key.'="'.$this->_clean($value)."\"\n");
+                    fwrite(
+                        $SFfdescriptor,
+                        $key.'="'.$this->_clean($value)."\"\n"
+                    );
                 }
 
                 fwrite($SFfdescriptor, "\n");
 
             } else {
-                fwrite($SFfdescriptor,
-                    $section.'="'.$this->_clean($array)."\"\n");
+                fwrite(
+                    $SFfdescriptor,
+                    $section.'="'.$this->_clean($array)."\"\n"
+                );
             }
         }
 

@@ -95,8 +95,10 @@ class Timer
         $result = $this->result();
 
         foreach ($result as $key => $data) {
-            $data[2] = round(($key ? $data[1] - $result[$key - 1][1] : '0'),
-                5); // Diff
+            $data[2] = round(
+                ($key ? $data[1] - $result[$key - 1][1] : '0'),
+                5
+            ); // Diff
             $data[3] = round(($data[1] - $result[0][1]), 5); // Cumulative
 
             $result[$key] = $data;
@@ -105,5 +107,3 @@ class Timer
         return $result;
     }
 }
-
-?>

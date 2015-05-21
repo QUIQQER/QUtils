@@ -31,7 +31,6 @@ class DBMySQLTest extends DB_Test_Methods
             $this->fail('no exception thrown by bad DB data');
 
         } catch (\QUI\Database\Exception $Exception) {
-
         }
     }
 

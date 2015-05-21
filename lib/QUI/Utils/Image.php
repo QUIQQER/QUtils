@@ -101,8 +101,7 @@ class Image
 
         if ($new_height == $info['height']
             && $new_width == $info['width']
-        ) // Falls Höhe und Breite gleich der original Grösse ist dann nur ein Copy
-        {
+        ) { // Falls Höhe und Breite gleich der original Grösse ist dann nur ein Copy
             if ($original == $new_image) {
                 return true;
             }
@@ -116,13 +115,16 @@ class Image
             return true;
         }
 
-        if (IMAGE_LIBRARY == 'IMAGICK_PHP') // Image Magick
-        {
+        if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
             try {
                 $thumb = new \Imagick();
                 $thumb->readImage($original);
-                $thumb->resizeImage($new_width, $new_height,
-                    \Imagick::FILTER_LANCZOS, 1);
+                $thumb->resizeImage(
+                    $new_width,
+                    $new_height,
+                    \Imagick::FILTER_LANCZOS,
+                    1
+                );
 
                 if (strpos($new_image, 'jpg') !== false
                     || strpos($new_image, 'JPG') !== false
@@ -131,7 +133,7 @@ class Image
                 ) {
                     $thumb->setImageCompression(\Imagick::COMPRESSION_JPEG);
                     $thumb->setImageCompressionQuality(80);
-                }
+                    }
 
                 $thumb->writeImage($new_image);
                 $thumb->destroy();
@@ -146,8 +148,7 @@ class Image
                 );
             }
 
-        } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') // Image Magick - Console
-        {
+        } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') { // Image Magick - Console
             $size = getimagesize($original);
             $orig_width = $size[0];
             $orig_height = $size[1];
@@ -168,8 +169,7 @@ class Image
                 .$exec
             );
 
-        } elseif (IMAGE_LIBRARY == 'GDLIB') // GD Lib - sehr schlechte Quali
-        {
+        } elseif (IMAGE_LIBRARY == 'GDLIB') { // GD Lib - sehr schlechte Quali
             $size = getimagesize($original);
             $orig_width = $size[0];
             $orig_height = $size[1];
@@ -184,7 +184,10 @@ class Image
                         ImageCopyResized(
                             $new,
                             $old,
-                            0, 0, 0, 0,
+                            0,
+                            0,
+                            0,
+                            0,
                             $new_width,
                             $new_height,
                             $orig_width,
@@ -215,7 +218,10 @@ class Image
                         ImageCopyResized(
                             $new,
                             $old,
-                            0, 0, 0, 0,
+                            0,
+                            0,
+                            0,
+                            0,
                             $new_width,
                             $new_height,
                             $orig_width,
@@ -246,7 +252,10 @@ class Image
                         ImageCopyResized(
                             $new,
                             $old,
-                            0, 0, 0, 0,
+                            0,
+                            0,
+                            0,
+                            0,
                             $new_width,
                             $new_height,
                             $orig_width,
@@ -304,30 +313,32 @@ class Image
             throw new \QUI\Exception('Watersign Image not exist. '.$watermark);
         }
 
-        if (IMAGE_LIBRARY == 'IMAGICK_PHP') // Image Magick
-        {
+        if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
             try {
                 $_image = new \Imagick($image);
                 $_watermark = new \Imagick($watermark);
 
-                $_image->compositeImage($_watermark,
-                    $_watermark->getImageCompose(), $left, $top);
+                $_image->compositeImage(
+                    $_watermark,
+                    $_watermark->getImageCompose(),
+                    $left,
+                    $top
+                );
 
                 if ($newImage) {
                     $_image->writeImage($newImage);
-                } else {
+                    } else {
                     $_image->writeImage($image);
-                }
+                    }
 
-                $_image->destroy(); // ausm ram raus
-                $_watermark->destroy();
+                    $_image->destroy(); // ausm ram raus
+                    $_watermark->destroy();
 
             } catch (\ImagickException $e) {
                 throw new \QUI\Exception($e->getMessage());
             }
 
-        } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') // Image Magick - Console
-        {
+        } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') { // Image Magick - Console
             $exec
                 = 'composite -gravity center '.$watermark.' '.$image.' '.$image;
             exec(escapeshellcmd($exec), $return);
@@ -338,8 +349,7 @@ class Image
 
             throw new \QUI\Exception('PT_File::watermark(); Could not create');
 
-        } elseif (IMAGE_LIBRARY == 'GDLIB') // GD Lib - sehr schlechte Quali
-        {
+        } elseif (IMAGE_LIBRARY == 'GDLIB') { // GD Lib - sehr schlechte Quali
             $size = getimagesize($image);
             $w_size = getimagesize($watermark);
 
@@ -396,8 +406,16 @@ class Image
             imagecopy($new_image, $old_image, 0, 0, 0, 0, $width, $height);
 
             // Wasserzeichen einfügen
-            imagecopy($new_image, $wasserzeichen, 0, 0, 0, 0, $w_width,
-                $w_height);
+            imagecopy(
+                $new_image,
+                $wasserzeichen,
+                0,
+                0,
+                0,
+                0,
+                $w_width,
+                $w_height
+            );
 
             // Erstellen
             switch ($size[2]) {
@@ -527,8 +545,7 @@ class Image
 
         $tmp_image = str_replace('.'.end($_tmp), $_micro.'.png', $original);
 
-        if (IMAGE_LIBRARY == 'IMAGICK_PHP') // Image Magick
-        {
+        if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
             try {
                 $Im = new \Imagick($original);
                 $Im->setimagebackgroundcolor(new \ImagickPixel($bgcolor));
@@ -551,8 +568,7 @@ class Image
                     $e->getCode()
                 );
             }
-        } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') // Image Magick - Console
-        {
+        } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') { // Image Magick - Console
             $exec = 'convert '.$original.'
                 \( +clone  -threshold -1   -draw
                     \'fill black polygon 0,0 0,'.$radius.' '.$radius
@@ -561,8 +577,11 @@ class Image
                     \( +clone -flop \) -compose Multiply -composite
                 \) +matte -compose CopyOpacity -composite '.$tmp_image;
 
-            $exec = str_replace(array("\n", "\r", "\t"), array('', '', ' '),
-                $exec);
+            $exec = str_replace(
+                array("\n", "\r", "\t"),
+                array('', '', ' '),
+                $exec
+            );
             exec($exec, $return);
 
             $exec = 'convert -fill "'.$bgcolor.'" -opaque none '.$tmp_image.' '
@@ -594,9 +613,8 @@ class Image
             $params['shadow'] = 0.5;
         }
 
-        if (IMAGE_LIBRARY == 'IMAGICK_PHP') // Image Magick
-        {
-            // PNG draus machen
+        if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
+        // PNG draus machen
             $Im = new \Imagick($from);
             $width = $Im->getImageWidth();
             $height = $Im->getImageHeight();
@@ -626,7 +644,8 @@ class Image
             $Reflection->compositeImage(
                 $Gradient,
                 \Imagick::COMPOSITE_DSTOUT,
-                0, 0
+                0,
+                0
             );
 
             $Gradient->newPseudoImage(
@@ -653,8 +672,12 @@ class Image
             $Canvas->newImage($width, $height, new ImagickPixel('none'), "png");
 
             $Canvas->compositeImage($Im, imagick::COMPOSITE_SRCOVER, 0, 0);
-            $Canvas->compositeImage($Reflection, imagick::COMPOSITE_SRCOVER, 0,
-                $Im->getImageHeight());
+            $Canvas->compositeImage(
+                $Reflection,
+                imagick::COMPOSITE_SRCOVER,
+                0,
+                $Im->getImageHeight()
+            );
 
             //$Canvas->compositeImage($Im, imagick::COMPOSITE_OVER, 0, 0);
             //$Canvas->compositeImage($Reflection, imagick::COMPOSITE_OVER, 0, $Im->getImageHeight() + 0);

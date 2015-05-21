@@ -83,8 +83,10 @@ class GetText extends \QUI\QDOM
         );
         */
 
-        bindtextdomain($this->getAttribute('domain'),
-            $this->getAttribute('dir'));
+        bindtextdomain(
+            $this->getAttribute('domain'),
+            $this->getAttribute('dir')
+        );
         bind_textdomain_codeset($this->getAttribute('domain'), 'UTF-8');
 
         textdomain($this->getAttribute('domain'));

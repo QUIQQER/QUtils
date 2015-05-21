@@ -241,8 +241,10 @@ class String
             $test1 = true;
         }
 
-        if (!((bool)preg_match('~[\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\xC0\xC1]~ms',
-            $str))
+        if (!((bool)preg_match(
+            '~[\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\xC0\xC1]~ms',
+            $str
+        ))
         ) {
             $test2 = true;
         }
