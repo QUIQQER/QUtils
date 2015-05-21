@@ -137,7 +137,7 @@ class Url
      *
      * @param resource $Curl
      *
-     * @return resource
+     * @return mixed
      */
     static function exec($Curl)
     {
