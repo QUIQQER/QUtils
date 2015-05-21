@@ -41,6 +41,8 @@ if (class_exists('Imagick')) {
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
  *
+ * @deprecated better use http://image.intervention.io/
+ *
  * @todo    docu translation
  */
 class Image
