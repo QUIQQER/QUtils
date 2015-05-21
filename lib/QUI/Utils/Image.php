@@ -133,7 +133,7 @@ class Image
                 ) {
                     $thumb->setImageCompression(\Imagick::COMPRESSION_JPEG);
                     $thumb->setImageCompressionQuality(80);
-                    }
+                }
 
                 $thumb->writeImage($new_image);
                 $thumb->destroy();
@@ -327,9 +327,9 @@ class Image
 
                 if ($newImage) {
                     $_image->writeImage($newImage);
-                    } else {
+                } else {
                     $_image->writeImage($image);
-                    }
+                }
 
                     $_image->destroy(); // ausm ram raus
                     $_watermark->destroy();
