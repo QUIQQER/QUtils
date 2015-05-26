@@ -65,6 +65,22 @@ class DB extends QUI\QDOM
         // Attributes
         $this->setAttributes($attributes);
 
+        $this->_PDO = $this->getNewPDO();
+        $this->_PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->Tables = new Tables($this);
+    }
+
+    /**
+     * Return a new PDO Object
+     * This Object generate a new database connection
+     *
+     * attention: please use getPDO() if you want not a new database connection
+     *
+     * @return \PDO
+     * @throws Exception
+     */
+    public function getNewPDO()
+    {
         if ($this->getAttribute('dsn') === false) {
             $this->setAttribute(
                 'dsn',
@@ -76,30 +92,31 @@ class DB extends QUI\QDOM
 
         // sqlite PDO
         try {
+
             if ($this->getAttribute('driver') == 'sqlite') {
-                $this->_PDO = new \PDO(
-                    'sqlite:'.$this->getAttribute('dbname')
-                );
 
                 $this->_sqlite = true;
 
+                return new \PDO(
+                    'sqlite:'.$this->getAttribute('dbname')
+                );
+
             } else {
-                $this->_PDO = new \PDO(
+
+                return new \PDO(
                     $this->getAttribute('dsn'),
                     $this->getAttribute('user'),
                     $this->getAttribute('password'),
                     $this->getAttribute('options')
                 );
             }
+
         } catch (\PDOException $Exception) {
             throw new QUI\Database\Exception(
                 $Exception->getMessage(),
                 $Exception->getCode()
             );
         }
-
-        $this->_PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->Tables = new Tables($this);
     }
 
     /**
