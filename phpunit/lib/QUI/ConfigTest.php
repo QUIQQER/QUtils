@@ -119,8 +119,10 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $Config = $this->getConfig();
 
-        $this->assertEquals(true,
-            $Config->setValue('my_section', null, 'string'));
+        $this->assertEquals(
+            true,
+            $Config->setValue('my_section', null, 'string')
+        );
         $this->assertEquals('string', $Config->getSection('my_section'));
     }
 

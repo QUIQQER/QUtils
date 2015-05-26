@@ -497,8 +497,7 @@ class File
     {
         $sizes = array('B', 'KB', 'MB', 'GB', 'TB');
 
-        for ($i = 0, $len = count($sizes); $i < $len - 1 && $size >= 1024; $i++)
-        {
+        for ($i = 0, $len = count($sizes); $i < $len - 1 && $size >= 1024; $i++) {
             $size /= 1024;
         }
 
@@ -684,13 +683,11 @@ class File
         }
 
         if (isset($params['mime_type']) || $params == false) {
-            if (function_exists('mime_content_type')) // PHP interne Funktionen
-            {
+            if (function_exists('mime_content_type')) { // PHP interne Funktionen
                 $info['mime_type'] = mime_content_type($file);
             } elseif (function_exists('finfo_open')
                 && function_exists('finfo_file')
-            ) // PECL
-            {
+            ) { // PECL
                 $finfo = finfo_open(FILEINFO_MIME);
                 $part = explode(';', finfo_file($finfo, $file));
                 $info['mime_type'] = $part[0];
@@ -750,8 +747,12 @@ class File
         $new_width = 0,
         $new_height = 0
     ) {
-        return QUI\Utils\Image::resize($original, $new_image, $new_width,
-            $new_height);
+        return QUI\Utils\Image::resize(
+            $original,
+            $new_image,
+            $new_width,
+            $new_height
+        );
     }
 
     /**
@@ -991,8 +992,10 @@ class File
     static function download($host, $path, $local)
     {
         if (file_exists($local)) {
-            throw new QUI\Exception('Conflicting Request; Local File exist;',
-                409);
+            throw new QUI\Exception(
+                'Conflicting Request; Local File exist;',
+                409
+            );
         }
 
         $content = file_get_contents('http://'.$host.'/'.$path);
@@ -1053,8 +1056,12 @@ class File
 
             // Set headers incl range info
             header('HTTP/1.1 206 Partial Content');
-            header(sprintf('Content-Range: bytes %d-%d/%d', $seekStart,
-                $seekEnd, $size));
+            header(sprintf(
+                'Content-Range: bytes %d-%d/%d',
+                $seekStart,
+                $seekEnd,
+                $size
+            ));
         } else {
             // Set headers for full file
             header('HTTP/1.1 200 OK');
@@ -1315,8 +1322,10 @@ class File
         header("Pragma: public");
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header("Accept-Ranges: bytes");
-        header("Content-Disposition: inline; filename=\"".pathinfo($file,
-                PATHINFO_BASENAME)."\"");
+        header("Content-Disposition: inline; filename=\"".pathinfo(
+            $file,
+            PATHINFO_BASENAME
+        )."\"");
         header("Content-Size: ".$finfo['filesize']);
         header("Content-Length: ".$finfo['filesize']);
         header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");

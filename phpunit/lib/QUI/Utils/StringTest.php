@@ -19,7 +19,6 @@ class StringTest extends PHPUnit_Framework_TestCase
             );
 
         } catch (\QUI\Exception $Exception) {
-
         }
 
 

@@ -37,7 +37,8 @@ class Zip
     {
         if (!class_exists('ZipArchive')) {
             throw new \QUI\Exception(
-                'Class ZipArchive not exist', 404
+                'Class ZipArchive not exist',
+                404
             );
         }
 

@@ -19,5 +19,4 @@ class QUIUtilsTextWordTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $list['Nikolaus']);
         $this->assertEquals(1, $list['Haus']);
     }
-
 }

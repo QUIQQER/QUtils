@@ -77,8 +77,6 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
         $fields = $Table->getFields($table);
 
         if ($DataBase->isSQLite()) {
-
-
         }
 
 
@@ -222,7 +220,6 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
             $this->fail('no exception on Table->create thrown.');
 
         } catch (\QUI\Database\Exception $Exception) {
-
         }
     }
 

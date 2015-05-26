@@ -2,7 +2,6 @@
 
 use QUI\Utils\Security\Orthos as Orthos;
 
-
 class OrthosTest extends PHPUnit_Framework_TestCase
 {
     public function testClear()
