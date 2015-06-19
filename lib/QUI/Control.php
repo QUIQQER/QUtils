@@ -33,6 +33,8 @@ class Control extends QDOM
      */
     public function create()
     {
+        $body = $this->getBody();
+
         $attributes = $this->getAttributes();
         $params = '';
 
@@ -74,9 +76,7 @@ class Control extends QDOM
             $nodeName = $this->getAttribute('nodeName');
         }
 
-        return "<{$nodeName} {$quiClass}{$params}>".
-        $this->getBody().
-        "</{$nodeName}>";
+        return "<{$nodeName} {$quiClass}{$params}>".$body."</{$nodeName}>";
     }
 
     /**
