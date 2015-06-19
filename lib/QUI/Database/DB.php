@@ -383,6 +383,8 @@ class DB extends QUI\QDOM
      * @param String  $query
      * @param Integer $FETCH_STYLE - \PDO::FETCH*
      *
+     * @throws QUI\Database\Exception
+     *
      * @return Array
      */
     public function fetchSQL($query, $FETCH_STYLE = \PDO::FETCH_ASSOC)
