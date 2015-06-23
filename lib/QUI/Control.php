@@ -6,6 +6,8 @@
 
 namespace QUI;
 
+use QUI\System\Log;
+
 /**
  * QUI Control
  * PHP counterpart to the \QUI\Control JavaScript class
@@ -14,6 +16,11 @@ namespace QUI;
  */
 class Control extends QDOM
 {
+    /**
+     * list of css classes
+     *
+     * @var array
+     */
     protected $_cssClasses = array();
 
     /**
@@ -70,13 +77,39 @@ class Control extends QDOM
             $quiClass .= 'class="'.implode($cssClasses, ' ').'" ';
         }
 
+
+        // nddes
         $nodeName = 'div';
 
         if ($this->getAttribute('nodeName')) {
             $nodeName = $this->getAttribute('nodeName');
         }
 
-        return "<{$nodeName} {$quiClass}{$params}>".$body."</{$nodeName}>";
+
+        // styles
+        $styleList = array();
+        $style = '';
+
+        if ($this->getAttribute('height')) {
+            $styleList['height'] = $this->_cssValueCheck($this->getAttribute('height'));
+        }
+
+        if ($this->getAttribute('width')) {
+            $styleList['width'] = $this->_cssValueCheck($this->getAttribute('width'));
+        }
+
+        if (!empty($styleList)) {
+
+            $style = 'style="';
+
+            foreach ($styleList as $key => $val) {
+                $style .= "{$key}:{$val};";
+            }
+
+            $style .= '" ';
+        }
+
+        return "<{$nodeName} {$style}{$quiClass}{$params}>{$body}</{$nodeName}>";
     }
 
     /**
@@ -115,11 +148,48 @@ class Control extends QDOM
     /**
      * Add a css file to the control
      *
-     * @param String $file
+     * @param string $file
      */
     public function addCSSFile($file)
     {
         Control\Manager::addCSSFile($file);
+    }
+
+    /**
+     * @param $val
+     *
+     * @return string
+     */
+    protected function _cssValueCheck($val)
+    {
+        $val = trim($val);
+
+        if (empty($val)) {
+            return '';
+        }
+
+        if (is_numeric($val)) {
+            return (string)$val.'px';
+        }
+
+        $units = array(
+            'px','cm','mm','mozmm','in','pt','pc','vh','vw','vm','vmin','vmax','rem',
+            '%','em','ex','ch','fr',
+            'deg','grad','rad','s','ms','turns','Hz','kHz'
+        );
+
+        $no = (int)$val;
+        $unit = str_replace($no, '', $val);
+
+        if (in_array($unit, $units)) {
+            return $no.$unit;
+        }
+
+        if (!empty($no) && empty($unit)) {
+            return $no.'px';
+        }
+
+        return '';
     }
 
     /**
