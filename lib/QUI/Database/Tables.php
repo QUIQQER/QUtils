@@ -184,12 +184,13 @@ class Tables
      *
      * @param String $table
      * @param Array  $fields
+     * @param String $engine
      *
      * @return Bool - if table exists or not
      * @throws QUI\Database\Exception
      * @todo check mysql injection
      */
-    public function create($table, $fields)
+    public function create($table, $fields, $engine = 'MYISAM')
     {
         if (!is_array($fields)) {
             throw new QUI\Database\Exception(
@@ -198,6 +199,24 @@ class Tables
         }
 
         $_table = $this->_clear($table);
+
+        switch ($engine) {
+            case 'InnoDB':
+            case 'MYISAM':
+            case 'Memory':
+            case 'Merge':
+            case 'Archive':
+            case 'Federated':
+            case 'NDB':
+            case 'CSV':
+            case 'Blackhole':
+            case 'Example':
+                break;
+
+            default:
+                $engine = 'MYISAM';
+                break;
+        }
 
         if ($this->_isSQLite()) {
             $sql = 'CREATE TABLE `'.$_table.'` (';
@@ -228,7 +247,7 @@ class Tables
         if ($this->_isSQLite()) {
             $sql .= ');';
         } else {
-            $sql .= ') ENGINE = MYISAM DEFAULT CHARSET = utf8;';
+            $sql .= ') ENGINE = '.$engine.' DEFAULT CHARSET = utf8;';
         }
 
         $this->_DB->getPDO()->exec($sql);
@@ -345,11 +364,12 @@ class Tables
      *
      * @param String $table
      * @param Array  $fields
+     * @param String $engine - optional, is only used when the table is created
      */
-    public function appendFields($table, $fields)
+    public function appendFields($table, $fields, $engine = 'MYISAM')
     {
         if ($this->exist($table) == false) {
-            $this->create($table, $fields);
+            $this->create($table, $fields, $engine);
 
             return;
         }
