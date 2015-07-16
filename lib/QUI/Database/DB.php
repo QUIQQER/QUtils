@@ -67,6 +67,26 @@ class DB extends QUI\QDOM
 
         $this->_PDO = $this->getNewPDO();
         $this->_PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        try {
+
+            $Date = new \DateTime();
+            $offset = $Date->getOffset();
+
+            $offsetHours = round(abs($offset) / 3600);
+            $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
+            $offsetString = ($offset < 0 ? '-' : '+');
+            $offsetString .= (strlen($offsetHours) < 2 ? '0' : '').$offsetHours;
+            $offsetString .= ':';
+            $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '')
+                .$offsetMinutes;
+
+            $this->_PDO->exec("SET time_zone = '{$offsetString}'");
+
+        } catch (\PDOException $Exception) {
+            QUI\System\Log::addError($Exception->getMessage());
+        }
+
         $this->Tables = new Tables($this);
     }
 
@@ -624,10 +644,19 @@ class DB extends QUI\QDOM
                         }
 
                         $sql .= $key.' = '.$value;
+                    } elseif (isset($value['type'])
+                        && ($value['type'] == '<'
+                            || $value['type'] == '>'
+                            || $value['type'] == '<='
+                            || $value['type'] == '>=')
+                    ) {
+                        $prepare['wherev'.$i] = $value['value'];
+                        $sql .= $key.' '.$value['type'].' :wherev'.$i;
 
                     } elseif (isset($value['type'])
                         && $value['type'] == 'NOT'
                     ) {
+
                         if (is_null($value['value'])) {
                             $sql .= $key.' IS NOT NULL ';
 
@@ -637,6 +666,7 @@ class DB extends QUI\QDOM
                         }
 
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
+
                         $sql .= $key.' IN (';
 
                         if (!is_array($value['value'])) {
@@ -661,6 +691,7 @@ class DB extends QUI\QDOM
                         $sql .= ') ';
 
                     } else {
+
                         if (!isset($value['type'])) {
                             $value['type'] = '';
                         }
