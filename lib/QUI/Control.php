@@ -6,7 +6,7 @@
 
 namespace QUI;
 
-use QUI\System\Log;
+use QUI;
 
 /**
  * QUI Control
@@ -40,7 +40,15 @@ class Control extends QDOM
      */
     public function create()
     {
-        $body = $this->getBody();
+        $body = '';
+
+        try
+        {
+            $body = $this->getBody();
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+
 
         $attributes = $this->getAttributes();
         $params = '';
