@@ -1013,6 +1013,7 @@ class File
      *
      * @param string $filePath
      * @param int    $rate speedlimit in KB/s
+     * @param string $downloadFileName (optional)
      *
      * @return void
      * @throws QUI\Exception
@@ -1020,15 +1021,20 @@ class File
      * found on:
      * http://www.phpgangsta.de/dateidownload-via-php-mit-speedlimit-und-resume
      */
-    static function send($filePath, $rate = 0)
+    static function send($filePath, $rate = 0, $downloadFileName = null)
     {
         // Check if file exists
         if (!is_file($filePath)) {
-            throw new QUI\Exception('File not found.');
+            throw new QUI\Exception('File not found.'); // #locale
         }
 
         // get more information about the file
         $filename = basename($filePath);
+
+        if (!empty($downloadFileName)) {
+            $filename = $downloadFileName;
+        }
+
         $size = filesize($filePath);
         $finfo = finfo_open(FILEINFO_MIME);
         $mimetype = finfo_file($finfo, realpath($filePath));
