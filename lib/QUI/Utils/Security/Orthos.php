@@ -7,6 +7,7 @@
 namespace QUI\Utils\Security;
 
 use QUI\Utils\String as QUIString;
+use QUI\Utils\String;
 
 /**
  * Orthos - Security class
@@ -446,5 +447,40 @@ class Orthos
         );
 
         return $value;
+    }
+
+    /**
+     * Encodes a string for safe and unambiguous url use
+     *
+     * @param $str
+     * @param string $replace - replacement character for unsafe / ambiguous characters
+     * @return string - filtered string
+     */
+    static function urlEncodeString($str, $replace = "-")
+    {
+        if (!is_string($replace)) {
+            $replace = "-";
+        }
+
+        // special reserved url characters
+        // @see https://de.wikipedia.org/wiki/URL-Encoding#Relevante_ASCII-Zeichen_in_.25-Darstellung
+        $reservedChars = array(
+            "!", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "/", ":",
+            ";", "=", "?", "@", "[", "]"
+        );
+
+        // replace special chars with replacement character
+        $str = str_replace($reservedChars, $replace, $str);
+
+        // filter non-letters and non-numbers and non-allowed url characters
+        $str = preg_replace('#[^\p{L}\d-_.~]+#iu', $replace, $str);
+
+        // trim outer and double replacement characters
+        $str = trim($str, $replace);
+
+        // reduce multiple replacement chars in a row
+        $str = preg_replace('#\\' . $replace . '{2,}#i', $replace, $str);
+
+        return String::toLower($str);
     }
 }
