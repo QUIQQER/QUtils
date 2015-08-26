@@ -142,6 +142,28 @@ class Control extends QDOM
     }
 
     /**
+     * Set the binded javascript control
+     *
+     * @param String $control
+     */
+    public function setJavaScriptControl($control)
+    {
+        $this->setAttribute('qui-class', $control);
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function setJavaScriptControlOption($name, $value)
+    {
+        $this->setAttribute(
+            'data-qui-options-'.$name,
+            $value
+        );
+    }
+
+    /**
      * Remove a css class from the CSS list
      *
      * @param String $cssClass
