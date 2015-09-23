@@ -15,11 +15,15 @@ namespace QUI;
 class ExceptionStack extends Exception
 {
     /**
+     * Container for exceptions
+     *
      * @var array
      */
     protected $_list = array();
 
     /**
+     * Adds an exception to the stack
+     *
      * @param Exception $Exception
      */
     public function addException($Exception)
@@ -28,6 +32,8 @@ class ExceptionStack extends Exception
     }
 
     /**
+     * Returns current list with collected exceptions
+     *
      * @return array
      */
     public function getExceptionList()
@@ -36,6 +42,7 @@ class ExceptionStack extends Exception
     }
 
     /**
+     * Checks if the exception is empty
      *
      * @return bool
      */
