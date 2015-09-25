@@ -11,10 +11,10 @@ namespace QUI\Utils\Translation;
  *
  * Easier access to gettext for QUIQQER
  *
- * @author www.pcsg.de (Henning Leutz)
+ * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qui.utils.translation
  *
- * @uses gettext
+ * @uses    gettext
  */
 
 class GetText extends \QUI\QDOM
@@ -30,11 +30,12 @@ class GetText extends \QUI\QDOM
     {
         $this->setAttribute(
             'locale',
-            \QUI\Utils\String::toLower($lang) .'_'. \QUI\Utils\String::toUpper($lang)
+            \QUI\Utils\String::toLower($lang).'_'
+            .\QUI\Utils\String::toUpper($lang)
         );
 
-        $this->setAttribute( 'domain', str_replace('/', '_', $domain) );
-        $this->setAttribute( 'dir', $dir );
+        $this->setAttribute('domain', str_replace('/', '_', $domain));
+        $this->setAttribute('dir', $dir);
     }
 
     /**
@@ -45,7 +46,8 @@ class GetText extends \QUI\QDOM
     public function fileExist()
     {
         return file_exists(
-            $this->getAttribute('dir') .'de_DE/LC_MESSAGES/'. $this->getAttribute('domain') .'.mo'
+            $this->getAttribute('dir').'de_DE/LC_MESSAGES/'
+            .$this->getAttribute('domain').'.mo'
         );
     }
 
@@ -53,6 +55,7 @@ class GetText extends \QUI\QDOM
      * Get the translation
      *
      * @param String $key
+     *
      * @return String
      */
     public function get($key)
@@ -80,7 +83,10 @@ class GetText extends \QUI\QDOM
         );
         */
 
-        bindtextdomain($this->getAttribute('domain'), $this->getAttribute('dir'));
+        bindtextdomain(
+            $this->getAttribute('domain'),
+            $this->getAttribute('dir')
+        );
         bind_textdomain_codeset($this->getAttribute('domain'), 'UTF-8');
 
         textdomain($this->getAttribute('domain'));

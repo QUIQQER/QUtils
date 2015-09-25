@@ -9,15 +9,15 @@ namespace QUI\Utils\Translation;
 /**
  * Easier Access to pspell
  *
- * @author www.pcsg.de (Henning Leutz)
+ * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qui.utils.translation
  *
- * @uses pspell
- * @todo check it, class is at the moment not in use
+ * @uses    pspell
+ * @todo    check it, class is at the moment not in use
  *
  * @example $Trans = new \QUI\Utils\Translation\PSpell(array(
- * 		'lang'    => 'en',
- * 		'dialect' => 'american'
+ *        'lang'    => 'en',
+ *        'dialect' => 'american'
  * ));
  *
  * $Trans->translate('House');
@@ -27,6 +27,7 @@ class PSpell extends \QUI\QDOM
 {
     /**
      * internal pspell object
+     *
      * @var $_Spell
      */
     protected $_Spell;
@@ -35,10 +36,10 @@ class PSpell extends \QUI\QDOM
      * Constructor
      *
      * @param array $settings - array(
-     * 		lang
-     *  	dialect
-     *  	personal
-     * );
+     *                        lang
+     *                        dialect
+     *                        personal
+     *                        );
      */
     public function __construct(array $settings)
     {
@@ -72,8 +73,8 @@ class PSpell extends \QUI\QDOM
      */
     static function check()
     {
-        if ( !function_exists( 'pspell_new' ) ) {
-            throw new \QUI\Exception( 'PSpell is not installed' );
+        if (!function_exists('pspell_new')) {
+            throw new \QUI\Exception('PSpell is not installed');
         }
 
         return true;
@@ -83,10 +84,11 @@ class PSpell extends \QUI\QDOM
      * Translate a String
      *
      * @param string $word
+     *
      * @return string
      */
     public function translate($word)
     {
-        return pspell_suggest( $this->_Spell, $word );
+        return pspell_suggest($this->_Spell, $word);
     }
 }

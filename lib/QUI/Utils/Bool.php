@@ -9,7 +9,7 @@ namespace QUI\Utils;
 /**
  * Helper for bool type handling
  *
- * @author www.pcsg.de (Henning Leutz
+ * @author  www.pcsg.de (Henning Leutz
  * @package com.pcsg.qui.utils
  */
 
@@ -17,6 +17,7 @@ class Bool
 {
     /**
      * internal var
+     *
      * @var String|Bool
      */
     public $_bool;
@@ -35,28 +36,28 @@ class Bool
      * Converts JavaScript Boolean values ​​for PHP
      *
      * @param String|Bool $value
+     *
      * @return Bool
      */
     static function JSBool($value)
     {
-         if ( is_bool( $value ) ) {
+        if (is_bool($value)) {
             return $value;
         }
 
-        if ( is_integer( $value ) )
-        {
-            if ( $value == 1 ) {
+        if (is_integer($value)) {
+            if ($value == 1) {
                 return true;
             }
 
             return false;
         }
 
-        if ( $value == 'true' || $value == '1' ) {
+        if ($value == 'true' || $value == '1') {
             return true;
         }
 
-        if ( $value == 'false' || $value == '0' ) {
+        if ($value == 'false' || $value == '0') {
             return false;
         }
 

@@ -9,7 +9,7 @@ namespace QUI\Utils;
 /**
  * Helper class for the system variables
  *
- * @author www.pcsg.de (Henning Leutz)
+ * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
  */
 
@@ -17,6 +17,7 @@ class System
 {
     /**
      * The max memory limit for memUsageToHigh(), look at ::memUsageToHigh()
+     *
      * @var Integer
      */
     static $memory_limit = 128;
@@ -29,7 +30,7 @@ class System
      */
     static function getProtocol()
     {
-        if ( self::isProtocolSecure() ) {
+        if (self::isProtocolSecure()) {
             return 'https://';
         }
 
@@ -38,25 +39,24 @@ class System
 
     /**
      * Return true if the used protocol is https
+     *
      * @return boolean
      */
     static function isProtocolSecure()
     {
-        if ( isset( $_SERVER['HTTPS'] ) )
-        {
-            $https = strtolower( $_SERVER['HTTPS'] );
+        if (isset($_SERVER['HTTPS'])) {
+            $https = strtolower($_SERVER['HTTPS']);
 
-            if ( $https == 'on' ) {
+            if ($https == 'on') {
                 return true;
             }
 
-            if ( $https == '1' ) {
+            if ($https == '1') {
                 return true;
             }
 
-        } elseif ( isset( $_SERVER['SERVER_PORT'] ) )
-        {
-            if ( $_SERVER['SERVER_PORT'] == '443' ) {
+        } elseif (isset($_SERVER['SERVER_PORT'])) {
+            if ($_SERVER['SERVER_PORT'] == '443') {
                 return true;
             }
         }
@@ -87,16 +87,16 @@ class System
      */
     static function memUsageToHigh()
     {
-        if ( !self::$memory_limit ) {
+        if (!self::$memory_limit) {
             return false;
         }
 
         // 80% abfragen
         $usage = (int)(memory_get_usage() / 1024 / 1000); // in MB
-        $max   = (int)self::$memory_limit;
-        $_max  = $max / 100 * 80; // 80%
+        $max = (int)self::$memory_limit;
+        $_max = $max / 100 * 80; // 80%
 
-        if ( $_max < $usage ) {
+        if ($_max < $usage) {
             return true;
         }
 
@@ -111,11 +111,11 @@ class System
     static function getClientIP()
     {
         // durch proxy
-        if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             return $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
 
-        if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+        if (isset($_SERVER['REMOTE_ADDR'])) {
             return $_SERVER['REMOTE_ADDR'];
         }
 
@@ -126,10 +126,12 @@ class System
      * Check if a shell function is callable
      *
      * @param String $func - Name of the shell function, eq: ls
+     *
      * @return Bool
      */
     static function isShellFunctionEnabled($func)
     {
-        return is_callable($func) && false === stripos(ini_get('disable_functions'), $func);
+        return is_callable($func)
+        && false === stripos(ini_get('disable_functions'), $func);
     }
 }

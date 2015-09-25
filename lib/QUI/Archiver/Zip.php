@@ -11,9 +11,9 @@ namespace QUI\Archiver;
  * zip and unzip files
  *
  * @copyright www.pcsg.de (Henning Leutz)
- * @uses ZipArchive
+ * @uses      ZipArchive
  *
- * @package com.pcsg.qui.utils.packer
+ * @package   com.pcsg.qui.utils.packer
  */
 
 class Zip
@@ -35,10 +35,10 @@ class Zip
      */
     static function check()
     {
-        if ( !class_exists( 'ZipArchive' ) )
-        {
+        if (!class_exists('ZipArchive')) {
             throw new \QUI\Exception(
-                'Class ZipArchive not exist', 404
+                'Class ZipArchive not exist',
+                404
             );
         }
 
@@ -48,45 +48,42 @@ class Zip
     /**
      * From a folder created a ZIP Archive
      *
-     * @param String $folder 	- Folder which is to be packed
-     * @param String $zipfile 	- Name of new Zipfiles
-     * @param Array $ignore 	- Folder to be ignored
+     * @param String $folder  - Folder which is to be packed
+     * @param String $zipfile - Name of new Zipfiles
+     * @param Array  $ignore  - Folder to be ignored
      */
-    static function zip($folder, $zipfile, $ignore=array())
+    static function zip($folder, $zipfile, $ignore = array())
     {
         self::check();
 
         $Zip = new \ZipArchive();
 
-        if ( $Zip->open( $zipfile, \ZIPARCHIVE::CREATE ) !== true ) {
-            throw new \QUI\Exception( 'cannot open '. $zipfile );
+        if ($Zip->open($zipfile, \ZIPARCHIVE::CREATE) !== true) {
+            throw new \QUI\Exception('cannot open '.$zipfile);
         }
 
-        if ( !is_array( $ignore ) ) {
+        if (!is_array($ignore)) {
             $ignore = array();
         }
 
-        if ( substr($folder, -1) != '/' ) {
+        if (substr($folder, -1) != '/') {
             $folder .= '/';
         }
 
-        $File  = new \QUI\Utils\System\File();
-        $files = $File->readDirRecursiv( $folder );
+        $File = new \QUI\Utils\System\File();
+        $files = $File->readDirRecursiv($folder);
 
-        foreach ( $files as $_folder => $_file )
-        {
-            if ( !empty( $ignore ) && in_array( $_folder, $ignore ) ) {
+        foreach ($files as $_folder => $_file) {
+            if (!empty($ignore) && in_array($_folder, $ignore)) {
                 continue;
             }
 
             $oldfolder = $folder.$_folder;
 
-            for ( $i = 0, $len = count($_file); $i < $len; $i++ )
-            {
-                if ( file_exists( $oldfolder . $_file[$i] ) )
-                {
+            for ($i = 0, $len = count($_file); $i < $len; $i++) {
+                if (file_exists($oldfolder.$_file[$i])) {
                     $Zip->addFile(
-                        $oldfolder . $_file[$i],
+                        $oldfolder.$_file[$i],
                         $_folder.$_file[$i]
                     );
                 }
@@ -99,8 +96,8 @@ class Zip
     /**
      * Unzip the file
      *
-     * @param String $zipfile 	- path to zip file
-     * @param String $to		- path to the destination folder
+     * @param String $zipfile - path to zip file
+     * @param String $to      - path to the destination folder
      *
      * @throws \QUI\Exception
      */
@@ -108,24 +105,22 @@ class Zip
     {
         self::check();
 
-        if ( !file_exists( $zipfile ) )
-        {
+        if (!file_exists($zipfile)) {
             throw new \QUI\Exception(
-                'Zip Archive '. $zipfile .' doesn\'t exist',
+                'Zip Archive '.$zipfile.' doesn\'t exist',
                 404
             );
         }
 
         $Zip = new \ZipArchive();
 
-        if ( $Zip->open( $zipfile ) === true )
-        {
-            $Zip->extractTo( $to );
+        if ($Zip->open($zipfile) === true) {
+            $Zip->extractTo($to);
             $Zip->close();
 
             return;
         }
 
-        throw new \QUI\Exception( 'Error on Extract Zip Archive' );
+        throw new \QUI\Exception('Error on Extract Zip Archive');
     }
 }

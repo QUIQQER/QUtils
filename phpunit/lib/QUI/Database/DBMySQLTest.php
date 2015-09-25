@@ -19,8 +19,7 @@ class DBMySQLTest extends DB_Test_Methods
 
     public function testDBException()
     {
-        try
-        {
+        try {
             $DataBase = new DB(array(
                 'driver'   => $GLOBALS['DB_DRIVER'],
                 'host'     => $GLOBALS['DB_HOST'],
@@ -29,11 +28,9 @@ class DBMySQLTest extends DB_Test_Methods
                 'dbname'   => $GLOBALS['DB_DBNAME']
             ));
 
-            $this->fail( 'no exception thrown by bad DB data' );
+            $this->fail('no exception thrown by bad DB data');
 
-        } catch ( \QUI\Database\Exception $Exception )
-        {
-
+        } catch (\QUI\Database\Exception $Exception) {
         }
     }
 

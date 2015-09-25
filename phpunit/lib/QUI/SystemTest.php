@@ -2,39 +2,39 @@
 
 class SystemTest extends PHPUnit_Framework_TestCase
 {
-    static function testGetProtocol()
+    public function testGetProtocol()
     {
         $protocol = \QUI\Utils\System::getProtocol();
 
-        if ( $protocol !== 'http://' && $protocol !== 'https://' ) {
-            $this->fail( 'unknown protocol' );
+        if ($protocol !== 'http://' && $protocol !== 'https://') {
+            $this->fail('unknown protocol');
         }
 
         $_SERVER['HTTPS'] = 'on';
-        $protocol         = \QUI\Utils\System::getProtocol();
+        $protocol = \QUI\Utils\System::getProtocol();
 
-        if ( $protocol !== 'https://' ) {
-            $this->fail( 'no https' );
+        if ($protocol !== 'https://') {
+            $this->fail('no https');
         }
     }
 
-    static function testGetUploadMaxFileSize()
+    public function testGetUploadMaxFileSize()
     {
         $max = \QUI\Utils\System::getUploadMaxFileSize();
 
-        if ( !$max ) {
-            $this->fail( 'something went wrong at \QUI\Utils\System::getUploadMaxFileSize' );
+        if (!$max) {
+            $this->fail('something went wrong at \QUI\Utils\System::getUploadMaxFileSize');
         }
     }
 
-    static function testMemUsageToHigh()
+    public function testMemUsageToHigh()
     {
-        if ( \QUI\Utils\System::memUsageToHigh() ) {
-            $this->fail( 'memUsageToHigh is to high' );
+        if (\QUI\Utils\System::memUsageToHigh()) {
+            $this->fail('memUsageToHigh is to high');
         }
     }
 
-    static function testGetClientIP()
+    public function testGetClientIP()
     {
         $cl_ip = \QUI\Utils\System::getClientIP();
 
