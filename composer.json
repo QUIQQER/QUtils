@@ -1,9 +1,9 @@
 {
     "name" : "quiqqer/utils",
     "type" : "library",
-    "description" : "QUIQQER Utils - Helper Classes",
-    "version" : "dev-master",
-    "license" : "GPL-3.0+",
+    "description" : "QUIQQER Utils - helper Classes",
+    "version" : "dev-dev",
+    "license" : "LGPL-3.0+",
 
     "authors" : [{
         "name": "Henning Leutz",
