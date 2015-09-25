@@ -501,7 +501,7 @@ class File
             $size /= 1024;
         }
 
-        return round($size, $round).' '.$sizes[$i];
+        return round($size, $round) . ' ' . $sizes[$i];
     }
 
     /**
@@ -516,7 +516,7 @@ class File
         $last = '';
 
         if (is_string($val)) {
-            $val = trim($val);
+            $val  = trim($val);
             $last = strtolower(mb_substr($val, -1));
         }
 
@@ -557,11 +557,11 @@ class File
 
         // create a var_dir temp folder
         $var_folder
-            = VAR_DIR.'tmp/'.str_replace(array(' ', '.'), '', microtime());
+            = VAR_DIR . 'tmp/' . str_replace(array(' ', '.'), '', microtime());
 
         while (file_exists($var_folder)) {
             $var_folder
-                = VAR_DIR.'tmp/'.str_replace(array(' ', '.'), '', microtime());
+                = VAR_DIR . 'tmp/' . str_replace(array(' ', '.'), '', microtime());
         }
 
         // move to var dir, its faster
@@ -572,7 +572,7 @@ class File
      * Move a file
      *
      * @param String $from - original file
-     * @param String $to   - target
+     * @param String $to - target
      *
      * @return Bool
      * @throws QUI\Exception
@@ -586,7 +586,7 @@ class File
         }
 
         throw new QUI\Exception(
-            "Can't move File: ".$from.' -> '.$to,
+            "Can't move File: " . $from . ' -> ' . $to,
             500
         );
     }
@@ -605,14 +605,14 @@ class File
     {
         if (file_exists($to)) {
             throw new QUI\Exception(
-                'Can\'t copy File. File exists '.$to,
+                'Can\'t copy File. File exists ' . $to,
                 500
             );
         }
 
         if (!file_exists($from)) {
             throw new QUI\Exception(
-                'Can\'t copy File. File not exists '.$from,
+                'Can\'t copy File. File not exists ' . $from,
                 500
             );
         }
@@ -623,8 +623,8 @@ class File
     /**
      * Get information about the file
      *
-     * @param String $file   - Path to file
-     * @param Array  $params - (optional) ->
+     * @param String $file - Path to file
+     * @param Array $params - (optional) ->
      *                       filesize=Dateigrösse;
      *                       imagesize=Bildgrösse;
      *                       mime_type=mime_type
@@ -636,8 +636,8 @@ class File
     {
         if (!file_exists($file)) {
             throw new QUI\Exception(
-                'QUI\Utils\System\File::getInfo()  File "'.$file
-                .'" does not exist',
+                'QUI\Utils\System\File::getInfo()  File "' . $file
+                . '" does not exist',
                 500
             );
         }
@@ -678,7 +678,7 @@ class File
         if (isset($params['imagesize']) || $params == false) {
             $r = getimagesize($file);
 
-            $info['width'] = $r[0];
+            $info['width']  = $r[0];
             $info['height'] = $r[1];
         }
 
@@ -686,17 +686,17 @@ class File
             if (function_exists('mime_content_type')) { // PHP interne Funktionen
                 $info['mime_type'] = mime_content_type($file);
             } elseif (function_exists('finfo_open')
-                && function_exists('finfo_file')
+                      && function_exists('finfo_file')
             ) { // PECL
-                $finfo = finfo_open(FILEINFO_MIME);
-                $part = explode(';', finfo_file($finfo, $file));
+                $finfo             = finfo_open(FILEINFO_MIME);
+                $part              = explode(';', finfo_file($finfo, $file));
                 $info['mime_type'] = $part[0];
             }
 
             // Falls beides nicht vorhanden ist
             // BAD
             if (!isset($info['mime_type']) || empty($info['mime_type'])) {
-                $file = strtolower($file);
+                $file     = strtolower($file);
                 $mimtypes = self::getMimeTypes();
 
                 if (isset($mimtypes[strrchr($file, '.')])) {
@@ -733,8 +733,8 @@ class File
     /**
      * Bildgrösse ändern
      *
-     * @param String  $original  - Pfad zum original Bild
-     * @param String  $new_image - Pfad zum neuen Bild
+     * @param String $original - Pfad zum original Bild
+     * @param String $new_image - Pfad zum neuen Bild
      * @param Integer $new_width
      * @param Integer $new_height
      *
@@ -758,9 +758,9 @@ class File
     /**
      * Legt ein Wasserzeichen auf ein Bild
      *
-     * @param String  $image     - Bild welches verändert werden soll
-     * @param String  $watermark - Wasserzeichen
-     * @param String  $newImage
+     * @param String $image - Bild welches verändert werden soll
+     * @param String $watermark - Wasserzeichen
+     * @param String $newImage
      * @param Integer $top
      * @param Integer $left
      *
@@ -802,7 +802,7 @@ class File
             return array();
         }
 
-        $dh = opendir($path);
+        $dh     = opendir($path);
         $result = array();
 
         while (($file = readdir($dh)) !== false) {
@@ -830,8 +830,8 @@ class File
     /**
      * Dateien rekursiv aus einem Ordner lesen
      *
-     * @param String $folder  - Pfad zum Ordner
-     * @param Bool   $flatten - no assoziativ folder array, return the array as flat array
+     * @param String $folder - Pfad zum Ordner
+     * @param Bool $flatten - no assoziativ folder array, return the array as flat array
      *
      * @return Array
      */
@@ -841,7 +841,7 @@ class File
             $folder .= '/';
         }
 
-        $this->_files = array();
+        $this->_files        = array();
         $this->_start_folder = $folder;
 
         $this->_readDirRecursiv($folder);
@@ -853,7 +853,7 @@ class File
 
             foreach ($this->_files as $dir => $files) {
                 foreach ($files as $file) {
-                    $list[] = $dir.$file;
+                    $list[] = $dir . $file;
                 }
             }
 
@@ -870,7 +870,7 @@ class File
      */
     private function _readDirRecursiv($folder)
     {
-        $_f = $this->readDir($folder);
+        $_f   = $this->readDir($folder);
         $_tmp = str_replace($this->_start_folder, '', $folder);
 
         foreach ($_f as $f) {
@@ -878,10 +878,10 @@ class File
                 $folder .= '/';
             }
 
-            $dir = $folder.$f;
+            $dir = $folder . $f;
 
             if (is_dir($dir)) {
-                $this->_readDirRecursiv($dir.'/');
+                $this->_readDirRecursiv($dir . '/');
             } else {
                 if ($folder == $this->_start_folder) {
                     $this->_files['/'][] = $f;
@@ -895,9 +895,9 @@ class File
     /**
      * Dateien eines Ordners auf dem Filesystem lesen
      *
-     * @param String $folder        - Ordner welcher ausgelesen werdens oll
-     * @param Bool   $only_files    - Nur Dateien auslesen
-     * @param Bool   $order_by_date - Nach Daum sortiert zurück geben
+     * @param String $folder - Ordner welcher ausgelesen werdens oll
+     * @param Bool $only_files - Nur Dateien auslesen
+     * @param Bool $order_by_date - Nach Daum sortiert zurück geben
      *
      * @return Array
      */
@@ -910,10 +910,10 @@ class File
             return array();
         }
 
-        $folder = '/'.trim($folder, '/').'/';
+        $folder = '/' . trim($folder, '/') . '/';
 
         $handle = opendir($folder);
-        $files = array();
+        $files  = array();
 
         while ($file = readdir($handle)) {
             if ($file == "." || $file == "..") {
@@ -921,19 +921,19 @@ class File
             }
 
             if ($only_files == true) {
-                if (is_file($folder.$file) && $order_by_date == false) {
+                if (is_file($folder . $file) && $order_by_date == false) {
                     array_push($files, $file);
                 }
 
-                if (is_file($folder.$file) && $order_by_date == true) {
-                    $files[filemtime($folder.$file)] = $file;
+                if (is_file($folder . $file) && $order_by_date == true) {
+                    $files[filemtime($folder . $file)] = $file;
                 }
 
                 continue;
             }
 
             if ($order_by_date == true) {
-                $files[filemtime($folder.$file)] = $file;
+                $files[filemtime($folder . $file)] = $file;
                 continue;
             }
 
@@ -968,7 +968,7 @@ class File
             }
 
             $dirs = self::deleteDir(
-                $dir.DIRECTORY_SEPARATOR.$item
+                $dir . DIRECTORY_SEPARATOR . $item
             );
 
             if (!$dirs) {
@@ -998,7 +998,7 @@ class File
             );
         }
 
-        $content = file_get_contents('http://'.$host.'/'.$path);
+        $content = file_get_contents('http://' . $host . '/' . $path);
         file_put_contents($local, $content);
 
         if (file_exists($local)) {
@@ -1012,7 +1012,7 @@ class File
      * Send a file as download to the browser (maybe limited in speed)
      *
      * @param string $filePath
-     * @param int    $rate speedlimit in KB/s
+     * @param int $rate speedlimit in KB/s
      * @param string $downloadFileName (optional)
      *
      * @return void
@@ -1035,8 +1035,8 @@ class File
             $filename = $downloadFileName;
         }
 
-        $size = filesize($filePath);
-        $finfo = finfo_open(FILEINFO_MIME);
+        $size     = filesize($filePath);
+        $finfo    = finfo_open(FILEINFO_MIME);
         $mimetype = finfo_file($finfo, realpath($filePath));
 
         finfo_close($finfo);
@@ -1045,12 +1045,12 @@ class File
         $fp = fopen($filePath, 'rb');
 
         $seekStart = 0;
-        $seekEnd = $size;
+        $seekEnd   = $size;
 
         // Check if only a specific part should be sent
         if (isset($_SERVER['HTTP_RANGE'])) {
             // If so, calculate the range to use
-            $range = explode('-', substr($_SERVER['HTTP_RANGE'], 6));
+            $range     = explode('-', substr($_SERVER['HTTP_RANGE'], 6));
             $seekStart = intval($range[0]);
 
             if ($range[1] > 0) {
@@ -1075,14 +1075,14 @@ class File
 
         // Output some headers
         header('Cache-Control: private');
-        header('Content-Type: '.$mimetype);
-        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        header('Content-Type: ' . $mimetype);
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Content-Transfer-Encoding: binary');
         header("Content-Description: File Transfer");
-        header('Content-Length: '.($seekEnd - $seekStart));
+        header('Content-Length: ' . ($seekEnd - $seekStart));
         header('Accept-Ranges: bytes');
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($filePath))
-            .' GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($filePath))
+               . ' GMT');
 
         $block = 1024;
         // limit download speed
@@ -1123,20 +1123,20 @@ class File
         QUI\Utils\System\File::mkdir($dstdir);
 
         if (substr($dstdir, -1) != '/') {
-            $dstdir = $dstdir.'/';
+            $dstdir = $dstdir . '/';
         }
 
-        $File = new QUI\Utils\System\File();
-        $Files = $File->readDirRecursiv($srcdir);
+        $File   = new QUI\Utils\System\File();
+        $Files  = $File->readDirRecursiv($srcdir);
         $errors = array();
 
         foreach ($Files as $folder => $file) {
-            $File->mkdir($dstdir.$folder);
+            $File->mkdir($dstdir . $folder);
 
             // files kopieren
             for ($i = 0, $len = count($file); $i < $len; $i++) {
-                $from = $srcdir.$folder.$file[$i];
-                $to = $dstdir.$folder.$file[$i];
+                $from = $srcdir . $folder . $file[$i];
+                $to   = $dstdir . $folder . $file[$i];
 
                 try {
                     self::copy($from, $to);
@@ -1172,11 +1172,11 @@ class File
             $path = substr($path, 0, -1);
         }
 
-        $p_e = explode('/', $path);
+        $p_e   = explode('/', $path);
         $p_tmp = '';
 
         for ($i = 0, $len = count($p_e); $i < $len; $i++) {
-            $p_tmp .= '/'.$p_e[$i];
+            $p_tmp .= '/' . $p_e[$i];
 
             if ($p_tmp == '/') {
                 continue;
@@ -1251,7 +1251,7 @@ class File
     {
         $fp = fopen($file, 'a');
 
-        fwrite($fp, $line."\n");
+        fwrite($fp, $line . "\n");
         fclose($fp);
     }
 
@@ -1291,7 +1291,7 @@ class File
     static function downloadHeader($file)
     {
         if (!file_exists($file)) {
-            throw new QUI\Exception('File not exist '.$file, 404);
+            throw new QUI\Exception('File not exist ' . $file, 404);
         }
 
         $finfo = self::getInfo($file);
@@ -1299,9 +1299,9 @@ class File
         header('Expires: Thu, 19 Nov 1981 08:52:00 GMT');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: no-cache');
-        header('Content-type: application/'.$finfo['extension']);
-        header('Content-Disposition: attachment; filename="'.basename($file)
-            .'"');
+        header('Content-type: application/' . $finfo['extension']);
+        header('Content-Disposition: attachment; filename="' . basename($file)
+               . '"');
 
         // Inhalt des gespeicherten Dokuments senden
         readfile($file);
@@ -1318,23 +1318,23 @@ class File
     static function fileHeader($file)
     {
         if (!file_exists($file)) {
-            throw new QUI\Exception('File not exist '.$file, 404);
+            throw new QUI\Exception('File not exist ' . $file, 404);
         }
 
         $finfo = self::getInfo($file);
 
-        header("Content-Type: ".$finfo['mime_type']);
-        header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
+        header("Content-Type: " . $finfo['mime_type']);
+        header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
         header("Pragma: public");
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header("Accept-Ranges: bytes");
-        header("Content-Disposition: inline; filename=\"".pathinfo(
-            $file,
-            PATHINFO_BASENAME
-        )."\"");
-        header("Content-Size: ".$finfo['filesize']);
-        header("Content-Length: ".$finfo['filesize']);
-        header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+        header("Content-Disposition: inline; filename=\"" . pathinfo(
+                $file,
+                PATHINFO_BASENAME
+            ) . "\"");
+        header("Content-Size: " . $finfo['filesize']);
+        header("Content-Length: " . $finfo['filesize']);
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
         header("Connection: Keep-Alive");
 
         $fo_file = fopen($file, "r");

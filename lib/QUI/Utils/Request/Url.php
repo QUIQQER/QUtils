@@ -26,15 +26,15 @@ class Url
     /**
      * Get the Curl Objekt
      *
-     * @param String $url        - Url
-     * @param array  $curlparams - Curl parameter
+     * @param String $url - Url
+     * @param array $curlparams - Curl parameter
      *
      * @return resource
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
     static function Curl($url, $curlparams = array())
     {
-        $hash = md5(serialize($url).serialize($curlparams));
+        $hash = md5(serialize($url) . serialize($curlparams));
 
         if (isset(self::$Curls[$hash]) && self::$Curls[$hash]) {
             return self::$Curls[$hash];
@@ -64,7 +64,7 @@ class Url
      * Get the content from a url
      *
      * @param String $url
-     * @param array  $curlparams - see Utils_Request_Url::Curl (optional)
+     * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *
      * @return array
      * @throws \QUI\Exception
@@ -77,7 +77,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new QUI\Exception('Fehler bei der Anfrage '.$error);
+            throw new QUI\Exception('Fehler bei der Anfrage ' . $error);
         }
 
         curl_close($Curl);
@@ -90,7 +90,7 @@ class Url
      *
      * @param String $url
      * @param String $search
-     * @param array  $curlparams - siehe Utils_Request_Url::Curl (optional)
+     * @param array $curlparams - siehe Utils_Request_Url::Curl (optional)
      *
      * @return Bool
      */
@@ -105,8 +105,8 @@ class Url
      * Get a header information of the url
      *
      * @param String $url
-     * @param bool   $info
-     * @param array  $curlparams - see Utils_Request_Url::Curl (optional)
+     * @param bool $info
+     * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *
      * @return mixed
      * @throws \QUI\Exception
@@ -124,7 +124,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new QUI\Exception('Fehler bei der Anfrage '.$error);
+            throw new QUI\Exception('Fehler bei der Anfrage ' . $error);
         }
 
         curl_close($Curl);
@@ -145,7 +145,7 @@ class Url
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);
 
             $newurl = curl_getinfo($Curl, CURLINFO_EFFECTIVE_URL);
-            $rch = curl_copy_handle($Curl);
+            $rch    = curl_copy_handle($Curl);
 
             curl_setopt($rch, CURLOPT_HEADER, true);
             curl_setopt($rch, CURLOPT_NOBODY, true);

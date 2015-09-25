@@ -93,8 +93,8 @@ class System
 
         // 80% abfragen
         $usage = (int)(memory_get_usage() / 1024 / 1000); // in MB
-        $max = (int)self::$memory_limit;
-        $_max = $max / 100 * 80; // 80%
+        $max   = (int)self::$memory_limit;
+        $_max  = $max / 100 * 80; // 80%
 
         if ($_max < $usage) {
             return true;
@@ -132,6 +132,6 @@ class System
     static function isShellFunctionEnabled($func)
     {
         return is_callable($func)
-        && false === stripos(ini_get('disable_functions'), $func);
+               && false === stripos(ini_get('disable_functions'), $func);
     }
 }

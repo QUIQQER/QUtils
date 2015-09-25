@@ -13,6 +13,7 @@ namespace QUI;
  *
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
+ * @deprecated
  */
 
 class Log
@@ -20,30 +21,30 @@ class Log
     /**
      * Writes an String to a log file
      *
-     * @param String $message  - String to write
+     * @param String $message - String to write
      * @param String $filename - Filename (eq: messages, error, database)
      */
     static function write($message, $filename = 'messages')
     {
         if (!defined('VAR_DIR')) {
-            error_log($message."\n", 3);
+            error_log($message . "\n", 3);
 
             return;
         }
 
-        $dir = VAR_DIR.'log/';
-        $file = $dir.$filename.date('-Y-m-d').'.log';
+        $dir  = VAR_DIR . 'log/';
+        $file = $dir . $filename . date('-Y-m-d') . '.log';
 
         // Log Verzeichnis erstellen
         Utils\System\File::mkdir($dir);
 
-        error_log($message."\n", 3, $file);
+        error_log($message . "\n", 3, $file);
     }
 
     /**
      * Writes with print_r the object into a log file
      *
-     * @param mixed  $object
+     * @param mixed $object
      * @param String $filename
      */
     static function writeRecursive($object, $filename = 'messages')
@@ -55,11 +56,11 @@ class Log
      * Writes an Exception to a log file
      *
      * @param \Exception|\QUI\Exception $Exception
-     * @param String                    $filename
+     * @param String $filename
      */
     static function writeException($Exception, $filename = 'error')
     {
-        $message = $Exception->getCode()." :: \n\n";
+        $message = $Exception->getCode() . " :: \n\n";
         $message .= $Exception->getMessage();
 
         self::write($message, $filename);

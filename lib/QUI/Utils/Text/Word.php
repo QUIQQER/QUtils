@@ -425,7 +425,7 @@ class Word
         );
 
         foreach ($endings as $search) {
-            if (preg_match('/(.*?)'.$search.'$/i', $word)) {
+            if (preg_match('/(.*?)' . $search . '$/i', $word)) {
                 return false;
             }
         }

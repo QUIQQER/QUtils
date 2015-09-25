@@ -8,6 +8,7 @@ namespace QUI\Utils\Security;
 
 use QUI\Utils\String as QUIString;
 use QUI\Utils\String;
+use QUI\Utils\Text\BBCode;
 
 /**
  * Orthos - Security class
@@ -43,6 +44,7 @@ class Orthos
      * none characters are no a-z A-z or 0-9
      *
      * @param String $str
+     * @param Array $allowedList - list of allowed signs
      *
      * @return String
      */
@@ -119,8 +121,8 @@ class Orthos
      * but are often much faster to execute than interpolated queries,
      * as both the server and client side can cache a compiled form of the query.
      *
-     * @param String $str    - Command
-     * @param Bool   $escape - Escape the String (true or false}
+     * @param String $str - Command
+     * @param Bool $escape - Escape the String (true or false}
      *
      * @return String
      *
@@ -128,7 +130,7 @@ class Orthos
      */
     static function clearMySQL($str, $escape = true)
     {
-        if (get_magic_quotes_gpc()) {
+        if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
             $str = stripslashes($str);
         }
 
@@ -173,7 +175,7 @@ class Orthos
      */
     static function cleanHTML($str)
     {
-        $BBCode = new \QUI\Utils\Text\BBCode();
+        $BBCode = new BBCode();
 
         $str = $BBCode->parseToBBCode($str);
         $str = $BBCode->parseToHTML($str);
@@ -186,7 +188,7 @@ class Orthos
      * Bei Korrektheit kommt $val wieder zurück ansonsten 0
      *
      * @param Integer $val
-     * @param String  $type - DAY | MONTH | YEAR
+     * @param String $type - DAY | MONTH | YEAR
      *
      * @return Integer
      */
@@ -307,9 +309,9 @@ class Orthos
     static function getPassword($length = 10)
     {
         $newpass = "";
-        $laenge = $length;
+        $laenge  = $length;
         $string
-            = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         mt_srand((double)microtime() * 1000000);
 
@@ -465,8 +467,25 @@ class Orthos
         // special reserved url characters
         // @see https://de.wikipedia.org/wiki/URL-Encoding#Relevante_ASCII-Zeichen_in_.25-Darstellung
         $reservedChars = array(
-            "!", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "/", ":",
-            ";", "=", "?", "@", "[", "]"
+            "!",
+            "#",
+            "$",
+            "%",
+            "&",
+            "'",
+            "(",
+            ")",
+            "*",
+            "+",
+            ",",
+            "/",
+            ":",
+            ";",
+            "=",
+            "?",
+            "@",
+            "[",
+            "]"
         );
 
         // replace special chars with replacement character

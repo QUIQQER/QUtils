@@ -57,8 +57,8 @@ class QDOM
     /**
      * set an attribute
      *
-     * @param String                   $name - name of the attribute
-     * @param String|Bool|Array|Object $val  - value of the attribute
+     * @param String $name - name of the attribute
+     * @param String|Bool|Array|Object $val - value of the attribute
      *
      * @return QDOM this
      */
@@ -144,10 +144,10 @@ class QDOM
     public function __toString()
     {
         if ($this->getAttribute('name')) {
-            return 'Object '.get_class($this).'('.$this->getAttribute('name')
-            .');';
+            return 'Object ' . get_class($this) . '(' . $this->getAttribute('name')
+                   . ');';
         }
 
-        return 'Object '.get_class($this).'();';
+        return 'Object ' . get_class($this) . '();';
     }
 }

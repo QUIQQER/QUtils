@@ -66,18 +66,18 @@ class Timer
     {
         $result = $this->result();
 
-        $output = '<table border="1">'."\n".
-            '<tr>'.
-            '<th>Messpunkt</th>'.
-            '<th>Diff</th>'.
-            '<th>Cumulative</th>'.
-            '</tr>'."\n";
+        $output = '<table border="1">' . "\n" .
+                  '<tr>' .
+                  '<th>Messpunkt</th>' .
+                  '<th>Diff</th>' .
+                  '<th>Cumulative</th>' .
+                  '</tr>' . "\n";
 
         foreach ($result as $key => $data) {
-            $output .= '<tr><td>'.$data[0].'</td>'.
-                '<td>'.round(($key ? $data[1] - $result[$key - 1][1] : '0'), 5)
-                .'</td>'.
-                '<td>'.round(($data[1] - $result[0][1]), 5).'</td></tr>'."\n";
+            $output .= '<tr><td>' . $data[0] . '</td>' .
+                       '<td>' . round(($key ? $data[1] - $result[$key - 1][1] : '0'), 5)
+                       . '</td>' .
+                       '<td>' . round(($data[1] - $result[0][1]), 5) . '</td></tr>' . "\n";
         }
 
         $output .= '</table>';

@@ -42,8 +42,7 @@ class Control extends QDOM
     {
         $body = '';
 
-        try
-        {
+        try {
             $body = $this->getBody();
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
@@ -51,7 +50,7 @@ class Control extends QDOM
 
 
         $attributes = $this->getAttributes();
-        $params = '';
+        $params     = '';
 
         foreach ($attributes as $key => $value) {
             if (strpos($key, 'data-') === false) {
@@ -63,14 +62,14 @@ class Control extends QDOM
             }
 
             $key = Utils\Security\Orthos::clear($key);
-            $params .= ' '.$key.'="'.htmlentities($value).'"';
+            $params .= ' ' . $key . '="' . htmlentities($value) . '"';
         }
 
         // qui class
         $quiClass = '';
 
         if ($this->getAttribute('qui-class')) {
-            $quiClass = 'data-qui="'.$this->getAttribute('qui-class').'" ';
+            $quiClass = 'data-qui="' . $this->getAttribute('qui-class') . '" ';
         }
 
         $cssClasses = array();
@@ -82,7 +81,7 @@ class Control extends QDOM
         $cssClasses = array_merge(array_keys($this->_cssClasses), $cssClasses);
 
         if (!empty($cssClasses)) {
-            $quiClass .= 'class="'.implode($cssClasses, ' ').'" ';
+            $quiClass .= 'class="' . implode($cssClasses, ' ') . '" ';
         }
 
 
@@ -96,7 +95,7 @@ class Control extends QDOM
 
         // styles
         $styleList = array();
-        $style = '';
+        $style     = '';
 
         if ($this->getAttribute('height')) {
             $styleList['height'] = $this->_cssValueCheck($this->getAttribute('height'));
@@ -158,7 +157,7 @@ class Control extends QDOM
     public function setJavaScriptControlOption($name, $value)
     {
         $this->setAttribute(
-            'data-qui-options-'.$name,
+            'data-qui-options-' . $name,
             $value
         );
     }
@@ -199,24 +198,47 @@ class Control extends QDOM
         }
 
         if (is_numeric($val)) {
-            return (string)$val.'px';
+            return (string)$val . 'px';
         }
 
         $units = array(
-            'px','cm','mm','mozmm','in','pt','pc','vh','vw','vm','vmin','vmax','rem',
-            '%','em','ex','ch','fr',
-            'deg','grad','rad','s','ms','turns','Hz','kHz'
+            'px',
+            'cm',
+            'mm',
+            'mozmm',
+            'in',
+            'pt',
+            'pc',
+            'vh',
+            'vw',
+            'vm',
+            'vmin',
+            'vmax',
+            'rem',
+            '%',
+            'em',
+            'ex',
+            'ch',
+            'fr',
+            'deg',
+            'grad',
+            'rad',
+            's',
+            'ms',
+            'turns',
+            'Hz',
+            'kHz'
         );
 
-        $no = (int)$val;
+        $no   = (int)$val;
         $unit = str_replace($no, '', $val);
 
         if (in_array($unit, $units)) {
-            return $no.$unit;
+            return $no . $unit;
         }
 
         if (!empty($no) && empty($unit)) {
-            return $no.'px';
+            return $no . 'px';
         }
 
         return '';

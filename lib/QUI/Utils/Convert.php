@@ -63,8 +63,8 @@ class Convert
         $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
 
-        return number_format($bytes / pow(1024, $power), 2, '.', ',').' '
-        .$units[$power];
+        return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' '
+               . $units[$power];
     }
 
 
@@ -113,7 +113,7 @@ class Convert
      * Convert umlauts e.g. ä to ae, u in ue etc.
      * it used to url converting
      *
-     * @param String  $conv
+     * @param String $conv
      * @param Integer $code 0=encode 1=decode, standard=0
      *
      * @return String

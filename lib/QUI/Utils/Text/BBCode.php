@@ -56,9 +56,9 @@ class BBCode extends \QUI\QDOM
     /**
      * Wandelt HTML Tags in BBCode um
      *
-     * @param unknown_type $html
+     * @param String $html
      *
-     * @return unknown
+     * @return String
      */
     public function parseToBBCode($html)
     {

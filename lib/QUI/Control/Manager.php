@@ -37,7 +37,7 @@ class Manager
      */
     static function getCSS()
     {
-        $files = self::getCSSFiles();
+        $files  = self::getCSSFiles();
         $result = '<style>';
 
         foreach ($files as $file) {
@@ -74,13 +74,13 @@ class Manager
     static function setCSSToHead($html)
     {
         // letzte head ersetzen
-        $string = $html;
-        $search = '</head>';
+        $string  = $html;
+        $search  = '</head>';
         $replace = self::getCSS();
 
         return substr_replace(
             $html,
-            $replace.'</head>',
+            $replace . '</head>',
             strrpos($string, $search),
             strlen($search)
         );

@@ -6,8 +6,6 @@
 
 namespace QUI;
 
-use QUI\Utils\Bool;
-
 /**
  * Class for handling ini files
  *
@@ -143,7 +141,7 @@ class Config
      * Setzt eine komplette Sektion
      *
      * @param String|Bool $section
-     * @param Array       $array
+     * @param Array $array
      *
      * @return Bool
      */
@@ -216,8 +214,8 @@ class Config
      * Setzt einen neuen Wert in einer Sektion oder eine gesamte neue Sektion
      *
      * @param string|bool $section - (optional)
-     * @param string      $key     - (optional)
-     * @param string      $value   - (optional)
+     * @param string $key - (optional)
+     * @param string $value - (optional)
      *
      * @return mixed
      */
@@ -279,7 +277,7 @@ class Config
             $filename = Utils\Security\Orthos::clear($filename);
 
             throw new Exception(
-                'Config '.$filename.' is not writable'
+                'Config ' . $filename . ' is not writable'
             );
         }
 
@@ -290,12 +288,12 @@ class Config
 
         foreach ($this->_iniParsedArray as $section => $array) {
             if (is_array($array)) {
-                fwrite($SFfdescriptor, "[".$section."]\n");
+                fwrite($SFfdescriptor, "[" . $section . "]\n");
 
                 foreach ($array as $key => $value) {
                     fwrite(
                         $SFfdescriptor,
-                        $key.'="'.$this->_clean($value)."\"\n"
+                        $key . '="' . $this->_clean($value) . "\"\n"
                     );
                 }
 
@@ -304,7 +302,7 @@ class Config
             } else {
                 fwrite(
                     $SFfdescriptor,
-                    $section.'="'.$this->_clean($array)."\"\n"
+                    $section . '="' . $this->_clean($array) . "\"\n"
                 );
             }
         }

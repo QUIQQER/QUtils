@@ -25,9 +25,9 @@ class Exception extends \Exception
     /**
      * Constructor
      *
-     * @param String  $message - Text der Exception
-     * @param Integer $code    - Errorcode der Exception
-     * @param String  $type    - Error Typ (Standard = Exception)
+     * @param String $message - Text der Exception
+     * @param Integer $code - Errorcode der Exception
+     * @param String $type - Error Typ (Standard = Exception)
      */
     public function __construct($message = null, $code = 0, $type = 'Exception')
     {
@@ -53,9 +53,9 @@ class Exception extends \Exception
     {
         $attributes = $this->_attributes;
 
-        $attributes['code'] = $this->getCode();
+        $attributes['code']    = $this->getCode();
         $attributes['message'] = $this->getMessage();
-        $attributes['type'] = $this->getType();
+        $attributes['type']    = $this->getType();
 
         return $attributes;
     }
@@ -81,7 +81,7 @@ class Exception extends \Exception
      * set an attribute
      *
      * @param String $name - name of the attribute
-     * @param mixed  $val  - value of the attribute
+     * @param mixed $val - value of the attribute
      *
      * @return \QUI\Exception this
      */

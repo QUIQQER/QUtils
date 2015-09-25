@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Translation;
 
+use QUI;
+
 /**
  * Bridge for gettext
  *
@@ -22,16 +24,16 @@ class GetText extends \QUI\QDOM
     /**
      * Constructor
      *
-     * @param String $lang   - Sprache
+     * @param String $lang - Sprache
      * @param String $domain - Domain, Gruppe
-     * @param String $dir    - Folder
+     * @param String $dir - Folder
      */
     public function __construct($lang, $domain, $dir)
     {
         $this->setAttribute(
             'locale',
-            \QUI\Utils\String::toLower($lang).'_'
-            .\QUI\Utils\String::toUpper($lang)
+            QUI\Utils\String::toLower($lang) . '_'
+            . QUI\Utils\String::toUpper($lang)
         );
 
         $this->setAttribute('domain', str_replace('/', '_', $domain));
@@ -46,8 +48,8 @@ class GetText extends \QUI\QDOM
     public function fileExist()
     {
         return file_exists(
-            $this->getAttribute('dir').'de_DE/LC_MESSAGES/'
-            .$this->getAttribute('domain').'.mo'
+            $this->getAttribute('dir') . 'de_DE/LC_MESSAGES/'
+            . $this->getAttribute('domain') . '.mo'
         );
     }
 

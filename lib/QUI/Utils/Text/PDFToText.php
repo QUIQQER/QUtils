@@ -49,8 +49,8 @@ class PDFToText extends QUI\QDOM
         }
 
         $tmp_file
-            = '/tmp/'.str_replace(array('.', ' '), '', microtime()).'.txt';
-        $exec = 'pdftotext '.$filename.' '.$tmp_file;
+              = '/tmp/' . str_replace(array('.', ' '), '', microtime()) . '.txt';
+        $exec = 'pdftotext ' . $filename . ' ' . $tmp_file;
 
         system(Orthos::clearShell($exec));
 

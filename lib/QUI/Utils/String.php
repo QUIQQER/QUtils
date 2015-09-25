@@ -63,7 +63,7 @@ class String
     /**
      * Verinfachtes Pathinfo
      *
-     * @param String       $path    - path to file
+     * @param String $path - path to file
      * @param Integer|bool $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      *
      * @return Array|String
@@ -72,7 +72,7 @@ class String
     static function pathinfo($path, $options = false)
     {
         if (!file_exists($path)) {
-            throw new QUI\Exception('File '.$path.' not exists');
+            throw new QUI\Exception('File ' . $path . ' not exists');
         }
 
         $info = pathinfo($path);
@@ -150,10 +150,10 @@ class String
             $char = preg_quote($char);
 
             if ($char === '#') {
-                $char = '\\'.$char;
+                $char = '\\' . $char;
             }
 
-            $regex = '#(['.$char.']){2,}#';
+            $regex = '#([' . $char . ']){2,}#';
 
             $_str = preg_replace($regex, "$1", $_str);
         }
@@ -360,7 +360,7 @@ class String
      */
     static function number2db($value)
     {
-        $larr = localeconv();
+        $larr   = localeconv();
         $search = array(
             $larr['decimal_point'],
             $larr['mon_decimal_point'],
@@ -378,7 +378,7 @@ class String
     /**
      * Enter description here...
      *
-     * @param array   $tags
+     * @param array $tags
      * @param Integer $start
      * @param Integer $min
      *
@@ -406,8 +406,8 @@ class String
             }
 
             $str
-                .= '<a href="'.$entry['url'].'" style="font-size: '.$size.'px">'
-                .$entry['tag'].'</a> ';
+                .= '<a href="' . $entry['url'] . '" style="font-size: ' . $size . 'px">'
+                   . $entry['tag'] . '</a> ';
         }
 
         return $str;
@@ -433,7 +433,7 @@ class String
         $att_ = explode('&', $url[1]);
 
         foreach ($att_ as $a) {
-            $item = explode('=', $a);
+            $item          = explode('=', $a);
             $att[$item[0]] = $item[1];
         }
 
@@ -474,8 +474,8 @@ class String
     static function splitStyleAttributes($style)
     {
         $attributes = array();
-        $style = trim($style);
-        $style = explode(';', $style);
+        $style      = trim($style);
+        $style      = explode(';', $style);
 
         foreach ($style as $att) {
             $att_ = explode(':', $att);
@@ -519,9 +519,9 @@ class String
     /**
      * Match String against a pattern
      *
-     * @param String  $pattern  - The shell wildcard pattern.
-     * @param String  $string   - The tested string.
-     * @param integer $flags    - The value of flags can be any combination of the following flags,
+     * @param String $pattern - The shell wildcard pattern.
+     * @param String $string - The tested string.
+     * @param integer $flags - The value of flags can be any combination of the following flags,
      *                          joined with the binary OR (|) operator. ( http://php.net/manual/de/function.fnmatch.php )
      *
      * @return boolean
@@ -534,7 +534,7 @@ class String
 
         // solution if fnmatch doesn't exist
         // found on http://php.net/manual/de/function.fnmatch.php
-        $modifiers = null;
+        $modifiers  = null;
         $transforms = array(
             '\*'   => '.*',
             '\?'   => '.',
@@ -568,9 +568,9 @@ class String
         }
 
         $pattern = '#^'
-            .strtr(preg_quote($pattern, '#'), $transforms)
-            .'$#'
-            .$modifiers;
+                   . strtr(preg_quote($pattern, '#'), $transforms)
+                   . '$#'
+                   . $modifiers;
 
         return (boolean)preg_match($pattern, $string);
     }

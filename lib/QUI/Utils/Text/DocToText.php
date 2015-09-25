@@ -116,7 +116,7 @@ class DocToText
         $n4 = (((ord($headers[0x21F]) * 256) * 256) * 256);
 
         # Total length of text in the document
-        $textLength = ($n1 + $n2 + $n3 + $n4);
+        $textLength          = ($n1 + $n2 + $n3 + $n4);
         $extracted_plaintext = fread($fh, $textLength);
 
         return utf8_encode(nl2br($extracted_plaintext));

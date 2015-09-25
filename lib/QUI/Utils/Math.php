@@ -41,7 +41,7 @@ class Math
      *
      * @param Integer $var1 - number one
      * @param Integer $var2 - number two
-     * @param Integer $max  - maximal number limit of each number
+     * @param Integer $max - maximal number limit of each number
      *
      * @return array
      */
@@ -74,7 +74,7 @@ class Math
      * found via http://stackoverflow.com/a/4133893
      *
      * @param Integer|Float $n - value to round
-     * @param Integer       $x - Rount step -> default=10
+     * @param Integer $x - Rount step -> default=10
      *
      * @return Integer
      */
@@ -91,7 +91,7 @@ class Math
      * found via http://stackoverflow.com/a/4133893
      *
      * @param Integer|Float $n - value to round
-     * @param Integer       $x - Rount step -> default=10
+     * @param Integer $x - Rount step -> default=10
      *
      * @return Integer
      */

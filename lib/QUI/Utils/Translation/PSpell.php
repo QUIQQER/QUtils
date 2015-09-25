@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Translation;
 
+use QUI;
+
 /**
  * Easier Access to pspell
  *
@@ -23,7 +25,7 @@ namespace QUI\Utils\Translation;
  * $Trans->translate('House');
  */
 
-class PSpell extends \QUI\QDOM
+class PSpell extends QUI\QDOM
 {
     /**
      * internal pspell object
@@ -74,7 +76,7 @@ class PSpell extends \QUI\QDOM
     static function check()
     {
         if (!function_exists('pspell_new')) {
-            throw new \QUI\Exception('PSpell is not installed');
+            throw new QUI\Exception('PSpell is not installed');
         }
 
         return true;
