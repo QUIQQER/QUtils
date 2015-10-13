@@ -23,15 +23,26 @@ class Exception extends \Exception
     protected $_attributes = array();
 
     /**
+     * context data
+     *
+     * @var array
+     */
+    protected $_context = array();
+
+    /**
      * Constructor
      *
      * @param String $message - Text der Exception
      * @param Integer $code - Errorcode der Exception
-     * @param String $type - Error Typ (Standard = Exception)
+     * @param Array $context - [optional] Context data, which data
      */
-    public function __construct($message = null, $code = 0, $type = 'Exception')
+    public function __construct($message = null, $code = 0, $context = array())
     {
         parent::__construct((string)$message, (int)$code);
+
+        if (!empty($context)) {
+            $this->_context = $context;
+        }
     }
 
     /**
@@ -42,6 +53,16 @@ class Exception extends \Exception
     public function getType()
     {
         return get_class($this);
+    }
+
+    /**
+     * Return the context data
+     *
+     * @return array
+     */
+    public function getContext()
+    {
+        return $this->_context;
     }
 
     /**
@@ -56,6 +77,7 @@ class Exception extends \Exception
         $attributes['code']    = $this->getCode();
         $attributes['message'] = $this->getMessage();
         $attributes['type']    = $this->getType();
+        $attributes['context'] = $this->_context;
 
         return $attributes;
     }
