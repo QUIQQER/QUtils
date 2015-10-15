@@ -69,19 +69,25 @@ class DB extends QUI\QDOM
         $this->_PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         try {
+            // need we a time_zone set
+            $mysqlDate = $this->fetchSQL('SELECT NOW();');
+            $mysqlDate = date('Y-m-d H', strtotime($mysqlDate));
 
-            $Date   = new \DateTime();
-            $offset = $Date->getOffset();
+            if ($mysqlDate != date('Y-m-d H')) {
 
-            $offsetHours   = round(abs($offset) / 3600);
-            $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
-            $offsetString  = ($offset < 0 ? '-' : '+');
-            $offsetString .= (strlen($offsetHours) < 2 ? '0' : '') . $offsetHours;
-            $offsetString .= ':';
-            $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '')
-                             . $offsetMinutes;
+                $Date   = new \DateTime();
+                $offset = $Date->getOffset();
 
-            $this->_PDO->exec("SET time_zone = '{$offsetString}'");
+                $offsetHours   = round(abs($offset) / 3600);
+                $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
+                $offsetString  = ($offset < 0 ? '-' : '+');
+                $offsetString .= (strlen($offsetHours) < 2 ? '0' : '') . $offsetHours;
+                $offsetString .= ':';
+                $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '')
+                                 . $offsetMinutes;
+
+                $this->_PDO->exec("SET time_zone = '{$offsetString}'");
+            }
 
         } catch (\PDOException $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
