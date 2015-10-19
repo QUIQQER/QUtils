@@ -934,17 +934,18 @@ class DB extends QUI\QDOM
             }
 
             $limit1 = (int)trim($limit[0]);
+            $limit2 = (int)trim($limit[1]);
 
             if ($limit1 < 0) {
                 $limit1 = 0;
             }
 
-            $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
+            if ($limit2 < 0) {
+                $limit2 = 0;
+            }
 
-            $prepare[':limit2'] = array(
-                (int)trim($limit[1]),
-                \PDO::PARAM_INT
-            );
+            $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
+            $prepare[':limit2'] = array($limit2, \PDO::PARAM_INT);
 
             $sql .= ':limit1,:limit2';
         }
