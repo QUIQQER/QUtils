@@ -69,7 +69,6 @@ class DB extends QUI\QDOM
         $this->_PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         try {
-
             $Date   = new \DateTime();
             $offset = $Date->getOffset();
 
@@ -918,10 +917,9 @@ class DB extends QUI\QDOM
         $prepare = array();
 
         if (strpos($params, ',') === false) {
-            $prepare[':limit1'] = array(
-                (int)trim($params),
-                \PDO::PARAM_INT
-            );
+            $limit1 = (int)trim($params);
+
+            $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
 
             $sql .= ':limit1';
 
@@ -935,10 +933,13 @@ class DB extends QUI\QDOM
                 );
             }
 
-            $prepare[':limit1'] = array(
-                (int)trim($limit[0]),
-                \PDO::PARAM_INT
-            );
+            $limit1 = (int)trim($limit[0]);
+
+            if ($limit1 < 0) {
+                $limit1 = 0;
+            }
+
+            $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
 
             $prepare[':limit2'] = array(
                 (int)trim($limit[1]),
