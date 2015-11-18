@@ -29,6 +29,16 @@ class ExceptionStack extends Exception
     public function addException($Exception)
     {
         $this->_list[] = $Exception;
+
+        $message = '';
+
+        /* @var $Exc Exception */
+        foreach ($this->_list as $Exc) {
+            $message .= $Exc->getMessage();
+        }
+
+        $this->message = $message;
+        $this->code    = $Exception->getCode();
     }
 
     /**
@@ -49,5 +59,26 @@ class ExceptionStack extends Exception
     public function isEmpty()
     {
         return empty($this->_list);
+    }
+
+    /**
+     * Return the context data
+     *
+     * @return array
+     */
+    public function getContext()
+    {
+        $context = array();
+
+        /* @var $Exc Exception */
+        foreach ($this->_list as $Exc) {
+            $_context              = $Exc->getContext();
+            $_context['Exception'] = $Exc->getMessage();
+            $_context['Trace']     = $Exc->getTrace();
+
+            $context[] = $_context;
+        }
+
+        return $context;
     }
 }

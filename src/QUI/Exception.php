@@ -77,7 +77,7 @@ class Exception extends \Exception
         $attributes['code']    = $this->getCode();
         $attributes['message'] = $this->getMessage();
         $attributes['type']    = $this->getType();
-        $attributes['context'] = $this->_context;
+        $attributes['context'] = $this->getContext();
 
         return $attributes;
     }
