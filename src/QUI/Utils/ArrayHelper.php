@@ -20,7 +20,7 @@ class ArrayHelper
      *
      * @param array $array
      *
-     * @return Bool
+     * @return boolean
      */
     static function isAssoc(array $array)
     {

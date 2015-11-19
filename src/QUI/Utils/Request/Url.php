@@ -92,7 +92,7 @@ class Url
      * @param string $search
      * @param array $curlparams - siehe Utils_Request_Url::Curl (optional)
      *
-     * @return Bool
+     * @return boolean
      */
     static function search($url, $search, $curlparams = array())
     {

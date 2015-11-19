@@ -19,10 +19,10 @@ class Math
      * Percent calculation
      * Return the percentage integer value
      *
-     * @param Integer|Float $amount
-     * @param Integer|Float $total
+     * @param integer|Float $amount
+     * @param integer|Float $total
      *
-     * @return Integer
+     * @return integer
      *
      * @example $percent = QUI\Utils\Math::percent(20, 60); $percent=>33
      * @example echo QUI\Utils\Math::percent(50, 100) .'%';
@@ -39,9 +39,9 @@ class Math
     /**
      * Resize each numbers in dependence
      *
-     * @param Integer $var1 - number one
-     * @param Integer $var2 - number two
-     * @param Integer $max - maximal number limit of each number
+     * @param integer $var1 - number one
+     * @param integer $var2 - number two
+     * @param integer $max - maximal number limit of each number
      *
      * @return array
      */
@@ -73,10 +73,10 @@ class Math
      *
      * found via http://stackoverflow.com/a/4133893
      *
-     * @param Integer|Float $n - value to round
-     * @param Integer $x - Rount step -> default=10
+     * @param integer|float $n - value to round
+     * @param integer $x - Rount step -> default=10
      *
-     * @return Integer
+     * @return integer
      */
     static function roundUp($n, $x = 10)
     {
@@ -90,10 +90,10 @@ class Math
      *
      * found via http://stackoverflow.com/a/4133893
      *
-     * @param Integer|Float $n - value to round
-     * @param Integer $x - Rount step -> default=10
+     * @param integer|float $n - value to round
+     * @param integer $x - Rount step -> default=10
      *
-     * @return Integer
+     * @return integer
      */
     static function ceilUp($n, $x = 10)
     {

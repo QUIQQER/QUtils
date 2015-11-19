@@ -34,7 +34,7 @@ class DB extends QUI\QDOM
     /**
      * SQLite Flag
      *
-     * @var Bool
+     * @var boolean
      */
     protected $_sqlite = false;
 
@@ -165,7 +165,7 @@ class DB extends QUI\QDOM
     /**
      * Is the DB a sqlite db?
      *
-     * @return Bool
+     * @return boolean
      */
     public function isSQLite()
     {
@@ -368,7 +368,7 @@ class DB extends QUI\QDOM
      * Query ausführen und als die Ergebnisse bekommen
      *
      * @param array $params (see at createQuery())
-     * @param Integer $FETCH_STYLE - \PDO::FETCH*
+     * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
      * @return array
      */

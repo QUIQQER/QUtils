@@ -30,7 +30,7 @@ class QDOM
      *
      * @param string $name
      *
-     * @return Bool
+     * @return boolean
      */
     public function existsAttribute($name)
     {

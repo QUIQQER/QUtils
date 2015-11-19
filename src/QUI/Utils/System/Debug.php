@@ -27,7 +27,7 @@ class Debug
     /**
      * create the output flag
      *
-     * @var Bool
+     * @var boolean
      */
     static $run = false;
 

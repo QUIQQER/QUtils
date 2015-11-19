@@ -893,7 +893,7 @@ class Tables
      * Prüft ob ein Fulltext auf das Feld gesetzt ist
      *
      * @param string $table
-     * @param string|Integer $key
+     * @param string|integer $key
      *
      * @return boolean
      * @throws QUI\Exception

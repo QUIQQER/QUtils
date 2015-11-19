@@ -20,8 +20,8 @@ class Convert
      *
      * 1.000,00 - 1000,00
      *
-     * @param Integer $price
-     * @param Integer $type -
+     * @param integer $price
+     * @param integer $type -
      *                      1=round($betrag, 2)
      *                      2=$price value with , as decimal separator
      *                      3=$price value with . as decimal separator

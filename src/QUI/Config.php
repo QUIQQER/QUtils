@@ -140,10 +140,10 @@ class Config
     /**
      * Setzt eine komplette Sektion
      *
-     * @param string|Bool $section
+     * @param string|boolean $section
      * @param array $array
      *
-     * @return Bool
+     * @return boolean
      */
     public function setSection($section = false, $array)
     {

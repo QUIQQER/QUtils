@@ -18,7 +18,7 @@ class System
     /**
      * The max memory limit for memUsageToHigh(), look at ::memUsageToHigh()
      *
-     * @var Integer
+     * @var integer
      */
     static $memory_limit = 128;
 

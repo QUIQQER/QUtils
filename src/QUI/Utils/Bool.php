@@ -37,7 +37,7 @@ class Bool
      *
      * @param string|boolean $value
      *
-     * @return Bool
+     * @return boolean
      */
     static function JSBool($value)
     {

@@ -70,7 +70,7 @@ class PSpell extends QUI\QDOM
     /**
      * Check if pspell is installed
      *
-     * @return Bool
+     * @return boolean
      * @throws \QUI\Exception
      */
     static function check()

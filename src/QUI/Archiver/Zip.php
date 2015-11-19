@@ -31,7 +31,7 @@ class Zip
     /**
      * Check, if ZipArchive is enabled
      *
-     * @return Bool
+     * @return boolean
      * @throws \QUI\Exception
      */
     static function check()
