@@ -16,14 +16,14 @@ class Manager
     /**
      * Lst of CSS Files
      *
-     * @var Array
+     * @var array
      */
     static protected $cssFilesloaded = array();
 
     /**
      * Return the CSS Files from the loaded Controls
      *
-     * @return Array
+     * @return array
      */
     static function getCSSFiles()
     {
@@ -33,7 +33,7 @@ class Manager
     /**
      * Return the <style></style> of all loaded css files
      *
-     * @return String
+     * @return string
      */
     static function getCSS()
     {
@@ -57,7 +57,7 @@ class Manager
     /**
      * Add a css file
      *
-     * @param String $file - Path to the CSS File, the system file path, no relativ path
+     * @param string $file - Path to the CSS File, the system file path, no relativ path
      */
     static function addCSSFile($file)
     {
@@ -67,9 +67,9 @@ class Manager
     /**
      * Insert the CSS Files in the <head></head> of a html
      *
-     * @param String $html - complete html
+     * @param string $html - complete html
      *
-     * @return String
+     * @return string
      */
     static function setCSSToHead($html)
     {

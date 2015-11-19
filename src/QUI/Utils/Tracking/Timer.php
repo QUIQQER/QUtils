@@ -26,7 +26,7 @@ class Timer
     /**
      * Time calc
      *
-     * @return Float
+     * @return float
      */
     protected function _time()
     {
@@ -38,7 +38,7 @@ class Timer
     /**
      * Set measurement point
      *
-     * @param String $name - name of the point
+     * @param string $name - name of the point
      */
     public function milestone($name)
     {
@@ -48,7 +48,7 @@ class Timer
     /**
      * Returns the time measurement result as an array
      *
-     * @return Array
+     * @return array
      */
     public function result()
     {
@@ -60,7 +60,7 @@ class Timer
     /**
      * Returns the time measurement results as HTML
      *
-     * @return String
+     * @return string
      */
     public function resultStr()
     {
@@ -88,7 +88,7 @@ class Timer
     /**
      * Returns the time measurement result for the bash / console
      *
-     * @return Array
+     * @return array
      */
     public function resultConsole()
     {

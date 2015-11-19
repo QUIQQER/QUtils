@@ -32,9 +32,9 @@ class Exception extends \Exception
     /**
      * Constructor
      *
-     * @param String $message - Text der Exception
-     * @param Integer $code - Errorcode der Exception
-     * @param Array $context - [optional] Context data, which data
+     * @param string $message - Text der Exception
+     * @param integer $code - Errorcode der Exception
+     * @param array $context - [optional] Context data, which data
      */
     public function __construct($message = null, $code = 0, $context = array())
     {
@@ -48,7 +48,7 @@ class Exception extends \Exception
     /**
      * Return the Exception type
      *
-     * @return String
+     * @return string
      */
     public function getType()
     {
@@ -68,7 +68,7 @@ class Exception extends \Exception
     /**
      * Return the Exception as an array
      *
-     * @return Array
+     * @return array
      */
     public function toArray()
     {
@@ -86,7 +86,7 @@ class Exception extends \Exception
      * returns a attribute
      * if the attribute is not set, it returns false
      *
-     * @param String $name
+     * @param string $name
      *
      * @return mixed
      */
@@ -102,7 +102,7 @@ class Exception extends \Exception
     /**
      * set an attribute
      *
-     * @param String $name - name of the attribute
+     * @param string $name - name of the attribute
      * @param mixed $val - value of the attribute
      *
      * @return \QUI\Exception this
@@ -117,7 +117,7 @@ class Exception extends \Exception
     /**
      * If you want to set more than one attribute
      *
-     * @param Array $attributes
+     * @param array $attributes
      *
      * @return \QUI\Exception
      */

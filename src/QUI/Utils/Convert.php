@@ -26,7 +26,7 @@ class Convert
      *                      2=$price value with , as decimal separator
      *                      3=$price value with . as decimal separator
      *
-     * @return String
+     * @return string
      */
     static function formPrice($price, $type = 1)
     {
@@ -50,7 +50,7 @@ class Convert
     /**
      * Format a byte number in human readable format
      *
-     * @param Integer $bytes
+     * @param integer $bytes
      *
      * @return string
      */
@@ -71,9 +71,9 @@ class Convert
     /**
      * Converts some Umlauts
      *
-     * @param String $conv
+     * @param string $conv
      *
-     * @return String
+     * @return string
      */
     static function convertChars($conv)
     {
@@ -94,9 +94,9 @@ class Convert
     /**
      * Converts a MySQL DateTime format to a Unix timestamp
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return Integer
+     * @return integer
      */
     static function convertMySqlDatetime($str)
     {
@@ -113,10 +113,10 @@ class Convert
      * Convert umlauts e.g. ä to ae, u in ue etc.
      * it used to url converting
      *
-     * @param String $conv
-     * @param Integer $code 0=encode 1=decode, standard=0
+     * @param string $conv
+     * @param integer $code 0=encode 1=decode, standard=0
      *
-     * @return String
+     * @return string
      */
     static function convertUrlChars($conv, $code = 0)
     {
@@ -146,9 +146,9 @@ class Convert
     /**
      * Convert romanic signs to their latin counterpart
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
     static function convertRoman($str)
     {

@@ -28,7 +28,7 @@ class QDOM
     /**
      * Exist the attribute in the object?
      *
-     * @param String $name
+     * @param string $name
      *
      * @return Bool
      */
@@ -41,7 +41,7 @@ class QDOM
      * returns a attribute
      * if the attribute is not set, it returns false
      *
-     * @param String $name
+     * @param string $name
      *
      * @return mixed
      */
@@ -57,8 +57,8 @@ class QDOM
     /**
      * set an attribute
      *
-     * @param String $name - name of the attribute
-     * @param String|Bool|Array|Object $val - value of the attribute
+     * @param string $name - name of the attribute
+     * @param string|boolean|array|object $val - value of the attribute
      *
      * @return QDOM this
      */
@@ -72,7 +72,7 @@ class QDOM
     /**
      * If you want to set more than one attribute
      *
-     * @param Array $attributes
+     * @param array $attributes
      *
      * @return QDOM this
      */
@@ -92,9 +92,9 @@ class QDOM
     /**
      * Remove a attribute
      *
-     * @param String $name
+     * @param string $name
      *
-     * @return Bool
+     * @return boolean
      */
     public function removeAttribute($name)
     {
@@ -108,7 +108,7 @@ class QDOM
     /**
      * Return all attributes
      *
-     * @return Array
+     * @return array
      * @deprecated getAllAttributes is depricated use getAttributes()
      */
     public function getAllAttributes()
@@ -119,7 +119,7 @@ class QDOM
     /**
      * Return all attributes
      *
-     * @return Array
+     * @return array
      */
     public function getAttributes()
     {
@@ -129,7 +129,7 @@ class QDOM
     /**
      * Return the class type
      *
-     * @return String
+     * @return string
      */
     public function getType()
     {
@@ -139,7 +139,7 @@ class QDOM
     /**
      * Return the object as string
      *
-     * @return String
+     * @return string
      */
     public function __toString()
     {

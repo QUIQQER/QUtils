@@ -25,7 +25,7 @@ class File
     protected $_files;
 
     /**
-     * @var String
+     * @var string
      */
     protected $_start_folder;
 
@@ -488,10 +488,10 @@ class File
     /**
      * Formats the size of a file into a readable output format and append the ending
      *
-     * @param Int $size - number in bytes
-     * @param Int $round
+     * @param integer $size - number in bytes
+     * @param integer $round
      *
-     * @return String
+     * @return string
      */
     static function formatSize($size, $round = 0)
     {
@@ -507,9 +507,9 @@ class File
     /**
      * Returns the Bytes of a php ini value
      *
-     * @param String $val - 129M
+     * @param string $val - 129M
      *
-     * @return Integer
+     * @return integer
      */
     static function getBytes($val)
     {
@@ -539,9 +539,9 @@ class File
      * the unlink method unlink the file not really
      * it makes move to the tmp folder, because a move is faster
      *
-     * @param String $file - Pfad zur Datei
+     * @param string $file - Pfad zur Datei
      *
-     * @return Bool
+     * @return boolean
      *
      * @throws QUI\Exception
      */
@@ -571,10 +571,10 @@ class File
     /**
      * Move a file
      *
-     * @param String $from - original file
-     * @param String $to - target
+     * @param string $from - original file
+     * @param string $to - target
      *
-     * @return Bool
+     * @return boolean
      * @throws QUI\Exception
      */
     static function move($from, $to)
@@ -595,11 +595,11 @@ class File
      * Copies a file, overwrite no file!
      * so the target may not exist
      *
-     * @param String $from
-     * @param String $to
+     * @param string $from
+     * @param string $to
      *
      * @throws QUI\Exception
-     * @return Bool
+     * @return boolean
      */
     static function copy($from, $to)
     {
@@ -623,8 +623,8 @@ class File
     /**
      * Get information about the file
      *
-     * @param String $file - Path to file
-     * @param Array $params - (optional) ->
+     * @param string $file - Path to file
+     * @param array $params - (optional) ->
      *                       filesize=Dateigrösse;
      *                       imagesize=Bildgrösse;
      *                       mime_type=mime_type
@@ -713,9 +713,9 @@ class File
     /**
      * Return the file ending for a mimetype
      *
-     * @param String $mime
+     * @param string $mime
      *
-     * @return String
+     * @return string
      */
     static function getEndingByMimeType($mime)
     {
@@ -733,12 +733,12 @@ class File
     /**
      * Bildgrösse ändern
      *
-     * @param String $original - Pfad zum original Bild
-     * @param String $new_image - Pfad zum neuen Bild
-     * @param Integer $new_width
-     * @param Integer $new_height
+     * @param string $original - Pfad zum original Bild
+     * @param string $new_image - Pfad zum neuen Bild
+     * @param integer $new_width
+     * @param integer $new_height
      *
-     * @return Bool
+     * @return boolean
      * @deprecated Use QUI\Utils\Image::resize
      */
     static function resize(
@@ -758,11 +758,11 @@ class File
     /**
      * Legt ein Wasserzeichen auf ein Bild
      *
-     * @param String $image - Bild welches verändert werden soll
-     * @param String $watermark - Wasserzeichen
-     * @param String $newImage
-     * @param Integer $top
-     * @param Integer $left
+     * @param string $image - Bild welches verändert werden soll
+     * @param string $watermark - Wasserzeichen
+     * @param string|boolean $newImage
+     * @param integer $top
+     * @param integer $left
      *
      * @deprecated Use QUI\Utils\Image::watermark
      */
@@ -779,7 +779,7 @@ class File
     /**
      * Wandelt ein Bild in TrueColor um
      *
-     * @param String $image - Path zum Bild
+     * @param string $image - Path zum Bild
      *
      * @deprecated Use QUI\Utils\Image::convertToTrueColor
      */
@@ -791,10 +791,10 @@ class File
     /**
      * Find files via fnmatch
      *
-     * @param String $path
-     * @param String $find
+     * @param string $path
+     * @param string $find
      *
-     * @return Array
+     * @return array
      */
     static function find($path, $find)
     {
@@ -830,10 +830,10 @@ class File
     /**
      * Dateien rekursiv aus einem Ordner lesen
      *
-     * @param String $folder - Pfad zum Ordner
-     * @param Bool $flatten - no assoziativ folder array, return the array as flat array
+     * @param string $folder - Pfad zum Ordner
+     * @param boolean $flatten - no assoziativ folder array, return the array as flat array
      *
-     * @return Array
+     * @return array
      */
     public function readDirRecursiv($folder, $flatten = false)
     {
@@ -866,7 +866,7 @@ class File
     /**
      * Helper Methode für readDirRecursiv
      *
-     * @param String $folder
+     * @param string $folder
      */
     private function _readDirRecursiv($folder)
     {
@@ -895,11 +895,11 @@ class File
     /**
      * Dateien eines Ordners auf dem Filesystem lesen
      *
-     * @param String $folder - Ordner welcher ausgelesen werdens oll
-     * @param Bool $only_files - Nur Dateien auslesen
-     * @param Bool $order_by_date - Nach Daum sortiert zurück geben
+     * @param string $folder - Ordner welcher ausgelesen werdens oll
+     * @param boolean $only_files - Nur Dateien auslesen
+     * @param boolean $order_by_date - Nach Daum sortiert zurück geben
      *
-     * @return Array
+     * @return array
      */
     static function readDir(
         $folder,
@@ -948,9 +948,9 @@ class File
     /**
      * Löscht ein Verzeichnis rekursiv
      *
-     * @param String $dir - path to dir
+     * @param string $dir - path to dir
      *
-     * @return bool
+     * @return boolean
      */
     static function deleteDir($dir)
     {
@@ -982,11 +982,11 @@ class File
     /**
      * Lädt eine Datei per HTTP herrunter und legt diese an einen bestimmten Ort
      *
-     * @param String $host
-     * @param String $path
-     * @param String $local
+     * @param string $host
+     * @param string $path
+     * @param string $local
      *
-     * @return Bool
+     * @return boolean
      * @throws QUI\Exception
      */
     static function download($host, $path, $local)
@@ -1012,7 +1012,7 @@ class File
      * Send a file as download to the browser (maybe limited in speed)
      *
      * @param string $filePath
-     * @param int $rate speedlimit in KB/s
+     * @param integer $rate speedlimit in KB/s
      * @param string $downloadFileName (optional)
      *
      * @return void
@@ -1113,10 +1113,10 @@ class File
     /**
      * Kopiert einen kompletten Ordner mit Unteordner
      *
-     * @param String $srcdir
-     * @param String $dstdir
+     * @param string $srcdir
+     * @param string $dstdir
      *
-     * @return Bool
+     * @return boolean
      */
     static function dircopy($srcdir, $dstdir)
     {
@@ -1157,9 +1157,9 @@ class File
      * Creates a folder
      * It can be given a complete path
      *
-     * @param $path - Path which is to be created
+     * @param string $path - Path which is to be created
      *
-     * @return Bool
+     * @return boolean
      */
     static function mkdir($path)
     {
@@ -1210,9 +1210,9 @@ class File
     /**
      * Erstellt eine Datei
      *
-     * @param String $file - path to the file
+     * @param string $file - path to the file
      *
-     * @return Bool
+     * @return boolean
      */
     static function mkfile($file)
     {
@@ -1228,9 +1228,9 @@ class File
     /**
      * Returns the content of a file, if file not exist, it returns an empty string
      *
-     * @param String $file - path to file
+     * @param string $file - path to file
      *
-     * @return String
+     * @return string
      */
     static function getFileContent($file)
     {
@@ -1244,8 +1244,8 @@ class File
     /**
      * Write the $line to the end of the file
      *
-     * @param String $file - Datei
-     * @param String $line - String welcher geschrieben werden soll
+     * @param string $file - Datei
+     * @param string $line - String welcher geschrieben werden soll
      */
     static function putLineToFile($file, $line = '')
     {
@@ -1258,9 +1258,9 @@ class File
     /**
      * Prüft ob die Datei innerhalb von open_basedir ist
      *
-     * @param String $path - Pfad der geprüft werden soll
+     * @param string $path - Pfad der geprüft werden soll
      *
-     * @return Bool
+     * @return boolean
      */
     static function checkOpenBaseDir($path)
     {
@@ -1284,7 +1284,7 @@ class File
     /**
      * Enter description here...
      *
-     * @param String $file
+     * @param string $file
      *
      * @throws QUI\Exception
      */
@@ -1311,7 +1311,7 @@ class File
     /**
      * Send a header for the file
      *
-     * @param String $file - Path to file
+     * @param string $file - Path to file
      *
      * @throws QUI\Exception
      */
@@ -1348,9 +1348,9 @@ class File
     /**
      * FileSize einer Datei bekommen (auch über eine URL)
      *
-     * @param String $url
+     * @param string $url
      *
-     * @return Integer
+     * @return integer
      */
     static function getFileSize($url)
     {

@@ -22,9 +22,9 @@ class PDFToText extends QUI\QDOM
     /**
      * Convert the pdf to text and return the text
      *
-     * @param String $filename - path to PDF File
+     * @param string $filename - path to PDF File
      *
-     * @return String
+     * @return string
      * @throws QUI\Exception
      */
     static function convert($filename)

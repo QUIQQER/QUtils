@@ -25,7 +25,7 @@ class System
     /**
      * Return the used protocol
      *
-     * @return String
+     * @return string
      * @example QUI\Utils\System::getProtocol(); -> http:// or https://
      */
     static function getProtocol()
@@ -67,7 +67,7 @@ class System
     /**
      * Returns the maximum file size which can be uploaded
      *
-     * @return Integer
+     * @return integer
      */
     static function getUploadMaxFileSize()
     {
@@ -83,7 +83,7 @@ class System
      * If 80% of consumption was given returns true
      * If self::$memory_limit is not set | false | null, than always return false
      *
-     * @return Bool
+     * @return boolean
      */
     static function memUsageToHigh()
     {
@@ -106,7 +106,7 @@ class System
     /**
      * IP des Clients bekommen, auch durch Proxys
      *
-     * @return String
+     * @return string
      */
     static function getClientIP()
     {
@@ -125,9 +125,9 @@ class System
     /**
      * Check if a shell function is callable
      *
-     * @param String $func - Name of the shell function, eq: ls
+     * @param string $func - Name of the shell function, eq: ls
      *
-     * @return Bool
+     * @return boolean
      */
     static function isShellFunctionEnabled($func)
     {

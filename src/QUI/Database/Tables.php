@@ -37,7 +37,7 @@ class Tables
     /**
      * Is the DB a sqlite db?
      *
-     * @return Bool
+     * @return boolean
      */
     protected function _isSQLite()
     {
@@ -47,7 +47,7 @@ class Tables
     /**
      * Returns all tables in the database
      *
-     * @return Array
+     * @return array
      */
     public function getTables()
     {
@@ -75,7 +75,7 @@ class Tables
     /**
      * Optimiert Tabellen
      *
-     * @param string|Array $tables
+     * @param string|array $tables
      *
      * @return void
      */
@@ -96,7 +96,7 @@ class Tables
      *
      * @param string $table - Tabellenname welcher gesucht wird
      *
-     * @return bool
+     * @return boolean
      */
     public function exist($table)
     {
@@ -127,7 +127,7 @@ class Tables
     /**
      * Delete a table
      *
-     * @param String $table
+     * @param string $table
      *
      * @return void
      */
@@ -147,7 +147,7 @@ class Tables
      * Execut a TRUNCATE on a table
      * empties a table completely
      *
-     * @param String $table
+     * @param string $table
      */
     public function truncate($table)
     {
@@ -182,11 +182,11 @@ class Tables
     /**
      * Creates a table with the specific fields
      *
-     * @param String $table
-     * @param Array $fields
-     * @param String $engine
+     * @param string $table
+     * @param array $fields
+     * @param string $engine
      *
-     * @return Bool - if table exists or not
+     * @return boolean - if table exists or not
      * @throws QUI\Database\Exception
      * @todo check mysql injection
      */
@@ -262,9 +262,9 @@ class Tables
     /**
      * Tabellen-Spalten mit weiterführenden Informationen
      *
-     * @param String $table
+     * @param string $table
      *
-     * @return Array
+     * @return array
      */
     public function getFields($table)
     {
@@ -338,7 +338,7 @@ class Tables
     /**
      * Tabellen-Spalten mit detailliertern Spalten-Informationen
      *
-     * @param String $table - Tabelle
+     * @param string $table - Tabelle
      *
      * @return array
      */
@@ -362,9 +362,9 @@ class Tables
      * Erweitert Tabellen mit den Feldern
      * Wenn die Tabelle nicht existiert wird diese erstellt
      *
-     * @param String $table
-     * @param Array $fields
-     * @param String $engine - optional, is only used when the table is created
+     * @param string $table
+     * @param array $fields
+     * @param string $engine - optional, is only used when the table is created
      */
     public function appendFields($table, $fields, $engine = 'MYISAM')
     {
@@ -448,7 +448,7 @@ class Tables
      * @param string $table
      * @param string $row
      *
-     * @return Bool
+     * @return boolean
      */
     public function existColumnInTable($table, $row)
     {
@@ -481,9 +481,9 @@ class Tables
     /**
      * Alle Spalten der Tabelle bekommen
      *
-     * @param String $table
+     * @param string $table
      *
-     * @return Array
+     * @return array
      */
     public function getColumns($table)
     {
@@ -493,8 +493,8 @@ class Tables
     /**
      * Return the informations of a column
      *
-     * @param String $table - Table name
-     * @param String $column - Row name
+     * @param string $table - Table name
+     * @param string $column - Row name
      *
      * @return array
      */
@@ -523,7 +523,7 @@ class Tables
      * @param string $table
      * @param string $row
      *
-     * @return bool
+     * @return boolean
      */
     public function deleteColumn($table, $row)
     {
@@ -549,8 +549,8 @@ class Tables
      * Schlüssel der Tabelle bekommen
      *
      * @param string $table
-     * @param bool $keyNamesOnly (optional) - Nur die Namen der Schlüssel (sonst alle Spalten-Informationen) [default: true]
-     * @param bool $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
+     * @param boolean $keyNamesOnly (optional) - Nur die Namen der Schlüssel (sonst alle Spalten-Informationen) [default: true]
+     * @param boolean $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
      *
      * @return array
      */
@@ -590,10 +590,10 @@ class Tables
     /**
      * Prüft ob der PrimaryKey gesetzt ist
      *
-     * @param String $table
-     * @param String|Array $key
+     * @param string $table
+     * @param string|array $key
      *
-     * @return Bool
+     * @return boolean
      */
     public function issetPrimaryKey($table, $key)
     {
@@ -615,10 +615,10 @@ class Tables
      *
      * @see issetPrimaryKey
      *
-     * @param String $table
-     * @param String $key
+     * @param string $table
+     * @param string $key
      *
-     * @return Bool
+     * @return boolean
      */
     protected function _issetPrimaryKey($table, $key)
     {
@@ -649,10 +649,10 @@ class Tables
     /**
      * Setzt ein PrimaryKey einer Tabelle
      *
-     * @param String $table
-     * @param String|Array $key
+     * @param string $table
+     * @param string|array $key
      *
-     * @return Bool
+     * @return boolean
      */
     public function setPrimaryKey($table, $key)
     {
@@ -685,9 +685,9 @@ class Tables
      * Prüft ob ein Index gesetzt ist
      *
      * @param string $table
-     * @param String|Integer $key
+     * @param string|integer $key
      *
-     * @return Bool
+     * @return boolean
      */
     public function issetIndex($table, $key)
     {
@@ -707,10 +707,10 @@ class Tables
     /**
      * Prüft ob ein Index gesetzt ist -> subroutine
      *
-     * @param String $table
-     * @param String $key
+     * @param string $table
+     * @param string $key
      *
-     * @return Bool
+     * @return boolean
      */
     protected function _issetIndex($table, $key)
     {
@@ -742,7 +742,7 @@ class Tables
     /**
      * Liefert die Indexes einer Tabelle
      *
-     * @param String $table
+     * @param string $table
      *
      * @return array
      */
@@ -774,10 +774,10 @@ class Tables
     /**
      * Setzt einen Index
      *
-     * @param String $table
-     * @param String|Array $index - Array not working on SQLite
+     * @param string $table
+     * @param string|array $index - Array not working on SQLite
      *
-     * @return Bool
+     * @return boolean
      */
     public function setIndex($table, $index)
     {
@@ -809,8 +809,8 @@ class Tables
     /**
      * Set the Autoincrement to the column
      *
-     * @param String $table
-     * @param String $index
+     * @param string $table
+     * @param string $index
      *
      * @throws QUI\Exception
      */
@@ -860,10 +860,10 @@ class Tables
     /**
      * Setzt einen Fulltext
      *
-     * @param String $table
-     * @param String|Array $index
+     * @param string $table
+     * @param string|array $index
      *
-     * @return Bool
+     * @return boolean
      * @throws QUI\Exception
      */
     public function setFulltext($table, $index)
@@ -892,10 +892,10 @@ class Tables
     /**
      * Prüft ob ein Fulltext auf das Feld gesetzt ist
      *
-     * @param String $table
-     * @param String|Integer $key
+     * @param string $table
+     * @param string|Integer $key
      *
-     * @return Bool
+     * @return boolean
      * @throws QUI\Exception
      */
     public function issetFulltext($table, $key)
@@ -920,10 +920,10 @@ class Tables
     /**
      * Prüft ob ein Fulltext auf das Feld gesetzt ist -> subroutine
      *
-     * @param String $table
-     * @param String $key
+     * @param string $table
+     * @param string $key
      *
-     * @return bool
+     * @return boolean
      */
     protected function _issetFulltext($table, $key)
     {
@@ -956,9 +956,9 @@ class Tables
     /**
      * Parse a mysql field type, and return the clean type
      *
-     * @param String $fieldType
+     * @param string $fieldType
      *
-     * @return String
+     * @return string
      */
     protected function _parseFieldType($fieldType)
     {

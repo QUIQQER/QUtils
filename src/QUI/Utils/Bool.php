@@ -18,14 +18,14 @@ class Bool
     /**
      * internal var
      *
-     * @var String|Bool
+     * @var string|boolean
      */
     public $_bool;
 
     /**
      * constructor
      *
-     * @param String|Bool $bool
+     * @param string|boolean $bool
      */
     public function __construct($bool)
     {
@@ -35,7 +35,7 @@ class Bool
     /**
      * Converts JavaScript Boolean values ​​for PHP
      *
-     * @param String|Bool $value
+     * @param string|boolean $value
      *
      * @return Bool
      */

@@ -26,7 +26,7 @@ class Control extends QDOM
     /**
      * Constructor
      *
-     * @param Array $attributes
+     * @param array $attributes
      */
     public function __construct($attributes = array())
     {
@@ -36,7 +36,7 @@ class Control extends QDOM
     /**
      * Return the DOM Node string
      *
-     * @return String
+     * @return string
      */
     public function create()
     {
@@ -123,7 +123,7 @@ class Control extends QDOM
      * Return the inner body of the element
      * Can be overwritten
      *
-     * @return String
+     * @return string
      */
     public function getBody()
     {
@@ -133,7 +133,7 @@ class Control extends QDOM
     /**
      * Add a css class
      *
-     * @param String $cssClass
+     * @param string $cssClass
      */
     public function addCSSClass($cssClass)
     {
@@ -143,7 +143,7 @@ class Control extends QDOM
     /**
      * Set the binded javascript control
      *
-     * @param String $control
+     * @param string $control
      */
     public function setJavaScriptControl($control)
     {
@@ -151,8 +151,8 @@ class Control extends QDOM
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      */
     public function setJavaScriptControlOption($name, $value)
     {
@@ -165,7 +165,7 @@ class Control extends QDOM
     /**
      * Remove a css class from the CSS list
      *
-     * @param String $cssClass
+     * @param string $cssClass
      */
     public function removeCSSClass($cssClass)
     {

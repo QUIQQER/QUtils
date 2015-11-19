@@ -41,7 +41,7 @@ class DB extends QUI\QDOM
     /**
      * Constructor
      *
-     * @param Array $attributes
+     * @param array $attributes
      * - host
      * - user
      * - password
@@ -206,9 +206,9 @@ class DB extends QUI\QDOM
      *        'debug' => true // write the query into the log
      * )
      *
-     * @return Array
+     * @return array
      *    array(
-     *        'query'   => String  - SQL String
+     *        'query'   => string  - SQL String
      *        'prepare' => array() - Prepared Statemanet Vars
      *    )
      */
@@ -370,7 +370,7 @@ class DB extends QUI\QDOM
      * @param array $params (see at createQuery())
      * @param Integer $FETCH_STYLE - \PDO::FETCH*
      *
-     * @return Array
+     * @return array
      */
     public function fetch(
         array $params = array(),
@@ -399,12 +399,12 @@ class DB extends QUI\QDOM
      * Das Query wird direkt überrgeben!
      * Besser ->fetch() nutzen und die Parameter als Array übergeben
      *
-     * @param String $query
-     * @param Integer $FETCH_STYLE - \PDO::FETCH*
+     * @param string $query
+     * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
      * @throws QUI\Database\Exception
      *
-     * @return Array
+     * @return array
      */
     public function fetchSQL($query, $FETCH_STYLE = \PDO::FETCH_ASSOC)
     {
@@ -439,9 +439,9 @@ class DB extends QUI\QDOM
     /**
      * Aktualisiert einen Datensatz
      *
-     * @param String $table
-     * @param Array $data
-     * @param Array $where
+     * @param string $table
+     * @param array $data
+     * @param array $where
      *
      * @return \PDOStatement
      */
@@ -457,8 +457,8 @@ class DB extends QUI\QDOM
     /**
      * Aktualisiert einen Datensatz
      *
-     * @param String $table
-     * @param Array $data
+     * @param string $table
+     * @param array $data
      *
      * @return \PDOStatement
      */
@@ -473,8 +473,8 @@ class DB extends QUI\QDOM
     /**
      * Löscht einen Datensatz
      *
-     * @param String $table - Name of the Database Table
-     * @param Array $where - data field, where statement
+     * @param string $table - Name of the Database Table
+     * @param array $where - data field, where statement
      *
      * @return \PDOStatement
      */
@@ -492,7 +492,7 @@ class DB extends QUI\QDOM
      *
      * @param array $params
      *
-     * @return String
+     * @return string
      */
     static function createQuerySelect($params)
     {
@@ -510,9 +510,9 @@ class DB extends QUI\QDOM
     /**
      * Insert Query Abschnitt
      *
-     * @param String $params
+     * @param string $params
      *
-     * @return String
+     * @return string
      */
     static function createQueryInsert($params)
     {
@@ -522,9 +522,9 @@ class DB extends QUI\QDOM
     /**
      * Update Query Abschnitt
      *
-     * @param String $params
+     * @param string $params
      *
-     * @return String
+     * @return string
      */
     static function createQueryUpdate($params)
     {
@@ -534,7 +534,7 @@ class DB extends QUI\QDOM
     /**
      * Delete Query Abschnitt
      *
-     * @return String
+     * @return string
      */
     static function createQueryDelete()
     {
@@ -544,9 +544,9 @@ class DB extends QUI\QDOM
     /**
      * COUNT() Query Abschnitt
      *
-     * @param Array || String $params
+     * @param array|string $params
      *
-     * @return String
+     * @return string
      */
     static function createQueryCount($params)
     {
@@ -572,9 +572,9 @@ class DB extends QUI\QDOM
     /**
      * FROM Query Abschnitt
      *
-     * @param String || Array $params
+     * @param string|array $params
      *
-     * @return String
+     * @return string
      */
     static function createQueryFrom($params)
     {
@@ -598,10 +598,10 @@ class DB extends QUI\QDOM
     /**
      * WHERE Query Abschnitt
      *
-     * @param String|Array $params
-     * @param String $type - if more than one where, you can specific the where typ (OR, AND)
+     * @param string|array $params
+     * @param string $type - if more than one where, you can specific the where typ (OR, AND)
      *
-     * @return Array array(
+     * @return array array(
      *        'where' => 'WHERE param = :param',
      *      'prepare' => array(
      *          'param' => value
@@ -739,9 +739,9 @@ class DB extends QUI\QDOM
     /**
      * Where Statement als OR
      *
-     * @param Array $params
+     * @param array $params
      *
-     * @return Array
+     * @return array
      */
     static function createQueryWhereOr($params)
     {
@@ -751,10 +751,10 @@ class DB extends QUI\QDOM
     /**
      * SET Query Abschnitt
      *
-     * @param String || Array $params
-     * @param String $driver - depricated
+     * @param string|array $params
+     * @param string|boolean $driver - depricated
      *
-     * @return Array
+     * @return array
      */
     static function createQuerySet($params, $driver = false)
     {
@@ -909,7 +909,7 @@ class DB extends QUI\QDOM
      *
      * @param string|integer $params
      *
-     * @return Array
+     * @return array
      */
     static function createQueryLimit($params)
     {

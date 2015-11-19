@@ -30,14 +30,14 @@ class String
     /**
      * internal string param
      *
-     * @var String
+     * @var string
      */
     public $_string;
 
     /**
      * Constructor
      *
-     * @param String $string
+     * @param string $string
      */
     public function __construct($string)
     {
@@ -47,9 +47,9 @@ class String
     /**
      * Wandelt JavaScript Strings für PHP in richtige Strings um
      *
-     * @param String|Bool $value
+     * @param string|boolean $value
      *
-     * @return String
+     * @return string
      */
     static function JSString($value)
     {
@@ -63,10 +63,10 @@ class String
     /**
      * Verinfachtes Pathinfo
      *
-     * @param String $path - path to file
-     * @param Integer|bool $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
+     * @param string $path - path to file
+     * @param integer|bool $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      *
-     * @return Array|String
+     * @return array|string
      * @throws \QUI\Exception
      */
     static function pathinfo($path, $options = false)
@@ -101,9 +101,9 @@ class String
      * // -> /
      * /// -> /
      *
-     * @param String $path
+     * @param string $path
      *
-     * @return String
+     * @return string
      */
     static function replaceDblSlashes($path)
     {
@@ -113,10 +113,10 @@ class String
     /**
      * Entfernt Zeilenumbrüche
      *
-     * @param String $text
-     * @param String $replace - Mit was ersetzt werden soll
+     * @param string $text
+     * @param string $replace - Mit was ersetzt werden soll
      *
-     * @return String
+     * @return string
      */
     static function removeLineBreaks($text, $replace = '')
     {
@@ -130,9 +130,9 @@ class String
     /**
      * Löscht doppelte hintereinander folgende Zeichen in einem String
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
     static function removeDblSigns($str)
     {
@@ -166,9 +166,9 @@ class String
     /**
      * Entfernt den letzten Slash am Ende, wenn das letzte Zeichen ein Slash ist
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
     static function removeLastSlash($str)
     {
@@ -196,7 +196,7 @@ class String
      *
      * @param string $string
      *
-     * @return String
+     * @return string
      */
     static function toLower($string)
     {
@@ -208,7 +208,7 @@ class String
      *
      * @param string $string
      *
-     * @return String
+     * @return string
      */
     static function toUpper($string)
     {
@@ -218,9 +218,9 @@ class String
     /**
      * Prüft ob der String ein Echter UTF8 String ist
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return bool
+     * @return boolean
      */
     static function isValidUTF8($str)
     {
@@ -259,9 +259,9 @@ class String
     /**
      * Gibt einen String als UTF8 String zurück
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
     static function toUTF8($str)
     {
@@ -275,9 +275,9 @@ class String
     /**
      * Erster Satz bekommen
      *
-     * @param String $text
+     * @param string $text
      *
-     * @return String
+     * @return string
      */
     static function sentence($text)
     {
@@ -312,9 +312,9 @@ class String
      * Parset einen String zu einem richtigen Float Wert
      * From php.net
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return Float
+     * @return float
      */
     static function parseFloat($str)
     {
@@ -379,8 +379,8 @@ class String
      * Enter description here...
      *
      * @param array $tags
-     * @param Integer $start
-     * @param Integer $min
+     * @param integer $start
+     * @param integer $min
      *
      * @return string
      */
@@ -416,7 +416,7 @@ class String
     /**
      * Einzelnen Attribute einer URL bekommen
      *
-     * @param String $url - ?id=1&project=demo
+     * @param string $url - ?id=1&project=demo
      *
      * @return array
      */
@@ -443,9 +443,9 @@ class String
     /**
      * Gibt die Attribute eines HTML Strings zurück
      *
-     * @param String $html - <img * />
+     * @param string $html - <img * />
      *
-     * @return Array
+     * @return array
      */
     static function getHTMLAttributes($html)
     {
@@ -467,9 +467,9 @@ class String
     /**
      * Gibt die Attribute eines HTML Styles zurück
      *
-     * @param String $style - "width:200px; height:200px"
+     * @param string $style - "width:200px; height:200px"
      *
-     * @return Array
+     * @return array
      */
     static function splitStyleAttributes($style)
     {
@@ -496,9 +496,9 @@ class String
     /**
      * Replace the last occurrences of the search string with the replacement string
      *
-     * @param String $search
-     * @param String $replace
-     * @param String $string
+     * @param string $search
+     * @param string $replace
+     * @param string $string
      *
      * @return string
      */
@@ -519,8 +519,8 @@ class String
     /**
      * Match String against a pattern
      *
-     * @param String $pattern - The shell wildcard pattern.
-     * @param String $string - The tested string.
+     * @param string $pattern - The shell wildcard pattern.
+     * @param string $string - The tested string.
      * @param integer $flags - The value of flags can be any combination of the following flags,
      *                          joined with the binary OR (|) operator. ( http://php.net/manual/de/function.fnmatch.php )
      *

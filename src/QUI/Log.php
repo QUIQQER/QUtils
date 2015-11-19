@@ -19,10 +19,10 @@ namespace QUI;
 class Log
 {
     /**
-     * Writes an String to a log file
+     * Writes an string to a log file
      *
-     * @param String $message - String to write
-     * @param String $filename - Filename (eq: messages, error, database)
+     * @param string $message - String to write
+     * @param string $filename - Filename (eq: messages, error, database)
      */
     static function write($message, $filename = 'messages')
     {
@@ -45,7 +45,7 @@ class Log
      * Writes with print_r the object into a log file
      *
      * @param mixed $object
-     * @param String $filename
+     * @param string $filename
      */
     static function writeRecursive($object, $filename = 'messages')
     {
@@ -56,7 +56,7 @@ class Log
      * Writes an Exception to a log file
      *
      * @param \Exception|\QUI\Exception $Exception
-     * @param String $filename
+     * @param string $filename
      */
     static function writeException($Exception, $filename = 'error')
     {

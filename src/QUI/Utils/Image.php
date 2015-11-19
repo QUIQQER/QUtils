@@ -50,12 +50,14 @@ class Image
     /**
      * Bildgrösse ändern
      *
-     * @param String $original - Pfad zum original Bild
-     * @param String $new_image - Pfad zum neuen Bild
-     * @param Integer $new_width
-     * @param Integer $new_height
+     * @param string $original - Pfad zum original Bild
+     * @param string $new_image - Pfad zum neuen Bild
+     * @param integer $new_width
+     * @param integer $new_height
      *
-     * @return Bool
+     * @return boolean
+     *
+     * @throws \QUI\Exception
      */
     static function resize(
         $original,
@@ -292,11 +294,13 @@ class Image
     /**
      * Legt ein Wasserzeichen auf ein Bild
      *
-     * @param String $image - Bild welches verändert werden soll
-     * @param String $watermark - Wasserzeichen
-     * @param String $newImage - if it set, a new image would be generated
-     * @param Integer $top - x position of the watermark
-     * @param Integer $left - y position of the watermark
+     * @param string $image - Bild welches verändert werden soll
+     * @param string $watermark - Wasserzeichen
+     * @param string|boolean $newImage - if it set, a new image would be generated
+     * @param integer $top - x position of the watermark
+     * @param integer $left - y position of the watermark
+     *
+     * @throws \QUI\Exception
      */
     static function watermark(
         $image,
@@ -443,7 +447,7 @@ class Image
     /**
      * Wandelt ein Bild in TrueColor um
      *
-     * @param String $image - Path zum Bild
+     * @param string $image - Path zum Bild
      */
     static function convertToTrueColor($image)
     {
@@ -513,12 +517,13 @@ class Image
     /**
      * Enter description here...
      *
-     * @param String $original
-     * @param String $new
-     * @param Array $params - array(
+     * @param string $original
+     * @param string $new
+     * @param array $params - array(
      *                       'background' => '#FFFFFF',
      *                       'radius'     => 10
      *                       )
+     * @throws \QUI\Exception
      */
     static function roundCorner($original, $new, $params)
     {
@@ -598,9 +603,11 @@ class Image
     /**
      * Spiegeleffekt für Bilder
      *
-     * @param String $from
-     * @param String $to
-     * @param Array $params
+     * @param string $from
+     * @param string $to
+     * @param array $params
+     *
+     * @throws \QUI\Exception
      */
     static function reflection($from, $to, $params = array())
     {

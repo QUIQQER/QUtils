@@ -19,14 +19,14 @@ class Url
     /**
      * List of curl Objects
      *
-     * @var Array
+     * @var array
      */
     static $Curls = array();
 
     /**
      * Get the Curl Objekt
      *
-     * @param String $url - Url
+     * @param string $url - Url
      * @param array $curlparams - Curl parameter
      *
      * @return resource
@@ -63,7 +63,7 @@ class Url
     /**
      * Get the content from a url
      *
-     * @param String $url
+     * @param string $url
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *
      * @return array
@@ -88,8 +88,8 @@ class Url
     /**
      * Search the string at the content of the url
      *
-     * @param String $url
-     * @param String $search
+     * @param string $url
+     * @param string $search
      * @param array $curlparams - siehe Utils_Request_Url::Curl (optional)
      *
      * @return Bool
@@ -104,7 +104,7 @@ class Url
     /**
      * Get a header information of the url
      *
-     * @param String $url
+     * @param string $url
      * @param bool $info
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *

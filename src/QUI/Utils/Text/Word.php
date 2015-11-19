@@ -16,13 +16,12 @@ mb_internal_encoding('UTF-8');
  */
 class Word
 {
-
     /**
      * Zählt die wichtigen Wörter eines deutschen Textes
      *
-     * @param String $text
+     * @param string $text
      *
-     * @return Array
+     * @return array
      */
     static function countImportantWords($text)
     {
@@ -59,9 +58,9 @@ class Word
      * a word filter for german words. checks the string
      * at the moment only for german words
      *
-     * @param String $word - German word
+     * @param string $word - German word
      *
-     * @return Bool
+     * @return boolean
      */
     static function isUseful($word)
     {

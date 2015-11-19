@@ -34,14 +34,14 @@ class Debug
     /**
      * debug the memory flag
      *
-     * @var Bool
+     * @var boolean
      */
     static $debug_memory = false;
 
     /**
      * Set a Debug Marker
      *
-     * @param String|Bool $step - (optional)
+     * @param string|boolean $step - (optional)
      */
     static function marker($step = false)
     {
@@ -66,7 +66,7 @@ class Debug
     /**
      * Return the Output
      *
-     * @return String
+     * @return string
      */
     static function output()
     {

@@ -24,9 +24,9 @@ class GetText extends \QUI\QDOM
     /**
      * Constructor
      *
-     * @param String $lang - Sprache
-     * @param String $domain - Domain, Gruppe
-     * @param String $dir - Folder
+     * @param string $lang - Sprache
+     * @param string $domain - Domain, Gruppe
+     * @param string $dir - Folder
      */
     public function __construct($lang, $domain, $dir)
     {
@@ -43,7 +43,7 @@ class GetText extends \QUI\QDOM
     /**
      * Exist the translation file?
      *
-     * @return Bool
+     * @return boolean
      */
     public function fileExist()
     {
@@ -56,9 +56,9 @@ class GetText extends \QUI\QDOM
     /**
      * Get the translation
      *
-     * @param String $key
+     * @param string $key
      *
-     * @return String
+     * @return string
      */
     public function get($key)
     {

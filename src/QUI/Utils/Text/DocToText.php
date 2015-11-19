@@ -22,10 +22,10 @@ class DocToText
     /**
      * Returns the content from a odx / docx file
      *
-     * @param String $file - path to file
+     * @param string $file - path to file
      *
      * @throws QUI\Exception
-     * @return String
+     * @return string
      */
     static function convert($file)
     {
@@ -86,9 +86,9 @@ class DocToText
      * Convert a microsoft .doc file to text
      * from: http://blog.folkeraxmann.de/?p=318
      *
-     * @param String $filename - Path to filename
+     * @param string $filename - Path to filename
      *
-     * @return String
+     * @return string
      * @throws QUI\Exception
      */
     static function convertDoc($filename)

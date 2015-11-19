@@ -20,7 +20,7 @@ class Config
     /**
      * filename
      *
-     * @var String
+     * @var string
      */
     private $_iniFilename = '';
 
@@ -34,7 +34,7 @@ class Config
     /**
      * constructor
      *
-     * @param String $filename - (optional) Path to the config
+     * @param string $filename - (optional) Path to the config
      */
     public function __construct($filename = '')
     {
@@ -58,7 +58,7 @@ class Config
     /**
      * Ini Einträge als Array bekommen
      *
-     * @return Array
+     * @return array
      */
     public function toArray()
     {
@@ -68,7 +68,7 @@ class Config
     /**
      * Return the ini as json encode
      *
-     * @return String
+     * @return string
      */
     public function toJSON()
     {
@@ -78,9 +78,9 @@ class Config
     /**
      * Gibt eine komplette Sektion zurück
      *
-     * @param String $key
+     * @param string $key
      *
-     * @return String || Array
+     * @return string|array
      */
     public function getSection($key)
     {
@@ -94,10 +94,10 @@ class Config
     /**
      * Gibt einen Wert aus einer Sektion zurück
      *
-     * @param String $section
-     * @param String $key
+     * @param string $section
+     * @param string $key
      *
-     * @return String || Array
+     * @return string|array
      */
     public function getValue($section, $key)
     {
@@ -113,10 +113,10 @@ class Config
     /**
      * Gibt den Wert einer Sektion  oder die ganze Section zurück
      *
-     * @param String $section
-     * @param String || NULL $key (optional)
+     * @param string $section
+     * @param string || NULL $key (optional)
      *
-     * @return String|Array
+     * @return string|array
      */
     public function get($section, $key = null)
     {
@@ -130,7 +130,7 @@ class Config
     /**
      * Gibt den Dateinamen der Config zurück
      *
-     * @return String
+     * @return string
      */
     public function getFilename()
     {
@@ -140,8 +140,8 @@ class Config
     /**
      * Setzt eine komplette Sektion
      *
-     * @param String|Bool $section
-     * @param Array $array
+     * @param string|Bool $section
+     * @param array $array
      *
      * @return Bool
      */
@@ -165,11 +165,11 @@ class Config
     /**
      * Setzt einen neuen Wert in einer Sektion
      *
-     * @param String $section
-     * @param String $key
-     * @param String $value
+     * @param string $section
+     * @param string $key
+     * @param string $value
      *
-     * @return Bool
+     * @return boolean
      *
      * @example QConfig->setValue('section', null, 'something');
      * @example QConfig->setValue('section', 'entry', 'something');
@@ -192,10 +192,10 @@ class Config
     /**
      * exist the section or value?
      *
-     * @param String $section
-     * @param String $key - (optional)
+     * @param string $section
+     * @param string $key - (optional)
      *
-     * @return Bool
+     * @return boolean
      */
     public function existValue($section, $key = null)
     {
@@ -231,10 +231,10 @@ class Config
     /**
      * Löscht eine Sektion oder ein Key in der Sektion
      *
-     * @param String $section
-     * @param String $key - optional, wenn angegeben wird Key gelöscht ansonsten komplette Sektion
+     * @param string $section
+     * @param string $key - optional, wenn angegeben wird Key gelöscht ansonsten komplette Sektion
      *
-     * @return Bool
+     * @return boolean
      */
     public function del($section, $key = null)
     {
@@ -262,9 +262,9 @@ class Config
     /**
      * Speichert die Einträge in die INI Datei
      *
-     * @param String $filename - (optional) Pfad zur Datei
+     * @param string $filename - (optional) Pfad zur Datei
      *
-     * @return Bool
+     * @return boolean
      * @throws \QUI\Exception
      */
     public function save($filename = null)
@@ -313,9 +313,9 @@ class Config
     /**
      * Zeilenumbrüche löschen
      *
-     * @param String $value
+     * @param string $value
      *
-     * @return String
+     * @return string
      */
     protected function _clean($value)
     {
