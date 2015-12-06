@@ -21,7 +21,7 @@ class Control extends QDOM
      *
      * @var array
      */
-    protected $_cssClasses = array();
+    protected $cssClasses = array();
 
     /**
      * Constructor
@@ -78,7 +78,7 @@ class Control extends QDOM
             $cssClasses[] = $this->getAttribute('class');
         }
 
-        $cssClasses = array_merge(array_keys($this->_cssClasses), $cssClasses);
+        $cssClasses = array_merge(array_keys($this->cssClasses), $cssClasses);
 
         if (!empty($cssClasses)) {
             $quiClass .= 'class="' . implode($cssClasses, ' ') . '" ';
@@ -98,15 +98,14 @@ class Control extends QDOM
         $style     = '';
 
         if ($this->getAttribute('height')) {
-            $styleList['height'] = $this->_cssValueCheck($this->getAttribute('height'));
+            $styleList['height'] = $this->cssValueCheck($this->getAttribute('height'));
         }
 
         if ($this->getAttribute('width')) {
-            $styleList['width'] = $this->_cssValueCheck($this->getAttribute('width'));
+            $styleList['width'] = $this->cssValueCheck($this->getAttribute('width'));
         }
 
         if (!empty($styleList)) {
-
             $style = 'style="';
 
             foreach ($styleList as $key => $val) {
@@ -137,7 +136,7 @@ class Control extends QDOM
      */
     public function addCSSClass($cssClass)
     {
-        $this->_cssClasses[$cssClass] = true;
+        $this->cssClasses[$cssClass] = true;
     }
 
     /**
@@ -169,8 +168,8 @@ class Control extends QDOM
      */
     public function removeCSSClass($cssClass)
     {
-        if (isset($this->_cssClasses[$cssClass])) {
-            unset($this->_cssClasses[$cssClass]);
+        if (isset($this->cssClasses[$cssClass])) {
+            unset($this->cssClasses[$cssClass]);
         }
     }
 
@@ -189,7 +188,7 @@ class Control extends QDOM
      *
      * @return string
      */
-    protected function _cssValueCheck($val)
+    protected function cssValueCheck($val)
     {
         $val = trim($val);
 
@@ -245,11 +244,22 @@ class Control extends QDOM
     }
 
     /**
+     * @param $val
+     * @return string
+     *
+     * @deprecated
+     */
+    protected function _cssValueCheck($val)
+    {
+        return $this->cssValueCheck($val);
+    }
+
+    /**
      * Return the Project
      *
      * @return \QUI\Projects\Project
      */
-    protected function _getProject()
+    protected function getProject()
     {
         if ($this->getAttribute('Project')) {
             return $this->getAttribute('Project');
@@ -264,5 +274,15 @@ class Control extends QDOM
         $this->setAttribute('Project', $Project);
 
         return $Project;
+    }
+
+    /**
+     * @return Projects\Project
+     *
+     * @deprecated
+     */
+    protected function _getProject()
+    {
+        return $this->getProject();
     }
 }
