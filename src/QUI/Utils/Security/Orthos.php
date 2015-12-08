@@ -28,7 +28,7 @@ class Orthos
      *
      * @return string
      */
-    static function clear($str)
+    public static function clear($str)
     {
         $str = self::removeHTML($str);
         $str = self::clearPath($str);
@@ -48,7 +48,7 @@ class Orthos
      *
      * @return string
      */
-    static function clearNoneCharacters($str = '', $allowedList = array())
+    public static function clearNoneCharacters($str = '', $allowedList = array())
     {
         $chars = 'a-zA-Z0-9';
 
@@ -66,7 +66,7 @@ class Orthos
      *
      * @return array
      */
-    static function clearArray($data)
+    public static function clearArray($data)
     {
         if (!is_array($data)) {
             return array();
@@ -93,7 +93,7 @@ class Orthos
      *
      * @return string|boolean
      */
-    static function clearPath($path)
+    public static function clearPath($path)
     {
         return str_replace(array('../', '..'), '', $path);
     }
@@ -105,7 +105,7 @@ class Orthos
      *
      * @return string
      */
-    static function removeHTML($text)
+    public static function removeHTML($text)
     {
         return strip_tags($text);
     }
@@ -128,7 +128,7 @@ class Orthos
      *
      * @deprecated use PDO::quote (QUI::getPDO()->quote())
      */
-    static function clearMySQL($str, $escape = true)
+    public static function clearMySQL($str, $escape = true)
     {
         if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
             $str = stripslashes($str);
@@ -148,7 +148,7 @@ class Orthos
      *
      * @return string
      */
-    static function clearShell($str)
+    public static function clearShell($str)
     {
         return escapeshellcmd($str);
     }
@@ -160,7 +160,7 @@ class Orthos
      *
      * @return integer
      */
-    static function parseInt($str)
+    public static function parseInt($str)
     {
         return (int)$str;
     }
@@ -173,7 +173,7 @@ class Orthos
      *
      * @return string
      */
-    static function cleanHTML($str)
+    public static function cleanHTML($str)
     {
         $BBCode = new BBCode();
 
@@ -192,7 +192,7 @@ class Orthos
      *
      * @return integer
      */
-    static function date($val, $type = 'DAY')
+    public static function date($val, $type = 'DAY')
     {
         if ($type == 'MONTH') {
             $val = self::parseInt($val);
@@ -230,7 +230,7 @@ class Orthos
      *
      * @return boolean
      */
-    static function checkdate($day, $month, $year)
+    public static function checkdate($day, $month, $year)
     {
         if (!is_int($day)) {
             return false;
@@ -257,7 +257,7 @@ class Orthos
      *
      * @return string
      */
-    static function removeLineBreaks($text)
+    public static function removeLineBreaks($text)
     {
         return QUIString::removeLineBreaks($text, '');
     }
@@ -269,7 +269,7 @@ class Orthos
      *
      * @return boolean
      */
-    static function checkMailSyntax($email)
+    public static function checkMailSyntax($email)
     {
         return preg_match(
             '/^([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,64}\@{1}([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,248}\.{1}([a-z]){2,6}$/',
@@ -284,7 +284,7 @@ class Orthos
      *
      * @return boolean
      */
-    static function checkMySqlDatetimeSyntax($date)
+    public static function checkMySqlDatetimeSyntax($date)
     {
         // Nur Zahlen erlaubt
         if (preg_match('/[^0-9- :]/i', $date)) {
@@ -306,7 +306,7 @@ class Orthos
      *
      * @return string
      */
-    static function getPassword($length = 10)
+    public static function getPassword($length = 10)
     {
         $newpass = "";
         $laenge  = $length;
@@ -329,7 +329,7 @@ class Orthos
      *
      * @return boolean
      */
-    static function isSpamMail($mail)
+    public static function isSpamMail($mail)
     {
         $split = explode('@', $mail);
 
@@ -413,12 +413,11 @@ class Orthos
      *
      * @return string
      */
-    static function clearFormRequest($value)
+    public static function clearFormRequest($value)
     {
         if (is_array($value)) {
             foreach ($value as $key => $entry) {
-                $value[$key]
-                    = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
+                $value[$key] = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
             }
 
         } else {
@@ -458,7 +457,7 @@ class Orthos
      * @param string $replace - replacement character for unsafe / ambiguous characters
      * @return string - filtered string
      */
-    static function urlEncodeString($str, $replace = "-")
+    public static function urlEncodeString($str, $replace = "-")
     {
         if (!is_string($replace)) {
             $replace = "-";

@@ -20,28 +20,36 @@ class Exception extends \Exception
      *
      * @var array
      */
-    protected $_attributes = array();
+    protected $attributes = array();
 
     /**
      * context data
      *
      * @var array
      */
-    protected $_context = array();
+    protected $context = array();
 
     /**
      * Constructor
      *
-     * @param string $message - Text der Exception
+     * @param string|array $message - Text der Exception
      * @param integer $code - Errorcode der Exception
      * @param array $context - [optional] Context data, which data
      */
     public function __construct($message = null, $code = 0, $context = array())
     {
+        if (is_array($message)) {
+            if (!isset($message[0]) || !isset($message[1])) {
+                $message = implode(',', $message);
+            } else {
+                $message = \QUI::getLocale()->get($message[0], $message[1]);
+            }
+        }
+
         parent::__construct((string)$message, (int)$code);
 
         if (!empty($context)) {
-            $this->_context = $context;
+            $this->context = $context;
         }
     }
 
@@ -62,7 +70,7 @@ class Exception extends \Exception
      */
     public function getContext()
     {
-        return $this->_context;
+        return $this->context;
     }
 
     /**
@@ -72,7 +80,7 @@ class Exception extends \Exception
      */
     public function toArray()
     {
-        $attributes = $this->_attributes;
+        $attributes = $this->attributes;
 
         $attributes['code']    = $this->getCode();
         $attributes['message'] = $this->getMessage();
@@ -92,8 +100,8 @@ class Exception extends \Exception
      */
     public function getAttribute($name)
     {
-        if (isset($this->_attributes[$name])) {
-            return $this->_attributes[$name];
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
         }
 
         return false;
@@ -109,7 +117,7 @@ class Exception extends \Exception
      */
     public function setAttribute($name, $val)
     {
-        $this->_attributes[$name] = $val;
+        $this->attributes[$name] = $val;
 
         return $this;
     }
