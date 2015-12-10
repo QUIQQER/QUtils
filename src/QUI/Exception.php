@@ -42,7 +42,10 @@ class Exception extends \Exception
             if (!isset($message[0]) || !isset($message[1])) {
                 $message = implode(',', $message);
             } else {
-                $message = \QUI::getLocale()->get($message[0], $message[1]);
+                $message = \QUI::getUserBySession()->getLocale()->get(
+                    $message[0],
+                    $message[1]
+                );
             }
         }
 
