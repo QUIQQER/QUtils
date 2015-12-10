@@ -222,7 +222,7 @@ class Tables
             $sql = 'CREATE TABLE `' . $_table . '` (';
         } else {
             $sql = 'CREATE TABLE `' . $this->_DB->getAttribute('dbname') . '`.`'
-                   . $_table . '` (';
+                . $_table . '` (';
         }
 
 
@@ -675,6 +675,127 @@ class Tables
         $Stmnt->execute();
 
         return $this->issetPrimaryKey($table, $key);
+    }
+
+    /**
+     * Unique-Spalten einer Tabelle bekommen
+     *
+     * @param string $table
+     * @param boolean $keyNamesOnly (optional) - Nur die Namen der Schlüssel (sonst alle Spalten-Informationen) [default: true]
+     * @param boolean $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
+     *
+     * @return array
+     */
+    /**
+     * Schlüssel der Tabelle bekommen
+     *
+     * @param string $table
+     *
+     * @return array
+     */
+    public function getUniqueColumns($table)
+    {
+        $PDO   = $this->_DB->getPDO();
+        $table = $this->_clear($table);
+
+        // @todo implement sqlite query
+        if ($this->_isSQLite()) {
+            return array();
+        }
+
+        $query = "SHOW INDEXES FROM `{$table}`";
+        $query .= " WHERE non_unique = 0 AND Key_name != 'PRIMARY';";
+
+        $Stmt = $PDO->prepare($query);
+        $Stmt->execute();
+        $result = $Stmt->fetchAll();
+
+        $columns = array();
+
+        foreach ($result as $k => $row) {
+            if (isset($row['Column_name'])) {
+                $columns[] = $row['Column_name'];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Setzt ein UNIQUE-Spalten einer Tabelle
+     *
+     * @param string $table
+     * @param string|array $unique
+     *
+     * @return boolean
+     */
+    public function setUniqueColumns($table, $unique)
+    {
+        // You can't modify SQLite tables in any significant way after they have been created
+        if ($this->_isSQLite()) {
+            return true;
+        }
+
+        if ($this->issetUniqueColumn($table, $unique)) {
+            return true;
+        }
+
+        $queryKeys  = $this->_inList($unique);
+        $queryTable = $this->_clear($table);
+
+        $PDO = $this->_DB->getPDO();
+
+        $Stmnt = $PDO->prepare(
+            "ALTER TABLE `{$queryTable}` ADD UNIQUE({$queryKeys})"
+        );
+        $Stmnt->execute();
+
+        return $this->issetUniqueColumn($table, $unique);
+    }
+
+    /**
+     * Prüft ob UNIQUE-Spalten gesetzt sind
+     *
+     * @param string $table
+     * @param string|array $unique
+     *
+     * @return boolean
+     */
+    public function issetUniqueColumn($table, $unique)
+    {
+        if (is_array($unique)) {
+            foreach ($unique as $entry) {
+                if ($this->_issetUniqueColumn($table, $entry) == false) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return $this->_issetUniqueColumn($table, $unique);
+    }
+
+    /**
+     * Helper for issetPrimaryKey
+     *
+     * @see issetPrimaryKey
+     *
+     * @param string $table
+     * @param string $unique
+     *
+     * @return boolean
+     */
+    protected function _issetUniqueColumn($table, $unique)
+    {
+        if ($this->_isSQLite()) {
+            // @todo implement sqlite query
+            return false;
+        }
+
+        $uniques = $this->getUniqueColumns($table);
+
+        return in_array($unique, $uniques);
     }
 
     /**
