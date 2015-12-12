@@ -23,7 +23,7 @@ class QDOM
      *
      * @var array
      */
-    protected $_attributes = array();
+    protected $attributes = array();
 
     /**
      * Exist the attribute in the object?
@@ -34,7 +34,7 @@ class QDOM
      */
     public function existsAttribute($name)
     {
-        return isset($this->_attributes[$name]) ? true : false;
+        return isset($this->attributes[$name]) ? true : false;
     }
 
     /**
@@ -47,8 +47,8 @@ class QDOM
      */
     public function getAttribute($name)
     {
-        if (isset($this->_attributes[$name])) {
-            return $this->_attributes[$name];
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
         }
 
         return false;
@@ -64,7 +64,7 @@ class QDOM
      */
     public function setAttribute($name, $val)
     {
-        $this->_attributes[$name] = $val;
+        $this->attributes[$name] = $val;
 
         return $this;
     }
@@ -98,8 +98,8 @@ class QDOM
      */
     public function removeAttribute($name)
     {
-        if (isset($this->_attributes[$name])) {
-            unset($this->_attributes[$name]);
+        if (isset($this->attributes[$name])) {
+            unset($this->attributes[$name]);
         }
 
         return true;
@@ -123,7 +123,7 @@ class QDOM
      */
     public function getAttributes()
     {
-        return $this->_attributes;
+        return $this->attributes;
     }
 
     /**
