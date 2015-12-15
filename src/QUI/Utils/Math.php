@@ -27,7 +27,7 @@ class Math
      * @example $percent = QUI\Utils\Math::percent(20, 60); $percent=>33
      * @example echo QUI\Utils\Math::percent(50, 100) .'%';
      */
-    static function percent($amount, $total)
+    public static function percent($amount, $total)
     {
         if ($amount == 0 || $total == 0) {
             return 0;
@@ -45,7 +45,7 @@ class Math
      *
      * @return array
      */
-    static function resize($var1, $var2, $max)
+    public static function resize($var1, $var2, $max)
     {
         if ($var1 > $max) {
             $resize_by_percent = ($max * 100) / $var1;
@@ -78,7 +78,7 @@ class Math
      *
      * @return integer
      */
-    static function roundUp($n, $x = 10)
+    public static function roundUp($n, $x = 10)
     {
         return (round($n) % $x === 0) ? round($n)
             : round(($n + $x / 2) / $x) * $x;
@@ -95,7 +95,7 @@ class Math
      *
      * @return integer
      */
-    static function ceilUp($n, $x = 10)
+    public static function ceilUp($n, $x = 10)
     {
         return (ceil($n) % $x === 0) ? ceil($n)
             : round(($n + $x / 2) / $x) * $x;

@@ -11,56 +11,11 @@ namespace QUI\Utils;
  *
  * @author  www.pcsg.de (Henning Leutz
  * @package com.pcsg.qui.utils
+ *
+ * @deprecated
  */
 
-class Bool
+class Bool extends BoolHelper
 {
-    /**
-     * internal var
-     *
-     * @var string|boolean
-     */
-    public $_bool;
 
-    /**
-     * constructor
-     *
-     * @param string|boolean $bool
-     */
-    public function __construct($bool)
-    {
-        $this->_bool = (bool)$bool;
-    }
-
-    /**
-     * Converts JavaScript Boolean values ​​for PHP
-     *
-     * @param string|boolean $value
-     *
-     * @return boolean
-     */
-    static function JSBool($value)
-    {
-        if (is_bool($value)) {
-            return $value;
-        }
-
-        if (is_integer($value)) {
-            if ($value == 1) {
-                return true;
-            }
-
-            return false;
-        }
-
-        if ($value == 'true' || $value == '1') {
-            return true;
-        }
-
-        if ($value == 'false' || $value == '0') {
-            return false;
-        }
-
-        return $value;
-    }
 }

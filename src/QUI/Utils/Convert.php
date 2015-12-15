@@ -28,7 +28,7 @@ class Convert
      *
      * @return string
      */
-    static function formPrice($price, $type = 1)
+    public static function formPrice($price, $type = 1)
     {
         switch ($type) {
             case 2:
@@ -54,7 +54,7 @@ class Convert
      *
      * @return string
      */
-    static function formatBytes($bytes)
+    public static function formatBytes($bytes)
     {
         if (!$bytes) {
             return '0 B';
@@ -75,7 +75,7 @@ class Convert
      *
      * @return string
      */
-    static function convertChars($conv)
+    public static function convertChars($conv)
     {
         $conv = str_replace("Ä", chr(196), $conv);
         $conv = str_replace("ä", chr(228), $conv);
@@ -98,7 +98,7 @@ class Convert
      *
      * @return integer
      */
-    static function convertMySqlDatetime($str)
+    public static function convertMySqlDatetime($str)
     {
         list($date, $time) = explode(' ', $str);
         list($year, $month, $day) = explode('-', $date);
@@ -118,7 +118,7 @@ class Convert
      *
      * @return string
      */
-    static function convertUrlChars($conv, $code = 0)
+    public static function convertUrlChars($conv, $code = 0)
     {
         if ($code == 0) {
             $conv = str_replace("Ä", "Ae", $conv);
@@ -150,7 +150,7 @@ class Convert
      *
      * @return string
      */
-    static function convertRoman($str)
+    public static function convertRoman($str)
     {
         $signs = array(
             'À' => 'A',
