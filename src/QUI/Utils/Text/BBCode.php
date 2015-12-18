@@ -323,11 +323,11 @@ class BBCode extends \QUI\QDOM
         if (strpos($img, 'image.php') !== false
             && strpos($img, 'pms=1') !== false
         ) {
-            $att = \QUI\Utils\String::getHTMLAttributes($img);
+            $att = \QUI\Utils\StringHelper::getHTMLAttributes($img);
 
             if (isset($att['src'])) {
                 $src = str_replace('&amp;', '&', $att['src']);
-                $url = \QUI\Utils\String::getUrlAttributes($src);
+                $url = \QUI\Utils\StringHelper::getUrlAttributes($src);
 
                 if (isset($url['project']) && $url['id']) {
                     $project = $url['project'];
@@ -378,7 +378,7 @@ class BBCode extends \QUI\QDOM
         if (strpos($img, '/media/cache/')
             || $this->getAttribute('extern_image')
         ) {
-            $att = \QUI\Utils\String::getHTMLAttributes($img);
+            $att = \QUI\Utils\StringHelper::getHTMLAttributes($img);
 
             if (!isset($att['src'])) {
                 return '';
@@ -422,7 +422,7 @@ class BBCode extends \QUI\QDOM
 
         if (isset($attributes['style'])) {
             $style
-                = \QUI\Utils\String::splitStyleAttributes($attributes['style']);
+                = \QUI\Utils\StringHelper::splitStyleAttributes($attributes['style']);
 
             if (isset($style['width'])) {
                 $size['width'] = (int)$style['width'];

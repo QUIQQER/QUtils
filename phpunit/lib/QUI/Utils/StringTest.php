@@ -1,7 +1,10 @@
 <?php
 
-use QUI\Utils\String as String;
+use QUI\Utils\StringHelper as StringHelper;
 
+/**
+ * Class StringTest
+ */
 class StringTest extends PHPUnit_Framework_TestCase
 {
     public function testJSString()
@@ -12,7 +15,7 @@ class StringTest extends PHPUnit_Framework_TestCase
     public function testPathinfo()
     {
         try {
-            $test = String::pathinfo('nothing');
+            $test = StringHelper::pathinfo('nothing');
 
             $this->fail(
                 'QUI\Utils\String::pathinfo throws no exception on a none existing file'
@@ -22,7 +25,7 @@ class StringTest extends PHPUnit_Framework_TestCase
         }
 
 
-        $path = String::pathinfo(__FILE__);
+        $path = StringHelper::pathinfo(__FILE__);
 
         if (!isset($path['dirname'])) {
             $this->fail('no dir name');
@@ -39,19 +42,19 @@ class StringTest extends PHPUnit_Framework_TestCase
         }
 
 
-        if (String::pathinfo(__FILE__, PATHINFO_BASENAME) != 'StringTest.php') {
+        if (StringHelper::pathinfo(__FILE__, PATHINFO_BASENAME) != 'StringTest.php') {
             $this->fail('PATHINFO_BASENAME is wrong');
         }
 
-        if (String::pathinfo(__FILE__, PATHINFO_EXTENSION) != 'php') {
+        if (StringHelper::pathinfo(__FILE__, PATHINFO_EXTENSION) != 'php') {
             $this->fail('PATHINFO_EXTENSION is wrong');
         }
 
-        if (String::pathinfo(__FILE__, PATHINFO_FILENAME) != 'StringTest') {
+        if (StringHelper::pathinfo(__FILE__, PATHINFO_FILENAME) != 'StringTest') {
             $this->fail('PATHINFO_FILENAME is wrong');
         }
 
-        $dirname = String::pathinfo(__FILE__, PATHINFO_DIRNAME);
+        $dirname = StringHelper::pathinfo(__FILE__, PATHINFO_DIRNAME);
 
         if ($path['dirname'] != $dirname) {
             $this->fail('PATHINFO_DIRNAME is wrong');
@@ -62,7 +65,7 @@ class StringTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             '/var/www/vhosts/',
-            String::replaceDblSlashes('//var//www/vhosts/')
+            StringHelper::replaceDblSlashes('//var//www/vhosts/')
         );
     }
 
@@ -70,7 +73,7 @@ class StringTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             '   ',
-            String::removeLineBreaks("\n  ", " ")
+            StringHelper::removeLineBreaks("\n  ", " ")
         );
     }
 
@@ -78,27 +81,27 @@ class StringTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             'abc',
-            String::removeDblSigns('aabbccc')
+            StringHelper::removeDblSigns('aabbccc')
         );
 
         $this->assertEquals(
             '/',
-            String::removeDblSigns('///')
+            StringHelper::removeDblSigns('///')
         );
 
         $this->assertEquals(
             '/ ',
-            String::removeDblSigns('/// ')
+            StringHelper::removeDblSigns('/// ')
         );
 
         $this->assertEquals(
             '##',
-            String::removeDblSigns('#')
+            StringHelper::removeDblSigns('#')
         );
 
         $this->assertEquals(
             '[[]]',
-            String::removeDblSigns('[]')
+            StringHelper::removeDblSigns('[]')
         );
     }
 
@@ -106,7 +109,7 @@ class StringTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             '/var/www/vhosts',
-            String::removeLastSlash('/var/www/vhosts/')
+            StringHelper::removeLastSlash('/var/www/vhosts/')
         );
     }
 
@@ -114,7 +117,7 @@ class StringTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             'Atesttest',
-            String::firstToUpper('ATestTest')
+            StringHelper::firstToUpper('ATestTest')
         );
     }
 
@@ -122,27 +125,27 @@ class StringTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             'ÖLLAMPE',
-            String::toUpper('öllampe')
+            StringHelper::toUpper('öllampe')
         );
     }
 
     public function testGetUrlAttributes()
     {
         $attr
-            = String::getUrlAttributes('index.php?id=1&param1=test&param2=hallo');
+            = StringHelper::getUrlAttributes('index.php?id=1&param1=test&param2=hallo');
 
         $this->assertArrayHasKey('id', $attr);
         $this->assertArrayHasKey('param1', $attr);
         $this->assertArrayHasKey('param2', $attr);
 
-        $attr = String::getUrlAttributes('index.php');
+        $attr = StringHelper::getUrlAttributes('index.php');
 
         $this->assertEquals(0, count($attr));
     }
 
     public function testGetHTMLAttributes()
     {
-        $attr = String::getHTMLAttributes(
+        $attr = StringHelper::getHTMLAttributes(
             '<img class="cssclass" id="unique" src="image.png" style="border: 1px solid red;" />'
         );
 
@@ -154,11 +157,11 @@ class StringTest extends PHPUnit_Framework_TestCase
 
     public function testSplitStyleAttributes()
     {
-        $attr = String::getHTMLAttributes(
+        $attr = StringHelper::getHTMLAttributes(
             '<img src="image.png" style="border: 1px solid red; margin: 10px; padding: 10px;" />'
         );
 
-        $style = String::splitStyleAttributes($attr['style']);
+        $style = StringHelper::splitStyleAttributes($attr['style']);
 
         $this->assertArrayHasKey('border', $style);
         $this->assertArrayHasKey('margin', $style);
@@ -171,13 +174,13 @@ class StringTest extends PHPUnit_Framework_TestCase
 
     public function testReplaceLast()
     {
-        $result = String::replaceLast('one', 'three', 'one two one');
+        $result = StringHelper::replaceLast('one', 'three', 'one two one');
 
         $this->assertEquals('one two three', $result);
 
         $this->assertEquals(
             'one two one',
-            String::replaceLast('three', 'three', 'one two one')
+            StringHelper::replaceLast('three', 'three', 'one two one')
         );
     }
 
@@ -190,12 +193,12 @@ class StringTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             'müll',
-            String::toUTF8(utf8_decode('müll'))
+            StringHelper::toUTF8(utf8_decode('müll'))
         );
 
         $this->assertEquals(
             'müll',
-            String::toUTF8('müll')
+            StringHelper::toUTF8('müll')
         );
     }
 
@@ -212,16 +215,16 @@ class StringTest extends PHPUnit_Framework_TestCase
             At vero eos et accusam et justo duo dolores et ea rebum.
             Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
 
-        $sentence = String::sentence($text);
+        $sentence = StringHelper::sentence($text);
 
         $this->assertEquals(
             'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
-            String::sentence($text)
+            StringHelper::sentence($text)
         );
 
         $this->assertEquals(
             false,
-            String::sentence('Lorem ipsum dolor sit amet')
+            StringHelper::sentence('Lorem ipsum dolor sit amet')
         );
     }
 }

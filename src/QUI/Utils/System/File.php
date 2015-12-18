@@ -1189,7 +1189,7 @@ class File
                 }
             }
 
-            $p_tmp = QUI\Utils\String::replaceDblSlashes($p_tmp);
+            $p_tmp = QUI\Utils\StringHelper::replaceDblSlashes($p_tmp);
 
             if (!self::checkOpenBaseDir($p_tmp)) {
                 continue;
