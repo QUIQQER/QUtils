@@ -18,7 +18,7 @@ class StringTest extends PHPUnit_Framework_TestCase
             $test = StringHelper::pathinfo('nothing');
 
             $this->fail(
-                'QUI\Utils\String::pathinfo throws no exception on a none existing file'
+                'QUI\Utils\StringHelper::pathinfo throws no exception on a none existing file'
             );
 
         } catch (\QUI\Exception $Exception) {

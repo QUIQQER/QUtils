@@ -247,10 +247,10 @@ class Orthos
     }
 
     /**
-     * use \QUI\Utils\String::removeLineBreaks
+     * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @see        \QUI\Utils\String::removeLineBreaks
-     * @deprecated use \QUI\Utils\String::removeLineBreaks
+     * @see        \QUI\Utils\StringHelper::removeLineBreaks
+     * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      *
      * @param string $text
      *
