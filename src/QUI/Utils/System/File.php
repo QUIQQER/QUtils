@@ -523,8 +523,10 @@ class File
         switch ($last) {
             case 'g':
                 $val *= 1024;
+                // go on
             case 'm':
                 $val *= 1024;
+                // go on
             case 'k':
                 $val *= 1024;
         }
