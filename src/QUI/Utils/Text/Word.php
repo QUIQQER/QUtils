@@ -23,7 +23,7 @@ class Word
      *
      * @return array
      */
-    static function countImportantWords($text)
+    public static function countImportantWords($text)
     {
         $str = $text;
 
@@ -62,7 +62,7 @@ class Word
      *
      * @return boolean
      */
-    static function isUseful($word)
+    public static function isUseful($word)
     {
         if (strlen($word) <= 1) {
             return false;

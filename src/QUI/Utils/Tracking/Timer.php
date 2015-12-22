@@ -21,14 +21,14 @@ class Timer
      *
      * @var array
      */
-    protected $_milestones;
+    protected $milestones;
 
     /**
      * Time calc
      *
      * @return float
      */
-    protected function _time()
+    protected function time()
     {
         list($utime, $time) = explode(" ", microtime());
 
@@ -42,7 +42,7 @@ class Timer
      */
     public function milestone($name)
     {
-        $this->_milestones[] = array($name, $this->_time());
+        $this->milestones[] = array($name, $this->time());
     }
 
     /**
@@ -54,7 +54,7 @@ class Timer
     {
         $this->milestone('finish');
 
-        return $this->_milestones;
+        return $this->milestones;
     }
 
     /**

@@ -27,7 +27,7 @@ class DocToText
      * @throws QUI\Exception
      * @return string
      */
-    static function convert($file)
+    public static function convert($file)
     {
         if (!file_exists($file)) {
             throw new QUI\Exception('File could not be read.', 404);
@@ -91,7 +91,7 @@ class DocToText
      * @return string
      * @throws QUI\Exception
      */
-    static function convertDoc($filename)
+    public static function convertDoc($filename)
     {
         if (!file_exists($filename)) {
             throw new QUI\Exception('File could not be read.', 404);

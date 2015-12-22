@@ -22,28 +22,28 @@ class Debug
      *
      * @var array
      */
-    static $times = array();
+    public static $times = array();
 
     /**
      * create the output flag
      *
      * @var boolean
      */
-    static $run = false;
+    public static $run = false;
 
     /**
      * debug the memory flag
      *
      * @var boolean
      */
-    static $debug_memory = false;
+    public static $debug_memory = false;
 
     /**
      * Set a Debug Marker
      *
      * @param string|boolean $step - (optional)
      */
-    static function marker($step = false)
+    public static function marker($step = false)
     {
         if (self::$run == false) {
             return;
@@ -68,7 +68,7 @@ class Debug
      *
      * @return string
      */
-    static function output()
+    public static function output()
     {
         if (self::$run == false) {
             return '';

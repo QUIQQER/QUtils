@@ -150,7 +150,7 @@ class DB extends QUI\QDOM
      *
      * @return \QUI\Database\Tables
      */
-    public function Table()
+    public function table()
     {
         if ($this->Tables === null) {
             $this->Tables = new Tables($this);

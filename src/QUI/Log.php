@@ -24,7 +24,7 @@ class Log
      * @param string $message - String to write
      * @param string $filename - Filename (eq: messages, error, database)
      */
-    static function write($message, $filename = 'messages')
+    public static function write($message, $filename = 'messages')
     {
         if (!defined('VAR_DIR')) {
             error_log($message . "\n", 3);
@@ -47,7 +47,7 @@ class Log
      * @param mixed $object
      * @param string $filename
      */
-    static function writeRecursive($object, $filename = 'messages')
+    public static function writeRecursive($object, $filename = 'messages')
     {
         self::write(print_r($object, true), $filename);
     }
@@ -58,7 +58,7 @@ class Log
      * @param \Exception|\QUI\Exception $Exception
      * @param string $filename
      */
-    static function writeException($Exception, $filename = 'error')
+    public static function writeException($Exception, $filename = 'error')
     {
         $message = $Exception->getCode() . " :: \n\n";
         $message .= $Exception->getMessage();
