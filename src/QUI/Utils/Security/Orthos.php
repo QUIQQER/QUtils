@@ -144,6 +144,9 @@ class Orthos
     /**
      * Befreit einen Shell Command String von Schadcode
      *
+     * Nicht für Befehle mit Sonderzeichen benutzen (hierfür einzelne Argumente
+     * mit Orthos::clearShellArg() säubern.
+     *
      * @param string $str - Command
      *
      * @return string
@@ -151,6 +154,17 @@ class Orthos
     public static function clearShell($str)
     {
         return escapeshellcmd($str);
+    }
+
+    /**
+     * Setzt ein Shell-Argument in einfache Anführungszeichen und escaped diese
+     *
+     * @param string $str - Shell-Argument
+     * @return string
+     */
+    public static function clearShellArg($str)
+    {
+        return escapeshellarg($str);
     }
 
     /**
