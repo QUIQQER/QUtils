@@ -34,7 +34,7 @@ class Zip
      * @return boolean
      * @throws \QUI\Exception
      */
-    static function check()
+    public static function check()
     {
         if (!class_exists('ZipArchive')) {
             throw new QUI\Exception(
@@ -55,7 +55,7 @@ class Zip
      *
      * @throws QUI\Exception
      */
-    static function zip($folder, $zipfile, $ignore = array())
+    public static function zip($folder, $zipfile, $ignore = array())
     {
         self::check();
 
@@ -104,7 +104,7 @@ class Zip
      *
      * @throws \QUI\Exception
      */
-    static function unzip($zipfile, $to)
+    public static function unzip($zipfile, $to)
     {
         self::check();
 

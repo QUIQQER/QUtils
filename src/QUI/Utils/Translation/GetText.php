@@ -18,8 +18,7 @@ use QUI;
  *
  * @uses    gettext
  */
-
-class GetText extends \QUI\QDOM
+class GetText extends QUI\QDOM
 {
     /**
      * Constructor
@@ -32,8 +31,8 @@ class GetText extends \QUI\QDOM
     {
         $this->setAttribute(
             'locale',
-            QUI\Utils\String::toLower($lang) . '_'
-            . QUI\Utils\String::toUpper($lang)
+            QUI\Utils\StringHelper::toLower($lang) . '_'
+            . QUI\Utils\StringHelper::toUpper($lang)
         );
 
         $this->setAttribute('domain', str_replace('/', '_', $domain));
@@ -62,7 +61,7 @@ class GetText extends \QUI\QDOM
      */
     public function get($key)
     {
-        $this->_set();
+        $this->set();
 
         return gettext($key);
     }
@@ -70,7 +69,7 @@ class GetText extends \QUI\QDOM
     /**
      * Set all the bindings for gettext
      */
-    protected function _set()
+    protected function set()
     {
         //@todo Ganzes System auf die Aktuelle Sprache inkl. Dezimal etc..
 

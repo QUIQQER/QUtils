@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains QUI\Utils\String
+ * This file contains QUI\Utils\StringHelper
  */
 
 namespace QUI\Utils;

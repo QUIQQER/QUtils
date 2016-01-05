@@ -1,7 +1,7 @@
 <?php
 
 use QUI\Utils\System\File as File;
-use QUI\Utils\String as String;
+use QUI\Utils\StringHelper as StringHelper;
 
 class FileTest extends PHPUnit_Framework_TestCase
 {
@@ -18,7 +18,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "one line",
-            String::removeLineBreaks(File::getFileContent($filename))
+            StringHelper::removeLineBreaks(File::getFileContent($filename))
         );
 
         File::unlink($filename);

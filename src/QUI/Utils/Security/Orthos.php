@@ -6,8 +6,7 @@
 
 namespace QUI\Utils\Security;
 
-use QUI\Utils\String as QUIString;
-use QUI\Utils\String;
+use QUI\Utils\StringHelper;
 use QUI\Utils\Text\BBCode;
 
 /**
@@ -262,10 +261,10 @@ class Orthos
     }
 
     /**
-     * use \QUI\Utils\String::removeLineBreaks
+     * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @see        \QUI\Utils\String::removeLineBreaks
-     * @deprecated use \QUI\Utils\String::removeLineBreaks
+     * @see        \QUI\Utils\StringHelper::removeLineBreaks
+     * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      *
      * @param string $text
      *
@@ -273,7 +272,7 @@ class Orthos
      */
     public static function removeLineBreaks($text)
     {
-        return QUIString::removeLineBreaks($text, '');
+        return StringHelper::removeLineBreaks($text, '');
     }
 
     /**
@@ -513,6 +512,6 @@ class Orthos
         // reduce multiple replacement chars in a row
         $str = preg_replace('#\\' . $replace . '{2,}#i', $replace, $str);
 
-        return String::toLower($str);
+        return StringHelper::toLower($str);
     }
 }

@@ -22,21 +22,21 @@ class DB extends QUI\QDOM
      *
      * @var \PDO
      */
-    protected $_PDO = null;
+    protected $PDO = null;
 
     /**
      * DBTable Object
      *
      * @var \QUI\Database\Tables
      */
-    protected $_Tables = null;
+    protected $Tables = null;
 
     /**
      * SQLite Flag
      *
      * @var boolean
      */
-    protected $_sqlite = false;
+    protected $sqlite = false;
 
     /**
      * Constructor
@@ -65,8 +65,8 @@ class DB extends QUI\QDOM
         // Attributes
         $this->setAttributes($attributes);
 
-        $this->_PDO = $this->getNewPDO();
-        $this->_PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->PDO = $this->getNewPDO();
+        $this->PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         try {
             $Date   = new \DateTime();
@@ -80,7 +80,7 @@ class DB extends QUI\QDOM
             $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '')
                              . $offsetMinutes;
 
-            $this->_PDO->exec("SET time_zone = '{$offsetString}'");
+            $this->PDO->exec("SET time_zone = '{$offsetString}'");
 
         } catch (\PDOException $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
@@ -111,17 +111,14 @@ class DB extends QUI\QDOM
 
         // sqlite PDO
         try {
-
             if ($this->getAttribute('driver') == 'sqlite') {
-
-                $this->_sqlite = true;
+                $this->sqlite = true;
 
                 return new \PDO(
                     'sqlite:' . $this->getAttribute('dbname')
                 );
 
             } else {
-
                 return new \PDO(
                     $this->getAttribute('dsn'),
                     $this->getAttribute('user'),
@@ -145,7 +142,7 @@ class DB extends QUI\QDOM
      */
     public function getPDO()
     {
-        return $this->_PDO;
+        return $this->PDO;
     }
 
     /**
@@ -153,13 +150,13 @@ class DB extends QUI\QDOM
      *
      * @return \QUI\Database\Tables
      */
-    public function Table()
+    public function table()
     {
-        if (is_null($this->_Tables)) {
-            $this->_Tables = new Tables($this);
+        if ($this->Tables === null) {
+            $this->Tables = new Tables($this);
         }
 
-        return $this->_Tables;
+        return $this->Tables;
     }
 
     /**
@@ -169,7 +166,7 @@ class DB extends QUI\QDOM
      */
     public function isSQLite()
     {
-        return $this->_sqlite;
+        return $this->sqlite;
     }
 
     /**
@@ -306,14 +303,14 @@ class DB extends QUI\QDOM
 
         // debuging
         if (isset($params['debug'])) {
-            QUI\Log::writeRecursive(array(
-                'query'   => $query,
+            QUI\System\Log::writeRecursive(array(
+                'query' => $query,
                 'prepare' => $prepare
             ));
         }
 
         return array(
-            'query'   => $query,
+            'query' => $query,
             'prepare' => $prepare
         );
     }
@@ -449,8 +446,8 @@ class DB extends QUI\QDOM
     {
         return $this->exec(array(
             'update' => $table,
-            'set'    => $data,
-            'where'  => $where
+            'set' => $data,
+            'where' => $where
         ));
     }
 
@@ -466,7 +463,7 @@ class DB extends QUI\QDOM
     {
         return $this->exec(array(
             'insert' => $table,
-            'set'    => $data
+            'set' => $data
         ));
     }
 
@@ -482,8 +479,8 @@ class DB extends QUI\QDOM
     {
         return $this->exec(array(
             'delete' => true,
-            'from'   => $table,
-            'where'  => $where
+            'from' => $table,
+            'where' => $where
         ));
     }
 
@@ -494,7 +491,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQuerySelect($params)
+    public static function createQuerySelect($params)
     {
         if (!isset($params['select']) || empty($params['select'])) {
             return 'SELECT * ';
@@ -514,7 +511,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQueryInsert($params)
+    public static function createQueryInsert($params)
     {
         return 'INSERT INTO `' . $params . '` ';
     }
@@ -526,7 +523,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQueryUpdate($params)
+    public static function createQueryUpdate($params)
     {
         return 'UPDATE `' . $params . '` ';
     }
@@ -536,7 +533,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQueryDelete()
+    public static function createQueryDelete()
     {
         return 'DELETE ';
     }
@@ -548,7 +545,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQueryCount($params)
+    public static function createQueryCount($params)
     {
         if (is_array($params) && isset($params['select'])) {
             $query = ' SELECT COUNT(' . $params['select'] . ') ';
@@ -576,7 +573,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQueryFrom($params)
+    public static function createQueryFrom($params)
     {
         if (is_string($params)) {
             return ' FROM `' . $params . '` ';
@@ -608,11 +605,11 @@ class DB extends QUI\QDOM
      *      )
      * )
      */
-    static function createQueryWhere($params, $type = 'AND')
+    public static function createQueryWhere($params, $type = 'AND')
     {
         if (is_string($params)) {
             return array(
-                'where'   => ' WHERE ' . $params,
+                'where' => ' WHERE ' . $params,
                 'prepare' => array()
             );
         }
@@ -655,7 +652,6 @@ class DB extends QUI\QDOM
                     } elseif (isset($value['type'])
                               && $value['type'] == 'NOT'
                     ) {
-
                         if (is_null($value['value'])) {
                             $sql .= $key . ' IS NOT NULL ';
 
@@ -665,7 +661,6 @@ class DB extends QUI\QDOM
                         }
 
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
-
                         $sql .= $key . ' IN (';
 
                         if (!is_array($value['value'])) {
@@ -690,7 +685,6 @@ class DB extends QUI\QDOM
                         $sql .= ') ';
 
                     } else {
-
                         if (!isset($value['type'])) {
                             $value['type'] = '';
                         }
@@ -731,7 +725,7 @@ class DB extends QUI\QDOM
         }
 
         return array(
-            'where'   => $sql,
+            'where' => $sql,
             'prepare' => $prepare
         );
     }
@@ -743,7 +737,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      */
-    static function createQueryWhereOr($params)
+    public static function createQueryWhereOr($params)
     {
         return self::createQueryWhere($params, 'OR');
     }
@@ -756,11 +750,11 @@ class DB extends QUI\QDOM
      *
      * @return array
      */
-    static function createQuerySet($params, $driver = false)
+    public static function createQuerySet($params, $driver = false)
     {
         if (is_string($params)) {
             return array(
-                'set'     => ' SET ' . $params,
+                'set' => ' SET ' . $params,
                 'prepare' => array()
             );
         }
@@ -827,7 +821,7 @@ class DB extends QUI\QDOM
         }
 
         return array(
-            'set'     => $sql,
+            'set' => $sql,
             'prepare' => $prepare
         );
     }
@@ -839,7 +833,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      */
-    static function createQuerySQLiteInsert($params)
+    public static function createQuerySQLiteInsert($params)
     {
         $set_params = $params['set'];
 
@@ -869,7 +863,7 @@ class DB extends QUI\QDOM
         $sql .= ') VALUES (' . implode(',', $values) . ')';
 
         return array(
-            'insert'  => $sql,
+            'insert' => $sql,
             'prepare' => $prepare
         );
     }
@@ -881,7 +875,7 @@ class DB extends QUI\QDOM
      *
      * @return string
      */
-    static function createQueryOrder($params)
+    public static function createQueryOrder($params)
     {
         if (is_string($params)) {
             return ' ORDER BY ' . $params;
@@ -911,7 +905,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      */
-    static function createQueryLimit($params)
+    public static function createQueryLimit($params)
     {
         $sql     = ' LIMIT ';
         $prepare = array();
@@ -928,7 +922,7 @@ class DB extends QUI\QDOM
 
             if (!isset($limit[0]) || !isset($limit[1])) {
                 return array(
-                    'limit'   => '',
+                    'limit' => '',
                     'prepare' => $prepare
                 );
             }
@@ -950,7 +944,7 @@ class DB extends QUI\QDOM
         }
 
         return array(
-            'limit'   => $sql,
+            'limit' => $sql,
             'prepare' => $prepare
         );
     }

@@ -21,7 +21,7 @@ class Url
      *
      * @var array
      */
-    static $Curls = array();
+    public static $Curls = array();
 
     /**
      * Get the Curl Objekt
@@ -32,7 +32,7 @@ class Url
      * @return resource
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
-    static function Curl($url, $curlparams = array())
+    public static function curl($url, $curlparams = array())
     {
         $hash = md5(serialize($url) . serialize($curlparams));
 
@@ -69,9 +69,9 @@ class Url
      * @return array
      * @throws \QUI\Exception
      */
-    static function get($url, $curlparams = array())
+    public static function get($url, $curlparams = array())
     {
-        $Curl = self::Curl($url, $curlparams);
+        $Curl = self::curl($url, $curlparams);
         $data = self::exec($Curl);
 
         $error = curl_error($Curl);
@@ -94,7 +94,7 @@ class Url
      *
      * @return boolean
      */
-    static function search($url, $search, $curlparams = array())
+    public static function search($url, $search, $curlparams = array())
     {
         $content = self::get($url, $curlparams);
 
@@ -111,9 +111,9 @@ class Url
      * @return mixed
      * @throws \QUI\Exception
      */
-    static function getInfo($url, $info = false, $curlparams = array())
+    public static function getInfo($url, $info = false, $curlparams = array())
     {
-        $Curl = self::Curl($url, $curlparams);
+        $Curl = self::curl($url, $curlparams);
 
         if ($info) {
             $result = curl_getinfo($Curl, $info);
@@ -139,7 +139,7 @@ class Url
      *
      * @return mixed
      */
-    static function exec($Curl)
+    public static function exec($Curl)
     {
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);

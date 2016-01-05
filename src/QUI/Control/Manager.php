@@ -18,14 +18,14 @@ class Manager
      *
      * @var array
      */
-    static protected $cssFilesloaded = array();
+    protected static $cssFilesloaded = array();
 
     /**
      * Return the CSS Files from the loaded Controls
      *
      * @return array
      */
-    static function getCSSFiles()
+    public static function getCSSFiles()
     {
         return array_keys(self::$cssFilesloaded);
     }
@@ -35,7 +35,7 @@ class Manager
      *
      * @return string
      */
-    static function getCSS()
+    public static function getCSS()
     {
         $files  = self::getCSSFiles();
         $result = '<style>';
@@ -59,7 +59,7 @@ class Manager
      *
      * @param string $file - Path to the CSS File, the system file path, no relativ path
      */
-    static function addCSSFile($file)
+    public static function addCSSFile($file)
     {
         self::$cssFilesloaded[$file] = true;
     }
@@ -71,7 +71,7 @@ class Manager
      *
      * @return string
      */
-    static function setCSSToHead($html)
+    public static function setCSSToHead($html)
     {
         // letzte head ersetzen
         $string  = $html;
