@@ -564,7 +564,7 @@ class BBCode extends QUI\QDOM
 
         $html = preg_replace_callback(
             '/\[url=([^\]]*)\](.*?)\[\/url\]/is',
-            array(&$this, "_outputlinkhtml"),
+            array(&$this, "outputlinkhtml"),
             $html
         );
 
