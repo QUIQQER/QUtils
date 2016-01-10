@@ -6,8 +6,7 @@
 
 namespace QUI\Utils\Security;
 
-use QUI\Utils\String as QUIString;
-use QUI\Utils\String;
+use QUI\Utils\StringHelper;
 use QUI\Utils\Text\BBCode;
 
 /**
@@ -24,11 +23,11 @@ class Orthos
     /**
      * Befreit einen String von allem möglichen Schadcode
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
-    static function clear($str)
+    public static function clear($str)
     {
         $str = self::removeHTML($str);
         $str = self::clearPath($str);
@@ -43,12 +42,12 @@ class Orthos
      * Remove all none characters in the string.
      * none characters are no a-z A-z or 0-9
      *
-     * @param String $str
-     * @param Array $allowedList - list of allowed signs
+     * @param string $str
+     * @param array $allowedList - list of allowed signs
      *
-     * @return String
+     * @return string
      */
-    static function clearNoneCharacters($str = '', $allowedList = array())
+    public static function clearNoneCharacters($str = '', $allowedList = array())
     {
         $chars = 'a-zA-Z0-9';
 
@@ -62,11 +61,11 @@ class Orthos
     /**
      * Befreit ein Array von allem möglichen Schadcode
      *
-     * @param Array $data
+     * @param array $data
      *
-     * @return Array
+     * @return array
      */
-    static function clearArray($data)
+    public static function clearArray($data)
     {
         if (!is_array($data)) {
             return array();
@@ -89,11 +88,11 @@ class Orthos
     /**
      * Säubert eine Pfadangabe von eventuellen Änderungen des Pfades
      *
-     * @param String $path
+     * @param string $path
      *
-     * @return String|Bool
+     * @return string|boolean
      */
-    static function clearPath($path)
+    public static function clearPath($path)
     {
         return str_replace(array('../', '..'), '', $path);
     }
@@ -101,11 +100,11 @@ class Orthos
     /**
      * Enfernt HTML aus dem Text
      *
-     * @param String $text
+     * @param string $text
      *
-     * @return String
+     * @return string
      */
-    static function removeHTML($text)
+    public static function removeHTML($text)
     {
         return strip_tags($text);
     }
@@ -121,14 +120,14 @@ class Orthos
      * but are often much faster to execute than interpolated queries,
      * as both the server and client side can cache a compiled form of the query.
      *
-     * @param String $str - Command
-     * @param Bool $escape - Escape the String (true or false}
+     * @param string $str - Command
+     * @param boolean $escape - Escape the String (true or false}
      *
-     * @return String
+     * @return string
      *
      * @deprecated use PDO::quote (QUI::getPDO()->quote())
      */
-    static function clearMySQL($str, $escape = true)
+    public static function clearMySQL($str, $escape = true)
     {
         if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
             $str = stripslashes($str);
@@ -144,23 +143,37 @@ class Orthos
     /**
      * Befreit einen Shell Command String von Schadcode
      *
-     * @param String $str - Command
+     * Nicht für Befehle mit Sonderzeichen benutzen (hierfür einzelne Argumente
+     * mit Orthos::clearShellArg() säubern.
      *
-     * @return String
+     * @param string $str - Command
+     *
+     * @return string
      */
-    static function clearShell($str)
+    public static function clearShell($str)
     {
         return escapeshellcmd($str);
     }
 
     /**
+     * Setzt ein Shell-Argument in einfache Anführungszeichen und escaped diese
+     *
+     * @param string $str - Shell-Argument
+     * @return string
+     */
+    public static function clearShellArg($str)
+    {
+        return escapeshellarg($str);
+    }
+
+    /**
      * Enter description here...
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return Integer
+     * @return integer
      */
-    static function parseInt($str)
+    public static function parseInt($str)
     {
         return (int)$str;
     }
@@ -169,11 +182,11 @@ class Orthos
      * Säubert "böses" HTML raus
      * Zum Beispiel für Wiki
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
-    static function cleanHTML($str)
+    public static function cleanHTML($str)
     {
         $BBCode = new BBCode();
 
@@ -187,12 +200,12 @@ class Orthos
      * Prüft Datumsteile nach Korrektheit
      * Bei Korrektheit kommt $val wieder zurück ansonsten 0
      *
-     * @param Integer $val
-     * @param String $type - DAY | MONTH | YEAR
+     * @param integer $val
+     * @param string $type - DAY | MONTH | YEAR
      *
-     * @return Integer
+     * @return integer
      */
-    static function date($val, $type = 'DAY')
+    public static function date($val, $type = 'DAY')
     {
         if ($type == 'MONTH') {
             $val = self::parseInt($val);
@@ -224,13 +237,13 @@ class Orthos
     /**
      * Prüft ein Datum auf Korrektheit
      *
-     * @param Integer $day
-     * @param Integer $month
-     * @param Integer $year
+     * @param integer $day
+     * @param integer $month
+     * @param integer $year
      *
-     * @return Bool
+     * @return boolean
      */
-    static function checkdate($day, $month, $year)
+    public static function checkdate($day, $month, $year)
     {
         if (!is_int($day)) {
             return false;
@@ -248,28 +261,28 @@ class Orthos
     }
 
     /**
-     * use \QUI\Utils\String::removeLineBreaks
+     * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @see        \QUI\Utils\String::removeLineBreaks
-     * @deprecated use \QUI\Utils\String::removeLineBreaks
+     * @see        \QUI\Utils\StringHelper::removeLineBreaks
+     * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @param String $text
+     * @param string $text
      *
      * @return string
      */
-    static function removeLineBreaks($text)
+    public static function removeLineBreaks($text)
     {
-        return QUIString::removeLineBreaks($text, '');
+        return StringHelper::removeLineBreaks($text, '');
     }
 
     /**
      * Prüft eine Mail Adresse auf Syntax
      *
-     * @param String $email - Mail Adresse
+     * @param string $email - Mail Adresse
      *
-     * @return Bool
+     * @return boolean
      */
-    static function checkMailSyntax($email)
+    public static function checkMailSyntax($email)
     {
         return preg_match(
             '/^([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,64}\@{1}([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,248}\.{1}([a-z]){2,6}$/',
@@ -280,11 +293,11 @@ class Orthos
     /**
      * Prüft ein MySQL Timestamp auf Syntax
      *
-     * @param String $date
+     * @param string $date
      *
-     * @return Bool
+     * @return boolean
      */
-    static function checkMySqlDatetimeSyntax($date)
+    public static function checkMySqlDatetimeSyntax($date)
     {
         // Nur Zahlen erlaubt
         if (preg_match('/[^0-9- :]/i', $date)) {
@@ -302,11 +315,11 @@ class Orthos
     /**
      * Generiert einen Zufallsstring
      *
-     * @param $length - Länge des Passwortes
+     * @param integer $length - Länge des Passwortes
      *
-     * @return String
+     * @return string
      */
-    static function getPassword($length = 10)
+    public static function getPassword($length = 10)
     {
         $newpass = "";
         $laenge  = $length;
@@ -325,11 +338,11 @@ class Orthos
     /**
      * Prüft ob die Mail Adresse eine Spam Wegwerf Mail Adresse ist
      *
-     * @param String $mail - E-Mail Adresse
+     * @param string $mail - E-Mail Adresse
      *
-     * @return Bool
+     * @return boolean
      */
-    static function isSpamMail($mail)
+    public static function isSpamMail($mail)
     {
         $split = explode('@', $mail);
 
@@ -409,16 +422,15 @@ class Orthos
     /**
      * Löscht alle Zeichen aus einem Request welches für ein XSS verwendet werden könnte
      *
-     * @param String $value
+     * @param string $value
      *
-     * @return String
+     * @return string
      */
-    static function clearFormRequest($value)
+    public static function clearFormRequest($value)
     {
         if (is_array($value)) {
             foreach ($value as $key => $entry) {
-                $value[$key]
-                    = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
+                $value[$key] = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
             }
 
         } else {
@@ -454,11 +466,11 @@ class Orthos
     /**
      * Encodes a string for safe and unambiguous url use
      *
-     * @param $str
+     * @param string $str
      * @param string $replace - replacement character for unsafe / ambiguous characters
      * @return string - filtered string
      */
-    static function urlEncodeString($str, $replace = "-")
+    public static function urlEncodeString($str, $replace = "-")
     {
         if (!is_string($replace)) {
             $replace = "-";
@@ -500,6 +512,6 @@ class Orthos
         // reduce multiple replacement chars in a row
         $str = preg_replace('#\\' . $replace . '{2,}#i', $replace, $str);
 
-        return String::toLower($str);
+        return StringHelper::toLower($str);
     }
 }

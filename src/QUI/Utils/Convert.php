@@ -20,15 +20,15 @@ class Convert
      *
      * 1.000,00 - 1000,00
      *
-     * @param Integer $price
-     * @param Integer $type -
+     * @param integer $price
+     * @param integer $type -
      *                      1=round($betrag, 2)
      *                      2=$price value with , as decimal separator
      *                      3=$price value with . as decimal separator
      *
-     * @return String
+     * @return string
      */
-    static function formPrice($price, $type = 1)
+    public static function formPrice($price, $type = 1)
     {
         switch ($type) {
             case 2:
@@ -50,11 +50,11 @@ class Convert
     /**
      * Format a byte number in human readable format
      *
-     * @param Integer $bytes
+     * @param integer $bytes
      *
      * @return string
      */
-    static function formatBytes($bytes)
+    public static function formatBytes($bytes)
     {
         if (!$bytes) {
             return '0 B';
@@ -71,11 +71,11 @@ class Convert
     /**
      * Converts some Umlauts
      *
-     * @param String $conv
+     * @param string $conv
      *
-     * @return String
+     * @return string
      */
-    static function convertChars($conv)
+    public static function convertChars($conv)
     {
         $conv = str_replace("Ä", chr(196), $conv);
         $conv = str_replace("ä", chr(228), $conv);
@@ -94,11 +94,11 @@ class Convert
     /**
      * Converts a MySQL DateTime format to a Unix timestamp
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return Integer
+     * @return integer
      */
-    static function convertMySqlDatetime($str)
+    public static function convertMySqlDatetime($str)
     {
         list($date, $time) = explode(' ', $str);
         list($year, $month, $day) = explode('-', $date);
@@ -113,12 +113,12 @@ class Convert
      * Convert umlauts e.g. ä to ae, u in ue etc.
      * it used to url converting
      *
-     * @param String $conv
-     * @param Integer $code 0=encode 1=decode, standard=0
+     * @param string $conv
+     * @param integer $code 0=encode 1=decode, standard=0
      *
-     * @return String
+     * @return string
      */
-    static function convertUrlChars($conv, $code = 0)
+    public static function convertUrlChars($conv, $code = 0)
     {
         if ($code == 0) {
             $conv = str_replace("Ä", "Ae", $conv);
@@ -146,11 +146,11 @@ class Convert
     /**
      * Convert romanic signs to their latin counterpart
      *
-     * @param String $str
+     * @param string $str
      *
-     * @return String
+     * @return string
      */
-    static function convertRoman($str)
+    public static function convertRoman($str)
     {
         $signs = array(
             'À' => 'A',

@@ -31,10 +31,10 @@ class Zip
     /**
      * Check, if ZipArchive is enabled
      *
-     * @return Bool
+     * @return boolean
      * @throws \QUI\Exception
      */
-    static function check()
+    public static function check()
     {
         if (!class_exists('ZipArchive')) {
             throw new QUI\Exception(
@@ -49,13 +49,13 @@ class Zip
     /**
      * From a folder created a ZIP Archive
      *
-     * @param String $folder - Folder which is to be packed
-     * @param String $zipfile - Name of new Zipfiles
-     * @param Array $ignore - Folder to be ignored
+     * @param string $folder - Folder which is to be packed
+     * @param string $zipfile - Name of new Zipfiles
+     * @param array $ignore - Folder to be ignored
      *
      * @throws QUI\Exception
      */
-    static function zip($folder, $zipfile, $ignore = array())
+    public static function zip($folder, $zipfile, $ignore = array())
     {
         self::check();
 
@@ -99,12 +99,12 @@ class Zip
     /**
      * Unzip the file
      *
-     * @param String $zipfile - path to zip file
-     * @param String $to - path to the destination folder
+     * @param string $zipfile - path to zip file
+     * @param string $to - path to the destination folder
      *
      * @throws \QUI\Exception
      */
-    static function unzip($zipfile, $to)
+    public static function unzip($zipfile, $to)
     {
         self::check();
 

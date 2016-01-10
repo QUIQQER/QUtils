@@ -23,32 +23,32 @@ class QDOM
      *
      * @var array
      */
-    protected $_attributes = array();
+    protected $attributes = array();
 
     /**
      * Exist the attribute in the object?
      *
-     * @param String $name
+     * @param string $name
      *
-     * @return Bool
+     * @return boolean
      */
     public function existsAttribute($name)
     {
-        return isset($this->_attributes[$name]) ? true : false;
+        return isset($this->attributes[$name]) ? true : false;
     }
 
     /**
      * returns a attribute
      * if the attribute is not set, it returns false
      *
-     * @param String $name
+     * @param string $name
      *
      * @return mixed
      */
     public function getAttribute($name)
     {
-        if (isset($this->_attributes[$name])) {
-            return $this->_attributes[$name];
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
         }
 
         return false;
@@ -57,14 +57,14 @@ class QDOM
     /**
      * set an attribute
      *
-     * @param String $name - name of the attribute
-     * @param String|Bool|Array|Object $val - value of the attribute
+     * @param string $name - name of the attribute
+     * @param string|boolean|array|object $val - value of the attribute
      *
      * @return QDOM this
      */
     public function setAttribute($name, $val)
     {
-        $this->_attributes[$name] = $val;
+        $this->attributes[$name] = $val;
 
         return $this;
     }
@@ -72,7 +72,7 @@ class QDOM
     /**
      * If you want to set more than one attribute
      *
-     * @param Array $attributes
+     * @param array $attributes
      *
      * @return QDOM this
      */
@@ -92,14 +92,14 @@ class QDOM
     /**
      * Remove a attribute
      *
-     * @param String $name
+     * @param string $name
      *
-     * @return Bool
+     * @return boolean
      */
     public function removeAttribute($name)
     {
-        if (isset($this->_attributes[$name])) {
-            unset($this->_attributes[$name]);
+        if (isset($this->attributes[$name])) {
+            unset($this->attributes[$name]);
         }
 
         return true;
@@ -108,7 +108,7 @@ class QDOM
     /**
      * Return all attributes
      *
-     * @return Array
+     * @return array
      * @deprecated getAllAttributes is depricated use getAttributes()
      */
     public function getAllAttributes()
@@ -119,17 +119,17 @@ class QDOM
     /**
      * Return all attributes
      *
-     * @return Array
+     * @return array
      */
     public function getAttributes()
     {
-        return $this->_attributes;
+        return $this->attributes;
     }
 
     /**
      * Return the class type
      *
-     * @return String
+     * @return string
      */
     public function getType()
     {
@@ -139,7 +139,7 @@ class QDOM
     /**
      * Return the object as string
      *
-     * @return String
+     * @return string
      */
     public function __toString()
     {

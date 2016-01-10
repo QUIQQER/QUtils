@@ -16,16 +16,16 @@ class Manager
     /**
      * Lst of CSS Files
      *
-     * @var Array
+     * @var array
      */
-    static protected $cssFilesloaded = array();
+    protected static $cssFilesloaded = array();
 
     /**
      * Return the CSS Files from the loaded Controls
      *
-     * @return Array
+     * @return array
      */
-    static function getCSSFiles()
+    public static function getCSSFiles()
     {
         return array_keys(self::$cssFilesloaded);
     }
@@ -33,9 +33,9 @@ class Manager
     /**
      * Return the <style></style> of all loaded css files
      *
-     * @return String
+     * @return string
      */
-    static function getCSS()
+    public static function getCSS()
     {
         $files  = self::getCSSFiles();
         $result = '<style>';
@@ -57,9 +57,9 @@ class Manager
     /**
      * Add a css file
      *
-     * @param String $file - Path to the CSS File, the system file path, no relativ path
+     * @param string $file - Path to the CSS File, the system file path, no relativ path
      */
-    static function addCSSFile($file)
+    public static function addCSSFile($file)
     {
         self::$cssFilesloaded[$file] = true;
     }
@@ -67,11 +67,11 @@ class Manager
     /**
      * Insert the CSS Files in the <head></head> of a html
      *
-     * @param String $html - complete html
+     * @param string $html - complete html
      *
-     * @return String
+     * @return string
      */
-    static function setCSSToHead($html)
+    public static function setCSSToHead($html)
     {
         // letzte head ersetzen
         $string  = $html;

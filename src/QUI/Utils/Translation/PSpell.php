@@ -32,7 +32,7 @@ class PSpell extends QUI\QDOM
      *
      * @var $_Spell
      */
-    protected $_Spell;
+    protected $Spell;
 
     /**
      * Constructor
@@ -64,16 +64,16 @@ class PSpell extends QUI\QDOM
             pspell_config_personal($Config, $this->getAttribute('personal'));
         }
 
-        $this->_Spell = pspell_new($Config);
+        $this->Spell = pspell_new($Config);
     }
 
     /**
      * Check if pspell is installed
      *
-     * @return Bool
+     * @return boolean
      * @throws \QUI\Exception
      */
-    static function check()
+    public static function check()
     {
         if (!function_exists('pspell_new')) {
             throw new QUI\Exception('PSpell is not installed');
@@ -91,6 +91,6 @@ class PSpell extends QUI\QDOM
      */
     public function translate($word)
     {
-        return pspell_suggest($this->_Spell, $word);
+        return pspell_suggest($this->Spell, $word);
     }
 }

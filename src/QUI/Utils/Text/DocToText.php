@@ -22,12 +22,12 @@ class DocToText
     /**
      * Returns the content from a odx / docx file
      *
-     * @param String $file - path to file
+     * @param string $file - path to file
      *
      * @throws QUI\Exception
-     * @return String
+     * @return string
      */
-    static function convert($file)
+    public static function convert($file)
     {
         if (!file_exists($file)) {
             throw new QUI\Exception('File could not be read.', 404);
@@ -86,12 +86,12 @@ class DocToText
      * Convert a microsoft .doc file to text
      * from: http://blog.folkeraxmann.de/?p=318
      *
-     * @param String $filename - Path to filename
+     * @param string $filename - Path to filename
      *
-     * @return String
+     * @return string
      * @throws QUI\Exception
      */
-    static function convertDoc($filename)
+    public static function convertDoc($filename)
     {
         if (!file_exists($filename)) {
             throw new QUI\Exception('File could not be read.', 404);

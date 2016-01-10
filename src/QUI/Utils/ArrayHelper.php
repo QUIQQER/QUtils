@@ -20,9 +20,9 @@ class ArrayHelper
      *
      * @param array $array
      *
-     * @return Bool
+     * @return boolean
      */
-    static function isAssoc(array $array)
+    public static function isAssoc(array $array)
     {
         foreach ($array as $key => $value) {
             if (is_int($key)) {
@@ -40,7 +40,7 @@ class ArrayHelper
      *
      * @return array
      */
-    static function toAssoc(array $array)
+    public static function toAssoc(array $array)
     {
         $result = array();
 
@@ -58,7 +58,7 @@ class ArrayHelper
      *
      * @return array
      */
-    static function objectToArray($obj)
+    public static function objectToArray($obj)
     {
         $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
         $arr  = array();
@@ -85,7 +85,7 @@ class ArrayHelper
      *
      * @return Object
      */
-    static function arrayToObject($array = array())
+    public static function arrayToObject($array = array())
     {
         // its the easiest way
         return (object)$array;

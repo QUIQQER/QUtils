@@ -19,20 +19,20 @@ class Url
     /**
      * List of curl Objects
      *
-     * @var Array
+     * @var array
      */
-    static $Curls = array();
+    public static $Curls = array();
 
     /**
      * Get the Curl Objekt
      *
-     * @param String $url - Url
+     * @param string $url - Url
      * @param array $curlparams - Curl parameter
      *
      * @return resource
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
-    static function Curl($url, $curlparams = array())
+    public static function curl($url, $curlparams = array())
     {
         $hash = md5(serialize($url) . serialize($curlparams));
 
@@ -63,15 +63,15 @@ class Url
     /**
      * Get the content from a url
      *
-     * @param String $url
+     * @param string $url
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *
      * @return array
      * @throws \QUI\Exception
      */
-    static function get($url, $curlparams = array())
+    public static function get($url, $curlparams = array())
     {
-        $Curl = self::Curl($url, $curlparams);
+        $Curl = self::curl($url, $curlparams);
         $data = self::exec($Curl);
 
         $error = curl_error($Curl);
@@ -88,13 +88,13 @@ class Url
     /**
      * Search the string at the content of the url
      *
-     * @param String $url
-     * @param String $search
+     * @param string $url
+     * @param string $search
      * @param array $curlparams - siehe Utils_Request_Url::Curl (optional)
      *
-     * @return Bool
+     * @return boolean
      */
-    static function search($url, $search, $curlparams = array())
+    public static function search($url, $search, $curlparams = array())
     {
         $content = self::get($url, $curlparams);
 
@@ -104,16 +104,16 @@ class Url
     /**
      * Get a header information of the url
      *
-     * @param String $url
+     * @param string $url
      * @param bool $info
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *
      * @return mixed
      * @throws \QUI\Exception
      */
-    static function getInfo($url, $info = false, $curlparams = array())
+    public static function getInfo($url, $info = false, $curlparams = array())
     {
-        $Curl = self::Curl($url, $curlparams);
+        $Curl = self::curl($url, $curlparams);
 
         if ($info) {
             $result = curl_getinfo($Curl, $info);
@@ -139,7 +139,7 @@ class Url
      *
      * @return mixed
      */
-    static function exec($Curl)
+    public static function exec($Curl)
     {
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);

@@ -20,35 +20,46 @@ class Exception extends \Exception
      *
      * @var array
      */
-    protected $_attributes = array();
+    protected $attributes = array();
 
     /**
      * context data
      *
      * @var array
      */
-    protected $_context = array();
+    protected $context = array();
 
     /**
      * Constructor
      *
-     * @param String $message - Text der Exception
-     * @param Integer $code - Errorcode der Exception
-     * @param Array $context - [optional] Context data, which data
+     * @param string|array $message - Text der Exception
+     * @param integer $code - Errorcode der Exception
+     * @param array $context - [optional] Context data, which data
      */
     public function __construct($message = null, $code = 0, $context = array())
     {
+        if (is_array($message)) {
+            if (!isset($message[0]) || !isset($message[1])) {
+                $message = implode(',', $message);
+            } else {
+                $message = \QUI::getUserBySession()->getLocale()->get(
+                    $message[0],
+                    $message[1]
+                );
+            }
+        }
+
         parent::__construct((string)$message, (int)$code);
 
         if (!empty($context)) {
-            $this->_context = $context;
+            $this->context = $context;
         }
     }
 
     /**
      * Return the Exception type
      *
-     * @return String
+     * @return string
      */
     public function getType()
     {
@@ -62,22 +73,22 @@ class Exception extends \Exception
      */
     public function getContext()
     {
-        return $this->_context;
+        return $this->context;
     }
 
     /**
      * Return the Exception as an array
      *
-     * @return Array
+     * @return array
      */
     public function toArray()
     {
-        $attributes = $this->_attributes;
+        $attributes = $this->attributes;
 
         $attributes['code']    = $this->getCode();
         $attributes['message'] = $this->getMessage();
         $attributes['type']    = $this->getType();
-        $attributes['context'] = $this->_context;
+        $attributes['context'] = $this->getContext();
 
         return $attributes;
     }
@@ -86,14 +97,14 @@ class Exception extends \Exception
      * returns a attribute
      * if the attribute is not set, it returns false
      *
-     * @param String $name
+     * @param string $name
      *
      * @return mixed
      */
     public function getAttribute($name)
     {
-        if (isset($this->_attributes[$name])) {
-            return $this->_attributes[$name];
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
         }
 
         return false;
@@ -102,14 +113,14 @@ class Exception extends \Exception
     /**
      * set an attribute
      *
-     * @param String $name - name of the attribute
+     * @param string $name - name of the attribute
      * @param mixed $val - value of the attribute
      *
      * @return \QUI\Exception this
      */
     public function setAttribute($name, $val)
     {
-        $this->_attributes[$name] = $val;
+        $this->attributes[$name] = $val;
 
         return $this;
     }
@@ -117,7 +128,7 @@ class Exception extends \Exception
     /**
      * If you want to set more than one attribute
      *
-     * @param Array $attributes
+     * @param array $attributes
      *
      * @return \QUI\Exception
      */

@@ -22,12 +22,12 @@ class PDFToText extends QUI\QDOM
     /**
      * Convert the pdf to text and return the text
      *
-     * @param String $filename - path to PDF File
+     * @param string $filename - path to PDF File
      *
-     * @return String
+     * @return string
      * @throws QUI\Exception
      */
-    static function convert($filename)
+    public static function convert($filename)
     {
         if (!file_exists($filename)) {
             throw new QUI\Exception('File could not be read.', 404);

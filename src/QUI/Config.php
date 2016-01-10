@@ -20,21 +20,21 @@ class Config
     /**
      * filename
      *
-     * @var String
+     * @var string
      */
-    private $_iniFilename = '';
+    private $iniFilename = '';
 
     /**
      * ini entries
      *
      * @var array
      */
-    private $_iniParsedArray = array();
+    private $iniParsedArray = array();
 
     /**
      * constructor
      *
-     * @param String $filename - (optional) Path to the config
+     * @param string $filename - (optional) Path to the config
      */
     public function __construct($filename = '')
     {
@@ -46,9 +46,9 @@ class Config
             return;
         }
 
-        $this->_iniFilename = $filename;
+        $this->iniFilename = $filename;
 
-        if ($this->_iniParsedArray = parse_ini_file($filename, true)) {
+        if ($this->iniParsedArray = parse_ini_file($filename, true)) {
             return;
         }
 
@@ -58,69 +58,69 @@ class Config
     /**
      * Ini Einträge als Array bekommen
      *
-     * @return Array
+     * @return array
      */
     public function toArray()
     {
-        return $this->_iniParsedArray;
+        return $this->iniParsedArray;
     }
 
     /**
      * Return the ini as json encode
      *
-     * @return String
+     * @return string
      */
     public function toJSON()
     {
-        return json_encode($this->_iniParsedArray);
+        return json_encode($this->iniParsedArray);
     }
 
     /**
      * Gibt eine komplette Sektion zurück
      *
-     * @param String $key
+     * @param string $key
      *
-     * @return String || Array
+     * @return string|array
      */
     public function getSection($key)
     {
-        if (!isset($this->_iniParsedArray[$key])) {
+        if (!isset($this->iniParsedArray[$key])) {
             return false;
         }
 
-        return $this->_iniParsedArray[$key];
+        return $this->iniParsedArray[$key];
     }
 
     /**
      * Gibt einen Wert aus einer Sektion zurück
      *
-     * @param String $section
-     * @param String $key
+     * @param string $section
+     * @param string $key
      *
-     * @return String || Array
+     * @return string|array
      */
     public function getValue($section, $key)
     {
-        if (!isset($this->_iniParsedArray[$section])
-            || !isset($this->_iniParsedArray[$section][$key])
+        if (!isset($this->iniParsedArray[$section])
+            || !isset($this->iniParsedArray[$section][$key])
         ) {
             return false;
         }
 
-        return $this->_iniParsedArray[$section][$key];
+        return $this->iniParsedArray[$section][$key];
     }
 
     /**
      * Gibt den Wert einer Sektion  oder die ganze Section zurück
      *
-     * @param String $section
-     * @param String || NULL $key (optional)
+     * @param string $section
+     * @param string || NULL $key (optional)
      *
-     * @return String|Array
+     * @return string|array
      */
     public function get($section, $key = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getSection($section);
         }
 
@@ -130,34 +130,34 @@ class Config
     /**
      * Gibt den Dateinamen der Config zurück
      *
-     * @return String
+     * @return string
      */
     public function getFilename()
     {
-        return $this->_iniFilename;
+        return $this->iniFilename;
     }
 
     /**
      * Setzt eine komplette Sektion
      *
-     * @param String|Bool $section
-     * @param Array $array
+     * @param string|boolean $section
+     * @param array $array
      *
-     * @return Bool
+     * @return boolean
      */
-    public function setSection($section = false, $array)
+    public function setSection($section = false, $array = array())
     {
         if (!is_array($array)) {
             return false;
         }
 
         if ($section) {
-            $this->_iniParsedArray[$section] = $array;
+            $this->iniParsedArray[$section] = $array;
 
             return true;
         }
 
-        $this->_iniParsedArray[] = $array;
+        $this->iniParsedArray[] = $array;
 
         return true;
     }
@@ -165,24 +165,24 @@ class Config
     /**
      * Setzt einen neuen Wert in einer Sektion
      *
-     * @param String $section
-     * @param String $key
-     * @param String $value
+     * @param string $section
+     * @param string|null $key
+     * @param string $value
      *
-     * @return Bool
+     * @return boolean
      *
      * @example QConfig->setValue('section', null, 'something');
      * @example QConfig->setValue('section', 'entry', 'something');
      */
-    public function setValue($section, $key = null, $value)
+    public function setValue($section, $key = null, $value = '')
     {
         if ($key == null) {
-            if ($this->_iniParsedArray[$section] = $value) {
+            if ($this->iniParsedArray[$section] = $value) {
                 return true;
             }
         }
 
-        if ($this->_iniParsedArray[$section][$key] = $value) {
+        if ($this->iniParsedArray[$section][$key] = $value) {
             return true;
         }
 
@@ -192,22 +192,22 @@ class Config
     /**
      * exist the section or value?
      *
-     * @param String $section
-     * @param String $key - (optional)
+     * @param string $section
+     * @param string $key - (optional)
      *
-     * @return Bool
+     * @return boolean
      */
     public function existValue($section, $key = null)
     {
         if ($key === null) {
-            return isset($this->_iniParsedArray[$section]) ? true : false;
+            return isset($this->iniParsedArray[$section]) ? true : false;
         }
 
-        if (!isset($this->_iniParsedArray[$section])) {
+        if (!isset($this->iniParsedArray[$section])) {
             return false;
         }
 
-        return isset($this->_iniParsedArray[$section][$key]) ? true : false;
+        return isset($this->iniParsedArray[$section][$key]) ? true : false;
     }
 
     /**
@@ -221,7 +221,7 @@ class Config
      */
     public function set($section = false, $key = null, $value = null)
     {
-        if (is_array($key) && is_null($value)) {
+        if (is_array($key) && $key === null) {
             return $this->setSection($section, $key);
         }
 
@@ -231,28 +231,28 @@ class Config
     /**
      * Löscht eine Sektion oder ein Key in der Sektion
      *
-     * @param String $section
-     * @param String $key - optional, wenn angegeben wird Key gelöscht ansonsten komplette Sektion
+     * @param string $section
+     * @param string $key - optional, wenn angegeben wird Key gelöscht ansonsten komplette Sektion
      *
-     * @return Bool
+     * @return boolean
      */
     public function del($section, $key = null)
     {
-        if (!isset($this->_iniParsedArray[$section])) {
+        if (!isset($this->iniParsedArray[$section])) {
             return true;
         }
 
-        if (is_null($key)) {
-            unset($this->_iniParsedArray[$section]);
+        if ($key === null) {
+            unset($this->iniParsedArray[$section]);
 
             return true;
         }
 
-        if (isset($this->_iniParsedArray[$section][$key])) {
-            unset($this->_iniParsedArray[$section][$key]);
+        if (isset($this->iniParsedArray[$section][$key])) {
+            unset($this->iniParsedArray[$section][$key]);
         }
 
-        if (isset($this->_iniParsedArray[$section][$key])) {
+        if (isset($this->iniParsedArray[$section][$key])) {
             return false;
         }
 
@@ -262,15 +262,15 @@ class Config
     /**
      * Speichert die Einträge in die INI Datei
      *
-     * @param String $filename - (optional) Pfad zur Datei
+     * @param string $filename - (optional) Pfad zur Datei
      *
-     * @return Bool
+     * @return boolean
      * @throws \QUI\Exception
      */
     public function save($filename = null)
     {
         if ($filename == null) {
-            $filename = $this->_iniFilename;
+            $filename = $this->iniFilename;
         }
 
         if (!is_writeable($filename)) {
@@ -286,14 +286,14 @@ class Config
         fwrite($SFfdescriptor, ";<?php exit; ?>\n"); // php security
 
 
-        foreach ($this->_iniParsedArray as $section => $array) {
+        foreach ($this->iniParsedArray as $section => $array) {
             if (is_array($array)) {
                 fwrite($SFfdescriptor, "[" . $section . "]\n");
 
                 foreach ($array as $key => $value) {
                     fwrite(
                         $SFfdescriptor,
-                        $key . '="' . $this->_clean($value) . "\"\n"
+                        $key . '="' . $this->clean($value) . "\"\n"
                     );
                 }
 
@@ -302,7 +302,7 @@ class Config
             } else {
                 fwrite(
                     $SFfdescriptor,
-                    $section . '="' . $this->_clean($array) . "\"\n"
+                    $section . '="' . $this->clean($array) . "\"\n"
                 );
             }
         }
@@ -313,11 +313,11 @@ class Config
     /**
      * Zeilenumbrüche löschen
      *
-     * @param String $value
+     * @param string $value
      *
-     * @return String
+     * @return string
      */
-    protected function _clean($value)
+    protected function clean($value)
     {
         $value = str_replace(array("\r\n", "\n", "\r"), '', $value);
         $value = str_replace('"', '\"', $value);

@@ -21,14 +21,14 @@ class Timer
      *
      * @var array
      */
-    protected $_milestones;
+    protected $milestones;
 
     /**
      * Time calc
      *
-     * @return Float
+     * @return float
      */
-    protected function _time()
+    protected function time()
     {
         list($utime, $time) = explode(" ", microtime());
 
@@ -38,29 +38,29 @@ class Timer
     /**
      * Set measurement point
      *
-     * @param String $name - name of the point
+     * @param string $name - name of the point
      */
     public function milestone($name)
     {
-        $this->_milestones[] = array($name, $this->_time());
+        $this->milestones[] = array($name, $this->time());
     }
 
     /**
      * Returns the time measurement result as an array
      *
-     * @return Array
+     * @return array
      */
     public function result()
     {
         $this->milestone('finish');
 
-        return $this->_milestones;
+        return $this->milestones;
     }
 
     /**
      * Returns the time measurement results as HTML
      *
-     * @return String
+     * @return string
      */
     public function resultStr()
     {
@@ -88,7 +88,7 @@ class Timer
     /**
      * Returns the time measurement result for the bash / console
      *
-     * @return Array
+     * @return array
      */
     public function resultConsole()
     {

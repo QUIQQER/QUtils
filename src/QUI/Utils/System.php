@@ -12,23 +12,22 @@ namespace QUI\Utils;
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
  */
-
 class System
 {
     /**
      * The max memory limit for memUsageToHigh(), look at ::memUsageToHigh()
      *
-     * @var Integer
+     * @var integer
      */
-    static $memory_limit = 128;
+    public static $memory_limit = 128;
 
     /**
      * Return the used protocol
      *
-     * @return String
+     * @return string
      * @example QUI\Utils\System::getProtocol(); -> http:// or https://
      */
-    static function getProtocol()
+    public static function getProtocol()
     {
         if (self::isProtocolSecure()) {
             return 'https://';
@@ -42,7 +41,7 @@ class System
      *
      * @return boolean
      */
-    static function isProtocolSecure()
+    public static function isProtocolSecure()
     {
         if (isset($_SERVER['HTTPS'])) {
             $https = strtolower($_SERVER['HTTPS']);
@@ -67,9 +66,9 @@ class System
     /**
      * Returns the maximum file size which can be uploaded
      *
-     * @return Integer
+     * @return integer
      */
-    static function getUploadMaxFileSize()
+    public static function getUploadMaxFileSize()
     {
         return min(
             (int)ini_get('upload_max_filesize'),
@@ -83,9 +82,9 @@ class System
      * If 80% of consumption was given returns true
      * If self::$memory_limit is not set | false | null, than always return false
      *
-     * @return Bool
+     * @return boolean
      */
-    static function memUsageToHigh()
+    public static function memUsageToHigh()
     {
         if (!self::$memory_limit) {
             return false;
@@ -106,9 +105,9 @@ class System
     /**
      * IP des Clients bekommen, auch durch Proxys
      *
-     * @return String
+     * @return string
      */
-    static function getClientIP()
+    public static function getClientIP()
     {
         // durch proxy
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -125,11 +124,11 @@ class System
     /**
      * Check if a shell function is callable
      *
-     * @param String $func - Name of the shell function, eq: ls
+     * @param string $func - Name of the shell function, eq: ls
      *
-     * @return Bool
+     * @return boolean
      */
-    static function isShellFunctionEnabled($func)
+    public static function isShellFunctionEnabled($func)
     {
         return is_callable($func)
                && false === stripos(ini_get('disable_functions'), $func);
