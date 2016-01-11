@@ -881,18 +881,20 @@ class DB extends QUI\QDOM
             return ' ORDER BY ' . $params;
         }
 
-        if (is_array($params)) {
-            $sql = ' ORDER BY';
+        if (is_array($params)
+            && !empty($params)) {
+            $sql = ' ORDER BY ';
+            $sortFields = array();
 
             foreach ($params as $key => $sort) {
                 if (is_string($key)) {
-                    $sql .= ' `' . $key . '`' . $sort . ' ';
+                    $sortFields[] = '`' . $key . '` ' . $sort;
                 } else {
-                    $sql .= ' `' . $sort . '` ';
+                    $sortFields[] = '`' . $sort . '`';
                 }
             }
 
-            return $sql;
+            return $sql . implode(',', $sortFields);
         }
 
         return '';
