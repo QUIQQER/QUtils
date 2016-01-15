@@ -58,7 +58,7 @@ class ExceptionStack extends Exception
      */
     public function isEmpty()
     {
-        return empty($this->_list);
+        return empty($this->list);
     }
 
     /**
