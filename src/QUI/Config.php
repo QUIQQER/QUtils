@@ -48,7 +48,7 @@ class Config
 
         $this->iniFilename = $filename;
 
-        if ($this->iniParsedArray = parse_ini_file($filename, true)) {
+        if ($this->iniParsedArray = @parse_ini_file($filename, true)) {
             return;
         }
 
