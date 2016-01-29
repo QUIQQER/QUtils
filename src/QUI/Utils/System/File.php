@@ -523,10 +523,10 @@ class File
         switch ($last) {
             case 'g':
                 $val *= 1024;
-                // go on
+            // go on
             case 'm':
                 $val *= 1024;
-                // go on
+            // go on
             case 'k':
                 $val *= 1024;
         }
@@ -558,12 +558,10 @@ class File
         }
 
         // create a var_dir temp folder
-        $var_folder
-            = VAR_DIR . 'tmp/' . str_replace(array(' ', '.'), '', microtime());
+        $var_folder = VAR_DIR . 'tmp/' . str_replace(array(' ', '.'), '', microtime());
 
         while (file_exists($var_folder)) {
-            $var_folder
-                = VAR_DIR . 'tmp/' . str_replace(array(' ', '.'), '', microtime());
+            $var_folder = VAR_DIR . 'tmp/' . str_replace(array(' ', '.'), '', microtime());
         }
 
         // move to var dir, its faster
