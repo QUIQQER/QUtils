@@ -385,18 +385,21 @@ class Tables
 
             if (!in_array($field, $tblFields)) {
                 if ($this->isSQLite()) {
-                    $Stmnt
-                        = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN `{$field}` {$type}");
+                    $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN `{$field}` {$type}");
                     $Stmnt->execute();
 
                     continue;
                 }
 
-                $Stmnt = $PDO->prepare(
-                    "ALTER TABLE `{$table}` ADD `{$field}` {$type}"
-                );
+                $query = "ALTER TABLE `{$table}` ADD `{$field}` {$type}";
+                $Stmnt = $PDO->prepare($query);
 
-                $Stmnt->execute();
+                try {
+                    $Stmnt->execute();
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::addError($query);
+                    throw $Exception;
+                }
             }
         }
     }
