@@ -46,7 +46,7 @@ class GetText extends QUI\QDOM
      */
     public function fileExist()
     {
-        $locale = $this->getAttribute('domain');
+        $locale = $this->getAttribute('locale');
         $dir    = $this->getAttribute('dir');
         $domain = $this->getAttribute('domain');
 
