@@ -46,10 +46,11 @@ class GetText extends QUI\QDOM
      */
     public function fileExist()
     {
-        return file_exists(
-            $this->getAttribute('dir') . 'de_DE/LC_MESSAGES/'
-            . $this->getAttribute('domain') . '.mo'
-        );
+        $locale = $this->getAttribute('domain');
+        $dir    = $this->getAttribute('dir');
+        $domain = $this->getAttribute('domain');
+
+        return file_exists($dir . $locale . '/LC_MESSAGES/' . $domain . '.mo');
     }
 
     /**
