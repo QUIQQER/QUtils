@@ -265,74 +265,11 @@ class Tables
      * @param string $table
      *
      * @return array
+     * @deprecated use ->getColumns
      */
     public function getFields($table)
     {
-        $PDO   = $this->DB->getPDO();
-        $table = $this->clear($table);
-
-        if ($this->isSQLite()) {
-            $fields = array();
-
-            $Stmt = $PDO->prepare("PRAGMA table_info(`{$table}`)");
-            $Stmt->execute();
-            $result = $Stmt->fetchAll();
-
-            foreach ($result as $k => $row) {
-                $fields[] = $row['name'];
-            }
-
-            return $fields;
-
-//            $Stmnt = $PDO->prepare(
-//                "SELECT sql FROM sqlite_master
-//                WHERE tbl_name = `{$table}` AND type = 'table'"
-//            );
-//
-//            $Stmnt->execute();
-//
-//            $result = $Stmnt->fetchAll();
-//
-//            if ( !isset( $result[0] ) && !isset( $result[0] ) ) {
-//                return array();
-//            }
-//
-//            $pos  = mb_strpos( $result[0]['sql'], '(' );
-//            $data = mb_substr( $result[0]['sql'], $pos+1 );
-//
-//            $fields = array();
-//            $expl    = explode( ',', $data );
-//
-//            foreach ( $expl as $part )
-//            {
-//                $part = str_replace( '"', '', $part );
-//
-//                if ( strpos( $part, '`' ) !== false )
-//                {
-//                    preg_match("/`(.*?)`/", $part, $matches);
-//
-//                    if ( isset( $matches[1] ) ) {
-//                        $part = $matches[1];
-//                    }
-//                }
-//
-//                $fields[] = $part;
-//            }
-//
-//            return $fields;
-        }
-
-        $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `{$table}`");
-        $Stmnt->execute();
-
-        $result = $Stmnt->fetchAll(\PDO::FETCH_ASSOC);
-        $fields = array();
-
-        foreach ($result as $entry) {
-            $fields[] = $entry['Field'];
-        }
-
-        return $fields;
+        return $this->getColumns($table);
     }
 
     /**
@@ -365,8 +302,66 @@ class Tables
      * @param string $table
      * @param array $fields
      * @param string $engine - optional, is only used when the table is created
+     * @deprecated ->addColumn
      */
     public function appendFields($table, $fields, $engine = 'MYISAM')
+    {
+        $this->addColumn($table, $fields, $engine);
+    }
+
+    /**
+     * Löscht ein Feld / Spalte aus der Tabelle
+     *
+     * @param string $table
+     * @param array $fields
+     *
+     * @return void
+     */
+    public function deleteFields($table, $fields)
+    {
+        if ($this->exist($table) == false) {
+            return;
+        }
+
+        $tbl_fields   = $this->getColumns($table);
+        $table_fields = QUI\Utils\ArrayHelper::toAssoc($tbl_fields);
+
+        // prüfen ob die Tabelle leer wäre wenn alle Felder gelöscht werden
+        // wenn ja, Tabelle löschen
+        foreach ($fields as $field => $type) {
+            if (isset($table_fields[$field])) {
+                unset($table_fields[$field]);
+            }
+        }
+
+        if (empty($table_fields)) {
+            $this->delete($table);
+
+            return;
+        }
+
+        // Einzeln die Felder löschen
+        foreach ($fields as $field) {
+            if (in_array($field, $tbl_fields)) {
+                $this->deleteColumn($table, $field);
+            }
+        }
+    }
+
+    /**
+     * Column Methods
+     */
+
+    /**
+     * Extend the table
+     *
+     * @param string $table
+     * @param array $fields
+     * @param string $engine
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function addColumn($table, $fields, $engine = 'MYISAM')
     {
         if ($this->exist($table) == false) {
             $this->create($table, $fields, $engine);
@@ -374,7 +369,7 @@ class Tables
             return;
         }
 
-        $tblFields = $this->getFields($table);
+        $tblFields = $this->getColumns($table);
 
         $PDO   = $this->DB->getPDO();
         $table = $this->clear($table);
@@ -405,49 +400,6 @@ class Tables
     }
 
     /**
-     * Löscht ein Feld / Spalte aus der Tabelle
-     *
-     * @param string $table
-     * @param array $fields
-     *
-     * @return void
-     */
-    public function deleteFields($table, $fields)
-    {
-        if ($this->exist($table) == false) {
-            return;
-        }
-
-        $tbl_fields   = $this->getFields($table);
-        $table_fields = QUI\Utils\ArrayHelper::toAssoc($tbl_fields);
-
-        // prüfen ob die Tabelle leer wäre wenn alle Felder gelöscht werden
-        // wenn ja, Tabelle löschen
-        foreach ($fields as $field => $type) {
-            if (isset($table_fields[$field])) {
-                unset($table_fields[$field]);
-            }
-        }
-
-        if (empty($table_fields)) {
-            $this->delete($table);
-
-            return;
-        }
-
-        // Einzeln die Felder löschen
-        foreach ($fields as $field) {
-            if (in_array($field, $tbl_fields)) {
-                $this->deleteColumn($table, $field);
-            }
-        }
-    }
-
-    /**
-     * Column Methods
-     */
-
-    /**
      * Prüft ob eine Spalte in der Tabelle existiert
      *
      * @param string $table
@@ -472,7 +424,7 @@ class Tables
 
 
         // sqlite part
-        $columns = $this->getFields($table);
+        $columns = $this->getColumns($table);
 
         foreach ($columns as $col) {
             if ($col == $row) {
@@ -492,7 +444,34 @@ class Tables
      */
     public function getColumns($table)
     {
-        return $this->getFields($table);
+        $PDO   = $this->DB->getPDO();
+        $table = $this->clear($table);
+
+        if ($this->isSQLite()) {
+            $fields = array();
+
+            $Stmt = $PDO->prepare("PRAGMA table_info(`{$table}`)");
+            $Stmt->execute();
+            $result = $Stmt->fetchAll();
+
+            foreach ($result as $k => $row) {
+                $fields[] = $row['name'];
+            }
+
+            return $fields;
+        }
+
+        $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `{$table}`");
+        $Stmnt->execute();
+
+        $result = $Stmnt->fetchAll(\PDO::FETCH_ASSOC);
+        $fields = array();
+
+        foreach ($result as $entry) {
+            $fields[] = $entry['Field'];
+        }
+
+        return $fields;
     }
 
     /**
