@@ -48,7 +48,7 @@ class Config
 
         $this->iniFilename = $filename;
 
-        if ($this->iniParsedArray = parse_ini_file($filename, true)) {
+        if ($this->iniParsedArray = @parse_ini_file($filename, true)) {
             return;
         }
 
@@ -97,7 +97,7 @@ class Config
      * @param string $section
      * @param string $key
      *
-     * @return string|array
+     * @return string|array|boolean
      */
     public function getValue($section, $key)
     {
@@ -176,7 +176,7 @@ class Config
      */
     public function setValue($section, $key = null, $value = '')
     {
-        if ($key == null) {
+        if ($key === null) {
             if ($this->iniParsedArray[$section] = $value) {
                 return true;
             }
@@ -269,7 +269,7 @@ class Config
      */
     public function save($filename = null)
     {
-        if ($filename == null) {
+        if ($filename === null) {
             $filename = $this->iniFilename;
         }
 
@@ -284,7 +284,6 @@ class Config
         $SFfdescriptor = fopen($filename, "w");
 
         fwrite($SFfdescriptor, ";<?php exit; ?>\n"); // php security
-
 
         foreach ($this->iniParsedArray as $section => $array) {
             if (is_array($array)) {

@@ -34,6 +34,7 @@ class Url
      */
     public static function curl($url, $curlparams = array())
     {
+        $url  = str_replace(' ', '+', $url); // URL Fix
         $hash = md5(serialize($url) . serialize($curlparams));
 
         if (isset(self::$Curls[$hash]) && self::$Curls[$hash]) {

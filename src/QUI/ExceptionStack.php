@@ -24,7 +24,7 @@ class ExceptionStack extends Exception
     /**
      * Adds an exception to the stack
      *
-     * @param Exception $Exception
+     * @param Exception|\Exception $Exception
      */
     public function addException($Exception)
     {

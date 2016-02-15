@@ -6,6 +6,8 @@
 
 namespace QUI;
 
+use QUI\System\Log;
+
 /**
  * QUIQQER-DOM Class
  *
@@ -15,7 +17,6 @@ namespace QUI;
  * @package com.pcsg.qutils
  * @author  www.pcsg.de (Henning Leutz)
  */
-
 class QDOM
 {
     /**
@@ -134,6 +135,17 @@ class QDOM
     public function getType()
     {
         return get_class($this);
+    }
+
+    /**
+     * Checks if the object is of this class or has this class as one of its parents
+     *
+     * @param string $className
+     * @return bool
+     */
+    public function isInstanceOf($className)
+    {
+        return $this instanceof $className;
     }
 
     /**
