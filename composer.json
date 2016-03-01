@@ -16,7 +16,7 @@
         "email": "support@pcsg.de",
         "url": "http://www.pcsg.de"
     },
-    
+
     "require": {
         "php" : ">=5.3"
     },
