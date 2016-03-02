@@ -29,12 +29,7 @@ class GetText extends QUI\QDOM
      */
     public function __construct($lang, $domain, $dir)
     {
-        $this->setAttribute(
-            'locale',
-            QUI\Utils\StringHelper::toLower($lang) . '_'
-            . QUI\Utils\StringHelper::toUpper($lang)
-        );
-
+        $this->setLanguage($lang);
         $this->setAttribute('domain', str_replace('/', '_', $domain));
         $this->setAttribute('dir', $dir);
     }
@@ -46,11 +41,33 @@ class GetText extends QUI\QDOM
      */
     public function fileExist()
     {
+        return file_exists($this->getFile());
+    }
+
+    /**
+     * Return the .mo file path
+     * @return string
+     */
+    public function getFile()
+    {
         $locale = $this->getAttribute('locale');
         $dir    = $this->getAttribute('dir');
         $domain = $this->getAttribute('domain');
 
-        return file_exists($dir . $locale . '/LC_MESSAGES/' . $domain . '.mo');
+        return $dir . $locale . '/LC_MESSAGES/' . $domain . '.mo';
+    }
+
+    /**
+     * Set the locale via language string (en, de)
+     *
+     * @param string $lang
+     */
+    public function setLanguage($lang)
+    {
+        $lower = QUI\Utils\StringHelper::toLower($lang);
+        $upper = QUI\Utils\StringHelper::toUpper($lang);
+
+        $this->setAttribute('locale', $lower . '_' . $upper);
     }
 
     /**
