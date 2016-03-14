@@ -53,7 +53,9 @@ class Control extends QDOM
         $params     = '';
 
         foreach ($attributes as $key => $value) {
-            if (strpos($key, 'data-') === false) {
+            if (strpos($key, 'data-') === false
+                && $this->isAllowedAttribute($key) === false
+            ) {
                 continue;
             }
 
@@ -255,6 +257,23 @@ class Control extends QDOM
     }
 
     /**
+     * Is the html node attribute allowed
+     *
+     * @param $attribute
+     * @return boolean
+     */
+    protected function isAllowedAttribute($attribute)
+    {
+        $list = array(
+            'disabled' => true,
+            'alt' => true,
+            'title' => true
+        );
+
+        return isset($list[$attribute]);
+    }
+
+    /**
      * Return the Project
      *
      * @return \QUI\Projects\Project
@@ -265,10 +284,10 @@ class Control extends QDOM
             return $this->getAttribute('Project');
         }
 
-        $Project = \QUI::getRewrite()->getProject();
+        $Project = QUI::getRewrite()->getProject();
 
         if (!$Project) {
-            $Project = \QUI::getProjectManager()->get();
+            $Project = QUI::getProjectManager()->get();
         }
 
         $this->setAttribute('Project', $Project);
