@@ -1,0 +1,14 @@
+
+1.3.0
+
+    - QUI\Control\Control isAllowedAttribute eingeführt
+
+1.2.0
+
+    - QUI\Exception besitzt nun context data
+    - Database -> limit unter 0 wird abgefangen
+    - PSR2 Anpassungen
+    - String zu StringHelper und String = deprecated
+    - gettext -> getFile, fileExists und setLanguage optimiert
+    - gettext fixes -> fileExist hat immer deutsch verwenden
+    - get instance of -> into QDOM
