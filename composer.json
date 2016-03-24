@@ -22,8 +22,8 @@
     },
 
     "autoload": {
-        "psr-0" : {
-            "QUI" : "src/"
+        "psr-4" : {
+            "QUI\\" : "src/QUI"
         }
     }
 }
