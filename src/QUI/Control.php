@@ -202,6 +202,10 @@ class Control extends QDOM
             return (string)$val . 'px';
         }
 
+        if (strpos($val, 'calc(') !== false) {
+            return (string)$val;
+        }
+
         $units = array(
             'px',
             'cm',
