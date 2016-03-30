@@ -138,7 +138,24 @@ class Control extends QDOM
      */
     public function addCSSClass($cssClass)
     {
-        $this->cssClasses[$cssClass] = true;
+        if (!is_string($cssClass)) {
+            return;
+        }
+
+        if (empty($cssClass)) {
+            return;
+        }
+
+        $classes = preg_replace('/[^_a-zA-Z0-9-]/', ' ', $cssClass);
+        $classes = explode(' ', $classes);
+
+        $keys = array_flip($this->cssClasses);
+
+        foreach ($classes as $cssClass) {
+            if (!isset($keys[$cssClass])) {
+                $this->cssClasses[$cssClass] = true;
+            }
+        }
     }
 
     /**
