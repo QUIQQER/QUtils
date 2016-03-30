@@ -149,10 +149,8 @@ class Control extends QDOM
         $classes = preg_replace('/[^_a-zA-Z0-9-]/', ' ', $cssClass);
         $classes = explode(' ', $classes);
 
-        $keys = array_flip($this->cssClasses);
-
         foreach ($classes as $cssClass) {
-            if (!isset($keys[$cssClass])) {
+            if (!isset($this->cssClasses[$cssClass])) {
                 $this->cssClasses[$cssClass] = true;
             }
         }
