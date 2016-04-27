@@ -652,11 +652,20 @@ class Tables
         $queryKeys  = $this->inList($key);
         $queryTable = $this->clear($table);
 
-        $PDO = $this->DB->getPDO();
+        $PDO   = $this->DB->getPDO();
+        $query = "ALTER TABLE `{$queryTable}` ADD PRIMARY KEY({$queryKeys})";
 
-        $Stmnt = $PDO->prepare(
-            "ALTER TABLE `{$queryTable}` ADD PRIMARY KEY({$queryKeys})"
-        );
+        // if key exists, drop it
+        if (is_array($key)) {
+            foreach ($key as $k) {
+                if ($this->issetPrimaryKey($table, $k)) {
+                    $query = "ALTER TABLE  `{$queryTable}` DROP PRIMARY KEY , ADD PRIMARY KEY({$queryKeys});";
+                    break;
+                }
+            }
+        }
+
+        $Stmnt = $PDO->prepare($query);
         $Stmnt->execute();
 
         return $this->issetPrimaryKey($table, $key);
@@ -907,8 +916,7 @@ class Tables
             return $this->issetIndex($table, $index);
         }
 
-        $Stmnt
-            = $PDO->prepare("ALTER TABLE `{$queryTable}` ADD INDEX({$inList})");
+        $Stmnt = $PDO->prepare("ALTER TABLE `{$queryTable}` ADD INDEX({$inList})");
         $Stmnt->execute();
 
         return $this->issetIndex($table, $index);
