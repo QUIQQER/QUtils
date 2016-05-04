@@ -266,8 +266,10 @@ class Control extends QDOM
     {
         $list = array(
             'disabled' => true,
-            'alt' => true,
-            'title' => true
+            'alt'      => true,
+            'title'    => true,
+            'href'     => true,
+            '_blank'   => true
         );
 
         return isset($list[$attribute]);
