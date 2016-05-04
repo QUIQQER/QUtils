@@ -138,7 +138,22 @@ class Control extends QDOM
      */
     public function addCSSClass($cssClass)
     {
-        $this->cssClasses[$cssClass] = true;
+        if (!is_string($cssClass)) {
+            return;
+        }
+
+        if (empty($cssClass)) {
+            return;
+        }
+
+        $classes = preg_replace('/[^_a-zA-Z0-9-]/', ' ', $cssClass);
+        $classes = explode(' ', $classes);
+
+        foreach ($classes as $cssClass) {
+            if (!isset($this->cssClasses[$cssClass])) {
+                $this->cssClasses[$cssClass] = true;
+            }
+        }
     }
 
     /**
@@ -200,6 +215,10 @@ class Control extends QDOM
 
         if (is_numeric($val)) {
             return (string)$val . 'px';
+        }
+
+        if (strpos($val, 'calc(') !== false) {
+            return (string)$val;
         }
 
         $units = array(
