@@ -953,7 +953,7 @@ class Tables
         if ($column['Null'] === 'No') {
             $columnValue = ' NOT NULL';
         } else {
-            $columnValue = ' NULL';
+            $columnValue = '';
         }
 
         $query
