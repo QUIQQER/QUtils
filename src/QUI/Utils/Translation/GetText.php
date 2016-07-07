@@ -64,10 +64,15 @@ class GetText extends QUI\QDOM
      */
     public function setLanguage($lang)
     {
-        $lower = QUI\Utils\StringHelper::toLower($lang);
-        $upper = QUI\Utils\StringHelper::toUpper($lang);
+        if (strlen($lang) == 2) {
+            $lower = mb_strtolower($lang);
+            $upper = mb_strtoupper($lang);
 
-        $this->setAttribute('locale', $lower . '_' . $upper);
+            $this->setAttribute('locale', $lower . '_' . $upper);
+            return;
+        }
+
+        $this->setAttribute('locale', $lang);
     }
 
     /**
