@@ -24,6 +24,11 @@ class Control extends QDOM
     protected $cssClasses = array();
 
     /**
+     * @var array
+     */
+    protected $styles = array();
+
+    /**
      * Constructor
      *
      * @param array $attributes
@@ -96,26 +101,23 @@ class Control extends QDOM
 
 
         // styles
-        $styleList = array();
-        $style     = '';
-
         if ($this->getAttribute('height')) {
-            $styleList['height'] = $this->cssValueCheck($this->getAttribute('height'));
+            $this->styles['height'] = $this->cssValueCheck($this->getAttribute('height'));
         }
 
         if ($this->getAttribute('width')) {
-            $styleList['width'] = $this->cssValueCheck($this->getAttribute('width'));
+            $this->styles['width'] = $this->cssValueCheck($this->getAttribute('width'));
         }
 
-        if (!empty($styleList)) {
-            $style = 'style="';
+        // csscrush_inline
+        foreach ($this->styles as $property => $value) {
+            $property = htmlentities($property);
+            $value    = htmlentities($value);
 
-            foreach ($styleList as $key => $val) {
-                $style .= "{$key}:{$val};";
-            }
-
-            $style .= '" ';
+            $this->styles[$property] = $value;
         }
+
+        $style = 'styles="' . implode(',', $this->styles) . '" ';
 
         return "<{$nodeName} {$style}{$quiClass}{$params}>{$body}</{$nodeName}>";
     }
@@ -265,6 +267,29 @@ class Control extends QDOM
     }
 
     /**
+     * Set inline style to the control
+     *
+     * @param string $property - name of the property
+     * @param string $value - value of the property
+     */
+    public function setStyle($property, $value)
+    {
+        $this->styles[$property] = $value;
+    }
+
+    /**
+     * Set multiple inline styles to the control
+     *
+     * @param array $styles
+     */
+    public function setStyles(array $styles)
+    {
+        foreach ($styles as $property => $value) {
+            $this->setStyle($property, $value);
+        }
+    }
+
+    /**
      * @param $val
      * @return string
      *
@@ -285,11 +310,11 @@ class Control extends QDOM
     {
         $list = array(
             'disabled' => true,
-            'alt' => true,
-            'title' => true,
-            'href' => true,
-            '_blank' => true,
-            'role' => true
+            'alt'      => true,
+            'title'    => true,
+            'href'     => true,
+            '_blank'   => true,
+            'role'     => true
         );
 
         return isset($list[$attribute]);
