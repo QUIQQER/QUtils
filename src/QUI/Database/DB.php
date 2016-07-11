@@ -304,13 +304,13 @@ class DB extends QUI\QDOM
         // debuging
         if (isset($params['debug'])) {
             QUI\System\Log::writeRecursive(array(
-                'query' => $query,
+                'query'   => $query,
                 'prepare' => $prepare
             ));
         }
 
         return array(
-            'query' => $query,
+            'query'   => $query,
             'prepare' => $prepare
         );
     }
@@ -446,8 +446,8 @@ class DB extends QUI\QDOM
     {
         return $this->exec(array(
             'update' => $table,
-            'set' => $data,
-            'where' => $where
+            'set'    => $data,
+            'where'  => $where
         ));
     }
 
@@ -463,7 +463,7 @@ class DB extends QUI\QDOM
     {
         return $this->exec(array(
             'insert' => $table,
-            'set' => $data
+            'set'    => $data
         ));
     }
 
@@ -479,8 +479,8 @@ class DB extends QUI\QDOM
     {
         return $this->exec(array(
             'delete' => true,
-            'from' => $table,
-            'where' => $where
+            'from'   => $table,
+            'where'  => $where
         ));
     }
 
@@ -609,7 +609,7 @@ class DB extends QUI\QDOM
     {
         if (is_string($params)) {
             return array(
-                'where' => ' WHERE ' . $params,
+                'where'   => ' WHERE ' . $params,
                 'prepare' => array()
             );
         }
@@ -649,16 +649,17 @@ class DB extends QUI\QDOM
                         $prepare['wherev' . $i] = $value['value'];
                         $sql .= $key . ' ' . $value['type'] . ' :wherev' . $i;
 
-                    } elseif (isset($value['type'])
-                              && $value['type'] == 'NOT'
-                    ) {
+                    } elseif (isset($value['type']) && $value['type'] == 'NOT') {
                         if (is_null($value['value'])) {
                             $sql .= $key . ' IS NOT NULL ';
-
                         } else {
                             $prepare['wherev' . $i] = $value['value'];
                             $sql .= $key . ' != :wherev' . $i;
                         }
+
+                    } elseif (isset($value['type']) && $value['type'] == 'REGEXP') {
+                        $sql .= $key . ' REGEXP :wherev' . $i;
+                        $prepare['wherev' . $i] = $value['value'];
 
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
                         $sql .= $key . ' IN (';
@@ -725,7 +726,7 @@ class DB extends QUI\QDOM
         }
 
         return array(
-            'where' => $sql,
+            'where'   => $sql,
             'prepare' => $prepare
         );
     }
@@ -754,7 +755,7 @@ class DB extends QUI\QDOM
     {
         if (is_string($params)) {
             return array(
-                'set' => ' SET ' . $params,
+                'set'     => ' SET ' . $params,
                 'prepare' => array()
             );
         }
@@ -821,7 +822,7 @@ class DB extends QUI\QDOM
         }
 
         return array(
-            'set' => $sql,
+            'set'     => $sql,
             'prepare' => $prepare
         );
     }
@@ -863,7 +864,7 @@ class DB extends QUI\QDOM
         $sql .= ') VALUES (' . implode(',', $values) . ')';
 
         return array(
-            'insert' => $sql,
+            'insert'  => $sql,
             'prepare' => $prepare
         );
     }
@@ -882,8 +883,9 @@ class DB extends QUI\QDOM
         }
 
         if (is_array($params)
-            && !empty($params)) {
-            $sql = ' ORDER BY ';
+            && !empty($params)
+        ) {
+            $sql        = ' ORDER BY ';
             $sortFields = array();
 
             foreach ($params as $key => $sort) {
@@ -924,7 +926,7 @@ class DB extends QUI\QDOM
 
             if (!isset($limit[0]) || !isset($limit[1])) {
                 return array(
-                    'limit' => '',
+                    'limit'   => '',
                     'prepare' => $prepare
                 );
             }
@@ -946,7 +948,7 @@ class DB extends QUI\QDOM
         }
 
         return array(
-            'limit' => $sql,
+            'limit'   => $sql,
             'prepare' => $prepare
         );
     }
