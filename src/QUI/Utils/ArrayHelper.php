@@ -6,13 +6,14 @@
 
 namespace QUI\Utils;
 
+use QUI\System\Log;
+
 /**
  * Helper for array handling
  *
  * @author  www.pcsg.de (Henning Leutz
  * @package com.pcsg.qutils
  */
-
 class ArrayHelper
 {
     /**
@@ -89,5 +90,25 @@ class ArrayHelper
     {
         // its the easiest way
         return (object)$array;
+    }
+
+    /**
+     * Cleanup an array
+     *
+     * @param array|string $array
+     * @param string $delimiter - default = ,
+     * @return array
+     */
+    public static function cleanup($array, $delimiter = ',')
+    {
+        if (is_bool($array)) {
+            return array();
+        }
+
+        if (!is_array($array)) {
+            $array = explode($delimiter, $array);
+        }
+
+        return array_filter(array_unique($array));
     }
 }
