@@ -110,14 +110,19 @@ class Control extends QDOM
         }
 
         // csscrush_inline
+        $styles = array();
+        $style  = '';
+
         foreach ($this->styles as $property => $value) {
             $property = htmlentities($property);
             $value    = htmlentities($value);
 
-            $this->styles[$property] = $value;
+            $styles[] = $property . ':' . $value;
         }
 
-        $style = 'styles="' . implode(',', $this->styles) . '" ';
+        if (!empty($styles)) {
+            $style = 'style="' . implode(';', $styles) . '" ';
+        }
 
         return "<{$nodeName} {$style}{$quiClass}{$params}>{$body}</{$nodeName}>";
     }
