@@ -81,7 +81,6 @@ class DB extends QUI\QDOM
                              . $offsetMinutes;
 
             $this->PDO->exec("SET time_zone = '{$offsetString}'");
-
         } catch (\PDOException $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
         }
@@ -126,7 +125,6 @@ class DB extends QUI\QDOM
                     $this->getAttribute('options')
                 );
             }
-
         } catch (\PDOException $Exception) {
             throw new QUI\Database\Exception(
                 $Exception->getMessage(),
@@ -684,7 +682,6 @@ class DB extends QUI\QDOM
                         }
 
                         $sql .= ') ';
-
                     } else {
                         if (!isset($value['type'])) {
                             $value['type'] = '';
