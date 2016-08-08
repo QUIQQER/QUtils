@@ -116,15 +116,14 @@ class DB extends QUI\QDOM
                 return new \PDO(
                     'sqlite:' . $this->getAttribute('dbname')
                 );
-
-            } else {
-                return new \PDO(
-                    $this->getAttribute('dsn'),
-                    $this->getAttribute('user'),
-                    $this->getAttribute('password'),
-                    $this->getAttribute('options')
-                );
             }
+
+            return new \PDO(
+                $this->getAttribute('dsn'),
+                $this->getAttribute('user'),
+                $this->getAttribute('password'),
+                $this->getAttribute('options')
+            );
         } catch (\PDOException $Exception) {
             throw new QUI\Database\Exception(
                 $Exception->getMessage(),
