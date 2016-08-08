@@ -641,7 +641,6 @@ class DB extends QUI\QDOM
                     ) {
                         $prepare['wherev' . $i] = $value['value'];
                         $sql .= $key . ' ' . $value['type'] . ' :wherev' . $i;
-
                     } elseif (isset($value['type']) && $value['type'] == 'NOT') {
                         if (is_null($value['value'])) {
                             $sql .= $key . ' IS NOT NULL ';
@@ -658,7 +657,6 @@ class DB extends QUI\QDOM
                         if (!is_array($value['value'])) {
                             $prepare['in' . $i] = $value['value'];
                             $sql .= ':in' . $i;
-
                         } else {
                             $in = 0;
 
