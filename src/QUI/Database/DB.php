@@ -222,7 +222,6 @@ class DB extends QUI\QDOM
                 $prepare = array_merge($prepare, $insert['prepare']);
 
                 unset($params['set']);
-
             } else {
                 $query = $this->createQueryInsert($params['insert']);
             }
@@ -347,7 +346,6 @@ class DB extends QUI\QDOM
 
         try {
             $Statement->execute();
-
         } catch (\PDOException $Exception) {
             $message = $Exception->getMessage();
             $message .= print_r($query, true);
@@ -406,7 +404,6 @@ class DB extends QUI\QDOM
 
         try {
             $Statement->execute();
-
         } catch (\PDOException $Exception) {
             $message = $Exception->getMessage();
             $message .= print_r($query, true);
@@ -626,7 +623,6 @@ class DB extends QUI\QDOM
 
                 if (is_null($value)) {
                     $sql .= $key . ' IS NULL ';
-
                 } else {
                     if (!is_array($value)) {
                         if (strpos($value, '`') !== false) {
@@ -653,11 +649,9 @@ class DB extends QUI\QDOM
                             $prepare['wherev' . $i] = $value['value'];
                             $sql .= $key . ' != :wherev' . $i;
                         }
-
                     } elseif (isset($value['type']) && $value['type'] == 'REGEXP') {
                         $sql .= $key . ' REGEXP :wherev' . $i;
                         $prepare['wherev' . $i] = $value['value'];
-
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
                         $sql .= $key . ' IN (';
 
@@ -914,7 +908,6 @@ class DB extends QUI\QDOM
             $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
 
             $sql .= ':limit1';
-
         } else {
             $limit = explode(',', $params);
 
