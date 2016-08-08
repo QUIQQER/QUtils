@@ -882,9 +882,7 @@ class DB extends QUI\QDOM
             return ' ORDER BY ' . $params;
         }
 
-        if (is_array($params)
-            && !empty($params)
-        ) {
+        if (is_array($params) && !empty($params)) {
             $sql        = ' ORDER BY ';
             $sortFields = array();
 
@@ -951,5 +949,72 @@ class DB extends QUI\QDOM
             'limit'   => $sql,
             'prepare' => $prepare
         );
+    }
+
+    /**
+     * Is order clause valid?
+     *
+     * @param string $value
+     * @param array $allowed - allowed fields
+     *
+     * @return bool
+     */
+    public static function isOrderValid($value, $allowed = array())
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+
+        $value = trim($value);
+
+        if (strpos($value, ' ') === false) {
+            foreach ($allowed as $field) {
+                if ($value === $field) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        $value = explode(' ', $value);
+
+        switch (strtoupper($value[1])) {
+            case 'ASC':
+            case 'DESC':
+                break; // is allowed
+
+            default:
+                return false;
+        }
+
+        foreach ($allowed as $field) {
+            if ($value[0] === $field) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Is where clause valid?
+     *
+     * @param array $where - where clause
+     * @param array $allowed - allowed fields
+     *
+     * @return bool
+     */
+    public static function isWhereValid(array $where, $allowed = array())
+    {
+        $allowed = array_flip($allowed);
+
+        foreach ($where as $key => $params) {
+            if (isset($allowed[$key])) {
+                return true;
+            }
+        }
+
+        return true;
     }
 }
