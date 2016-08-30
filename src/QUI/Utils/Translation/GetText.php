@@ -50,9 +50,9 @@ class GetText extends QUI\QDOM
      */
     public function getFile()
     {
-        $locale = $this->getAttribute('locale');
-        $dir    = $this->getAttribute('dir');
-        $domain = $this->getAttribute('domain');
+        $locale = trim($this->getAttribute('locale'));
+        $dir    = trim($this->getAttribute('dir'));
+        $domain = trim($this->getAttribute('domain'));
 
         return $dir . $locale . '/LC_MESSAGES/' . $domain . '.mo';
     }
