@@ -224,7 +224,6 @@ class DBTest extends \PHPUnit_Framework_TestCase
             $Table->create('test', '');
 
             $this->fail('no exception on Table->create thrown.');
-
         } catch (\QUI\Database\Exception $Exception) {
         }
     }
@@ -421,7 +420,6 @@ class DBTest extends \PHPUnit_Framework_TestCase
         }
 
         $Table->delete($table);
-
 
         $Table->truncate($table);
     }
