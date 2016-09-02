@@ -1,10 +1,14 @@
 <?php
 
+namespace QUITest\QUI\Database;
+
 use \QUI\Database\DB as DB;
 
-require_once 'DB_Test_Methods.php';
-
-class DBSQLiteTest extends DB_Test_Methods
+/**
+ * Class DBSQLiteTest
+ * @package QUITest\Database
+ */
+class DBSQLiteTest extends DBTest
 {
     public function getDBConection()
     {

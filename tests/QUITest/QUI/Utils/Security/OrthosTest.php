@@ -1,7 +1,13 @@
 <?php
 
+namespace QUITest\QUI\Utils\Security;
+
 use QUI\Utils\Security\Orthos as Orthos;
 
+/**
+ * Class OrthosTest
+ * @package QUITests\QUI\Utils\Security
+ */
 class OrthosTest extends PHPUnit_Framework_TestCase
 {
     public function testClear()
@@ -65,7 +71,6 @@ class OrthosTest extends PHPUnit_Framework_TestCase
     public function testClearMySQL()
     {
         $result = Orthos::clearMySQL('"; SELECT FROM');
-
     }
 
     public function testCleanHTML()
@@ -76,8 +81,7 @@ class OrthosTest extends PHPUnit_Framework_TestCase
             $this->fail('\QUI\Utils\Security\Orthos::testCleanHTML <b>test</b> wrong parsed');
         }
 
-        $result
-            = Orthos::cleanHTML('<some_unknown_tag><p><b>test</b></p></some_unknown_tag>');
+        $result = Orthos::cleanHTML('<some_unknown_tag><p><b>test</b></p></some_unknown_tag>');
 
         if ($result != '<p><b>test</b></p>') {
             $this->fail(
@@ -143,8 +147,7 @@ class OrthosTest extends PHPUnit_Framework_TestCase
 
     public function testRemoveLineBreaks()
     {
-        $str
-            = "
+        $str = "
             <p>test</p>
             <p>test</p>
             <p>test</p>
@@ -160,7 +163,10 @@ class OrthosTest extends PHPUnit_Framework_TestCase
     public function testCheckMailSyntax()
     {
         if (!Orthos::checkMailSyntax('support@pcsg.de')) {
-            $this->fail('\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect. support@pcsg.de is no correct email');
+            $this->fail(
+                '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect. 
+                support@pcsg.de is no correct email'
+            );
         }
 
         if (!Orthos::checkMailSyntax('support.test@pcsg.de')) {
@@ -209,8 +215,8 @@ class OrthosTest extends PHPUnit_Framework_TestCase
 
     public function testClearPath()
     {
-        $path = '/var/www/vhost/domain/../lala/';
-        $clear = \QUI\Utils\Security\Orthos::clearPath($path);
+        $path  = '/var/www/vhost/domain/../lala/';
+        $clear = Orthos::clearPath($path);
 
         if ($clear != '/var/www/vhost/domain/lala/') {
             $this->fail('\QUI\Utils\Security\Orthos::clearPath error');
@@ -219,7 +225,7 @@ class OrthosTest extends PHPUnit_Framework_TestCase
 
     public function testClearShell()
     {
-        $clear = \QUI\Utils\Security\Orthos::clearShell('ls -l; ls -l');
+        $clear = Orthos::clearShell('ls -l; ls -l');
 
         if ($clear != 'ls -l\; ls -l') {
             $this->fail('\QUI\Utils\Security\Orthos::clearShell error');
@@ -228,28 +234,26 @@ class OrthosTest extends PHPUnit_Framework_TestCase
 
     public function testParseInt()
     {
-        if (!is_int(\QUI\Utils\Security\Orthos::parseInt('123'))) {
+        if (!is_int(Orthos::parseInt('123'))) {
             $this->fail('\QUI\Utils\Security\Orthos::parseInt error -> 123 is no int');
         }
 
-        if (!is_int(\QUI\Utils\Security\Orthos::parseInt('hallo'))) {
+        if (!is_int(Orthos::parseInt('hallo'))) {
             $this->fail('\QUI\Utils\Security\Orthos::parseInt error -> hallo is not parsed to an int');
         }
     }
 
     public function testIsSpamMail()
     {
-        if (\QUI\Utils\Security\Orthos::isSpamMail('test@spaminator.de')
-            === false
-        ) {
+        if (Orthos::isSpamMail('test@spaminator.de') === false) {
             $this->fail('test@spaminator.de is not marked as a spammail');
         }
 
-        if (\QUI\Utils\Security\Orthos::isSpamMail('test@pcsg.de')) {
+        if (Orthos::isSpamMail('test@pcsg.de')) {
             $this->fail('test@pcsg.de is marked as a spammail');
         }
 
-        if (\QUI\Utils\Security\Orthos::isSpamMail('test')) {
+        if (Orthos::isSpamMail('test')) {
             $this->fail('test is not marked as a spammail');
         }
     }

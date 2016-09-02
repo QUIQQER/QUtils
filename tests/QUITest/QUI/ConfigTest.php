@@ -1,20 +1,25 @@
 <?php
 
+namespace QUITest\QUI;
+
 use QUI\Config as Config;
 
-class ConfigTest extends PHPUnit_Framework_TestCase
+/**
+ * Class ConfigTest
+ */
+class ConfigTest extends \PHPUnit_Framework_TestCase
 {
     public function getConfig()
     {
         return new Config(
-            dirname(__FILE__).'/ConfigTest.ini'
+            dirname(__FILE__) . '/ConfigTest.ini'
         );
     }
 
     public function testToArray()
     {
         $Config = $this->getConfig();
-        $array = $Config->toArray();
+        $array  = $Config->toArray();
 
         $this->assertEquals(1, $array['section1']['var1']);
         $this->assertEquals(1, $array['section1']['var2']);
@@ -25,8 +30,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     public function testToJSON()
     {
         $Config = $this->getConfig();
-        $json = $Config->toJSON();
-        $array = json_decode($json, true);
+        $json   = $Config->toJSON();
+        $array  = json_decode($json, true);
 
         $this->assertEquals(1, $array['section1']['var1']);
         $this->assertEquals(1, $array['section1']['var2']);
@@ -36,7 +41,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     public function testGetSection()
     {
-        $Config = $this->getConfig();
+        $Config  = $this->getConfig();
         $section = $Config->getSection('section2');
 
         $this->assertEquals(3, $section['var3']);
@@ -69,7 +74,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $Config = $this->getConfig();
 
         $this->assertEquals(
-            dirname(__FILE__).'/ConfigTest.ini',
+            dirname(__FILE__) . '/ConfigTest.ini',
             $Config->getFilename()
         );
     }

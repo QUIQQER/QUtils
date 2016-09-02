@@ -1,15 +1,16 @@
 <?php
 
+namespace QUITest\QUI\Utils;
+
 use QUI\Utils\StringHelper as StringHelper;
 
 /**
  * Class StringTest
  */
-class StringTest extends PHPUnit_Framework_TestCase
+class StringTest extends \PHPUnit_Framework_TestCase
 {
     public function testJSString()
     {
-
     }
 
     public function testPathinfo()
@@ -20,7 +21,6 @@ class StringTest extends PHPUnit_Framework_TestCase
             $this->fail(
                 'QUI\Utils\StringHelper::pathinfo throws no exception on a none existing file'
             );
-
         } catch (\QUI\Exception $Exception) {
         }
 
@@ -204,8 +204,7 @@ class StringTest extends PHPUnit_Framework_TestCase
 
     public function testSentence()
     {
-        $text
-            = '
+        $text = '
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr.
             sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
             sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum!

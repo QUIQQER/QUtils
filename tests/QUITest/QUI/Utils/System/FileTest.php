@@ -1,5 +1,7 @@
 <?php
 
+namespace QUITest\QUI\Control;
+
 use QUI\Utils\System\File as File;
 use QUI\Utils\StringHelper as StringHelper;
 
