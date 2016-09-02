@@ -38,7 +38,7 @@ class Manager
     public static function getCSS()
     {
         $files  = self::getCSSFiles();
-        $result = '<style>';
+        $result = '';
 
         foreach ($files as $file) {
             if (!file_exists($file)) {
@@ -46,10 +46,11 @@ class Manager
             }
 
             $css = file_get_contents($file);
-            $result .= $css;
-        }
 
-        $result .= '</style>';
+            $result .= '<style>';
+            $result .= $css;
+            $result .= '</style>';
+        }
 
         return $result;
     }

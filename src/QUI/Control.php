@@ -24,6 +24,11 @@ class Control extends QDOM
     protected $cssClasses = array();
 
     /**
+     * @var array
+     */
+    protected $styles = array();
+
+    /**
      * Constructor
      *
      * @param array $attributes
@@ -96,25 +101,27 @@ class Control extends QDOM
 
 
         // styles
-        $styleList = array();
-        $style     = '';
-
         if ($this->getAttribute('height')) {
-            $styleList['height'] = $this->cssValueCheck($this->getAttribute('height'));
+            $this->styles['height'] = $this->cssValueCheck($this->getAttribute('height'));
         }
 
         if ($this->getAttribute('width')) {
-            $styleList['width'] = $this->cssValueCheck($this->getAttribute('width'));
+            $this->styles['width'] = $this->cssValueCheck($this->getAttribute('width'));
         }
 
-        if (!empty($styleList)) {
-            $style = 'style="';
+        // csscrush_inline
+        $styles = array();
+        $style  = '';
 
-            foreach ($styleList as $key => $val) {
-                $style .= "{$key}:{$val};";
-            }
+        foreach ($this->styles as $property => $value) {
+            $property = htmlentities($property);
+            $value    = htmlentities($value);
 
-            $style .= '" ';
+            $styles[] = $property . ':' . $value;
+        }
+
+        if (!empty($styles)) {
+            $style = 'style="' . implode(';', $styles) . '" ';
         }
 
         return "<{$nodeName} {$style}{$quiClass}{$params}>{$body}</{$nodeName}>";
@@ -138,7 +145,22 @@ class Control extends QDOM
      */
     public function addCSSClass($cssClass)
     {
-        $this->cssClasses[$cssClass] = true;
+        if (!is_string($cssClass)) {
+            return;
+        }
+
+        if (empty($cssClass)) {
+            return;
+        }
+
+        $classes = preg_replace('/[^_a-zA-Z0-9-]/', ' ', $cssClass);
+        $classes = explode(' ', $classes);
+
+        foreach ($classes as $cssClass) {
+            if (!isset($this->cssClasses[$cssClass])) {
+                $this->cssClasses[$cssClass] = true;
+            }
+        }
     }
 
     /**
@@ -202,6 +224,10 @@ class Control extends QDOM
             return (string)$val . 'px';
         }
 
+        if (strpos($val, 'calc(') !== false) {
+            return (string)$val;
+        }
+
         $units = array(
             'px',
             'cm',
@@ -246,6 +272,29 @@ class Control extends QDOM
     }
 
     /**
+     * Set inline style to the control
+     *
+     * @param string $property - name of the property
+     * @param string $value - value of the property
+     */
+    public function setStyle($property, $value)
+    {
+        $this->styles[$property] = $value;
+    }
+
+    /**
+     * Set multiple inline styles to the control
+     *
+     * @param array $styles
+     */
+    public function setStyles(array $styles)
+    {
+        foreach ($styles as $property => $value) {
+            $this->setStyle($property, $value);
+        }
+    }
+
+    /**
      * @param $val
      * @return string
      *
@@ -266,8 +315,11 @@ class Control extends QDOM
     {
         $list = array(
             'disabled' => true,
-            'alt' => true,
-            'title' => true
+            'alt'      => true,
+            'title'    => true,
+            'href'     => true,
+            '_blank'   => true,
+            'role'     => true
         );
 
         return isset($list[$attribute]);

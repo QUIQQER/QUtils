@@ -34,7 +34,7 @@ class ExceptionStack extends Exception
 
         /* @var $Exc Exception */
         foreach ($this->list as $Exc) {
-            $message .= $Exc->getMessage();
+            $message .= $Exc->getMessage() . "\n";
         }
 
         $this->message = $message;

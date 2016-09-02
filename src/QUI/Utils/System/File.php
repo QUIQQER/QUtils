@@ -676,10 +676,14 @@ class File
         }
 
         if (isset($params['imagesize']) || $params == false) {
-            $r = getimagesize($file);
+            try {
+                $r = getimagesize($file);
 
-            $info['width']  = $r[0];
-            $info['height'] = $r[1];
+                $info['width']  = $r[0];
+                $info['height'] = $r[1];
+            } catch (\Exception $Exception) {
+                // ignore if not an image
+            }
         }
 
         if (isset($params['mime_type']) || $params == false) {

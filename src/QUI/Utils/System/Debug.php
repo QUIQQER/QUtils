@@ -86,8 +86,16 @@ class Debug
                 $before_time = $params['time'];
                 $before_key  = $key;
 
+                if (isset($params['step']) && !empty($params['step'])) {
+                    $before_key = $params['step'];
+                }
+
                 $start = $params['time'];
                 continue;
+            }
+
+            if (isset($params['step']) && !empty($params['step'])) {
+                $key = $params['step'];
             }
 
             $str .= $before_key . ' -> ' . $key . ' : ';

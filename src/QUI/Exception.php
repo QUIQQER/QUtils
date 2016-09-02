@@ -48,6 +48,8 @@ class Exception extends \Exception
                     $params = $message[2];
                 }
 
+                $context['locale'] = $message;
+                
                 $message = \QUI::getUserBySession()->getLocale()->get(
                     $message[0],
                     $message[1],

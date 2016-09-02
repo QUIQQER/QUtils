@@ -50,9 +50,9 @@ class GetText extends QUI\QDOM
      */
     public function getFile()
     {
-        $locale = $this->getAttribute('locale');
-        $dir    = $this->getAttribute('dir');
-        $domain = $this->getAttribute('domain');
+        $locale = trim($this->getAttribute('locale'));
+        $dir    = trim($this->getAttribute('dir'));
+        $domain = trim($this->getAttribute('domain'));
 
         return $dir . $locale . '/LC_MESSAGES/' . $domain . '.mo';
     }
@@ -64,10 +64,15 @@ class GetText extends QUI\QDOM
      */
     public function setLanguage($lang)
     {
-        $lower = QUI\Utils\StringHelper::toLower($lang);
-        $upper = QUI\Utils\StringHelper::toUpper($lang);
+        if (strlen($lang) == 2) {
+            $lower = mb_strtolower($lang);
+            $upper = mb_strtoupper($lang);
 
-        $this->setAttribute('locale', $lower . '_' . $upper);
+            $this->setAttribute('locale', $lower . '_' . $upper);
+            return;
+        }
+
+        $this->setAttribute('locale', $lang);
     }
 
     /**

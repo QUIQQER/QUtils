@@ -56,6 +56,15 @@ class Config
     }
 
     /**
+     * Reload the ini data
+     * Read the ini file
+     */
+    public function reload()
+    {
+        $this->iniParsedArray = @parse_ini_file($this->iniFilename, true);
+    }
+
+    /**
      * Ini Einträge als Array bekommen
      *
      * @return array
@@ -297,7 +306,6 @@ class Config
                 }
 
                 fwrite($SFfdescriptor, "\n");
-
             } else {
                 fwrite(
                     $SFfdescriptor,
