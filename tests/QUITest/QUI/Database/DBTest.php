@@ -1,14 +1,20 @@
 <?php
 
+namespace QUITest\QUI\Database;
+
 use \QUI\Database\DB as DB;
 
-class DB_Test_Methods extends PHPUnit_Framework_TestCase
+/**
+ * Class DB_Test_Methods
+ * @package QUITest\Database
+ */
+class DBTest extends \PHPUnit_Framework_TestCase
 {
     public function testDB()
     {
         $DataBase = $this->getDBConection();
 
-        $Table = $DataBase->Table();
+        $Table  = $DataBase->Table();
         $tables = $Table->getTables();
 
         $table = 'test';
@@ -214,7 +220,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     {
         try {
             $DataBase = $this->getDBConection();
-            $Table = $DataBase->Table();
+            $Table    = $DataBase->Table();
             $Table->create('test', '');
 
             $this->fail('no exception on Table->create thrown.');
@@ -226,7 +232,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     public function testPrimaryKey()
     {
         $DataBase = $this->getDBConection();
-        $Table = $DataBase->Table();
+        $Table    = $DataBase->Table();
 
         // You can't modify SQLite tables in any significant way after they have been created
         if ($DataBase->isSQLite()) {
@@ -258,7 +264,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     public function testIndex()
     {
         $DataBase = $this->getDBConection();
-        $Table = $DataBase->Table();
+        $Table    = $DataBase->Table();
 
         $table = 'test';
 
@@ -285,7 +291,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     public function testSetAutoIncrement()
     {
         $DataBase = $this->getDBConection();
-        $Table = $DataBase->Table();
+        $Table    = $DataBase->Table();
 
         if ($DataBase->isSQLite()) {
             return;
@@ -308,7 +314,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     public function testSetFulltext()
     {
         $DataBase = $this->getDBConection();
-        $Table = $DataBase->Table();
+        $Table    = $DataBase->Table();
 
         if ($DataBase->isSQLite()) {
             return;
@@ -335,7 +341,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     public function testGetTable()
     {
         $DataBase = $this->getDBConection();
-        $Table = $DataBase->Table();
+        $Table    = $DataBase->Table();
 
         // create some tables
         $Table->delete('test1');
@@ -378,7 +384,7 @@ class DB_Test_Methods extends PHPUnit_Framework_TestCase
     public function testTruncate()
     {
         $DataBase = $this->getDBConection();
-        $Table = $DataBase->Table();
+        $Table    = $DataBase->Table();
 
         $table = 'test1';
 

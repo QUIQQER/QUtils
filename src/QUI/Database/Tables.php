@@ -58,7 +58,6 @@ class Tables
             $result = $PDO->query(
                 "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
             )->fetchAll();
-
         } else {
             $result = $PDO->query("SHOW tables")->fetchAll();
         }
@@ -107,7 +106,6 @@ class Tables
             $Stmnt = $PDO->prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name = :table"
             );
-
         } else {
             $dbname = $this->DB->getAttribute('dbname');
 
@@ -871,7 +869,6 @@ class Tables
                 $result = $PDO->query(
                     "SELECT * FROM sqlite_master WHERE type = 'index'"
                 )->fetch();
-
             } catch (\PDOException $Exception) {
                 return array();
             }

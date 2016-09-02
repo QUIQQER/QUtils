@@ -1,8 +1,14 @@
 <?php
 
+namespace QUITest\QUI\Utils\WordTest;
+
 use QUI\Utils\Text\Word as Word;
 
-class QUIUtilsTextWordTest extends PHPUnit_Framework_TestCase
+/**
+ * Class QUIUtilsTextWordTest
+ * @package QUITest\QUI\Utils\WordTest
+ */
+class QUIUtilsTextWordTest extends \PHPUnit_Framework_TestCase
 {
     public function testIsUseful()
     {
@@ -12,8 +18,7 @@ class QUIUtilsTextWordTest extends PHPUnit_Framework_TestCase
 
     public function testcountImportantWords()
     {
-        $list
-            = Word::countImportantWords('Dies ist das Haus vom Nikolaus Nikolaus');
+        $list = Word::countImportantWords('Dies ist das Haus vom Nikolaus Nikolaus');
 
         $this->assertEquals(2, count($list));
         $this->assertEquals(2, $list['Nikolaus']);

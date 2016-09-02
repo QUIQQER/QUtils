@@ -1,8 +1,14 @@
 <?php
 
+namespace QUITest\QUI\Utils;
+
 use QUI\Utils\ArrayHelper as ArrayHelper;
 
-class ArrayHelperTest extends PHPUnit_Framework_TestCase
+/**
+ * Class ArrayHelperTest
+ * @package QUITests\QUI\Utils
+ */
+class ArrayHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function testIsAssoc()
     {
