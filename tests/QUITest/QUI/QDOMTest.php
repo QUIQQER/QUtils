@@ -1,7 +1,13 @@
 <?php
 
+namespace QUITest\QUI;
+
 use QUI\QDOM as QDOM;
 
+/**
+ * Class QDOMTest
+ * @package QUITest\QUI
+ */
 class QDOMTest extends \PHPUnit_Framework_TestCase
 {
     public function testToString()
@@ -15,7 +21,7 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         $string = (string)$Test;
 
         if ($string !== 'Object QUI\QDOM();') {
-            $this->fail(get_class($Test).'__toString has an error');
+            $this->fail(get_class($Test) . '__toString has an error');
         }
 
         $Test = new QDOM();
@@ -26,7 +32,7 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         $string = (string)$Test;
 
         if ($string !== 'Object QUI\QDOM(huhu);') {
-            $this->fail(get_class($Test).'__toString has an error');
+            $this->fail(get_class($Test) . '__toString has an error');
         }
     }
 
@@ -39,11 +45,11 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         ));
 
         if ($Test->existsAttribute('var1') !== true) {
-            $this->fail(get_class($Test).'->existsAttribute ');
+            $this->fail(get_class($Test) . '->existsAttribute ');
         }
 
         if ($Test->existsAttribute('var2') !== true) {
-            $this->fail(get_class($Test).'->existsAttribute');
+            $this->fail(get_class($Test) . '->existsAttribute');
         }
     }
 
@@ -56,11 +62,11 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         ));
 
         if ($Test->getAttribute('var1') !== 123) {
-            $this->fail(get_class($Test).'->getAttribute var1');
+            $this->fail(get_class($Test) . '->getAttribute var1');
         }
 
         if ($Test->getAttribute('var2') !== 234) {
-            $this->fail(get_class($Test).'->getAttribute var2');
+            $this->fail(get_class($Test) . '->getAttribute var2');
         }
     }
 
@@ -73,7 +79,7 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         ));
 
         if ($Test->getAttribute('var1') !== 123) {
-            $this->fail(get_class($Test).'->setAttribute var1');
+            $this->fail(get_class($Test) . '->setAttribute var1');
         }
     }
 
@@ -86,11 +92,11 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         ));
 
         if ($Test->getAttribute('var1') !== 123) {
-            $this->fail(get_class($Test).'->getAttribute var1');
+            $this->fail(get_class($Test) . '->getAttribute var1');
         }
 
         if ($Test->getAttribute('var2') !== 234) {
-            $this->fail(get_class($Test).'->getAttribute var2');
+            $this->fail(get_class($Test) . '->getAttribute var2');
         }
 
         // kein array übergebn
@@ -108,15 +114,15 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         $Test->removeAttribute('var1');
 
         if ($Test->existsAttribute('var1') !== false) {
-            $this->fail(get_class($Test).'->removeAttribute var1');
+            $this->fail(get_class($Test) . '->removeAttribute var1');
         }
 
         if ($Test->getAttribute('var1') !== false) {
-            $this->fail(get_class($Test).'->removeAttribute var1');
+            $this->fail(get_class($Test) . '->removeAttribute var1');
         }
 
         if ($Test->getAttribute('var2') === false) {
-            $this->fail(get_class($Test).'->removeAttribute var2');
+            $this->fail(get_class($Test) . '->removeAttribute var2');
         }
     }
 
@@ -131,11 +137,11 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         $attributes = $Test->getAttributes();
 
         if ($attributes['var1'] !== 123) {
-            $this->fail(get_class($Test).'->getAttribute var1');
+            $this->fail(get_class($Test) . '->getAttribute var1');
         }
 
         if ($attributes['var2'] !== 234) {
-            $this->fail(get_class($Test).'->getAttribute var2');
+            $this->fail(get_class($Test) . '->getAttribute var2');
         }
 
         /**
@@ -144,11 +150,11 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         $attributes = $Test->getAllAttributes();
 
         if ($attributes['var1'] !== 123) {
-            $this->fail(get_class($Test).'->getAttribute var1');
+            $this->fail(get_class($Test) . '->getAttribute var1');
         }
 
         if ($attributes['var2'] !== 234) {
-            $this->fail(get_class($Test).'->getAttribute var2');
+            $this->fail(get_class($Test) . '->getAttribute var2');
         }
     }
 
@@ -163,7 +169,7 @@ class QDOMTest extends \PHPUnit_Framework_TestCase
         $type = $Test->getType();
 
         if (!is_string($type)) {
-            $this->fail(get_class($Test).'->getType');
+            $this->fail(get_class($Test) . '->getType');
         }
     }
 }

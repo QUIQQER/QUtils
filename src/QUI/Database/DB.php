@@ -81,7 +81,6 @@ class DB extends QUI\QDOM
                              . $offsetMinutes;
 
             $this->PDO->exec("SET time_zone = '{$offsetString}'");
-
         } catch (\PDOException $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
         }
@@ -117,16 +116,14 @@ class DB extends QUI\QDOM
                 return new \PDO(
                     'sqlite:' . $this->getAttribute('dbname')
                 );
-
-            } else {
-                return new \PDO(
-                    $this->getAttribute('dsn'),
-                    $this->getAttribute('user'),
-                    $this->getAttribute('password'),
-                    $this->getAttribute('options')
-                );
             }
 
+            return new \PDO(
+                $this->getAttribute('dsn'),
+                $this->getAttribute('user'),
+                $this->getAttribute('password'),
+                $this->getAttribute('options')
+            );
         } catch (\PDOException $Exception) {
             throw new QUI\Database\Exception(
                 $Exception->getMessage(),
@@ -225,7 +222,6 @@ class DB extends QUI\QDOM
                 $prepare = array_merge($prepare, $insert['prepare']);
 
                 unset($params['set']);
-
             } else {
                 $query = $this->createQueryInsert($params['insert']);
             }
@@ -350,7 +346,6 @@ class DB extends QUI\QDOM
 
         try {
             $Statement->execute();
-
         } catch (\PDOException $Exception) {
             $message = $Exception->getMessage();
             $message .= print_r($query, true);
@@ -409,7 +404,6 @@ class DB extends QUI\QDOM
 
         try {
             $Statement->execute();
-
         } catch (\PDOException $Exception) {
             $message = $Exception->getMessage();
             $message .= print_r($query, true);
@@ -629,7 +623,6 @@ class DB extends QUI\QDOM
 
                 if (is_null($value)) {
                     $sql .= $key . ' IS NULL ';
-
                 } else {
                     if (!is_array($value)) {
                         if (strpos($value, '`') !== false) {
@@ -648,7 +641,6 @@ class DB extends QUI\QDOM
                     ) {
                         $prepare['wherev' . $i] = $value['value'];
                         $sql .= $key . ' ' . $value['type'] . ' :wherev' . $i;
-
                     } elseif (isset($value['type']) && $value['type'] == 'NOT') {
                         if (is_null($value['value'])) {
                             $sql .= $key . ' IS NOT NULL ';
@@ -656,18 +648,15 @@ class DB extends QUI\QDOM
                             $prepare['wherev' . $i] = $value['value'];
                             $sql .= $key . ' != :wherev' . $i;
                         }
-
                     } elseif (isset($value['type']) && $value['type'] == 'REGEXP') {
                         $sql .= $key . ' REGEXP :wherev' . $i;
                         $prepare['wherev' . $i] = $value['value'];
-
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
                         $sql .= $key . ' IN (';
 
                         if (!is_array($value['value'])) {
                             $prepare['in' . $i] = $value['value'];
                             $sql .= ':in' . $i;
-
                         } else {
                             $in = 0;
 
@@ -684,7 +673,6 @@ class DB extends QUI\QDOM
                         }
 
                         $sql .= ') ';
-
                     } elseif (isset($value['type']) && $value['type'] == 'NOT IN') {
                         $sql .= $key . ' NOT IN (';
 
@@ -905,9 +893,7 @@ class DB extends QUI\QDOM
             return ' ORDER BY ' . $params;
         }
 
-        if (is_array($params)
-            && !empty($params)
-        ) {
+        if (is_array($params) && !empty($params)) {
             $sql        = ' ORDER BY ';
             $sortFields = array();
 
@@ -943,7 +929,6 @@ class DB extends QUI\QDOM
             $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
 
             $sql .= ':limit1';
-
         } else {
             $limit = explode(',', $params);
 
@@ -974,5 +959,72 @@ class DB extends QUI\QDOM
             'limit'   => $sql,
             'prepare' => $prepare
         );
+    }
+
+    /**
+     * Is order clause valid?
+     *
+     * @param string $value
+     * @param array $allowed - allowed fields
+     *
+     * @return bool
+     */
+    public static function isOrderValid($value, $allowed = array())
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+
+        $value = trim($value);
+
+        if (strpos($value, ' ') === false) {
+            foreach ($allowed as $field) {
+                if ($value === $field) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        $value = explode(' ', $value);
+
+        switch (strtoupper($value[1])) {
+            case 'ASC':
+            case 'DESC':
+                break; // is allowed
+
+            default:
+                return false;
+        }
+
+        foreach ($allowed as $field) {
+            if ($value[0] === $field) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Is where clause valid?
+     *
+     * @param array $where - where clause
+     * @param array $allowed - allowed fields
+     *
+     * @return bool
+     */
+    public static function isWhereValid(array $where, $allowed = array())
+    {
+        $allowed = array_flip($allowed);
+
+        foreach ($where as $key => $params) {
+            if (isset($allowed[$key])) {
+                return true;
+            }
+        }
+
+        return true;
     }
 }

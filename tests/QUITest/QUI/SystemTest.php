@@ -1,6 +1,12 @@
 <?php
 
-class SystemTest extends PHPUnit_Framework_TestCase
+namespace QUITest\QUI;
+
+/**
+ * Class SystemTest
+ * @package QUITests\QUI
+ */
+class SystemTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetProtocol()
     {
@@ -11,7 +17,7 @@ class SystemTest extends PHPUnit_Framework_TestCase
         }
 
         $_SERVER['HTTPS'] = 'on';
-        $protocol = \QUI\Utils\System::getProtocol();
+        $protocol         = \QUI\Utils\System::getProtocol();
 
         if ($protocol !== 'https://') {
             $this->fail('no https');

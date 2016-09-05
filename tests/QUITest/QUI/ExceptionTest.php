@@ -1,5 +1,11 @@
 <?php
 
+namespace QUITest\QUI;
+
+/**
+ * Class ExceptionTest
+ * @package QUITest\QUI
+ */
 class ExceptionTest extends \PHPUnit_Framework_TestCase
 {
     public function testException()

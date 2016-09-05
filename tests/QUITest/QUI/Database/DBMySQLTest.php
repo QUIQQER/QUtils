@@ -1,10 +1,14 @@
 <?php
 
+namespace QUITest\QUI\Database;
+
 use \QUI\Database\DB as DB;
 
-require_once 'DB_Test_Methods.php';
-
-class DBMySQLTest extends DB_Test_Methods
+/**
+ * Class DBMySQLTest
+ * @package QUITest\Database
+ */
+class DBMySQLTest extends DBTest
 {
     public function getDBConection()
     {
@@ -29,7 +33,6 @@ class DBMySQLTest extends DB_Test_Methods
             ));
 
             $this->fail('no exception thrown by bad DB data');
-
         } catch (\QUI\Database\Exception $Exception) {
         }
     }
@@ -43,6 +46,5 @@ class DBMySQLTest extends DB_Test_Methods
 
     public function testSetAutoIncrement()
     {
-
     }
 }
