@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains the \QUI\Utils\XML
+ * This file contains the \QUI\Utils\Text\XML
  */
 
 namespace QUI\Utils\Text;
