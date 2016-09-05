@@ -677,19 +677,19 @@ class DB extends QUI\QDOM
                         $sql .= $key . ' NOT IN (';
 
                         if (!is_array($value['value'])) {
-                            $prepare['in' . $i] = $value['value'];
-                            $sql .= ':in' . $i;
+                            $prepare['notin' . $i] = $value['value'];
+                            $sql .= ':notin' . $i;
                         } else {
                             $in = 0;
 
                             foreach ($value['value'] as $val) {
-                                $prepare['in' . $in] = $val;
+                                $prepare['notin' . $in] = $val;
 
                                 if ($in != 0) {
                                     $sql .= ', ';
                                 }
 
-                                $sql .= ':in' . $in;
+                                $sql .= ':notin' . $in;
                                 $in++;
                             }
                         }
