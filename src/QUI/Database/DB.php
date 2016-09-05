@@ -679,7 +679,6 @@ class DB extends QUI\QDOM
                         if (!is_array($value['value'])) {
                             $prepare['in' . $i] = $value['value'];
                             $sql .= ':in' . $i;
-
                         } else {
                             $in = 0;
 
