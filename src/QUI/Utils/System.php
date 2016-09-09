@@ -132,36 +132,4 @@ class System
         return is_callable($func)
                && false === stripos(ini_get('disable_functions'), $func);
     }
-
-    /**
-     * Executes a command on the system shell.
-     * @param string $command - The shellcommand, that should be executed.
-     * @param bool $liveOutput - If true, the ouput will be echoed live
-     * @return array - Returns an array : array ('output' => <the command output>,'status' => <statuscode>)
-     */
-    public static function shellExec($command, $liveOutput)
-    {
-
-        $command = escapeshellcmd($command);
-
-        $output = "Executing : ". $command;
-        $status = -1;
-
-        if ($proc = popen("($command) 2>&1", "r")) {
-            while (!feof($proc)) {
-                $res = fgets($proc, 1000);
-                $output .= $res;
-
-                if ($liveOutput) {
-                    echo $res;
-                }
-            }
-            $status = pclose($proc);
-        }
-
-        return array(
-            'output' => $output,
-            'status' => $status
-        );
-    }
 }
