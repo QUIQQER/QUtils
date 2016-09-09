@@ -673,6 +673,28 @@ class DB extends QUI\QDOM
                         }
 
                         $sql .= ') ';
+                    } elseif (isset($value['type']) && $value['type'] == 'NOT IN') {
+                        $sql .= $key . ' NOT IN (';
+
+                        if (!is_array($value['value'])) {
+                            $prepare['notin' . $i] = $value['value'];
+                            $sql .= ':notin' . $i;
+                        } else {
+                            $in = 0;
+
+                            foreach ($value['value'] as $val) {
+                                $prepare['notin' . $in] = $val;
+
+                                if ($in != 0) {
+                                    $sql .= ', ';
+                                }
+
+                                $sql .= ':notin' . $in;
+                                $in++;
+                            }
+                        }
+
+                        $sql .= ') ';
                     } else {
                         if (!isset($value['type'])) {
                             $value['type'] = '';

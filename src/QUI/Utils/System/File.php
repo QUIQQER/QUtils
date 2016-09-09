@@ -1162,10 +1162,11 @@ class File
      * It can be given a complete path
      *
      * @param string $path - Path which is to be created
+     * @param int $mode - Permissions for the folder
      *
      * @return boolean
      */
-    public static function mkdir($path)
+    public static function mkdir($path, $mode = 0)
     {
         // Wenn schon existiert dann schluss -> true
         if (is_dir($path) || file_exists($path)) {
@@ -1200,7 +1201,11 @@ class File
             }
 
             if (!is_dir($p_tmp) || !file_exists($p_tmp)) {
-                mkdir($p_tmp);
+                if ($mode != 0) {
+                    mkdir($p_tmp, $mode);
+                } else {
+                    mkdir($p_tmp);
+                }
             }
         }
 
