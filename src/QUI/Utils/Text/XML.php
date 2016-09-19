@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains the \QUI\Utils\XML
+ * This file contains the \QUI\Utils\Text\XML
  */
 
 namespace QUI\Utils\Text;
@@ -637,14 +637,41 @@ class XML
     }
 
     /**
-     * Reads the settings window from an *.xml and search the category
+     * Reads the settings window from an *.xml and search all categories
      *
      * @param string $file - path to xml file
-     * @param string $name - Category name
      *
-     * @return \DOMElement|boolean - DOMElement | false
+     * @return array|\DOMElement|false - List of DOMElements
      */
-    public static function getSettingCategoriesFromXml($file, $name)
+    public static function getSettingCategoriesFromXml($file)
+    {
+        $Dom  = self::getDomFromXml($file);
+        $Path = new \DOMXPath($Dom);
+        $list = array();
+
+        $categories = $Path->query("//settings/window/categories/category");
+
+        if (!$categories->length) {
+            return $list;
+        }
+
+        /* @var $Category \DOMElement */
+        foreach ($categories as $Category) {
+            $list[] = $Category;
+        }
+
+        return $list;
+    }
+
+    /**
+     * Reads the settings window from an *.xml and search a category
+     *
+     * @param string $file - path to xml file
+     * @param string $name - optional, Category name
+     *
+     * @return \DOMElement|false - List of DOMElements
+     */
+    public static function getSettingCategoryFromXml($file, $name)
     {
         $Dom  = self::getDomFromXml($file);
         $Path = new \DOMXPath($Dom);

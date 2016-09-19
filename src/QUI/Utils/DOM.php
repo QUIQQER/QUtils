@@ -476,8 +476,8 @@ class DOM
 
         $str = '';
 
+        /* @var $Tab \DOMElement */
         foreach ($tabs as $Tab) {
-            /* @var $Tab \DOMElement */
             if ($Tab->getAttribute('name') != $name) {
                 continue;
             }

@@ -53,7 +53,6 @@ class System
             if ($https == '1') {
                 return true;
             }
-
         } elseif (isset($_SERVER['SERVER_PORT'])) {
             if ($_SERVER['SERVER_PORT'] == '443') {
                 return true;
