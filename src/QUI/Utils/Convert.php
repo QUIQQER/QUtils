@@ -237,8 +237,11 @@ class Convert
      * Convert color to a lighter or brighter color
      * inspired by http://lab.clearpixel.com.au/2008/06/darken-or-lighten-colours-dynamically-using-php/
      *
+     * Negative $percent make a color brighter, positive lighter.
+     * Possible values are from -1 to 1;
+     *
      * @param string $hex - hex code
-     * @param int|float|double $percent - eq: 0.2, 0.9 percentage of the hex code
+     * @param int|float|double $percent - eq: 0.2 or -0.9
      * @return string
      */
     public static function colorBrightness($hex, $percent)
