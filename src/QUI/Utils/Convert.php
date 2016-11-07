@@ -64,7 +64,7 @@ class Convert
         $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
 
         return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' '
-               . $units[$power];
+        . $units[$power];
     }
 
 
@@ -231,5 +231,65 @@ class Convert
         }
 
         return $str;
+    }
+
+    /**
+     * Convert color to a lighter or brighter color
+     * inspired by http://lab.clearpixel.com.au/2008/06/darken-or-lighten-colours-dynamically-using-php/
+     *
+     * Negative $percent make a color brighter, positive lighter.
+     * Possible values are from -1 to 1;
+     *
+     * @param string $hex - hex code
+     * @param int|float|double $percent - eq: 0.2 or -0.9
+     * @return string
+     */
+    public static function colorBrightness($hex, $percent)
+    {
+        // Work out if hash given
+        $hash = '';
+
+        if (stristr($hex, '#')) {
+            $hex  = str_replace('#', '', $hex);
+            $hash = '#';
+        }
+
+        /// HEX TO RGB
+        $rgb = array(
+            hexdec(substr($hex, 0, 2)),
+            hexdec(substr($hex, 2, 2)),
+            hexdec(substr($hex, 4, 2))
+        );
+
+        for ($i = 0; $i < 3; $i++) {
+            if ($percent > 0) {
+                // Lighter
+                $rgb[$i] = round($rgb[$i] * $percent) + round(255 * (1 - $percent));
+            } else {
+                // Darker
+                $positivePercent = $percent - ($percent * 2);
+                $rgb[$i]         = round($rgb[$i] * $positivePercent) + round(0 * (1 - $positivePercent));
+            }
+
+            if ($rgb[$i] > 255) {
+                $rgb[$i] = 255;
+            }
+        }
+
+        //// RBG to Hex
+        $hex = '';
+
+        for ($i = 0; $i < 3; $i++) {
+            // Convert the decimal digit to hex
+            $hexDigit = dechex($rgb[$i]);
+            // Add a leading zero if necessary
+            if (strlen($hexDigit) == 1) {
+                $hexDigit = "0" . $hexDigit;
+            }
+            // Append to the hex string
+            $hex .= $hexDigit;
+        }
+
+        return $hash . $hex;
     }
 }

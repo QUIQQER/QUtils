@@ -560,6 +560,59 @@ class XML
     }
 
     /**
+     * Return the package data from a package.xml
+     * parse a package xml to an array
+     *
+     * @param string $file - path to the xml file
+     *
+     * @return array
+     */
+    public static function getPackageFromXMLFile($file)
+    {
+        $Dom  = self::getDomFromXml($file);
+        $Path = new \DOMXPath($Dom);
+
+        $package = $Path->query("//quiqqer/package");
+
+        if (!$package->length) {
+            return array();
+        }
+
+        $result     = array();
+        $Package    = $package->item(0);
+        $childNodes = $Package->childNodes;
+
+        foreach ($childNodes as $Node) {
+            /* @var $Node \DOMElement */
+            if ($Node->nodeName === 'title') {
+                $result['title'] = DOM::getTextFromNode($Node);
+                continue;
+            }
+
+            if ($Node->nodeName === 'description') {
+                $result['description'] = DOM::getTextFromNode($Node);
+                continue;
+            }
+
+            if ($Node->nodeName === 'image') {
+                $result['image'] = DOM::parseVar($Node->getAttribute('src'));
+                continue;
+            }
+        }
+
+        // preview images
+        $previews          = $Path->query("//quiqqer/package/preview/image");
+        $result['preview'] = array();
+
+        foreach ($previews as $Image) {
+            /* @var $Image \DOMElement */
+            $result['preview'][] = DOM::parseVar($Image->getAttribute('src'));
+        }
+
+        return $result;
+    }
+
+    /**
      * Return the panel nodes from an *.xml file
      *
      * @param string $file - path to the xml file
