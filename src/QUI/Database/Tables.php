@@ -363,14 +363,14 @@ class Tables
     {
         if ($this->exist($table) == false) {
             $this->create($table, $fields, $engine);
-
             return;
         }
 
         $tblFields = $this->getColumns($table);
 
-        $PDO   = $this->DB->getPDO();
-        $table = $this->clear($table);
+        $PDO    = $this->DB->getPDO();
+        $table  = $this->clear($table);
+        $change = array();
 
         foreach ($fields as $field => $type) {
             $field = $this->clear($field);
@@ -393,7 +393,36 @@ class Tables
                     QUI\System\Log::addError($query);
                     throw $Exception;
                 }
+
+                continue;
             }
+
+            // change column
+            if (stripos($type, 'PRIMARY KEY') === false &&
+                !$this->issetPrimaryKey($table, $field)
+            ) {
+                $change[] = "CHANGE `{$field}` `{$field}` {$type}";
+            }
+        }
+
+        if (!count($change)) {
+            return;
+        }
+
+
+        $query = "ALTER TABLE `{$table}` ";
+        $query .= implode(",\n", $change);
+
+        $query = str_replace('CURRENTTIMESTAMP', 'NOW()', $query);
+        $query = str_replace('DEFAULT  NOT NULL', "DEFAULT '' NOT NULL", $query);
+
+        $Stmnt = $PDO->prepare($query);
+
+        try {
+            $Stmnt->execute();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($query);
+            throw $Exception;
         }
     }
 
@@ -1077,7 +1106,7 @@ class Tables
      */
     protected function parseFieldType($fieldType)
     {
-        $fieldType = preg_replace("/[^a-zA-Z0-9() ]/", "", $fieldType);
+        $fieldType = preg_replace("/[^a-zA-Z0-9() ']/", "", $fieldType);
         $fieldType = strtoupper($fieldType);
 
         return $fieldType;
