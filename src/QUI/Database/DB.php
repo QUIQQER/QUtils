@@ -707,23 +707,45 @@ class DB extends QUI\QDOM
                         switch ($value['type']) {
                             case '%LIKE%':
                                 $prepare['wherev' . $i] = '%' . $value['value'] . '%';
+                                $sql .= $key . ' LIKE :wherev' . $i;
                                 break;
 
                             case '%LIKE':
                                 $prepare['wherev' . $i] = '%' . $value['value'];
+                                $sql .= $key . ' LIKE :wherev' . $i;
                                 break;
 
                             case 'LIKE%':
                                 $prepare['wherev' . $i] = $value['value'] . '%';
+                                $sql .= $key . ' LIKE :wherev' . $i;
+                                break;
+
+                            case 'NOT LIKE':
+                                $prepare['wherev' . $i] = $value['value'];
+                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                break;
+
+                            case 'NOT %LIKE%':
+                                $prepare['wherev' . $i] = '%' . $value['value'] . '%';
+                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                break;
+
+                            case 'NOT %LIKE':
+                                $prepare['wherev' . $i] = '%' . $value['value'];
+                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                break;
+
+                            case 'NOT LIKE%':
+                                $prepare['wherev' . $i] = $value['value'] . '%';
+                                $sql .= $key . ' NOT LIKE :wherev' . $i;
                                 break;
 
                             default:
                             case 'LIKE':
                                 $prepare['wherev' . $i] = $value['value'];
+                                $sql .= $key . ' LIKE :wherev' . $i;
                                 break;
                         }
-
-                        $sql .= $key . ' LIKE :wherev' . $i;
                     }
                 }
 

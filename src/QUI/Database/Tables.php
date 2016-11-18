@@ -219,8 +219,7 @@ class Tables
         if ($this->isSQLite()) {
             $sql = 'CREATE TABLE `' . $_table . '` (';
         } else {
-            $sql = 'CREATE TABLE `' . $this->DB->getAttribute('dbname') . '`.`'
-                   . $_table . '` (';
+            $sql = 'CREATE TABLE `' . $this->DB->getAttribute('dbname') . '`.`' . $_table . '` (';
         }
 
 
