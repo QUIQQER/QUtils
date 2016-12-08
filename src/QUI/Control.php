@@ -35,8 +35,10 @@ class Control extends QDOM
      */
     public function __construct($attributes = array())
     {
-        if (!isset($attributes['showTitle'])) {
-            $attributes['showTitle'] = false;
+        if (!isset($attributes['showTitle'])
+            && !isset($this->attributes['showTitle'])
+        ) {
+            $attributes['showTitle'] = true;
         }
 
         $this->setAttributes($attributes);
