@@ -325,8 +325,13 @@ class XML
             return new \DOMDocument();
         }
 
-        $Dom = new \DOMDocument();
-        $Dom->load($filename);
+        try {
+            $Dom = new \DOMDocument();
+            $Dom->load($filename);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            return new \DOMDocument();
+        }
 
         return $Dom;
     }
