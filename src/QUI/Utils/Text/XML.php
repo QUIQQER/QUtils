@@ -1339,7 +1339,7 @@ class XML
     }
 
     /**
-     * Parse a list of xmls to collections
+     * Parse a list of xml files to collections
      *
      * @param array|string $xmlFiles
      * @return \DusanKasan\Knapsack\Collection
@@ -1365,8 +1365,8 @@ class XML
                     return $data['name'] == $item['name'];
                 });
 
-                if (!$entry) {
-                    $Collection->append($data);
+                if (empty($entry)) {
+                    $Collection = $Collection->append($data);
                     continue;
                 }
 
@@ -1376,16 +1376,11 @@ class XML
             }
         }
 
-        // sort setting items
-        $Collection->sort(function ($a, $b) {
-            return $a['index'] > $b['index'];
-        });
-
         return $Collection;
     }
 
     /**
-     * Parse a xml category DOMElement to an array
+     * Parse <category> DOMElement and return it as an array
      *
      * @param \DOMElement $Category
      * @return array
@@ -1397,6 +1392,7 @@ class XML
         $data = array(
             'name'  => $Category->getAttribute('name'),
             'index' => $Category->getAttribute('index'),
+            'title' => '',
             'items' => $Collection
         );
 
@@ -1405,7 +1401,7 @@ class XML
                 continue;
             }
 
-            if ($Child->nodeName == 'text') {
+            if ($Child->nodeName == 'title') {
                 $data['title'] = DOM::getTextFromNode($Child, false);
                 continue;
             }
@@ -1416,19 +1412,20 @@ class XML
             }
 
             if ($Child->nodeName == 'settings') {
-                $Collection->append(self::parseSettings($Child));
+                $Collection = $Collection->append(
+                    self::parseSettings($Child)
+                );
             }
         }
 
-        // sort setting items
-        $Collection->sort(function ($a, $b) {
-            return $a['index'] > $b['index'];
-        });
+        $data['items'] = $Collection;
 
         return $data;
     }
 
     /**
+     * Parse a <setting> DOM node and return it as an array
+     *
      * @param \DOMElement $Setting
      * @return array
      */
@@ -1436,6 +1433,7 @@ class XML
     {
         $data = array(
             'name'  => $Setting->getAttribute('name'),
+            'title' => '',
             'index' => $Setting->getAttribute('index'),
             'items' => ''
         );
@@ -1447,7 +1445,7 @@ class XML
                 continue;
             }
 
-            if ($Child->nodeName == 'text') {
+            if ($Child->nodeName == 'title' || $Child->nodeName == 'text') {
                 $data['title'] = DOM::getTextFromNode($Child, false);
                 continue;
             }
@@ -1480,5 +1478,47 @@ class XML
         $data['items'] = $content;
 
         return $data;
+    }
+
+    /**
+     * Return the HTML from a category or from multiple categories
+     *
+     * @param string|array $files
+     * @param bool|string $categoryName
+     * @return string
+     */
+    public static function getCategoriesHtml($files, $categoryName = false)
+    {
+        $Collection = self::parseCategoriesToCollection($files);
+        $result     = '';
+
+        $sortByIndex = function ($a, $b) {
+            return $a['index'] > $b['index'];
+        };
+
+        $collections = $Collection->sort($sortByIndex)->toArray();
+
+        foreach ($collections as $category) {
+            if ($categoryName && $categoryName != $category['name']) {
+                continue;
+            }
+
+            /* @var $Items Collection */
+            $Items    = $category['items'];
+            $settings = $Items->sort($sortByIndex)->toArray();
+
+            foreach ($settings as $setting) {
+                $result .= '<table class="data-table">';
+                $result .= '<thead><tr><th>';
+                $result .= $setting['title'];
+                $result .= '</th></tr></thead>';
+
+                $result .= '<tbody>';
+                $result .= $setting['items'];
+                $result .= '</tbody></table>';
+            }
+        }
+
+        return $result;
     }
 }

@@ -37,7 +37,7 @@
 
             <categories>
                 <category name="first_settings">
-                    <text>Allgemein</text>
+                    <title>Allgemein</title>
                     <icon>URL_BIN_DIR/22x22/quiqqer.png</icon>
 
                     <settings title="first_setting_section" name="first_setting_section">
@@ -62,7 +62,7 @@
                 </category>
 
                 <category name="second_settings">
-                    <text>More Settings</text>
+                    <title>More Settings</title>
                     <icon>URL_BIN_DIR/22x22/database.png</icon>
 
                     <settings title="database" name="database">
