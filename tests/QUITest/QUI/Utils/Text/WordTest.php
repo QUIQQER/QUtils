@@ -1,6 +1,6 @@
 <?php
 
-namespace QUITest\QUI\Utils\WordTest;
+namespace QUITest\QUI\Utils\Text;
 
 use QUI\Utils\Text\Word as Word;
 

@@ -9,6 +9,7 @@ namespace QUI\Utils\Text;
 use QUI;
 use QUI\Utils\Security\Orthos;
 use QUI\Utils\DOM;
+use DusanKasan\Knapsack\Collection;
 
 /**
  * QUIQQER XML Util class
@@ -1335,5 +1336,149 @@ class XML
     {
         $Manager = QUI::getPermissionManager();
         $Manager->importPermissionsFromXml($xmlfile, $src);
+    }
+
+    /**
+     * Parse a list of xmls to collections
+     *
+     * @param array|string $xmlFiles
+     * @return \DusanKasan\Knapsack\Collection
+     */
+    public static function parseCategoriesToCollection($xmlFiles)
+    {
+        if (is_string($xmlFiles)) {
+            $xmlFiles = array($xmlFiles);
+        }
+
+        $Collection = Collection::from(array());
+
+        foreach ($xmlFiles as $xmlFile) {
+            $Dom  = self::getDomFromXml($xmlFile);
+            $Path = new \DOMXPath($Dom);
+
+            $categories = $Path->query("//settings/window/categories/category");
+
+            foreach ($categories as $Category) {
+                $data = self::parseCategory($Category);
+
+                $entry = $Collection->find(function ($item) use ($data) {
+                    return $data['name'] == $item['name'];
+                });
+
+                if (!$entry) {
+                    $Collection->append($data);
+                    continue;
+                }
+
+                /* @var $CategoryCollection Collection */
+                $CategoryCollection = $entry['items'];
+                $CategoryCollection->concat($data['items']);
+            }
+        }
+
+        // sort setting items
+        $Collection->sort(function ($a, $b) {
+            return $a['index'] > $b['index'];
+        });
+
+        return $Collection;
+    }
+
+    /**
+     * Parse a xml category DOMElement to an array
+     *
+     * @param \DOMElement $Category
+     * @return array
+     */
+    public static function parseCategory(\DOMElement $Category)
+    {
+        $Collection = Collection::from(array());
+
+        $data = array(
+            'name'  => $Category->getAttribute('name'),
+            'index' => $Category->getAttribute('index'),
+            'items' => $Collection
+        );
+
+        foreach ($Category->childNodes as $Child) {
+            if ($Child->nodeName == '#text') {
+                continue;
+            }
+
+            if ($Child->nodeName == 'text') {
+                $data['title'] = DOM::getTextFromNode($Child, false);
+                continue;
+            }
+
+            if ($Child->nodeName == 'image') {
+                $data['icon'] = DOM::parseVar($Child->value);
+                continue;
+            }
+
+            if ($Child->nodeName == 'settings') {
+                $Collection->append(self::parseSettings($Child));
+            }
+        }
+
+        // sort setting items
+        $Collection->sort(function ($a, $b) {
+            return $a['index'] > $b['index'];
+        });
+
+        return $data;
+    }
+
+    /**
+     * @param \DOMElement $Setting
+     * @return array
+     */
+    public static function parseSettings(\DOMElement $Setting)
+    {
+        $data = array(
+            'name'  => $Setting->getAttribute('name'),
+            'index' => $Setting->getAttribute('index'),
+            'items' => ''
+        );
+
+        $content = '';
+
+        foreach ($Setting->childNodes as $Child) {
+            if ($Child->nodeName == '#text') {
+                continue;
+            }
+
+            if ($Child->nodeName == 'text') {
+                $data['title'] = DOM::getTextFromNode($Child, false);
+                continue;
+            }
+
+            if ($Child->nodeName == 'input') {
+                $content .= DOM::inputDomToString($Child);
+                continue;
+            }
+
+            if ($Child->nodeName == 'select') {
+                $content .= DOM::selectDomToString($Child);
+                continue;
+            }
+
+            if ($Child->nodeName == 'textarea') {
+                $content .= DOM::textareaDomToString($Child);
+                continue;
+            }
+
+            if ($Child->nodeName == 'group') {
+                $content .= DOM::groupDomToString($Child);
+                continue;
+            }
+
+            if ($Child->nodeName == 'button') {
+                $content .= DOM::buttonDomToString($Child);
+            }
+        }
+
+        $data['items'] = $content;
+
+        return $data;
     }
 }

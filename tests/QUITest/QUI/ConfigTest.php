@@ -74,7 +74,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $Config = $this->getConfig();
 
         $this->assertEquals(
-            dirname(__FILE__) . '/ConfigTest.ini',
+            dirname(__FILE__) . '/ConfigTest.ini.php',
             $Config->getFilename()
         );
     }
@@ -100,10 +100,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $Config->set('section3', 'val1', 'test'));
         $this->assertEquals(true, $Config->existValue('section3'));
 
-        $this->assertEquals(true, $Config->set('section4', array(
-            'val1' => 'test'
-        )));
-
+        $this->assertEquals(true, $Config->set('section4', 'val1', 'test'));
         $this->assertEquals('test', $Config->get('section4', 'val1'));
     }
 
