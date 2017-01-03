@@ -2,18 +2,18 @@
 
 namespace QUITest\QUI\Utils\Text;
 
-use QUI\Utils\Text\XML;
+use QUI\Utils\XML\Settings;
 
 /**
  * Class QUIUtilsTextWordTest
  * @package QUITest\QUI\Utils\WordTest
  */
-class XMLTest extends \PHPUnit_Framework_TestCase
+class SettingsTest extends \PHPUnit_Framework_TestCase
 {
     public function testParseCategoriesToCollection()
     {
         // collection test
-        $Collection = XML::parseCategoriesToCollection(
+        $Collection = Settings::parseCategoriesToCollection(
             dirname(__FILE__) . '/settings.xml'
         );
 
@@ -21,7 +21,7 @@ class XMLTest extends \PHPUnit_Framework_TestCase
 
 
         // html test
-        $html = XML::getCategoriesHtml(dirname(__FILE__) . '/settings.xml');
+        $html = Settings::getCategoriesHtml(dirname(__FILE__) . '/settings.xml');
 
         $this->assertStringStartsWith('<table', $html);
         $this->assertStringEndsWith('</table>', $html);
