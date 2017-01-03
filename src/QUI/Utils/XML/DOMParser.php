@@ -62,7 +62,7 @@ class DOMParser
         if ($type == 'radio') {
             $input = '<div class="field-container-field">' . $input . '</div>';
         }
-        
+
         if ($type == 'checkbox') {
             $input = '<div class="field-container-field">' . $input . $attributes['desc'] . '</div>';
         }

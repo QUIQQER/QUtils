@@ -6,6 +6,7 @@
 
 namespace QUI\Utils\XML;
 
+use BirknerAlex\XMPPHP\Log;
 use QUI;
 use QUI\Utils\DOM;
 use QUI\Utils\Text\XML;
@@ -19,12 +20,68 @@ use DusanKasan\Knapsack\Collection;
 class Settings
 {
     /**
+     *
+     * @param $xmlFiles
+     * @return array
+     */
+    public static function getPanel($xmlFiles)
+    {
+        $result = array(
+            'title' => '',
+            'icon'  => ''
+        );
+
+        if (is_string($xmlFiles)) {
+            $xmlFiles = array($xmlFiles);
+        }
+
+        foreach ($xmlFiles as $xmlFile) {
+            $Dom     = XML::getDomFromXml($xmlFile);
+            $Path    = new \DOMXPath($Dom);
+            $windows = $Path->query("//settings/window");
+
+            foreach ($windows as $Window) {
+                /* @var $Window \DOMElement */
+                $Title = $Window->getElementsByTagName('title');
+                $Icon  = $Window->getElementsByTagName('icon');
+
+                if ($Title->length) {
+                    $result['title'] = htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
+                }
+
+                if ($Icon->length) {
+                    $result['icon'] = htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
+                }
+
+                // if params exists
+                $Params = $Window->getElementsByTagName('params');
+
+                if ($Params->length) {
+                    $Icon = $Params->item(0)->getElementsByTagName('icon');
+
+                    if ($Icon) {
+                        $result['icon'] = DOM::parseVar($Icon->item(0)->nodeValue);
+                    }
+                }
+            }
+        }
+
+        $sortByIndex = function ($a, $b) {
+            return $a['index'] > $b['index'];
+        };
+
+        $result['categories'] = self::getCategories($xmlFiles)->sort($sortByIndex);
+
+        return $result;
+    }
+
+    /**
      * Parse a list of xml files to collections
      *
      * @param array|string $xmlFiles
      * @return \DusanKasan\Knapsack\Collection
      */
-    public static function parseCategoriesToCollection($xmlFiles)
+    public static function getCategories($xmlFiles)
     {
         if (is_string($xmlFiles)) {
             $xmlFiles = array($xmlFiles);
@@ -86,8 +143,18 @@ class Settings
                 continue;
             }
 
+            if ($Child->nodeName == 'text') {
+                $data['text'] = DOM::getTextFromNode($Child, false);
+                continue;
+            }
+
+            if ($Child->nodeName == 'icon') {
+                $data['icon'] = DOM::parseVar($Child->nodeValue);
+                continue;
+            }
+
             if ($Child->nodeName == 'image') {
-                $data['icon'] = DOM::parseVar($Child->value);
+                $data['icon'] = DOM::parseVar($Child->nodeValue);
                 continue;
             }
 
@@ -169,7 +236,7 @@ class Settings
      */
     public static function getCategoriesHtml($files, $categoryName = false)
     {
-        $Collection = self::parseCategoriesToCollection($files);
+        $Collection = self::getCategories($files);
         $result     = '';
 
         $sortByIndex = function ($a, $b) {
