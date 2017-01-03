@@ -59,9 +59,14 @@ class DOMParser
                            ' . $attributes['attributes'] . '
                     />';
 
-        if ($type == 'checkbox' || $type == 'radio') {
+        if ($type == 'radio') {
             $input = '<div class="field-container-field">' . $input . '</div>';
         }
+        
+        if ($type == 'checkbox') {
+            $input = '<div class="field-container-field">' . $input . $attributes['desc'] . '</div>';
+        }
+
 
         return self::creatHTML($input, $attributes);
     }
@@ -247,6 +252,8 @@ class DOMParser
      */
     protected static function creatHTML($fieldHTML, $attributes)
     {
+        $isCheckbox = strpos($fieldHTML, 'type="checkbox"');
+
         $string = '<label class="field-container">';
         $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
         $string .= $attributes['text'];
@@ -254,7 +261,7 @@ class DOMParser
         $string .= $fieldHTML;
         $string .= '</label>';
 
-        if (!empty($attributes['desc'])) {
+        if (!empty($attributes['desc']) && !$isCheckbox) {
             $string .= '<div class="field-container-item-desc">' . $attributes['desc'] . '</div>';
         }
 
