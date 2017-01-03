@@ -32,7 +32,7 @@ class DOMParser
         $attributes = self::getAttributes($Input);
 
         $type    = 'text';
-        $classes = $attributes['classes'];
+        $classes = $attributes['class'];
 
         if ($Input->getAttribute('type')) {
             $type = $Input->getAttribute('type');
@@ -48,12 +48,20 @@ class DOMParser
                 break;
         }
 
+        if ($type != 'checkbox' || $type != 'radio') {
+            $classes[] = 'field-container-field';
+        }
+
         $input = '<input type="' . $type . '"
                            name="' . $attributes['conf'] . '"
                            id="' . $attributes['id'] . '"
-                           ' . implode(' ', $classes) . '
+                           class="' . implode(' ', $classes) . '"
                            ' . $attributes['attributes'] . '
                     />';
+
+        if ($type == 'checkbox' || $type == 'radio') {
+            $input = '<div class="field-container-field">' . $input . '</div>';
+        }
 
         return self::creatHTML($input, $attributes);
     }
@@ -97,6 +105,7 @@ class DOMParser
         $select = '<select
             name="' . $attributes['conf'] . '"
             id="' . $attributes['id'] . '"
+            class="field-container-field"
         >';
 
         // Options
@@ -131,7 +140,7 @@ class DOMParser
                      data-qui="controls/usersAndGroups/Select"
                      name="' . $attributes['conf'] . '"
                      id="' . $attributes['id'] . '"
-                     ' . implode(' ', $attributes['class']) . '
+                     class="' . implode(' ', $attributes['class']) . '"
                      ' . $attributes['attributes'] . '
                  />';
 
@@ -157,7 +166,7 @@ class DOMParser
                      data-qui="qui/controls/buttons/Button"
                      name="' . $attributes['conf'] . '"
                      id="' . $attributes['id'] . '"
-                     ' . implode(' ', $attributes['class']) . '
+                     class="' . implode(' ', $attributes['class']) . '"
                      ' . $attributes['attributes'] . '
                  >' . $attributes['text'] . '</button>';
 
@@ -196,10 +205,10 @@ class DOMParser
 
 
         // classes
-        $class = array('field-container-field');
+        $class = array();
 
         if ($Node->getAttribute('class')) {
-            $class[] = $Node->getAttribute('class');
+            $class[] = htmlspecialchars($Node->getAttribute('class'));
         }
 
 
@@ -238,17 +247,16 @@ class DOMParser
      */
     protected static function creatHTML($fieldHTML, $attributes)
     {
-        $string = '<label class="qui-xml-panel-row-item">';
+        $string = '<label class="field-container">';
         $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
         $string .= $attributes['text'];
-        $string .= '</span>';
+        $string .= '</div>';
         $string .= $fieldHTML;
+        $string .= '</label>';
 
         if (!empty($attributes['desc'])) {
             $string .= '<div class="field-container-item-desc">' . $attributes['desc'] . '</div>';
         }
-
-        $string .= '</label>';
 
         return $string;
     }

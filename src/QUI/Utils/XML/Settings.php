@@ -188,11 +188,16 @@ class Settings
             $settings = $Items->sort($sortByIndex)->toArray();
 
             foreach ($settings as $setting) {
-                $result .= '<table class="data-table">';
+                $result .= '<table class="data-table data-table-flexbox product-data">';
                 $result .= '<thead><tr><th>';
-                $result .= $setting['title'];
-                $result .= '</th></tr></thead>';
 
+                if (is_array($setting['title'])) {
+                    $result .= QUI::getLocale()->get($setting['title'][0], $setting['title'][1]);
+                } else {
+                    $result .= $setting['title'];
+                }
+
+                $result .= '</th></tr></thead>';
                 $result .= '<tbody>';
 
                 foreach ($setting['items'] as $item) {
