@@ -6,7 +6,6 @@
 
 namespace QUI\Utils\XML;
 
-use BirknerAlex\XMPPHP\Log;
 use QUI;
 use QUI\Utils\DOM;
 use QUI\Utils\Text\XML;
@@ -20,11 +19,63 @@ use DusanKasan\Knapsack\Collection;
 class Settings
 {
     /**
+     * @var string
+     */
+    protected $xmlPath = '//settings/window';
+
+    /**
+     * @var null
+     */
+    protected static $Instance = null;
+
+    /**
+     * @return Settings
+     */
+    public function getInstance()
+    {
+        if (is_null(self::$Instance)) {
+            self::$Instance = new self();
+        }
+
+        return self::$Instance;
+    }
+
+    /**
+     * Set the xml start / search path for the settings/window
+     *
+     * The default path is //settings/window ... it worked for
+     *
+     * <settings>
+     *     <window>
+     *
+     *     </window>
+     * </settings>
+     *
+     * or
+     *
+     * <quiqqer>
+     *     <settings>
+     *         <window>
+     *
+     *         </window>
+     *     </settings>
+     * </quiqqer>
+     *
+     * @param string $xmlPath
+     */
+    public function setXMLPath($xmlPath)
+    {
+        if (is_string($xmlPath)) {
+            $this->xmlPath = $xmlPath;
+        }
+    }
+
+    /**
      *
      * @param $xmlFiles
      * @return array
      */
-    public static function getPanel($xmlFiles)
+    public function getPanel($xmlFiles)
     {
         $result = array(
             'title' => '',
@@ -38,7 +89,7 @@ class Settings
         foreach ($xmlFiles as $xmlFile) {
             $Dom     = XML::getDomFromXml($xmlFile);
             $Path    = new \DOMXPath($Dom);
-            $windows = $Path->query("//settings/window");
+            $windows = $Path->query($this->xmlPath);
 
             foreach ($windows as $Window) {
                 /* @var $Window \DOMElement */
@@ -70,7 +121,7 @@ class Settings
             return $a['index'] > $b['index'];
         };
 
-        $result['categories'] = self::getCategories($xmlFiles)->sort($sortByIndex);
+        $result['categories'] = $this->getCategories($xmlFiles)->sort($sortByIndex);
 
         return $result;
     }
@@ -81,7 +132,7 @@ class Settings
      * @param array|string $xmlFiles
      * @return \DusanKasan\Knapsack\Collection
      */
-    public static function getCategories($xmlFiles)
+    public function getCategories($xmlFiles)
     {
         if (is_string($xmlFiles)) {
             $xmlFiles = array($xmlFiles);
@@ -93,10 +144,10 @@ class Settings
             $Dom  = XML::getDomFromXml($xmlFile);
             $Path = new \DOMXPath($Dom);
 
-            $categories = $Path->query("//settings/window/categories/category");
+            $categories = $Path->query($this->xmlPath . "/categories/category");
 
             foreach ($categories as $Category) {
-                $data = self::parseCategory($Category);
+                $data = $this->parseCategory($Category);
 
                 $entry = $Collection->find(function ($item) use ($data) {
                     return $data['name'] == $item['name'];
@@ -122,15 +173,16 @@ class Settings
      * @param \DOMElement $Category
      * @return array
      */
-    public static function parseCategory(\DOMElement $Category)
+    public function parseCategory(\DOMElement $Category)
     {
         $Collection = Collection::from(array());
 
         $data = array(
-            'name'  => $Category->getAttribute('name'),
-            'index' => $Category->getAttribute('index'),
-            'title' => '',
-            'items' => $Collection
+            'name'    => $Category->getAttribute('name'),
+            'index'   => $Category->getAttribute('index'),
+            'require' => $Category->getAttribute('require'),
+            'title'   => '',
+            'items'   => $Collection
         );
 
         foreach ($Category->childNodes as $Child) {
@@ -160,7 +212,7 @@ class Settings
 
             if ($Child->nodeName == 'settings') {
                 $Collection = $Collection->append(
-                    self::parseSettings($Child)
+                    $this->parseSettings($Child)
                 );
             }
         }
@@ -176,7 +228,7 @@ class Settings
      * @param \DOMElement $Setting
      * @return array
      */
-    public static function parseSettings(\DOMElement $Setting)
+    public function parseSettings(\DOMElement $Setting)
     {
         $data = array(
             'name'  => $Setting->getAttribute('name'),
@@ -234,9 +286,9 @@ class Settings
      * @param bool|string $categoryName
      * @return string
      */
-    public static function getCategoriesHtml($files, $categoryName = false)
+    public function getCategoriesHtml($files, $categoryName = false)
     {
-        $Collection = self::getCategories($files);
+        $Collection = $this->getCategories($files);
         $result     = '';
 
         $sortByIndex = function ($a, $b) {

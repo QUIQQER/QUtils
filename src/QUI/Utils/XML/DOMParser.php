@@ -46,6 +46,9 @@ class DOMParser
                 $classes[] = $type;
                 $type      = 'text';
                 break;
+
+            case 'button':
+                return self::buttonDomToString($Input);
         }
 
         if ($type != 'checkbox' || $type != 'radio') {
@@ -161,7 +164,10 @@ class DOMParser
      */
     public static function buttonDomToString(\DOMNode $Button)
     {
-        if ($Button->nodeName != 'button') {
+        if ($Button->nodeName != 'button'
+            && $Button->getAttribute('type') != 'button'
+            && $Button->getAttribute('type') != 'submit'
+        ) {
             return '';
         }
 
