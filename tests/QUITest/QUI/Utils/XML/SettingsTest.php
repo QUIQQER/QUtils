@@ -15,7 +15,7 @@ class SettingsTest extends \PHPUnit_Framework_TestCase
         $Settings = Settings::getInstance();
 
         // collection test
-        $Collection = $Settings->parseCategoriesToCollection(
+        $Collection = $Settings->getCategories(
             dirname(__FILE__) . '/settings.xml'
         );
 
@@ -27,5 +27,16 @@ class SettingsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('<table', $html);
         $this->assertStringEndsWith('</table>', $html);
+
+        // combine test
+        $html = $Settings->getCategoriesHtml(
+            array(
+                dirname(__FILE__) . '/settings.xml',
+                dirname(__FILE__) . '/settings1.xml'
+            ),
+            'first_settings'
+        );
+
+        $this->assertGreaterThan(0, strpos($html, 'title="EXTEND"'));
     }
 }
