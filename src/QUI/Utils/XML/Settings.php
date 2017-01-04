@@ -140,6 +140,16 @@ class Settings
 
         $Collection = Collection::from(array());
 
+        $findIndex = function ($array, $name) {
+            foreach ($array as $key => $item) {
+                if ($item['name'] == $name) {
+                    return $key;
+                }
+            }
+
+            return false;
+        };
+
         foreach ($xmlFiles as $xmlFile) {
             $Dom  = XML::getDomFromXml($xmlFile);
             $Path = new \DOMXPath($Dom);
@@ -158,9 +168,23 @@ class Settings
                     continue;
                 }
 
-                /* @var $CategoryCollection Collection */
-                $CategoryCollection = $entry['items'];
-                $CategoryCollection->concat($data['items']);
+                $entry['items'] = new Collection(
+                    array_merge(
+                        $entry['items']->toArray(),
+                        $data['items']->toArray()
+                    )
+                );
+
+                // find index
+                $array = $Collection->toArray();
+                $index = $findIndex($array, $entry['name']);
+
+                if ($index === false) {
+                    $Collection = $Collection->append($entry);
+                    continue;
+                }
+
+                $Collection = $Collection->replaceByKeys([$index => $entry]);
             }
         }
 
@@ -175,7 +199,7 @@ class Settings
      */
     public function parseCategory(\DOMElement $Category)
     {
-        $Collection = Collection::from(array());
+        $Collection = Collection::from([]);
 
         $data = array(
             'name'    => $Category->getAttribute('name'),
