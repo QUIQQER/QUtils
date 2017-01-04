@@ -31,7 +31,7 @@ class Settings
     /**
      * @return Settings
      */
-    public function getInstance()
+    public static function getInstance()
     {
         if (is_null(self::$Instance)) {
             self::$Instance = new self();
