@@ -17,7 +17,8 @@
     "url": "http://www.pcsg.de"
   },
   "require": {
-    "php": ">=5.3"
+    "php": ">=5.3",
+    "dusank/knapsack": "8.*"
   },
   "autoload": {
     "psr-4": {

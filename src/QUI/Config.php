@@ -38,7 +38,7 @@ class Config
      */
     public function __construct($filename = '')
     {
-        if (substr($filename, -4) !== '.php') {
+        if (!file_exists($filename) && substr($filename, -4) !== '.php') {
             $filename .= '.php';
         }
 

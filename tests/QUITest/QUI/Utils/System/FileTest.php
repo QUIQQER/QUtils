@@ -5,7 +5,7 @@ namespace QUITest\QUI\Control;
 use QUI\Utils\System\File as File;
 use QUI\Utils\StringHelper as StringHelper;
 
-class FileTest extends PHPUnit_Framework_TestCase
+class FileTest extends \PHPUnit_Framework_TestCase
 {
     public function testFile()
     {
@@ -38,7 +38,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 
     public function testFormatSize()
     {
-        $info = File::getInfo(dirname(__FILE__).'/FileTest.txt');
+        $info = File::getInfo(dirname(__FILE__) . '/FileTest.txt');
 
         $this->assertEquals('55 KB', File::formatSize($info['filesize']));
     }
@@ -51,22 +51,22 @@ class FileTest extends PHPUnit_Framework_TestCase
 
     public function testGetEndingByMimeType()
     {
-        $file = dirname(__FILE__).'/FileTest.txt';
+        $file  = dirname(__FILE__) . '/FileTest.txt';
         $infos = File::getInfo($file);
 
         $this->assertEquals(
-            File::getEndingByMimeType($infos['extension']),
-            'text/plain'
+            File::getEndingByMimeType($infos['mime_type']),
+            '.txt'
         );
     }
 
     public function testFileGetContents()
     {
-        $content = file_get_contents(dirname(__FILE__).'/FileTest.txt');
+        $content = file_get_contents(dirname(__FILE__) . '/FileTest.txt');
 
         $this->assertEquals(false, File::getFileContent('lalalala.la'));
         $this->assertEquals($content, File::getFileContent(
-            dirname(__FILE__).'/FileTest.txt'
+            dirname(__FILE__) . '/FileTest.txt'
         ));
     }
 
@@ -74,14 +74,15 @@ class FileTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             56436,
-            File::getFileSize(dirname(__FILE__).'/FileTest.txt')
+            File::getFileSize(dirname(__FILE__) . '/FileTest.txt')
         );
 
-        $this->assertEquals(
-            2168615,
-            File::getFileSize(
-                'https://cloud.pcsg-server.de/public.php?service=files&t=20c0ec5ddc49b74f52e2452d73e672ea&download'
-            )
-        );
+        //@todo https test
+//        $this->assertEquals(
+//            2168615,
+//            File::getFileSize(
+//                'https://cloud.pcsg-server.de/public.php?service=files&t=20c0ec5ddc49b74f52e2452d73e672ea&download'
+//            )
+//        );
     }
 }

@@ -95,13 +95,13 @@ class StringTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            '##',
+            '#',
             StringHelper::removeDblSigns('#')
         );
 
         $this->assertEquals(
-            '[[]]',
-            StringHelper::removeDblSigns('[]')
+            '[]',
+            StringHelper::removeDblSigns('[[]]')
         );
     }
 
@@ -188,8 +188,8 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $no_utf8 = utf8_decode('müll');
 
-        $this->assertEquals(false, String::isValidUTF8(utf8_decode('müll')));
-        $this->assertEquals(true, String::isValidUTF8(utf8_encode('müll')));
+        $this->assertEquals(false, StringHelper::isValidUTF8(utf8_decode('müll')));
+        $this->assertEquals(true, StringHelper::isValidUTF8(utf8_encode('müll')));
 
         $this->assertEquals(
             'müll',
