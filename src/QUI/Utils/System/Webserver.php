@@ -1,18 +1,28 @@
 <?php
 
-
 namespace QUI\Utils\System;
 
 use QUI\Exception;
 use QUI\Utils\System;
 
+/**
+ * Class Webserver
+ * @package QUI\Utils\System
+ */
 class Webserver
 {
 
+    /** Constant for Apache2 Webserver */
     const WEBSERVER_APACHE = 0;
+    /** Constant for NGINX Webserver */
     const WEBSERVER_NGINX = 0;
 
-
+    /**
+     * Attempts to detect the installed/used Webserver.
+     *
+     * @return int @see QUI\Utils\System\Webserver::WEBSERVER_APACHE; @see QUI\Utils\System\Webserver::WEBSERVER_NGINX
+     * @throws Exception
+     */
     public static function detectInstalledWebserver()
     {
         try {
@@ -28,10 +38,7 @@ class Webserver
         throw new Exception("Could not detect the installed Webserver");
     }
 
-
-
     // ====================================== //
-
     /**
      * Attempts to detect the webserver through HTTP Headers.
      *
