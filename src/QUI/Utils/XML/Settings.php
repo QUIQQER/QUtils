@@ -176,12 +176,19 @@ class Settings
                 );
 
                 // find index
-                $array = $Collection->toArray();
-                $index = $findIndex($array, $entry['name']);
+                $index = $findIndex($Collection->toArray(), $entry['name']);
 
                 if ($index === false) {
                     $Collection = $Collection->append($entry);
                     continue;
+                }
+
+                if (empty($entry['title']) && !empty($data['title'])) {
+                    $entry['title'] = $data['title'];
+                }
+
+                if (empty($entry['icon']) && !empty($data['icon'])) {
+                    $entry['icon'] = $data['icon'];
                 }
 
                 $Collection = $Collection->replaceByKeys([$index => $entry]);
@@ -214,13 +221,8 @@ class Settings
                 continue;
             }
 
-            if ($Child->nodeName == 'title') {
+            if ($Child->nodeName == 'title' || $Child->nodeName == 'text') {
                 $data['title'] = DOM::getTextFromNode($Child, false);
-                continue;
-            }
-
-            if ($Child->nodeName == 'text') {
-                $data['text'] = DOM::getTextFromNode($Child, false);
                 continue;
             }
 
@@ -331,7 +333,7 @@ class Settings
             $settings = $Items->sort($sortByIndex)->toArray();
 
             foreach ($settings as $setting) {
-                $result .= '<table class="data-table data-table-flexbox product-data">';
+                $result .= '<table class="data-table data-table-flexbox">';
                 $result .= '<thead><tr><th>';
 
                 if (is_array($setting['title'])) {

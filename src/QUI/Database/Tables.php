@@ -191,7 +191,7 @@ class Tables
     public function create($table, $fields, $engine = 'MYISAM')
     {
         if (!is_array($fields)) {
-            throw new QUI\Database\Exception(
+            throw new Exception(
                 'No Array given \QUI\Database\Tables->createTable'
             );
         }
@@ -247,7 +247,16 @@ class Tables
             $sql .= ') ENGINE = ' . $engine . ' DEFAULT CHARSET = utf8;';
         }
 
-        $this->DB->getPDO()->exec($sql);
+        try {
+            $this->DB->getPDO()->exec($sql);
+        } catch (\PDOException $Exception) {
+            $message = $Exception->getMessage();
+            $message .= PHP_EOL;
+            $message .= PHP_EOL;
+            $message .= $sql;
+
+            throw new Exception($message, $Exception->getCode());
+        }
 
         return $this->exist($table);
     }
@@ -439,7 +448,7 @@ class Tables
             $PDO   = $this->DB->getPDO();
             $table = $this->clear($table);
 
-            $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `{$table}` LIKE :row");
+            $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `{$table}` WHERE `Field` = :row");
             $Stmnt->bindParam(':row', $row, \PDO::PARAM_STR);
             $Stmnt->execute();
 
@@ -447,7 +456,6 @@ class Tables
 
             return count($data) > 0 ? true : false;
         }
-
 
         // sqlite part
         $columns = $this->getColumns($table);

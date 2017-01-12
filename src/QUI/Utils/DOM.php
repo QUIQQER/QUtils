@@ -1182,6 +1182,7 @@ class DOM
                 $string .= $input;
             }
         } else {
+            \QUI\System\Log::writeRecursive($text);
             if ($text->length) {
                 $string .= '<label for="' . $id . '">' .
                            self::getTextFromNode($text->item(0)) .
