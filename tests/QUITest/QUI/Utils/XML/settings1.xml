@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiqqer>
+    <settings>
+
+        <window>
+            <title>My Second Settings</title>
+            <categories>
+                <category name="first_settings">
+                    <title>Allgemein</title>
+                    <icon>URL_BIN_DIR/22x22/quiqqer.png</icon>
+
+                    <settings title="first_setting_2" name="first_setting_2">
+                        <title>My First Settings</title>
+                        <input conf="first_setting_2.var1" type="checkbox">
+                            <text>EXTEND</text>
+                            <description>EXTEND</description>
+                        </input>
+                    </settings>
+                </category>
+            </categories>
+        </window>
+
+    </settings>
+</quiqqer>
