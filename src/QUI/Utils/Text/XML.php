@@ -43,6 +43,7 @@ class XML
 
             $params = array(
                 'text'    => DOM::getTextFromNode($Item),
+                'locale'  => DOM::getTextFromNode($Item, false),
                 'name'    => $Item->getAttribute('name'),
                 'icon'    => DOM::parseVar($Item->getAttribute('icon')),
                 'require' => $Item->getAttribute('require'),
@@ -612,6 +613,28 @@ class XML
         foreach ($previews as $Image) {
             /* @var $Image \DOMElement */
             $result['preview'][] = DOM::parseVar($Image->getAttribute('src'));
+        }
+
+        // provider
+        $provider           = $Path->query("//quiqqer/package/provider");
+        $result['provider'] = array();
+
+        foreach ($provider as $Provider) {
+            /* @var $Provider \DOMElement */
+            foreach ($Provider->childNodes as $Node) {
+                if ($Node->nodeType === \XML_TEXT_NODE
+                    || $Node->nodeName == '#text'
+                    || !$Node->getAttribute('src')
+                ) {
+                    continue;
+                }
+
+                if (!isset($result['provider'][$Node->nodeName])) {
+                    $result['provider'][$Node->nodeName] = array();
+                }
+
+                $result['provider'][$Node->nodeName][] = $Node->getAttribute('src');
+            }
         }
 
         return $result;
