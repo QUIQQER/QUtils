@@ -196,7 +196,8 @@ class DOMParser
         $conf = $Node->getAttribute('conf');
 
         // Attributes
-        $data = '';
+        $label = true;
+        $data  = '';
 
         foreach ($Node->attributes as $Attribute) {
             /* @var $Attribute \DOMAttr */
@@ -214,6 +215,9 @@ class DOMParser
             $data .= " {$name}=\"{$value}\"";
         }
 
+        if ($Node->getAttribute('label') === 0 || $Node->getAttribute('label') === 'false') {
+            $label = false;
+        }
 
         // classes
         $class = array();
@@ -247,7 +251,8 @@ class DOMParser
             'conf'       => $conf,
             'desc'       => $desc,
             'attributes' => $data,
-            'class'      => $class
+            'class'      => $class,
+            'label'      => $label
         );
     }
 
@@ -261,9 +266,13 @@ class DOMParser
         $isCheckbox = strpos($fieldHTML, 'type="checkbox"');
 
         $string = '<label class="field-container">';
-        $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
-        $string .= $attributes['text'];
-        $string .= '</div>';
+
+        if (!isset($attributes['label']) || $attributes['text'] != false) {
+            $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
+            $string .= $attributes['text'];
+            $string .= '</div>';
+        }
+
         $string .= $fieldHTML;
         $string .= '</label>';
 
