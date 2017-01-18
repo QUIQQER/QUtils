@@ -267,7 +267,7 @@ class DOMParser
 
         $string = '<label class="field-container">';
 
-        if (!isset($attributes['label']) || $attributes['text'] != false) {
+        if (!isset($attributes['label']) || $attributes['label'] != false) {
             $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
             $string .= $attributes['text'];
             $string .= '</div>';
