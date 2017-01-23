@@ -499,10 +499,17 @@ class XML
                     continue;
                 }
 
+                $priority = 0;
+
+                if ($Locale->getAttribute('priority')) {
+                    $priority = (int)$Locale->getAttribute('priority');
+                }
+
                 /* @var $Locale \DOMElement */
                 $params = array(
-                    'name' => $Locale->getAttribute('name'),
-                    'html' => $Locale->getAttribute('html') ? true : false
+                    'name'     => $Locale->getAttribute('name'),
+                    'html'     => $Locale->getAttribute('html') ? true : false,
+                    'priority' => $priority
                 );
 
                 $translations = $Locale->childNodes;
