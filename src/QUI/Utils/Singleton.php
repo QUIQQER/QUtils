@@ -10,24 +10,26 @@ namespace QUI\Utils;
  *
  * @package QUI\Utils
  */
-class Singleton
+abstract class Singleton
 {
     /**
      * @var null
      */
-    protected static $Instance = null;
+    protected static $instances = array();
 
     /**
      * Return the instance
      *
-     * @return Singleton
+     * @return static
      */
     public static function getInstance()
     {
-        if (self::$Instance === null) {
-            self::$Instance = new self();
+        $class = get_called_class();
+
+        if (!isset(self::$instances[$class])) {
+            self::$instances[$class] = new $class();
         }
 
-        return self::$Instance;
+        return self::$instances[$class];
     }
 }
