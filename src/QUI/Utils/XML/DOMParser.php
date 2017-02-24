@@ -265,17 +265,19 @@ class DOMParser
     {
         $isCheckbox = strpos($fieldHTML, 'type="checkbox"');
 
-        $string = '<label class="field-container">';
-
         if (!isset($attributes['label']) || $attributes['label'] != false) {
+            $string = '<label class="field-container">';
             $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
             $string .= $attributes['text'];
             $string .= '</div>';
+            $string .= $fieldHTML;
+            $string .= '</label>';
+        } else {
+            $string = '<div class="field-container">';
+            $string .= $fieldHTML;
+            $string .= '</div>';
         }
-
-        $string .= $fieldHTML;
-        $string .= '</label>';
-
+        
         if (!empty($attributes['desc']) && !$isCheckbox) {
             $string .= '<div class="field-container-item-desc">' . $attributes['desc'] . '</div>';
         }
