@@ -1105,6 +1105,11 @@ class XML
         $defaults = self::getConfigParamsFromXml($file);
         $Config   = self::getConfigFromXml($file);
 
+        if (!$Config) {
+            return;
+        }
+
+
         $checkFnMatch = function ($key, $keyList) {
 
             if (!is_array($keyList)) {

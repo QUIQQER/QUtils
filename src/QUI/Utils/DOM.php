@@ -932,7 +932,7 @@ class DOM
     /**
      * Wandelt ein Kategorie DomNode in entsprechendes HTML um
      *
-     * @param \DOMNode $Category
+     * @param \DOMNode|\DOMElement $Category
      * @param $Plugin - optional
      *
      * @return string
@@ -958,7 +958,8 @@ class DOM
             /* @var $Entry \DOMElement */
             $Entry = $children->item($c);
 
-            if ($Entry->nodeName == '#text' || $Entry->nodeName == 'text'
+            if ($Entry->nodeName == '#text'
+                || $Entry->nodeName == 'text'
                 || $Entry->nodeName == 'image'
             ) {
                 continue;
@@ -983,18 +984,28 @@ class DOM
             }
 
             if ($Entry->nodeName == 'title') {
-                $result .= '<table class="data-table"><thead><tr><th>';
+                $name = '';
+
+                if ($Category->getAttribute('name')) {
+                    $name = ' data-name="' . $Category->getAttribute('name') . '"';
+                }
+
+                $result .= '<table class="data-table" ' . $name . '><thead><tr><th>';
                 $result .= self::getTextFromNode($Entry);
                 $result .= '</th></tr></thead></table>';
-
                 continue;
             }
 
             if ($Entry->nodeName == 'settings') {
+                $name     = '';
                 $row      = 0;
                 $settings = $Entry->childNodes;
 
-                $result .= '<table class="data-table">';
+                if ($Entry->getAttribute('name')) {
+                    $name = ' data-name="' . $Entry->getAttribute('name') . '"';
+                }
+
+                $result .= '<table class="data-table" ' . $name . '>';
 
                 // title
                 $titles = $Entry->getElementsByTagName('title');
@@ -1182,7 +1193,6 @@ class DOM
                 $string .= $input;
             }
         } else {
-            \QUI\System\Log::writeRecursive($text);
             if ($text->length) {
                 $string .= '<label for="' . $id . '">' .
                            self::getTextFromNode($text->item(0)) .
