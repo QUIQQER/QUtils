@@ -432,7 +432,6 @@ class Orthos
             foreach ($value as $key => $entry) {
                 $value[$key] = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
             }
-
         } else {
             if (!is_string($value)) {
                 return '';
