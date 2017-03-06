@@ -514,4 +514,16 @@ class Orthos
 
         return StringHelper::toLower($str);
     }
+
+    /**
+     * Escape HTML
+     *
+     * @param string $str
+     * @return string
+     */
+    public static function escapeHTML($str)
+    {
+        $str = htmlspecialchars($str);
+        return $str;
+    }
 }
