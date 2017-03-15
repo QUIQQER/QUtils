@@ -1,28 +1,28 @@
 {
-  "name": "quiqqer/utils",
+  "name": "quiqqer\/utils",
   "type": "library",
   "description": "QUIQQER Utils - helper Classes",
-  "version": "dev-master",
+  "version": "dev-dev",
   "license": "LGPL-3.0+",
   "authors": [
     {
       "name": "Henning Leutz",
       "email": "leutz@pcsg.de",
-      "homepage": "http://www.pcsg.de",
+      "homepage": "http:\/\/www.pcsg.de",
       "role": "Developer"
     }
   ],
   "support": {
     "email": "support@pcsg.de",
-    "url": "http://www.pcsg.de"
+    "url": "http:\/\/www.pcsg.de"
   },
   "require": {
     "php": ">=5.3",
-    "dusank/knapsack": "8.*"
+    "dusank\/knapsack": "8.*"
   },
   "autoload": {
     "psr-4": {
-      "QUI\\": "src/QUI"
+      "QUI\\": "src\/QUI"
     }
   }
 }
