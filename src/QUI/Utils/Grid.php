@@ -56,7 +56,9 @@ class Grid extends QUI\QDOM
             $_params['limit'] = $start . ',' . $this->getAttribute('max');
         }
 
-        if (isset($params['sortOn'])) {
+        if (isset($params['sortOn'])
+            && !empty($params['sortOn'])
+        ) {
             $sortBy = '';
             $sortOn = $params['sortOn'];
 
