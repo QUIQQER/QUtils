@@ -291,9 +291,9 @@ class Orthos
     }
 
     /**
-     * Prüft ein MySQL Timestamp auf Syntax
+     * Checks a MySQL datetime for syntax
      *
-     * @param string $date
+     * @param string $date - 0000-00-00 00:00:00
      *
      * @return boolean
      */
@@ -313,26 +313,62 @@ class Orthos
     }
 
     /**
-     * Generiert einen Zufallsstring
+     * Checks a MySQL timestamp for syntax
      *
-     * @param integer $length - Länge des Passwortes
+     * @param string $date - 0000-00-00 00:00:00
+     *
+     * @return boolean
+     */
+    public static function checkMySqlTimestampSyntax($date)
+    {
+        return self::checkMySqlDatetimeSyntax($date);
+    }
+
+    /**
+     * Checks a MySQL date for syntax
+     *
+     * @param string $date - 0000-00-00
+     *
+     * @return boolean
+     */
+    public static function checkMySqlDateSyntax($date)
+    {
+        // Nur Zahlen erlaubt
+        if (preg_match('/[^0-9- :]/i', $date)) {
+            return false;
+        }
+
+        // Syntaxprüfung
+        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $date)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Generates a random string
+     *
+     * @param integer $length - Length of the password
      *
      * @return string
      */
     public static function getPassword($length = 10)
     {
-        $newpass = "";
-        $laenge  = $length;
-        $string
-                 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        if (!is_int($length)) {
+            $length = 10;
+        }
+
+        $newPass = "";
+        $string  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         mt_srand((double)microtime() * 1000000);
 
-        for ($i = 1; $i <= $laenge; $i++) {
-            $newpass .= substr($string, mt_rand(0, strlen($string) - 1), 1);
+        for ($i = 1; $i <= $length; $i++) {
+            $newPass .= substr($string, mt_rand(0, strlen($string) - 1), 1);
         }
 
-        return $newpass;
+        return $newPass;
     }
 
     /**
