@@ -22,6 +22,28 @@ class System
     public static $memory_limit = 128;
 
     /**
+     * Return the PHP Memory Limit in bytes
+     *
+     * @return integer
+     */
+    public static function getMemoryLimit()
+    {
+        $memoryLimit = ini_get('memory_limit');
+
+        if (preg_match('/^(\d+)(.)$/', $memoryLimit, $matches)) {
+            if ($matches[2] == 'M') {
+                $memoryLimit = $matches[1] * 1024 * 1024; // nnnM -> nnn MB
+            } else {
+                if ($matches[2] == 'K') {
+                    $memoryLimit = $matches[1] * 1024; // nnnK -> nnn KB
+                }
+            }
+        }
+
+        return $memoryLimit;
+    }
+    
+    /**
      * Return the used protocol
      *
      * @return string
