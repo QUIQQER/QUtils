@@ -6,6 +6,9 @@
 
 namespace QUI\Utils;
 
+use QUI;
+use QUI\Utils\System\File;
+
 /**
  * Helper class for the system variables
  *
@@ -28,19 +31,7 @@ class System
      */
     public static function getMemoryLimit()
     {
-        $memoryLimit = ini_get('memory_limit');
-
-        if (preg_match('/^(\d+)(.)$/', $memoryLimit, $matches)) {
-            if ($matches[2] == 'M') {
-                $memoryLimit = $matches[1] * 1024 * 1024; // nnnM -> nnn MB
-            } else {
-                if ($matches[2] == 'K') {
-                    $memoryLimit = $matches[1] * 1024; // nnnK -> nnn KB
-                }
-            }
-        }
-
-        return $memoryLimit;
+        return File::getBytes(ini_get('memory_limit'));
     }
 
     /**
