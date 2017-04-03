@@ -8,7 +8,7 @@ use QUI\Utils\Security\Orthos as Orthos;
  * Class OrthosTest
  * @package QUITests\QUI\Utils\Security
  */
-class OrthosTest extends PHPUnit_Framework_TestCase
+class OrthosTest extends \PHPUnit_Framework_TestCase
 {
     public function testClear()
     {

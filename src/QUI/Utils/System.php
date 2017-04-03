@@ -6,6 +6,9 @@
 
 namespace QUI\Utils;
 
+use QUI;
+use QUI\Utils\System\File;
+
 /**
  * Helper class for the system variables
  *
@@ -20,6 +23,16 @@ class System
      * @var integer
      */
     public static $memory_limit = 128;
+
+    /**
+     * Return the PHP Memory Limit in bytes
+     *
+     * @return integer
+     */
+    public static function getMemoryLimit()
+    {
+        return File::getBytes(ini_get('memory_limit'));
+    }
 
     /**
      * Return the used protocol

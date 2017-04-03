@@ -43,6 +43,7 @@ class XML
 
             $params = array(
                 'text'    => DOM::getTextFromNode($Item),
+                'locale'  => DOM::getTextFromNode($Item, false),
                 'name'    => $Item->getAttribute('name'),
                 'icon'    => DOM::parseVar($Item->getAttribute('icon')),
                 'require' => $Item->getAttribute('require'),
@@ -325,8 +326,13 @@ class XML
             return new \DOMDocument();
         }
 
-        $Dom = new \DOMDocument();
-        $Dom->load($filename);
+        try {
+            $Dom = new \DOMDocument();
+            $Dom->load($filename);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            return new \DOMDocument();
+        }
 
         return $Dom;
     }
@@ -493,10 +499,17 @@ class XML
                     continue;
                 }
 
+                $priority = 0;
+
+                if ($Locale->getAttribute('priority')) {
+                    $priority = (int)$Locale->getAttribute('priority');
+                }
+
                 /* @var $Locale \DOMElement */
                 $params = array(
-                    'name' => $Locale->getAttribute('name'),
-                    'html' => $Locale->getAttribute('html') ? true : false
+                    'name'     => $Locale->getAttribute('name'),
+                    'html'     => $Locale->getAttribute('html') ? true : false,
+                    'priority' => $priority
                 );
 
                 $translations = $Locale->childNodes;
@@ -607,6 +620,28 @@ class XML
         foreach ($previews as $Image) {
             /* @var $Image \DOMElement */
             $result['preview'][] = DOM::parseVar($Image->getAttribute('src'));
+        }
+
+        // provider
+        $provider           = $Path->query("//quiqqer/package/provider");
+        $result['provider'] = array();
+
+        foreach ($provider as $Provider) {
+            /* @var $Provider \DOMElement */
+            foreach ($Provider->childNodes as $Node) {
+                if ($Node->nodeType === \XML_TEXT_NODE
+                    || $Node->nodeName == '#text'
+                    || !$Node->getAttribute('src')
+                ) {
+                    continue;
+                }
+
+                if (!isset($result['provider'][$Node->nodeName])) {
+                    $result['provider'][$Node->nodeName] = array();
+                }
+
+                $result['provider'][$Node->nodeName][] = $Node->getAttribute('src');
+            }
         }
 
         return $result;
@@ -1069,6 +1104,11 @@ class XML
         // defaults prüfen
         $defaults = self::getConfigParamsFromXml($file);
         $Config   = self::getConfigFromXml($file);
+
+        if (!$Config) {
+            return;
+        }
+
 
         $checkFnMatch = function ($key, $keyList) {
 

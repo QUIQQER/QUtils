@@ -191,7 +191,7 @@ class Tables
     public function create($table, $fields, $engine = 'MYISAM')
     {
         if (!is_array($fields)) {
-            throw new QUI\Database\Exception(
+            throw new Exception(
                 'No Array given \QUI\Database\Tables->createTable'
             );
         }
@@ -247,7 +247,16 @@ class Tables
             $sql .= ') ENGINE = ' . $engine . ' DEFAULT CHARSET = utf8;';
         }
 
-        $this->DB->getPDO()->exec($sql);
+        try {
+            $this->DB->getPDO()->exec($sql);
+        } catch (\PDOException $Exception) {
+            $message = $Exception->getMessage();
+            $message .= PHP_EOL;
+            $message .= PHP_EOL;
+            $message .= $sql;
+
+            throw new Exception($message, $Exception->getCode());
+        }
 
         return $this->exist($table);
     }
@@ -439,7 +448,7 @@ class Tables
             $PDO   = $this->DB->getPDO();
             $table = $this->clear($table);
 
-            $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `{$table}` LIKE :row");
+            $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `{$table}` WHERE `Field` = :row");
             $Stmnt->bindParam(':row', $row, \PDO::PARAM_STR);
             $Stmnt->execute();
 
@@ -447,7 +456,6 @@ class Tables
 
             return count($data) > 0 ? true : false;
         }
-
 
         // sqlite part
         $columns = $this->getColumns($table);
@@ -882,6 +890,39 @@ class Tables
     }
 
     /**
+     * Return the current AUTO_INCREMENT of a table
+     *
+     * @param string $table
+     * @return int
+     */
+    public function getAutoIncrementIndex($table)
+    {
+        $table = $this->clear($table);
+
+        $query = "
+            SELECT `AUTO_INCREMENT`
+            FROM  INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_NAME   = '{$table}';
+              ";
+
+        $PDO       = $this->DB->getPDO();
+        $Statement = $PDO->prepare($query);
+        $Statement->execute();
+
+        $result = $Statement->fetchAll();
+
+        if (!isset($result[0])) {
+            return 0;
+        }
+
+        if (isset($result[0]['AUTO_INCREMENT'])) {
+            return (int)$result[0]['AUTO_INCREMENT'];
+        }
+
+        return 0;
+    }
+
+    /**
      * Liefert die Indexes einer Tabelle
      *
      * @param string $table
@@ -1007,8 +1048,10 @@ class Tables
      * @return boolean
      * @throws QUI\Exception
      */
-    public function setFulltext($table, $index)
-    {
+    public function setFulltext(
+        $table,
+        $index
+    ) {
         // no fulltext in sqlite
         if ($this->isSQLite()) {
             throw new QUI\Exception('Use USING fts4 for SQLite');
@@ -1041,8 +1084,10 @@ class Tables
      * @return boolean
      * @throws QUI\Exception
      */
-    public function issetFulltext($table, $key)
-    {
+    public function issetFulltext(
+        $table,
+        $key
+    ) {
         if ($this->isSQLite()) {
             throw new QUI\Exception('Use USING fts4 for SQLite');
         }
@@ -1068,8 +1113,10 @@ class Tables
      *
      * @return boolean
      */
-    protected function issetFulltextHelper($table, $key)
-    {
+    protected function issetFulltextHelper(
+        $table,
+        $key
+    ) {
         $keys = $this->getKeys($table);
 
         foreach ($keys as $entry) {
@@ -1091,8 +1138,9 @@ class Tables
      *
      * @return string
      */
-    protected function clear($str)
-    {
+    protected function clear(
+        $str
+    ) {
         return str_replace(array('\\', "\0", '`'), '', $str);
     }
 
@@ -1103,9 +1151,10 @@ class Tables
      *
      * @return string
      */
-    protected function parseFieldType($fieldType)
-    {
-        $fieldType = preg_replace("/[^a-zA-Z0-9() ']/", "", $fieldType);
+    protected function parseFieldType(
+        $fieldType
+    ) {
+        $fieldType = preg_replace("/[^a-zA-Z0-9() '_]/", "", $fieldType);
         $fieldType = strtoupper($fieldType);
 
         return $fieldType;
@@ -1118,8 +1167,9 @@ class Tables
      *
      * @return string
      */
-    protected function inList($index)
-    {
+    protected function inList(
+        $index
+    ) {
         if (is_array($index)) {
             foreach ($index as $k => $v) {
                 $index[$k] = $this->clear($v);

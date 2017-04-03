@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiqqer>
+    <settings>
+
+        <config name="my_conf_name">
+            <section name="first_section">
+                <conf name="var_1">
+                    <type><![CDATA[string]]></type>
+                    <defaultvalue>default value</defaultvalue>
+                </conf>
+                <conf name="var_2">
+                    <type><![CDATA[integer]]></type>
+                </conf>
+                <conf name="var_3">
+                    <type><![CDATA[bool]]></type>
+                </conf>
+            </section>
+
+            <section name="second_section">
+                <conf name="var_1">
+                    <type><![CDATA[string]]></type>
+                </conf>
+                <conf name="var_2">
+                    <type><![CDATA[integer]]></type>
+                </conf>
+                <conf name="var_3">
+                    <type><![CDATA[bool]]></type>
+                </conf>
+            </section>
+        </config>
+
+        <window>
+            <title>My Settings</title>
+            <params>
+                <icon>URL_BIN_DIR/16x16/settings.png</icon>
+            </params>
+
+            <categories>
+                <category name="first_settings">
+                    <title>Allgemein</title>
+                    <icon>URL_BIN_DIR/22x22/quiqqer.png</icon>
+
+                    <settings title="first_setting_section" name="first_setting_section">
+                        <title>My First Settings</title>
+                        <input conf="first_section.var1" type="checkbox">
+                            <text>Here is a title text</text>
+                            <description>
+                                Here is a description
+                            </description>
+                        </input>
+                    </settings>
+
+                    <settings title="second_setting_section" name="second_setting_section">
+                        <title>My second Settings</title>
+                        <input conf="first_section.var2" type="text">
+                            <text>Verwendete Template Engine</text>
+                        </input>
+                        <input conf="first_section.var3" type="checkbox">
+                            <text>Smarty Compile Prüfung</text>
+                        </input>
+                    </settings>
+                </category>
+
+                <category name="second_settings">
+                    <title>More Settings</title>
+                    <icon>URL_BIN_DIR/22x22/database.png</icon>
+
+                    <settings title="database" name="database">
+                        <title>Some Settings</title>
+                        <input conf="second_section.var1" type="text">
+                            <text>Datenbank Typ</text>
+                        </input>
+                        <input conf="second_section.var2" type="text">
+                            <text>Host</text>
+                        </input>
+                        <input conf="second_section.var3" type="text">
+                            <text>Datenbank Name</text>
+                        </input>
+                    </settings>
+                </category>
+
+                <category
+                        name="third_settings"
+                        require="package/QUIBASED_Package"
+                >
+                    <text>Button text</text>
+                    <icon>icon-button-icon</icon>
+                </category>
+
+            </categories>
+        </window>
+
+    </settings>
+</quiqqer>
