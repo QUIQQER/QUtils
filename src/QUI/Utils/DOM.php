@@ -1096,9 +1096,9 @@ class DOM
             }
         }
 
-        if (!empty($result)) {
-            $result .= '</table>';
-        }
+//        if (!empty($result)) {
+//            $result .= '</table>';
+//        }
 
         return $result;
     }
