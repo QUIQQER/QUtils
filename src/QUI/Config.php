@@ -6,14 +6,13 @@
 
 namespace QUI;
 
+use QUI;
+
 /**
  * Class for handling ini files
  *
  * @author  www.pcsg.de (Moritz Scholz)
  * @author  www.pcsg.de (Henning Leutz)
- * @package quiqqer/utils
- *
- * @todo    translate the docu
  */
 class Config
 {
@@ -35,6 +34,7 @@ class Config
      * constructor
      *
      * @param string $filename - (optional) Path to the config
+     * @throws QUI\Exception
      */
     public function __construct($filename = '')
     {
@@ -46,13 +46,12 @@ class Config
             return;
         }
 
-        $this->iniFilename = $filename;
+        $this->iniFilename    = $filename;
+        $this->iniParsedArray = @parse_ini_file($filename, true);
 
-        if ($this->iniParsedArray = @parse_ini_file($filename, true)) {
-            return;
+        if ($this->iniParsedArray === false) {
+            throw new QUI\Exception('Can\'t parse ini file ' . $filename);
         }
-
-        return;
     }
 
     /**
@@ -65,7 +64,7 @@ class Config
     }
 
     /**
-     * Ini Einträge als Array bekommen
+     * Ini entries get as array
      *
      * @return array
      */
@@ -85,7 +84,7 @@ class Config
     }
 
     /**
-     * Gibt eine komplette Sektion zurück
+     * Returns a complete section
      *
      * @param string $key
      *
@@ -101,7 +100,7 @@ class Config
     }
 
     /**
-     * Gibt einen Wert aus einer Sektion zurück
+     * Returns a value from a section
      *
      * @param string $section
      * @param string $key
@@ -120,7 +119,7 @@ class Config
     }
 
     /**
-     * Gibt den Wert einer Sektion  oder die ganze Section zurück
+     * Returns the value of a section or the entire section
      *
      * @param string $section
      * @param string || NULL $key (optional)
@@ -137,7 +136,7 @@ class Config
     }
 
     /**
-     * Gibt den Dateinamen der Config zurück
+     * Returns the filename of the config
      *
      * @return string
      */
@@ -147,7 +146,7 @@ class Config
     }
 
     /**
-     * Setzt eine komplette Sektion
+     * Sets a complete section
      *
      * @param string|boolean $section
      * @param array $array
@@ -172,7 +171,7 @@ class Config
     }
 
     /**
-     * Setzt einen neuen Wert in einer Sektion
+     * Sets a new value in a section
      *
      * @param string $section
      * @param string|null $key
@@ -220,7 +219,7 @@ class Config
     }
 
     /**
-     * Setzt einen neuen Wert in einer Sektion oder eine gesamte neue Sektion
+     * Sets a new value in a section or a whole new section
      *
      * @param string|bool $section - (optional)
      * @param string $key - (optional)
@@ -238,10 +237,10 @@ class Config
     }
 
     /**
-     * Löscht eine Sektion oder ein Key in der Sektion
+     * Deletes a section or key in the section
      *
      * @param string $section
-     * @param string $key - optional, wenn angegeben wird Key gelöscht ansonsten komplette Sektion
+     * @param string $key - optional, If indicated Key deleted otherwise complete section
      *
      * @return boolean
      */
@@ -253,7 +252,6 @@ class Config
 
         if ($key === null) {
             unset($this->iniParsedArray[$section]);
-
             return true;
         }
 
@@ -269,11 +267,10 @@ class Config
     }
 
     /**
-     * Speichert die Einträge in die INI Datei
+     * Saves the entries to the INI file
      *
-     * @param string $filename - (optional) Pfad zur Datei
+     * @param string $filename - optional, Path to the file
      *
-     * @return boolean
      * @throws \QUI\Exception
      */
     public function save($filename = null)
@@ -318,7 +315,7 @@ class Config
     }
 
     /**
-     * Zeilenumbrüche löschen
+     * Delete line breaks
      *
      * @param string $value
      *
