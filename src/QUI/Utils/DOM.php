@@ -922,10 +922,10 @@ class DOM
         $area = QUI\Permissions\Manager::parseArea($Node->getAttribute('area'));
 
         return array(
-            'name'    => $perm,
-            'area'    => $area,
-            'type'    => $type,
-            'default' => $default
+            'name'         => $perm,
+            'area'         => $area,
+            'type'         => $type,
+            'defaultvalue' => $default
         );
     }
 
@@ -1107,9 +1107,9 @@ class DOM
             }
         }
 
-        if (!empty($result)) {
-            $result .= '</table>';
-        }
+//        if (!empty($result)) {
+//            $result .= '</table>';
+//        }
 
         return $result;
     }
