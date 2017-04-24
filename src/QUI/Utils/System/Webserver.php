@@ -15,7 +15,7 @@ class Webserver
     /** Constant for Apache2 Webserver */
     const WEBSERVER_APACHE = 0;
     /** Constant for NGINX Webserver */
-    const WEBSERVER_NGINX = 0;
+    const WEBSERVER_NGINX = 1;
 
     /**
      * Attempts to detect the installed/used Webserver.
