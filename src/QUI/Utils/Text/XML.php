@@ -97,10 +97,11 @@ class XML
      * create a QUI\Config if not exist or read the QUI\Config
      *
      * @param string $file - path to the xml file
+     * @param bool $withCustomParams - Should custom parameters be considered?
      *
      * @return QUI\Config|boolean - Config | false
      */
-    public static function getConfigFromXml($file)
+    public static function getConfigFromXml($file, $withCustomParams = false)
     {
         $Dom      = self::getDomFromXml($file);
         $settings = $Dom->getElementsByTagName('settings');
@@ -149,7 +150,7 @@ class XML
         }
 
         $Config = new QUI\Config($ini_file);
-        $params = self::getConfigParamsFromXml($file);
+        $params = self::getConfigParamsFromXml($file, $withCustomParams);
 
         foreach ($params as $section => $key) {
             if (isset($key['default'])) {
@@ -179,13 +180,15 @@ class XML
      * Reads the config parameter from an *.xml
      *
      * @param string $file - path to xml file
+     * @param bool $withCustomParams - Should custom parameters be considered?
      *
      * @return \DOMElement|boolean|array - DOMElement | false
      */
-    public static function getConfigParamsFromXml($file)
+    public static function getConfigParamsFromXml($file, $withCustomParams = false)
     {
         return DOM::getConfigParamsFromDOM(
-            self::getDomFromXml($file)
+            self::getDomFromXml($file),
+            $withCustomParams
         );
     }
 
