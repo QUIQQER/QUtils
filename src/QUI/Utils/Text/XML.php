@@ -1196,7 +1196,7 @@ class XML
             try {
                 $Package = QUI::getPackage($_file[0] . '/' . $_file[1]);
 
-                QUI::getEvents()->fireEvent('packageConfigSave', array($Package));
+                QUI::getEvents()->fireEvent('packageConfigSave', array($Package, $params));
             } catch (QUI\Exception $Exception) {
             }
         }
