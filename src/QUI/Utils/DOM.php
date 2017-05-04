@@ -733,10 +733,10 @@ class DOM
      * Return the config parameter from an DOMNode Element
      *
      * @param \DOMDocument|\DOMNode $Dom
-     *
+     * @param bool $withCustomParams - Should custom parameters be considered?
      * @return array
      */
-    public static function getConfigParamsFromDOM($Dom)
+    public static function getConfigParamsFromDOM($Dom, $withCustomParams = false)
     {
         $Settings = $Dom;
 
@@ -780,6 +780,19 @@ class DOM
                 }
 
                 $result[$name] = self::parseConfs($confs);
+                
+                if ($withCustomParams) {
+                    $custom = $Param->getElementsByTagName('custom');
+
+                    foreach ($custom as $Custom) {
+                        $customParam = trim($Custom->nodeValue);
+
+                        $result[$name][$customParam] = array(
+                            'type'    => 'string',
+                            'default' => ''
+                        );
+                    }
+                }
             }
         }
 
