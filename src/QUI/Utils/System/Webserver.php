@@ -7,6 +7,7 @@ use QUI\Utils\System;
 
 /**
  * Class Webserver
+ *
  * @package QUI\Utils\System
  */
 class Webserver
@@ -38,7 +39,47 @@ class Webserver
         throw new Exception("Could not detect the installed Webserver");
     }
 
-    // ====================================== //
+
+    /**
+     * Attempts to detect the Apache webservers version
+     * Returnformat: array("major","minor","point")
+     *
+     * @return array
+     * @throws Exception
+     */
+    public static function detectApacheVersion()
+    {
+        # Attempt detection by apache2 module
+        if (function_exists('apache_get_version')) {
+            $version = apache_get_version();
+            $regex   = "/Apache\\/([0-9\\.]*)/i";
+            $res     = preg_match($regex, $version, $matches);
+
+            if ($res && isset($matches[1])) {
+                $version     = $matches[1];
+                $verionParts = explode(".", $version);
+
+                return $verionParts;
+            }
+        }
+
+        # Attempt detection by system shell
+        if (\QUI\Utils\System::isShellFunctionEnabled("shell_exec")) {
+            $version = shell_exec('apache2 -v');
+            $regex   = "/Apache\\/([0-9\\.]*)/i";
+            $res     = preg_match($regex, $version, $matches);
+            if ($res && isset($matches[1])) {
+                $version = $matches[1];
+
+                $verionParts = explode(".", $version);
+
+                return $verionParts;
+            }
+        }
+
+        throw new Exception("Could not detect Apache Version");
+    }
+
     /**
      * Attempts to detect the webserver through HTTP Headers.
      *
