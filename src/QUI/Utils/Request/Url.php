@@ -116,6 +116,8 @@ class Url
     {
         $Curl = self::curl($url, $curlparams);
 
+        curl_exec($Curl);
+
         if ($info) {
             $result = curl_getinfo($Curl, $info);
         } else {
@@ -165,12 +167,10 @@ class Url
                     if ($code == 301 || $code == 302) {
                         preg_match('/Location:(.*?)\n/', $header, $matches);
                         $newurl = trim(array_pop($matches));
-
                     } else {
                         $code = 0;
                     }
                 }
-
             } while ($code && --$mr);
 
             curl_close($rch);

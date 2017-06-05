@@ -76,8 +76,8 @@ class XML
 
             if ($Item->getAttribute('parent') == '/') {
                 $MenuItem = new QUI\Controls\Contextmenu\Baritem($params);
-            } elseif ($Item->getAttribute('type') == 'seperator') {
-                $MenuItem = new QUI\Controls\Contextmenu\Seperator($params);
+            } elseif ($Item->getAttribute('type') == 'separator') {
+                $MenuItem = new QUI\Controls\Contextmenu\Separator($params);
             } else {
                 $MenuItem = new QUI\Controls\Contextmenu\Menuitem($params);
             }
