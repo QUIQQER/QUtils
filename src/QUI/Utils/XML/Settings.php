@@ -87,6 +87,14 @@ class Settings
         }
 
         foreach ($xmlFiles as $xmlFile) {
+            if (!file_exists($xmlFile)) {
+                $xmlFile = CMS_DIR . $xmlFile;
+            }
+
+            if (!file_exists($xmlFile)) {
+                continue;
+            }
+
             $Dom     = XML::getDomFromXml($xmlFile);
             $Path    = new \DOMXPath($Dom);
             $windows = $Path->query($this->xmlPath);
@@ -151,6 +159,14 @@ class Settings
         };
 
         foreach ($xmlFiles as $xmlFile) {
+            if (!file_exists($xmlFile)) {
+                $xmlFile = CMS_DIR . $xmlFile;
+            }
+
+            if (!file_exists($xmlFile)) {
+                continue;
+            }
+
             $Dom  = XML::getDomFromXml($xmlFile);
             $Path = new \DOMXPath($Dom);
 
