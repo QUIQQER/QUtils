@@ -44,7 +44,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param array $params
      * @return Collection
      */
-    static function getInstance($params = array())
+    public static function getInstance($params = array())
     {
         $children = array();
         $allowed  = array();
