@@ -138,12 +138,24 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             return;
         }
 
-        if ($pos === false) {
+        if ($pos === false || $this->length() > $pos) {
             $this->children[] = $Child;
             return;
         }
 
-        array_splice($this->children, $pos, 0, $Child);
+        $children = array();
+
+        foreach ($this->children as $key => $Sibling) {
+            echo $key . '-' . $pos . '<br>';
+
+            if ($pos == $key) {
+                $children[] = $Child;
+            }
+
+            $children[] = $Sibling;
+        }
+
+        $this->children = $children;
     }
 
     /**
@@ -202,6 +214,17 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public function map(callable $function)
     {
         return array_map($function, $this->children);
+    }
+
+    /**
+     * Sort the children using a user-defined comparison function
+     * eq: $this->sort(function($a, $b) { })
+     *
+     * @param callable $function
+     */
+    public function sort(callable $function)
+    {
+        usort($this->children, $function);
     }
 
     /**
