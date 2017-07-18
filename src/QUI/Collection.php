@@ -60,8 +60,10 @@ class Collection implements \IteratorAggregate, \ArrayAccess
         return new Collection($children, $allowed);
     }
 
+    //region Collection methods
+
     /**
-     * Append a the allowed child to the collection
+     * Append an allowed child to the collection
      *
      * @param mixed $Child
      */
@@ -73,14 +75,112 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     }
 
     /**
-     * Applies the callback to the elements of the collection
-     *
-     * @param callable $callback
-     * @return array
+     * Clears the complete collection
      */
-    public function map($callback)
+    public function clear()
     {
-        return array_map($callback, $this->children);
+        $this->children = array();
+    }
+
+    /**
+     * Execute $function(value, key) for each children
+     *
+     * @param callable $function
+     */
+    public function each(callable $function)
+    {
+        foreach ($this->children as $key => $value) {
+            $function($value, $key);
+        }
+    }
+
+    /**
+     * Returns first children in the collection or throws Exception
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function first()
+    {
+        if (empty($this->children)) {
+            throw new Exception('Item not found, Collection ist empty');
+        }
+
+        return $this->children[0];
+    }
+
+    /**
+     * Returns children at the key $key
+     *
+     * @param integer $key
+     * @return mixed
+     * @throws Exception
+     */
+    public function get($key)
+    {
+        if (empty($this->children) || !isset($this->children[$key])) {
+            throw new Exception('Item not found, Collection ist empty');
+        }
+
+        return $this->children[$key];
+    }
+
+    /**
+     * Insert an allowed child to a specific position
+     * no child would be overwritten
+     *
+     * @param mixed $Child
+     * @param bool $pos - starts at 0, if $pos is false = child appended to the end
+     */
+    public function insert($Child, $pos = false)
+    {
+        if (!$this->isAllowed($Child)) {
+            return;
+        }
+
+        if ($pos === false) {
+            $this->children[] = $Child;
+            return;
+        }
+
+        array_splice($this->children, $pos, 0, $Child);
+    }
+
+    /**
+     * Returns true if the collection is empty
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return !!$this->length();
+    }
+
+    /**
+     * Returns true if the collection is not empty
+     *
+     * @return bool
+     */
+    public function isNotEmpty()
+    {
+        return !!$this->length();
+    }
+
+    /**
+     * Returns last children in the collection or throws Exception
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function last()
+    {
+        if (empty($this->children)) {
+            throw new Exception('Item not found, Collection ist empty');
+        }
+
+        $length = $this->length();
+
+        return $this->children[$length - 1];
     }
 
     /**
@@ -94,6 +194,17 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     }
 
     /**
+     * Applies the callback to each children of the collection
+     *
+     * @param callable $function
+     * @return array
+     */
+    public function map(callable $function)
+    {
+        return array_map($function, $this->children);
+    }
+
+    /**
      * Converts the collection to an array
      *
      * @return array
@@ -102,6 +213,10 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     {
         return $this->children;
     }
+
+    //endregion
+
+    //region Helper
 
     /**
      * Checks if the child is allowed in the collection
@@ -130,6 +245,8 @@ class Collection implements \IteratorAggregate, \ArrayAccess
 
         return false;
     }
+
+    //endregion
 
     //region interfaces API
 
