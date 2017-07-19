@@ -417,7 +417,6 @@ class Tables
             return;
         }
 
-
         $query = "ALTER TABLE `{$table}` ";
         $query .= implode(",\n", $change);
 
@@ -656,7 +655,10 @@ class Tables
         }
 
         foreach ($keys as $entry) {
-            if (isset($entry['Column_name']) && $entry['Column_name'] == $key) {
+            if (isset($entry['Column_name'])
+                && $entry['Column_name'] == $key
+                && $entry['Key_name'] === 'PRIMARY'
+            ) {
                 return true;
             }
         }
