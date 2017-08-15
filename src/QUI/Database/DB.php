@@ -105,12 +105,15 @@ class DB extends QUI\QDOM
     public function getNewPDO()
     {
         if ($this->getAttribute('dsn') === false) {
-            $this->setAttribute(
-                'dsn',
-                $this->getAttribute('driver').
-                ':dbname='.$this->getAttribute('dbname').
-                ';host='.$this->getAttribute('host')
-            );
+            $dsn = $this->getAttribute('driver').
+                   ':dbname='.$this->getAttribute('dbname').
+                   ';host='.$this->getAttribute('host');
+
+            if ($this->getAttribute('port')) {
+                $dsn .= ';port='.$this->getAttribute('port');
+            }
+            
+            $this->setAttribute('dsn', $dsn);
         }
 
         // sqlite PDO
