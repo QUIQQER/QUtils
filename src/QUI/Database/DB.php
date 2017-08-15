@@ -39,6 +39,11 @@ class DB extends QUI\QDOM
     protected $sqlite = false;
 
     /**
+     * @var bool|string
+     */
+    protected $version = false;
+
+    /**
      * Constructor
      *
      * @param array $attributes
@@ -74,11 +79,11 @@ class DB extends QUI\QDOM
 
             $offsetHours   = round(abs($offset) / 3600);
             $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
-            $offsetString  = ($offset < 0 ? '-' : '+');
-            $offsetString .= (strlen($offsetHours) < 2 ? '0' : '') . $offsetHours;
+
+            $offsetString = ($offset < 0 ? '-' : '+');
+            $offsetString .= (strlen($offsetHours) < 2 ? '0' : '').$offsetHours;
             $offsetString .= ':';
-            $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '')
-                             . $offsetMinutes;
+            $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '').$offsetMinutes;
 
             $this->PDO->exec("SET time_zone = '{$offsetString}'");
         } catch (\PDOException $Exception) {
@@ -102,9 +107,9 @@ class DB extends QUI\QDOM
         if ($this->getAttribute('dsn') === false) {
             $this->setAttribute(
                 'dsn',
-                $this->getAttribute('driver') .
-                ':dbname=' . $this->getAttribute('dbname') .
-                ';host=' . $this->getAttribute('host')
+                $this->getAttribute('driver').
+                ':dbname='.$this->getAttribute('dbname').
+                ';host='.$this->getAttribute('host')
             );
         }
 
@@ -114,7 +119,7 @@ class DB extends QUI\QDOM
                 $this->sqlite = true;
 
                 return new \PDO(
-                    'sqlite:' . $this->getAttribute('dbname')
+                    'sqlite:'.$this->getAttribute('dbname')
                 );
             }
 
@@ -140,6 +145,24 @@ class DB extends QUI\QDOM
     public function getPDO()
     {
         return $this->PDO;
+    }
+
+    /**
+     * Return the server version of the database
+     *
+     * @return bool|mixed|string
+     */
+    public function getVersion()
+    {
+        if (!$this->version) {
+            $this->version = $this->PDO->query('select version()')->fetchColumn();
+
+            preg_match("/^[0-9\.]+/", $this->version, $match);
+
+            $this->version = $match[0];
+        }
+
+        return $this->version;
     }
 
     /**
@@ -255,14 +278,14 @@ class DB extends QUI\QDOM
                 $this->getAttribute('driver')
             );
 
-            $query .= $set['set'];
+            $query   .= $set['set'];
             $prepare = array_merge($prepare, $set['prepare']);
         }
 
         if (isset($params['where']) && !empty($params['where'])) {
             $where = $this->createQueryWhere($params['where']);
 
-            $query .= $where['where'];
+            $query   .= $where['where'];
             $prepare = array_merge($prepare, $where['prepare']);
         }
 
@@ -272,8 +295,8 @@ class DB extends QUI\QDOM
             if (strpos($query, 'WHERE') === false) {
                 $query .= $where['where'];
             } else {
-                $query .= ' AND (' . str_replace('WHERE', '', $where['where'])
-                          . ')';
+                $query .= ' AND ('.str_replace('WHERE', '', $where['where'])
+                          .')';
             }
 
             $prepare = array_merge($prepare, $where['prepare']);
@@ -287,13 +310,13 @@ class DB extends QUI\QDOM
         }
 
         if (isset($params['group']) && !empty($params['group'])) {
-            $query .= ' GROUP BY ' . $params['group'];
+            $query .= ' GROUP BY '.$params['group'];
         }
 
         if (isset($params['limit']) && !empty($params['limit'])) {
             $limit = $this->createQueryLimit($params['limit']);
 
-            $query .= $limit['limit'];
+            $query   .= $limit['limit'];
             $prepare = array_merge($prepare, $limit['prepare']);
         }
 
@@ -328,7 +351,7 @@ class DB extends QUI\QDOM
             QUI\System\Log::writeRecursive($query);
         }
 
-        $Statement = $this->getPDO()->prepare($query['query'] . ';');
+        $Statement = $this->getPDO()->prepare($query['query'].';');
 
         foreach ($query['prepare'] as $key => $val) {
             if (is_array($val) && isset($val[0])) {
@@ -492,10 +515,10 @@ class DB extends QUI\QDOM
         }
 
         if (is_array($params['select'])) {
-            return 'SELECT ' . implode(',', $params['select']) . ' ';
+            return 'SELECT '.implode(',', $params['select']).' ';
         }
 
-        return 'SELECT ' . $params['select'] . ' ';
+        return 'SELECT '.$params['select'].' ';
     }
 
     /**
@@ -507,7 +530,7 @@ class DB extends QUI\QDOM
      */
     public static function createQueryInsert($params)
     {
-        return 'INSERT INTO `' . $params . '` ';
+        return 'INSERT INTO `'.$params.'` ';
     }
 
     /**
@@ -519,7 +542,7 @@ class DB extends QUI\QDOM
      */
     public static function createQueryUpdate($params)
     {
-        return 'UPDATE `' . $params . '` ';
+        return 'UPDATE `'.$params.'` ';
     }
 
     /**
@@ -542,10 +565,10 @@ class DB extends QUI\QDOM
     public static function createQueryCount($params)
     {
         if (is_array($params) && isset($params['select'])) {
-            $query = ' SELECT COUNT(' . $params['select'] . ') ';
+            $query = ' SELECT COUNT('.$params['select'].') ';
 
             if (isset($params['as'])) {
-                $query .= 'AS ' . $params['as'] . ' ';
+                $query .= 'AS '.$params['as'].' ';
             }
 
             return $query;
@@ -554,7 +577,7 @@ class DB extends QUI\QDOM
         $query = ' SELECT COUNT(*) ';
 
         if (is_string($params)) {
-            $query .= 'AS ' . $params . ' ';
+            $query .= 'AS '.$params.' ';
         }
 
         return $query;
@@ -570,7 +593,7 @@ class DB extends QUI\QDOM
     public static function createQueryFrom($params)
     {
         if (is_string($params)) {
-            return ' FROM `' . $params . '` ';
+            return ' FROM `'.$params.'` ';
         }
 
         $sql = '';
@@ -578,7 +601,7 @@ class DB extends QUI\QDOM
         if (is_array($params)) {
             $sql  = ' FROM ';
             $from = implode('`', array_unique($params));
-            $from = '`' . str_replace('`', '`,`', $from) . '`';
+            $from = '`'.str_replace('`', '`,`', $from).'`';
 
             $sql .= $from;
         }
@@ -603,7 +626,7 @@ class DB extends QUI\QDOM
     {
         if (is_string($params)) {
             return array(
-                'where'   => ' WHERE ' . $params,
+                'where'   => ' WHERE '.$params,
                 'prepare' => array()
             );
         }
@@ -619,77 +642,77 @@ class DB extends QUI\QDOM
             $prepare = array();
 
             foreach ($params as $key => $value) {
-                $key = '`' . str_replace('.', '`.`', $key) . '`';
+                $key = '`'.str_replace('.', '`.`', $key).'`';
 
                 if (is_null($value)) {
-                    $sql .= $key . ' IS NULL ';
+                    $sql .= $key.' IS NULL ';
                 } else {
                     if (!is_array($value)) {
                         if (strpos($value, '`') !== false) {
                             $value = str_replace('.', '`.`', $value);
                         } else {
-                            $prepare['wherev' . $i] = $value;
-                            $value                  = ':wherev' . $i;
+                            $prepare['wherev'.$i] = $value;
+                            $value                = ':wherev'.$i;
                         }
 
-                        $sql .= $key . ' = ' . $value;
+                        $sql .= $key.' = '.$value;
                     } elseif (isset($value['type'])
                               && ($value['type'] == '<'
                                   || $value['type'] == '>'
                                   || $value['type'] == '<='
                                   || $value['type'] == '>=')
                     ) {
-                        $prepare['wherev' . $i] = $value['value'];
-                        $sql .= $key . ' ' . $value['type'] . ' :wherev' . $i;
+                        $prepare['wherev'.$i] = $value['value'];
+                        $sql                  .= $key.' '.$value['type'].' :wherev'.$i;
                     } elseif (isset($value['type']) && $value['type'] == 'NOT') {
                         if (is_null($value['value'])) {
-                            $sql .= $key . ' IS NOT NULL ';
+                            $sql .= $key.' IS NOT NULL ';
                         } else {
-                            $prepare['wherev' . $i] = $value['value'];
-                            $sql .= $key . ' != :wherev' . $i;
+                            $prepare['wherev'.$i] = $value['value'];
+                            $sql                  .= $key.' != :wherev'.$i;
                         }
                     } elseif (isset($value['type']) && $value['type'] == 'REGEXP') {
-                        $sql .= $key . ' REGEXP :wherev' . $i;
-                        $prepare['wherev' . $i] = $value['value'];
+                        $sql                  .= $key.' REGEXP :wherev'.$i;
+                        $prepare['wherev'.$i] = $value['value'];
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
-                        $sql .= $key . ' IN (';
+                        $sql .= $key.' IN (';
 
                         if (!is_array($value['value'])) {
-                            $prepare['in' . $i] = $value['value'];
-                            $sql .= ':in' . $i;
+                            $prepare['in'.$i] = $value['value'];
+                            $sql              .= ':in'.$i;
                         } else {
                             $in = 0;
 
                             foreach ($value['value'] as $val) {
-                                $prepare['in' . $in] = $val;
+                                $prepare['in'.$in] = $val;
 
                                 if ($in != 0) {
                                     $sql .= ', ';
                                 }
 
-                                $sql .= ':in' . $in;
+                                $sql .= ':in'.$in;
                                 $in++;
                             }
                         }
 
                         $sql .= ') ';
                     } elseif (isset($value['type']) && $value['type'] == 'NOT IN') {
-                        $sql .= $key . ' NOT IN (';
+                        $sql .= $key.' NOT IN (';
 
                         if (!is_array($value['value'])) {
-                            $prepare['notin' . $i] = $value['value'];
-                            $sql .= ':notin' . $i;
+                            $prepare['notin'.$i] = $value['value'];
+                            $sql                 .= ':notin'.$i;
                         } else {
                             $in = 0;
 
                             foreach ($value['value'] as $val) {
-                                $prepare['notin' . $in] = $val;
+                                $prepare['notin'.$in] = $val;
 
                                 if ($in != 0) {
                                     $sql .= ', ';
                                 }
 
-                                $sql .= ':notin' . $in;
+                                $sql .= ':notin'.$in;
                                 $in++;
                             }
                         }
@@ -706,51 +729,51 @@ class DB extends QUI\QDOM
 
                         switch ($value['type']) {
                             case '%LIKE%':
-                                $prepare['wherev' . $i] = '%' . $value['value'] . '%';
-                                $sql .= $key . ' LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = '%'.$value['value'].'%';
+                                $sql                  .= $key.' LIKE :wherev'.$i;
                                 break;
 
                             case '%LIKE':
-                                $prepare['wherev' . $i] = '%' . $value['value'];
-                                $sql .= $key . ' LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = '%'.$value['value'];
+                                $sql                  .= $key.' LIKE :wherev'.$i;
                                 break;
 
                             case 'LIKE%':
-                                $prepare['wherev' . $i] = $value['value'] . '%';
-                                $sql .= $key . ' LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = $value['value'].'%';
+                                $sql                  .= $key.' LIKE :wherev'.$i;
                                 break;
 
                             case 'NOT LIKE':
-                                $prepare['wherev' . $i] = $value['value'];
-                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = $value['value'];
+                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
                                 break;
 
                             case 'NOT %LIKE%':
-                                $prepare['wherev' . $i] = '%' . $value['value'] . '%';
-                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = '%'.$value['value'].'%';
+                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
                                 break;
 
                             case 'NOT %LIKE':
-                                $prepare['wherev' . $i] = '%' . $value['value'];
-                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = '%'.$value['value'];
+                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
                                 break;
 
                             case 'NOT LIKE%':
-                                $prepare['wherev' . $i] = $value['value'] . '%';
-                                $sql .= $key . ' NOT LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = $value['value'].'%';
+                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
                                 break;
 
                             default:
                             case 'LIKE':
-                                $prepare['wherev' . $i] = $value['value'];
-                                $sql .= $key . ' LIKE :wherev' . $i;
+                                $prepare['wherev'.$i] = $value['value'];
+                                $sql                  .= $key.' LIKE :wherev'.$i;
                                 break;
                         }
                     }
                 }
 
                 if ($max > $i) {
-                    $sql .= ' ' . $type . ' ';
+                    $sql .= ' '.$type.' ';
                 }
 
                 $i++;
@@ -787,7 +810,7 @@ class DB extends QUI\QDOM
     {
         if (is_string($params)) {
             return array(
-                'set'     => ' SET ' . $params,
+                'set'     => ' SET '.$params,
                 'prepare' => array()
             );
         }
@@ -841,9 +864,9 @@ class DB extends QUI\QDOM
             $prepare = array();
 
             foreach ($params as $key => $value) {
-                $sql .= '`' . $key . '` = :setv' . $i;
+                $sql .= '`'.$key.'` = :setv'.$i;
 
-                $prepare['setv' . $i] = $value;
+                $prepare['setv'.$i] = $value;
 
                 if ($max > $i) {
                     $sql .= ', ';
@@ -880,20 +903,20 @@ class DB extends QUI\QDOM
         $sql .= ' (';
 
         foreach ($set_params as $key => $value) {
-            $sql .= '`' . $key . '`';
+            $sql .= '`'.$key.'`';
 
             if ($max > $i) {
                 $sql .= ', ';
             }
 
-            $values[] = ':v' . $i;
+            $values[] = ':v'.$i;
 
-            $prepare['v' . $i] = $value;
+            $prepare['v'.$i] = $value;
 
             $i++;
         }
 
-        $sql .= ') VALUES (' . implode(',', $values) . ')';
+        $sql .= ') VALUES ('.implode(',', $values).')';
 
         return array(
             'insert'  => $sql,
@@ -911,7 +934,7 @@ class DB extends QUI\QDOM
     public static function createQueryOrder($params)
     {
         if (is_string($params)) {
-            return ' ORDER BY ' . $params;
+            return ' ORDER BY '.$params;
         }
 
         if (is_array($params) && !empty($params)) {
@@ -920,13 +943,13 @@ class DB extends QUI\QDOM
 
             foreach ($params as $key => $sort) {
                 if (is_string($key)) {
-                    $sortFields[] = '`' . $key . '` ' . $sort;
+                    $sortFields[] = '`'.$key.'` '.$sort;
                 } else {
-                    $sortFields[] = '`' . $sort . '`';
+                    $sortFields[] = '`'.$sort.'`';
                 }
             }
 
-            return $sql . implode(',', $sortFields);
+            return $sql.implode(',', $sortFields);
         }
 
         return '';
