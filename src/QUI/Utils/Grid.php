@@ -53,7 +53,11 @@ class Grid extends QUI\QDOM
             $page  = ($this->getAttribute('page') - 1);
             $start = $page * $this->getAttribute('max');
 
-            $_params['limit'] = $start . ',' . $this->getAttribute('max');
+            $_params['limit'] = $start.','.$this->getAttribute('max');
+        }
+
+        if (isset($params['limit'])) {
+            $_params['limit'] = $params['limit'];
         }
 
         if (isset($params['sortOn'])
@@ -70,7 +74,7 @@ class Grid extends QUI\QDOM
                 $sortBy = '';
             }
 
-            $_params['order'] = $sortOn . ' ' . $sortBy;
+            $_params['order'] = $sortOn.' '.$sortBy;
         }
 
         return $_params;
