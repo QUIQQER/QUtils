@@ -690,7 +690,7 @@ class File
             if (function_exists('mime_content_type')) { // PHP interne Funktionen
                 $info['mime_type'] = mime_content_type($file);
             } elseif (function_exists('finfo_open')
-                      && function_exists('finfo_file')
+                && function_exists('finfo_file')
             ) { // PECL
                 $finfo             = finfo_open(FILEINFO_MIME);
                 $part              = explode(';', finfo_file($finfo, $file));
@@ -855,6 +855,7 @@ class File
         $this->readDirRecursivHelper($folder);
 
         ksort($this->files);
+
 
         if ($flatten) {
             $list = array();
@@ -1090,7 +1091,7 @@ class File
         header('Content-Length: ' . ($seekEnd - $seekStart));
         header('Accept-Ranges: bytes');
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($filePath))
-               . ' GMT');
+            . ' GMT');
 
         $block = 1024;
         // limit download speed
@@ -1134,10 +1135,14 @@ class File
             $dstdir = $dstdir . '/';
         }
 
+        if (substr($srcdir, -1) != '/') {
+            $srcdir = $srcdir . '/';
+        }
+
         $File   = new QUI\Utils\System\File();
         $Files  = $File->readDirRecursiv($srcdir);
         $errors = array();
-
+        
         foreach ($Files as $folder => $file) {
             $File->mkdir($dstdir . $folder);
 
@@ -1314,7 +1319,7 @@ class File
         header('Pragma: no-cache');
         header('Content-type: application/' . $finfo['extension']);
         header('Content-Disposition: attachment; filename="' . basename($file)
-               . '"');
+            . '"');
 
         // Inhalt des gespeicherten Dokuments senden
         readfile($file);
