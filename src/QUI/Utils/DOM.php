@@ -453,17 +453,14 @@ class DOM
                             }
 
                             // generate html
-                            $Engine = QUI::getTemplateManager()
-                                ->getEngine(true);
+                            $Engine = QUI::getTemplateManager()->getEngine(true);
 
-                            $Engine->assign(
-                                array(
-                                    'Site'    => $Object,
-                                    'Project' => $Object->getProject(),
-                                    'Plugins' => QUI::getPluginManager(),
-                                    'QUI'     => new QUI()
-                                )
-                            );
+                            $Engine->assign(array(
+                                'Site'    => $Object,
+                                'Project' => $Object->getProject(),
+                                'Plugins' => QUI::getPluginManager(),
+                                'QUI'     => new QUI()
+                            ));
 
                             return $Engine->fetch($file).$extra;
                         }
@@ -482,7 +479,7 @@ class DOM
                 continue;
             }
 
-            $str .= self::parseCategorieToHTML($Tab);
+            $str .= self::parseCategoryToHTML($Tab);
         }
 
         return $str;
@@ -673,8 +670,7 @@ class DOM
         }
 
         $string = '<p>';
-        $string .= '<div class="btn-groups" name="'.$Group->getAttribute('conf')
-                   .'"></div>';
+        $string .= '<div class="btn-groups" name="'.$Group->getAttribute('conf').'"></div>';
 
         $text = $Group->getElementsByTagName('text');
 
@@ -950,7 +946,7 @@ class DOM
      *
      * @return string
      */
-    public static function parseCategorieToHTML($Category, $Plugin = false)
+    public static function parseCategoryToHTML($Category, $Plugin = false)
     {
         if (is_bool($Category)) {
             return '';
@@ -964,8 +960,6 @@ class DOM
 
         $Engine = QUI::getTemplateManager()->getEngine(true);
         $result = '';
-        $odd    = 'odd';
-        $even   = 'even';
 
         for ($c = 0; $c < $children->length; $c++) {
             /* @var $Entry \DOMElement */
@@ -982,13 +976,11 @@ class DOM
                 $file = self::parseVar($Entry->nodeValue);
 
                 if (file_exists($file)) {
-                    $Engine->assign(
-                        array(
-                            'Plugin'  => $Plugin,
-                            'Plugins' => QUI::getPluginManager(),
-                            'QUI'     => new QUI()
-                        )
-                    );
+                    $Engine->assign(array(
+                        'Plugin'  => $Plugin,
+                        'Plugins' => QUI::getPluginManager(),
+                        'QUI'     => new QUI()
+                    ));
 
                     $result .= $Engine->fetch($file);
                 }
@@ -1003,7 +995,7 @@ class DOM
                     $name = ' data-name="'.$Category->getAttribute('name').'"';
                 }
 
-                $result .= '<table class="data-table" '.$name.'><thead><tr><th>';
+                $result .= '<table class="data-table data-table-flexbox" '.$name.'><thead><tr><th>';
                 $result .= self::getTextFromNode($Entry);
                 $result .= '</th></tr></thead></table>';
                 continue;
@@ -1018,7 +1010,7 @@ class DOM
                     $name = ' data-name="'.$Entry->getAttribute('name').'"';
                 }
 
-                $result .= '<table class="data-table" '.$name.'>';
+                $result .= '<table class="data-table data-table-flexbox" '.$name.'>';
 
                 // title
                 $titles = $Entry->getElementsByTagName('title');
@@ -1042,7 +1034,7 @@ class DOM
                         continue;
                     }
 
-                    $result .= '<tr class="'.($row % 2 ? $even : $odd).' qui-xml-panel-row"><td>';
+                    $result .= '<tr><td>';
 
                     switch ($Set->nodeName) {
                         case 'text':
@@ -1141,7 +1133,7 @@ class DOM
         }
 
         $type    = 'text';
-        $class   = '';
+        $classes = array();
         $dataQui = '';
         $data    = '';
 
@@ -1170,7 +1162,7 @@ class DOM
         }
 
         if ($Input->getAttribute('class')) {
-            $class = ' class="'.$Input->getAttribute('class').'"';
+            $classes[] = $Input->getAttribute('class');
         }
 
         switch ($type) {
@@ -1178,96 +1170,111 @@ class DOM
             case 'groups':
             case 'user':
             case 'users':
-                $class = ' class="'.$type.'"';
-                $type  = 'text';
+                $classes[] = $type;
+                $type      = 'text';
                 break;
         }
 
 
-        $id = $Input->getAttribute('conf').'-'.time();
+        $id   = $Input->getAttribute('conf').'-'.time();
+        $Text = $Input->getElementsByTagName('text');
+        $Desc = $Input->getElementsByTagName('description');
 
-        $string = '<div class="qui-xml-panel-row-item">';
-        $text   = $Input->getElementsByTagName('text');
-        $input  = '<input type="'.$type.'"
+
+        // create the html
+        $result = '<label class="field-container">';
+
+        if ($Text->item(0)) {
+            $result .= '<span class="field-container-item">';
+            $result .= self::getTextFromNode($Text->item(0));
+            $result .= '</span>';
+        }
+
+        // input html
+        if ($type != 'checkbox' && $type != 'radio') {
+            $nodeClasses   = $classes;
+            $nodeClasses[] = 'field-container-field';
+
+            $result .= '<input type="'.$type.'" 
                            name="'.$Input->getAttribute('conf').'"
-                           id="'.$id.'"
-                           '.$class.'
+                           id= "'.$id.'" 
+                           class="'.implode(' ', $nodeClasses).'" 
                            '.$dataQui.'
                            '.$data.'
-                    />';
+            />';
 
-        if ($type == 'checkbox' || $type == 'radio') {
-            if ($text->length) {
-                $string .= '<label for="'.$id.'" class="checkbox-label">'.
-                           $input.
-                           self::getTextFromNode($text->item(0)).
-                           '</label>';
-            } else {
-                $string .= $input;
-            }
-        } else {
-            if ($text->length) {
-                $string .= '<label for="'.$id.'">'.
-                           self::getTextFromNode($text->item(0)).
-                           '</label>';
+            $result .= '</label>';
+
+            if ($Desc->length) {
+                $result .= '<div class="description">';
+                $result .= self::getTextFromNode($Desc->item(0));
+                $result .= '</div>';
             }
 
-            $string .= $input;
+            return $result;
         }
 
-        $desc = $Input->getElementsByTagName('description');
 
-        $string .= '</div>';
+        // checkbox html
+        $result .= '<div class="field-container-field">';
 
-        if ($desc->length) {
-            $string .= '<div class="description qui-xml-panel-row-item">'.
-                       self::getTextFromNode($desc->item(0)).
-                       '</div>';
+        $result .= '<input';
+        $result .= ' type="'.$type.'"';
+        $result .= ' name="'.$Input->getAttribute('conf').'"';
+        $result .= ' id= "'.$id.'"';
+        $result .= ' class="'.implode(' ', $classes).'" ';
+        $result .= $dataQui;
+        $result .= $data;
+        $result .= ' />';
+
+        if ($Desc->length) {
+            $result .= self::getTextFromNode($Desc->item(0));
         }
 
-        return $string;
+        $result .= '</div>';
+        $result .= '</label>';
+
+        return $result;
     }
 
     /**
      * Eingabe Element Textarea in einen string für die Einstellung umwandeln
      *
-     * @param \DOMNode|\DOMElement $Textarea
+     * @param \DOMNode|\DOMElement $TextArea
      *
      * @return string
      */
-    public static function textareaDomToString(\DOMNode $Textarea)
+    public static function textareaDomToString(\DOMNode $TextArea)
     {
-        if ($Textarea->nodeName != 'textarea') {
+        if ($TextArea->nodeName != 'textarea') {
             return '';
         }
 
-        $id   = $Textarea->getAttribute('conf').'-'.time();
-        $text = $Textarea->getElementsByTagName('text');
-
+        $Text    = $TextArea->getElementsByTagName('text');
         $dataQui = '';
 
-        if ($Textarea->getAttribute('data-qui')) {
-            $dataQui = ' data-qui="'.$Textarea->getAttribute('data-qui').'"';
+        if ($TextArea->getAttribute('data - qui')) {
+            $dataQui = 'data-qui="'.$TextArea->getAttribute('data-qui').'"';
         }
 
-        $textarea
-            = '<textarea
-            name="'.$Textarea->getAttribute('conf').'"
-            id="'.$id.'"
+        $textarea = '<textarea
+            class="field-container-field"
+            name="'.$TextArea->getAttribute('conf').'"
             '.$dataQui.'
-        ></textarea>';
+            ></textarea>';
 
 
-        $string = '<p>';
+        // html
+        $string = '<label class="field-container">';
 
-        if ($text->length) {
-            $string .= '<label for="'.$id.'">'.
-                       self::getTextFromNode($text->item(0)).
-                       '</label>';
+        if ($Text->length) {
+            $string .= '<span  class="field-container-item">';
+            $string .= self::getTextFromNode($Text->item(0));
+            $string .= '</span>';
         }
 
         $string .= $textarea;
-        $string .= '</p>';
+        $string .= '</label>';
 
         return $string;
     }
@@ -1353,7 +1360,7 @@ class DOM
         );
 
         foreach ($replaces as $replace) {
-            if ($replace.'/' !== '//') {
+            if ($replace.' / ' !== '//') {
                 $value = str_replace($replace.'/', $replace, $value);
             }
         }
@@ -1374,18 +1381,16 @@ class DOM
             return '';
         }
 
-        $id      = $Select->getAttribute('conf').'-'.time();
         $dataQui = '';
 
         if ($Select->getAttribute('data-qui')) {
             $dataQui = ' data-qui="'.$Select->getAttribute('data-qui').'"';
         }
 
-        $select
-            = '<select
-            name="'.$Select->getAttribute('conf').'"
-            id="'.$id.'"
-            '.$dataQui.'
+        $select = '<select
+                  class="field-container-field"
+                  name="'.$Select->getAttribute('conf').'"'.
+                  $dataQui.'
         >';
 
         // Options
@@ -1403,16 +1408,16 @@ class DOM
 
 
         $text   = $Select->getElementsByTagName('text');
-        $result = '<p>';
+        $result = '<label class="field-container">';
 
         if ($text->length) {
-            $result .= '<label for="'.$id.'">'.
-                       self::getTextFromNode($text->item(0)).
-                       '</label>';
+            $result .= '<span class="field-container-item">';
+            $result .= self::getTextFromNode($text->item(0));
+            $result .= '</span>';
         }
 
         $result .= $select;
-        $result .= '</p>';
+        $result .= '</label>';
 
         return $result;
     }

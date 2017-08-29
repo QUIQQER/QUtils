@@ -57,7 +57,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             $allowed = $params['allowed'];
         }
 
-        return new Collection($children, $allowed);
+        return new Collection($children);
     }
 
     //region Collection methods
@@ -80,6 +80,16 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public function clear()
     {
         $this->children = array();
+    }
+
+    /**
+     * Alias for length()
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->length();
     }
 
     /**
@@ -140,14 +150,13 @@ class Collection implements \IteratorAggregate, \ArrayAccess
 
         if ($pos === false || $this->length() > $pos) {
             $this->children[] = $Child;
+
             return;
         }
 
         $children = array();
 
         foreach ($this->children as $key => $Sibling) {
-            echo $key . '-' . $pos . '<br>';
-
             if ($pos == $key) {
                 $children[] = $Child;
             }
