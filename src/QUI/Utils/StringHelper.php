@@ -576,4 +576,23 @@ class StringHelper
 
         return (boolean)preg_match($pattern, $string);
     }
+
+    /**
+     * Replaces a string in a string from right to left
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     * @return string
+     */
+    public static function strReplaceFromEnd($search, $replace, $subject)
+    {
+        $pos = strrpos($subject, $search);
+
+        if ($pos !== false) {
+            $subject = substr_replace($subject, $replace, $pos, strlen($search));
+        }
+
+        return $subject;
+    }
 }
