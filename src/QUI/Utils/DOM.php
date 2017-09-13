@@ -662,6 +662,7 @@ class DOM
      * @param \DOMNode|\DOMElement $Group
      *
      * @return string
+     * @todo rewrite to flexbox table
      */
     public static function groupDomToString(\DOMNode $Group)
     {
@@ -1065,13 +1066,11 @@ class DOM
                             $file = self::parseVar($Set->nodeValue);
 
                             if (file_exists($file)) {
-                                $Engine->assign(
-                                    array(
-                                        'Plugin'  => $Plugin,
-                                        'Plugins' => QUI::getPluginManager(),
-                                        'QUI'     => new QUI()
-                                    )
-                                );
+                                $Engine->assign(array(
+                                    'Plugin'  => $Plugin,
+                                    'Plugins' => QUI::getPluginManager(),
+                                    'QUI'     => new QUI()
+                                ));
 
                                 $result .= $Engine->fetch($file);
                             }

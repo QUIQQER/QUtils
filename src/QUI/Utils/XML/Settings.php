@@ -88,7 +88,7 @@ class Settings
 
         foreach ($xmlFiles as $xmlFile) {
             if (!file_exists($xmlFile)) {
-                $xmlFile = CMS_DIR . $xmlFile;
+                $xmlFile = CMS_DIR.$xmlFile;
             }
 
             if (!file_exists($xmlFile)) {
@@ -160,7 +160,7 @@ class Settings
 
         foreach ($xmlFiles as $xmlFile) {
             if (!file_exists($xmlFile)) {
-                $xmlFile = CMS_DIR . $xmlFile;
+                $xmlFile = CMS_DIR.$xmlFile;
             }
 
             if (!file_exists($xmlFile)) {
@@ -170,7 +170,7 @@ class Settings
             $Dom  = XML::getDomFromXml($xmlFile);
             $Path = new \DOMXPath($Dom);
 
-            $categories = $Path->query($this->xmlPath . "/categories/category");
+            $categories = $Path->query($this->xmlPath."/categories/category");
 
             foreach ($categories as $Category) {
                 $data = $this->parseCategory($Category);
@@ -287,7 +287,14 @@ class Settings
             }
 
             if ($Child->nodeName == 'title' || $Child->nodeName == 'text') {
-                $data['title'] = DOM::getTextFromNode($Child, false);
+                if (empty($data['title'])) {
+                    $data['title'] = DOM::getTextFromNode($Child, false);
+                    continue;
+                }
+            }
+
+            if ($Child->nodeName == 'text') {
+                $items[] = DOM::getTextFromNode($Child);
                 continue;
             }
 
