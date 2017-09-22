@@ -112,7 +112,7 @@ class DB extends QUI\QDOM
             if ($this->getAttribute('port')) {
                 $dsn .= ';port='.$this->getAttribute('port');
             }
-            
+
             $this->setAttribute('dsn', $dsn);
         }
 
@@ -645,6 +645,17 @@ class DB extends QUI\QDOM
             $prepare = array();
 
             foreach ($params as $key => $value) {
+                switch ($type) {
+                    case 'OR':
+                        $prepareKey = $i;
+                        break;
+
+                    default:
+                    case 'AND':
+                        $prepareKey = 'or'.$i;
+                        break;
+                }
+
                 $key = '`'.str_replace('.', '`.`', $key).'`';
 
                 if (is_null($value)) {
@@ -654,8 +665,9 @@ class DB extends QUI\QDOM
                         if (strpos($value, '`') !== false) {
                             $value = str_replace('.', '`.`', $value);
                         } else {
-                            $prepare['wherev'.$i] = $value;
-                            $value                = ':wherev'.$i;
+                            $prepare['wherev'.$prepareKey] = $value;
+
+                            $value = ':wherev'.$prepareKey;
                         }
 
                         $sql .= $key.' = '.$value;
@@ -665,24 +677,28 @@ class DB extends QUI\QDOM
                                   || $value['type'] == '<='
                                   || $value['type'] == '>=')
                     ) {
-                        $prepare['wherev'.$i] = $value['value'];
-                        $sql                  .= $key.' '.$value['type'].' :wherev'.$i;
+                        $prepare['wherev'.$prepareKey] = $value['value'];
+
+                        $sql .= $key.' '.$value['type'].' :wherev'.$prepareKey;
                     } elseif (isset($value['type']) && $value['type'] == 'NOT') {
                         if (is_null($value['value'])) {
                             $sql .= $key.' IS NOT NULL ';
                         } else {
-                            $prepare['wherev'.$i] = $value['value'];
-                            $sql                  .= $key.' != :wherev'.$i;
+                            $prepare['wherev'.$prepareKey] = $value['value'];
+
+                            $sql .= $key.' != :wherev'.$prepareKey;
                         }
                     } elseif (isset($value['type']) && $value['type'] == 'REGEXP') {
-                        $sql                  .= $key.' REGEXP :wherev'.$i;
-                        $prepare['wherev'.$i] = $value['value'];
+                        $sql .= $key.' REGEXP :wherev'.$prepareKey;
+
+                        $prepare['wherev'.$prepareKey] = $value['value'];
                     } elseif (isset($value['type']) && $value['type'] == 'IN') {
                         $sql .= $key.' IN (';
 
                         if (!is_array($value['value'])) {
-                            $prepare['in'.$i] = $value['value'];
-                            $sql              .= ':in'.$i;
+                            $prepare['in'.$prepareKey] = $value['value'];
+
+                            $sql .= ':in'.$prepareKey;
                         } else {
                             $in = 0;
 
@@ -703,8 +719,9 @@ class DB extends QUI\QDOM
                         $sql .= $key.' NOT IN (';
 
                         if (!is_array($value['value'])) {
-                            $prepare['notin'.$i] = $value['value'];
-                            $sql                 .= ':notin'.$i;
+                            $prepare['notin'.$prepareKey] = $value['value'];
+
+                            $sql .= ':notin'.$prepareKey;
                         } else {
                             $in = 0;
 
@@ -732,44 +749,52 @@ class DB extends QUI\QDOM
 
                         switch ($value['type']) {
                             case '%LIKE%':
-                                $prepare['wherev'.$i] = '%'.$value['value'].'%';
-                                $sql                  .= $key.' LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = '%'.$value['value'].'%';
+
+                                $sql .= $key.' LIKE :wherev'.$prepareKey;
                                 break;
 
                             case '%LIKE':
-                                $prepare['wherev'.$i] = '%'.$value['value'];
-                                $sql                  .= $key.' LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = '%'.$value['value'];
+
+                                $sql .= $key.' LIKE :wherev'.$prepareKey;
                                 break;
 
                             case 'LIKE%':
-                                $prepare['wherev'.$i] = $value['value'].'%';
-                                $sql                  .= $key.' LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = $value['value'].'%';
+
+                                $sql .= $key.' LIKE :wherev'.$prepareKey;
                                 break;
 
                             case 'NOT LIKE':
-                                $prepare['wherev'.$i] = $value['value'];
-                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = $value['value'];
+
+                                $sql .= $key.' NOT LIKE :wherev'.$prepareKey;
                                 break;
 
                             case 'NOT %LIKE%':
-                                $prepare['wherev'.$i] = '%'.$value['value'].'%';
-                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = '%'.$value['value'].'%';
+
+                                $sql .= $key.' NOT LIKE :wherev'.$prepareKey;
                                 break;
 
                             case 'NOT %LIKE':
-                                $prepare['wherev'.$i] = '%'.$value['value'];
-                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = '%'.$value['value'];
+
+                                $sql .= $key.' NOT LIKE :wherev'.$prepareKey;
                                 break;
 
                             case 'NOT LIKE%':
-                                $prepare['wherev'.$i] = $value['value'].'%';
-                                $sql                  .= $key.' NOT LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = $value['value'].'%';
+
+                                $sql .= $key.' NOT LIKE :wherev'.$prepareKey;
                                 break;
 
                             default:
                             case 'LIKE':
-                                $prepare['wherev'.$i] = $value['value'];
-                                $sql                  .= $key.' LIKE :wherev'.$i;
+                                $prepare['wherev'.$prepareKey] = $value['value'];
+
+                                $sql .= $key.' LIKE :wherev'.$prepareKey;
                                 break;
                         }
                     }
