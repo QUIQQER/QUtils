@@ -50,11 +50,12 @@ class DOM
             $image = '';
             $type  = '';
 
-            $Images   = $Tab->getElementsByTagName('image');
-            $Texts    = $Tab->getElementsByTagName('text');
-            $Onload   = $Tab->getElementsByTagName('onload');
-            $OnUnload = $Tab->getElementsByTagName('onunload');
-            $Template = $Tab->getElementsByTagName('template');
+            $Images     = $Tab->getElementsByTagName('image');
+            $Categories = $Tab->getElementsByTagName('category');
+            $Texts      = $Tab->getElementsByTagName('text');
+            $Onload     = $Tab->getElementsByTagName('onload');
+            $OnUnload   = $Tab->getElementsByTagName('onunload');
+            $Template   = $Tab->getElementsByTagName('template');
 
             if ($Images && $Images->item(0)) {
                 $image = self::parseVar($Images->item(0)->nodeValue);
@@ -68,15 +69,18 @@ class DOM
                 $type = $Tab->getAttribute('type');
             }
 
-            $ToolbarTab = new Toolbar\Tab(
-                array(
-                    'name'    => $Tab->getAttribute('name'),
-                    'text'    => $text,
-                    'image'   => $image,
-                    'plugin'  => $plugin,
-                    'wysiwyg' => $type == 'wysiwyg' ? true : false
-                )
-            );
+            if ($Categories->length) {
+                $type = 'xml';
+            }
+
+            $ToolbarTab = new Toolbar\Tab(array(
+                'name'    => $Tab->getAttribute('name'),
+                'text'    => $text,
+                'image'   => $image,
+                'plugin'  => $plugin,
+                'wysiwyg' => $type == 'wysiwyg' ? true : false,
+                'type'    => $type
+            ));
 
             foreach ($Tab->attributes as $attr) {
                 $name = $attr->nodeName;
