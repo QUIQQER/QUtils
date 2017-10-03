@@ -126,7 +126,7 @@ class XML
             // plugin conf???
             $dirname = dirname($file);
             $package = str_replace(
-                dirname(dirname($dirname)) . '/',
+                dirname(dirname($dirname)).'/',
                 '',
                 $dirname
             );
@@ -134,14 +134,14 @@ class XML
             try {
                 QUI::getPackageManager()->getInstalledPackage($package);
 
-                $name = 'plugins/' . $package;
+                $name = 'plugins/'.$package;
             } catch (QUI\Exception $Exception) {
                 return false;
             }
         }
 
 
-        $ini_file = CMS_DIR . 'etc/' . $name . '.ini.php';
+        $ini_file = CMS_DIR.'etc/'.$name.'.ini.php';
 
         QUI\Utils\System\File::mkdir(dirname($ini_file));
 
@@ -334,6 +334,7 @@ class XML
             $Dom->load($filename);
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
+
             return new \DOMDocument();
         }
 
@@ -396,7 +397,7 @@ class XML
                 $result[] = array(
                     'on'   => $Event->getAttribute('on'),
                     'fire' => $Event->getAttribute('fire'),
-                    'type' => $package . ':' . $Type->getAttribute('type')
+                    'type' => $package.':'.$Type->getAttribute('type')
                 );
             }
         }
@@ -718,8 +719,8 @@ class XML
                 $permission->item($i)
             );
 
-            $data['title'] = $package . ' permission.' . $data['name'];
-            $data['desc']  = $package . ' permission.' . $data['name'] . '._desc';
+            $data['title'] = $package.' permission.'.$data['name'];
+            $data['desc']  = $package.' permission.'.$data['name'].'._desc';
 
             $result[] = $data;
         }
@@ -1056,7 +1057,7 @@ class XML
                     continue;
                 }
 
-                $Widget->setAttribute('name', md5($file . $c));
+                $Widget->setAttribute('name', md5($file.$c));
 
                 $result[] = $Widget;
             }
@@ -1114,7 +1115,6 @@ class XML
 
 
         $checkFnMatch = function ($key, $keyList) {
-
             if (!is_array($keyList)) {
                 return false;
             }
@@ -1197,7 +1197,7 @@ class XML
             $_file = explode('/', $_file);
 
             try {
-                $Package = QUI::getPackage($_file[0] . '/' . $_file[1]);
+                $Package = QUI::getPackage($_file[0].'/'.$_file[1]);
 
                 QUI::getEvents()->fireEvent('packageConfigSave', array($Package, $params));
             } catch (QUI\Exception $Exception) {
@@ -1281,10 +1281,10 @@ class XML
                     $langs = explode(',', $params['langs']);
 
                     foreach ($langs as $lang) {
-                        $tbl = QUI::getDBTableName($name . '_' . $lang . '_' . $suffix);
+                        $tbl = QUI::getDBTableName($name.'_'.$lang.'_'.$suffix);
 
                         if ($noLang) {
-                            $tbl = QUI::getDBTableName($name . '_' . $suffix);
+                            $tbl = QUI::getDBTableName($name.'_'.$suffix);
                         }
 
                         $Table->addColumn($tbl, $fields, $engine);
@@ -1327,7 +1327,7 @@ class XML
                 $exec = str_replace('\\\\', '\\', $exec);
 
                 if (!is_callable($exec)) {
-                    QUI\System\Log::addInfo($exec . ' not callable');
+                    QUI\System\Log::addInfo($exec.' not callable');
                     continue;
                 }
 
@@ -1356,7 +1356,7 @@ class XML
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError(
                 "Error on XML database import ($xmlfile): "
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             throw $Exception;
