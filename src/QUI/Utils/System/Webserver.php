@@ -64,7 +64,7 @@ class Webserver
         }
 
         # Attempt detection by system shell
-        if (\QUI\Utils\System::isShellFunctionEnabled("shell_exec")) {
+        if (\QUI\Utils\System::isShellFunctionEnabled("shell_exec") && !empty(shell_exec("which apache2"))) {
             $version = shell_exec('apache2 -v');
             $regex   = "/Apache\\/([0-9\\.]*)/i";
             $res     = preg_match($regex, $version, $matches);
