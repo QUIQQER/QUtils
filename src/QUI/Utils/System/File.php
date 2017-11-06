@@ -520,6 +520,8 @@ class File
             $last = strtolower(mb_substr($val, -1));
         }
 
+        $val = (int)$val;
+
         switch ($last) {
             case 'g':
                 $val *= 1024;
