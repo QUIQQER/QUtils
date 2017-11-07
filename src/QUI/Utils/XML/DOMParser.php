@@ -89,15 +89,11 @@ class DOMParser
 
         $attributes = self::getAttributes($TextArea);
 
-        if (!isset($attributes['data'])) {
-            $attributes['data'] = '';
-        }
-
         $textArea = '<textarea
             name="'.$attributes['conf'].'"
             id="'.$attributes['id'].'"
             class="field-container-field"
-            '.$attributes['data'].'
+            '.$attributes['attributes'].'
         ></textarea>';
 
         return self::createHTML($textArea, $attributes);
