@@ -348,7 +348,17 @@ class DB extends QUI\QDOM
      */
     public function exec(array $params = array())
     {
+        if (class_exists('QUI') && QUI::$Events !== null) {
+            QUI::getEvents()->fireEvent('dataBaseQueryCreate', [$this]);
+        }
+
+        $start = microtime();
         $query = $this->createQuery($params);
+
+
+        if (class_exists('QUI') && QUI::$Events !== null) {
+            QUI::getEvents()->fireEvent('dataBaseQuery', [$this, $query]);
+        }
 
         if (isset($params['debug'])) {
             QUI\System\Log::writeRecursive($query);
@@ -376,7 +386,23 @@ class DB extends QUI\QDOM
             $message = $Exception->getMessage();
             $message .= print_r($query, true);
 
+            if (class_exists('QUI') && QUI::$Events !== null) {
+                QUI::getEvents()->fireEvent(
+                    'dataBaseQueryEnd',
+                    [$this, $query, $start, microtime()]
+                );
+
+                QUI::getEvents()->fireEvent(
+                    'dataBaseQueryError',
+                    [$this, $Exception, $query, $start, microtime()]
+                );
+            }
+
             throw new QUI\Database\Exception($message, $Exception->getCode());
+        }
+
+        if (class_exists('QUI') && QUI::$Events !== null) {
+            QUI::getEvents()->fireEvent('dataBaseQueryEnd', [$this, $query, $start, microtime()]);
         }
 
         return $Statement;

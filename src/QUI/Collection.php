@@ -174,7 +174,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function isEmpty()
     {
-        return !!$this->length();
+        return !$this->length();
     }
 
     /**
