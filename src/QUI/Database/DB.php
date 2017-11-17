@@ -352,6 +352,7 @@ class DB extends QUI\QDOM
             QUI::getEvents()->fireEvent('dataBaseQueryCreate', [$this]);
         }
 
+        $start = microtime();
         $query = $this->createQuery($params);
 
 
@@ -386,14 +387,22 @@ class DB extends QUI\QDOM
             $message .= print_r($query, true);
 
             if (class_exists('QUI') && QUI::$Events !== null) {
-                QUI::getEvents()->fireEvent('dataBaseQueryEnd', [$this, $query]);
+                QUI::getEvents()->fireEvent(
+                    'dataBaseQueryEnd',
+                    [$this, $query, $start, microtime()]
+                );
+
+                QUI::getEvents()->fireEvent(
+                    'dataBaseQueryError',
+                    [$this, $Exception, $query, $start, microtime()]
+                );
             }
 
             throw new QUI\Database\Exception($message, $Exception->getCode());
         }
 
         if (class_exists('QUI') && QUI::$Events !== null) {
-            QUI::getEvents()->fireEvent('dataBaseQueryEnd', [$this, $query]);
+            QUI::getEvents()->fireEvent('dataBaseQueryEnd', [$this, $query, $start, microtime()]);
         }
 
         return $Statement;
