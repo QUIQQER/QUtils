@@ -25,12 +25,44 @@ class XML
      *
      * @param QUI\Controls\Contextmenu\Bar $Menu - Menu Object
      * @param string $file - Path to XML File
+     * @param null|QUI\Interfaces\Users\User $User - User Object from QUIQQER
      */
-    public static function addXMLFileToMenu(QUI\Controls\Contextmenu\Bar $Menu, $file)
+    public static function addXMLFileToMenu(QUI\Controls\Contextmenu\Bar $Menu, $file, $User = null)
     {
         if (!file_exists($file)) {
             return;
         }
+
+        /**
+         * @param \DOMElement $Item
+         * @return bool
+         */
+        $hasPermission = function ($Item) use ($User) {
+            $permissions = $Item->getAttribute('permission');
+
+            if (empty($permissions)) {
+                return true;
+            }
+
+            if ($User === null) {
+                return true;
+            }
+
+            if (!class_exists('\QUI\Permissions\Permission') ||
+                !class_exists('\QUI')) {
+                return true;
+            }
+
+            $permissions = explode(',', $permissions);
+
+            foreach ($permissions as $permission) {
+                if (!QUI\Permissions\Permission::hasPermission($permission, $User)) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
 
         // read the xml
         $items = self::getMenuItemsXml($file);
@@ -38,6 +70,10 @@ class XML
         foreach ($items as $Item) {
             /* @var $Item \DOMElement */
             if (!$Item->getAttribute('parent')) {
+                continue;
+            }
+
+            if ($hasPermission($Item) === false) {
                 continue;
             }
 
