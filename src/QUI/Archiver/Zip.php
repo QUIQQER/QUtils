@@ -96,6 +96,39 @@ class Zip
         $Zip->close();
     }
 
+
+    /**
+     * Puts the given files in a zip file
+     *
+     * @param string[] $files - Paths of the files to zip
+     * @param string $zipfile - Path to the zip file (folders have to already exist)
+     * 
+     * @throws QUI\Exception
+     */
+    public static function zipFiles($files, $zipfile)
+    {
+        self::check();
+
+        $Zip = new \ZipArchive();
+
+        if ($Zip->open($zipfile, \ZIPARCHIVE::CREATE) !== true) {
+            throw new QUI\Exception('cannot open ' . $zipfile);
+        }
+
+        if (!is_array($files) || count($files) < 0) {
+            throw new QUI\Exception("You need to specify at least one file to zip in an array");
+        }
+
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                $Zip->addFile($file, basename($file));
+            }
+        }
+
+        $Zip->close();
+    }
+
+
     /**
      * Unzip the file
      *
