@@ -398,7 +398,14 @@ class DB extends QUI\QDOM
                 );
             }
 
-            throw new QUI\Database\Exception($message, $Exception->getCode());
+
+            $Exception = new QUI\Database\Exception($message, $Exception->getCode());
+
+            if (class_exists('QUI\System\Log')) {
+                QUI\System\Log::writeRecursive($Exception);
+            }
+
+            throw $Exception;
         }
 
         if (class_exists('QUI') && QUI::$Events !== null) {
