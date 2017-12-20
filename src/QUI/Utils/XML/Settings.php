@@ -280,12 +280,6 @@ class Settings
             'items' => array()
         );
 
-        if ($Setting->hasAttributes()) {
-            foreach ($Setting->attributes as $attribute) {
-                $data[$attribute->nodeName] = $attribute->nodeValue;
-            }
-        }
-
         $items = array();
 
         foreach ($Setting->childNodes as $Child) {
@@ -332,6 +326,14 @@ class Settings
 
             if ($Child->nodeName == 'button') {
                 $items[] = DOMParser::buttonDomToString($Child);
+            }
+        }
+
+        if ($Setting->hasAttributes()) {
+            foreach ($Setting->attributes as $attribute) {
+                if (empty($data[$attribute->nodeName])) {
+                    $data[$attribute->nodeName] = $attribute->nodeValue;
+                }
             }
         }
 
