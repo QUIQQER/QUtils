@@ -1348,6 +1348,22 @@ class DOM
 
         $value = str_replace(
             array(
+                'URL_BIN_DIR/',
+                'URL_OPT_DIR/',
+                'URL_USR_DIR/',
+                'BIN_DIR/',
+                'OPT_DIR/',
+                'URL_DIR/',
+                'SYS_DIR/',
+                'CMS_DIR/',
+                'USR_DIR/'
+            ),
+            $replaces,
+            $value
+        );
+
+        $value = str_replace(
+            array(
                 'URL_BIN_DIR',
                 'URL_OPT_DIR',
                 'URL_USR_DIR',
@@ -1362,12 +1378,12 @@ class DOM
             $value
         );
 
-        foreach ($replaces as $replace) {
-            if ($replace.' / ' !== '//') {
-                $value = str_replace($replace.'/', $replace, $value);
-            }
-        }
-
+//        foreach ($replaces as $replace) {
+//            if ($replace.' / ' !== '//') {
+//                $value = str_replace($replace.'/', $replace, $value);
+//            }
+//        }
+        
         return $value;
     }
 
