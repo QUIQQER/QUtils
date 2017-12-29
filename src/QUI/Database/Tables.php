@@ -749,7 +749,7 @@ class Tables
             }
         }
 
-        return $result;
+        return $columns;
     }
 
     /**

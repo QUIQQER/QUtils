@@ -276,6 +276,7 @@ class Settings
             'name'  => $Setting->getAttribute('name'),
             'title' => '',
             'index' => $Setting->getAttribute('index'),
+            'icon'  => $Setting->getAttribute('icon'),
             'items' => array()
         );
 
@@ -291,6 +292,11 @@ class Settings
                     $data['title'] = DOM::getTextFromNode($Child, false);
                     continue;
                 }
+            }
+
+            if ($Child->nodeName == 'template') {
+                $data['template'] = QUI\Utils\DOM::parseVar($Child->nodeValue);
+                continue;
             }
 
             if ($Child->nodeName == 'text') {
@@ -323,7 +329,19 @@ class Settings
             }
         }
 
-        $data['items'] = $items;
+        if ($Setting->hasAttributes()) {
+            foreach ($Setting->attributes as $attribute) {
+                if (empty($data[$attribute->nodeName])) {
+                    $data[$attribute->nodeName] = $attribute->nodeValue;
+                }
+            }
+        }
+
+        if (!empty($data['template'])) {
+            unset($data['items']);
+        } else {
+            $data['items'] = $items;
+        }
 
         return $data;
     }
