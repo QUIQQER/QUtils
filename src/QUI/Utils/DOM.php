@@ -240,7 +240,7 @@ class DOM
         $index = $Table->getElementsByTagName('index');
 
         for ($i = 0; $i < $index->length; $i++) {
-            $result = array_merge(
+            $result = array_merge_recursive(
                 $result,
                 self::dbIndexDomToArray($index->item($i))
             );
@@ -351,7 +351,7 @@ class DOM
     public static function dbIndexDomToArray(\DOMNode $Index)
     {
         return array(
-            'index' => trim($Index->nodeValue)
+            'index' => [trim($Index->nodeValue)]
         );
     }
 
@@ -420,6 +420,8 @@ class DOM
      *        $Object - string = path to user.xml File
      *
      * @return string
+     *
+     * @throws QUI\Exception
      */
     public static function getTabHTML($name, $Object)
     {
@@ -457,7 +459,14 @@ class DOM
                             }
 
                             // generate html
-                            $Engine = QUI::getTemplateManager()->getEngine(true);
+                            try {
+                                $Engine = QUI::getTemplateManager()->getEngine(true);
+                            } catch (QUI\Exception $Exception) {
+                                QUI\System\Log::writeDebugException($Exception);
+
+                                return '';
+                            }
+
 
                             $Engine->assign(array(
                                 'Site'    => $Object,
@@ -495,6 +504,8 @@ class DOM
      * @param \DomDocument|\DomElement $Dom
      *
      * @return array
+     *
+     * @throws QUI\Exception
      */
     public static function getButtonsFromWindow($Dom)
     {
@@ -736,6 +747,8 @@ class DOM
      * @param \DOMDocument|\DOMNode $Dom
      * @param bool $withCustomParams - Should custom parameters be considered?
      * @return array
+     *
+     * @throws QUI\Exception
      */
     public static function getConfigParamsFromDOM($Dom, $withCustomParams = false)
     {
@@ -807,6 +820,8 @@ class DOM
      * @param \DomDocument|\DOMElement $Dom
      *
      * @return QUI\Controls\Windows\Window|bool
+     *
+     * @throws QUI\Exception
      */
     public static function parseDomToWindow($Dom)
     {
@@ -950,6 +965,8 @@ class DOM
      * @param $Plugin - optional
      *
      * @return string
+     *
+     * @throws QUI\Exception
      */
     public static function parseCategoryToHTML($Category, $Plugin = false)
     {
@@ -1383,7 +1400,7 @@ class DOM
 //                $value = str_replace($replace.'/', $replace, $value);
 //            }
 //        }
-        
+
         return $value;
     }
 

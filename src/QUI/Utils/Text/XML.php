@@ -1249,6 +1249,9 @@ class XML
      * the Array must come from self::getDataBaseFromXml
      *
      * @param array $dbfields - array with db fields
+     *
+     * @throws QUI\Exception
+     * @throws \Exception
      */
     public static function importDataBase($dbfields)
     {
@@ -1270,13 +1273,19 @@ class XML
                     $Table->setUniqueColumns($tbl, $table['unique']);
                 }
 
-                if (isset($table['index'])) {
-                    $index = $table['index'];
+                $index = [];
 
-                    if (strpos($index, ',') !== false) {
-                        $Table->setIndex($tbl, explode(',', $table['index']));
+                if (isset($table['index']) && !is_array($table['index'])) {
+                    $index[] = $table['index'];
+                } elseif (isset($table['index']) && is_array($table['index'])) {
+                    $index = $table['index'];
+                }
+
+                foreach ($index as $ind) {
+                    if (strpos($ind, ',') !== false) {
+                        $Table->setIndex($tbl, explode(',', $ind));
                     } else {
-                        $Table->setIndex($tbl, $table['index']);
+                        $Table->setIndex($tbl, $ind);
                     }
                 }
 
@@ -1330,23 +1339,25 @@ class XML
                         }
 
                         if (isset($table['index'])) {
-                            $index = $table['index'];
+                            $index = [];
 
-                            if (strpos($index, ',') !== false) {
-                                $Table->setIndex(
-                                    $tbl,
-                                    explode(',', $table['index'])
-                                );
-                            } else {
-                                $Table->setIndex($tbl, $table['index']);
+                            if (isset($table['index']) && !is_array($table['index'])) {
+                                $index[] = $table['index'];
+                            } elseif (isset($table['index']) && is_array($table['index'])) {
+                                $index = $table['index'];
+                            }
+
+                            foreach ($index as $ind) {
+                                if (strpos($ind, ',') !== false) {
+                                    $Table->setIndex($tbl, explode(',', $ind));
+                                } else {
+                                    $Table->setIndex($tbl, $ind);
+                                }
                             }
                         }
 
                         if (isset($table['auto_increment'])) {
-                            $Table->setAutoIncrement(
-                                $tbl,
-                                $table['auto_increment']
-                            );
+                            $Table->setAutoIncrement($tbl, $table['auto_increment']);
                         }
 
                         if (isset($table['fulltext'])) {
@@ -1378,17 +1389,18 @@ class XML
      * @param string $xmlfile - Path to the file
      *
      * @throws QUI\Exception
+     * @throws \Exception
      */
     public static function importDataBaseFromXml($xmlfile)
     {
-        $dbfields = self::getDataBaseFromXml($xmlfile);
+        $dbFields = self::getDataBaseFromXml($xmlfile);
 
-        if (!count($dbfields)) {
+        if (!count($dbFields)) {
             return;
         }
 
         try {
-            self::importDataBase($dbfields);
+            self::importDataBase($dbFields);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError(
                 "Error on XML database import ($xmlfile): "
