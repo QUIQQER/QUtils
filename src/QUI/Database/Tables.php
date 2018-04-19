@@ -51,7 +51,7 @@ class Tables
      */
     public function getTables()
     {
-        $tables = array();
+        $tables = [];
         $PDO    = $this->DB->getPDO();
 
         if ($this->isSQLite()) {
@@ -217,15 +217,15 @@ class Tables
         }
 
         if ($this->isSQLite()) {
-            $sql = 'CREATE TABLE `' . $_table . '` (';
+            $sql = 'CREATE TABLE `'.$_table.'` (';
         } else {
-            $sql = 'CREATE TABLE `' . $this->DB->getAttribute('dbname') . '`.`' . $_table . '` (';
+            $sql = 'CREATE TABLE `'.$this->DB->getAttribute('dbname').'`.`'.$_table.'` (';
         }
 
 
         if (QUI\Utils\ArrayHelper::isAssoc($fields)) {
             foreach ($fields as $key => $type) {
-                $sql .= '`' . $key . '` ' . $type . ',';
+                $sql .= '`'.$key.'` '.$type.',';
             }
 
             $sql = substr($sql, 0, -1);
@@ -244,7 +244,7 @@ class Tables
         if ($this->isSQLite()) {
             $sql .= ');';
         } else {
-            $sql .= ') ENGINE = ' . $engine . ' DEFAULT CHARSET = utf8;';
+            $sql .= ') ENGINE = '.$engine.' DEFAULT CHARSET = utf8;';
         }
 
         try {
@@ -371,6 +371,7 @@ class Tables
     {
         if ($this->exist($table) == false) {
             $this->create($table, $fields, $engine);
+
             return;
         }
 
@@ -378,7 +379,7 @@ class Tables
 
         $PDO    = $this->DB->getPDO();
         $table  = $this->clear($table);
-        $change = array();
+        $change = [];
 
         foreach ($fields as $field => $type) {
             $field = $this->clear($field);
@@ -481,7 +482,7 @@ class Tables
         $table = $this->clear($table);
 
         if ($this->isSQLite()) {
-            $fields = array();
+            $fields = [];
 
             $Stmt = $PDO->prepare("PRAGMA table_info(`{$table}`)");
             $Stmt->execute();
@@ -498,7 +499,7 @@ class Tables
         $Stmnt->execute();
 
         $result = $Stmnt->fetchAll(\PDO::FETCH_ASSOC);
-        $fields = array();
+        $fields = [];
 
         foreach ($result as $entry) {
             $fields[] = $entry['Field'];
@@ -731,7 +732,7 @@ class Tables
 
         // @todo implement sqlite query
         if ($this->isSQLite()) {
-            return array();
+            return [];
         }
 
         $query = "SHOW INDEXES FROM `{$table}`";
@@ -741,7 +742,7 @@ class Tables
         $Stmt->execute();
         $result = $Stmt->fetchAll();
 
-        $columns = array();
+        $columns = [];
 
         foreach ($result as $k => $row) {
             if (isset($row['Column_name'])) {
@@ -900,12 +901,7 @@ class Tables
     public function getAutoIncrementIndex($table)
     {
         $table = $this->clear($table);
-
-        $query = "
-            SELECT `AUTO_INCREMENT`
-            FROM  INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_NAME   = '{$table}';
-              ";
+        $query = "SHOW TABLE STATUS WHERE name = '{$table}';";
 
         $PDO       = $this->DB->getPDO();
         $Statement = $PDO->prepare($query);
@@ -919,6 +915,10 @@ class Tables
 
         if (isset($result[0]['AUTO_INCREMENT'])) {
             return (int)$result[0]['AUTO_INCREMENT'];
+        }
+
+        if (isset($result[0]['Auto_increment'])) {
+            return (int)$result[0]['Auto_increment'];
         }
 
         return 0;
@@ -941,7 +941,7 @@ class Tables
                     "SELECT * FROM sqlite_master WHERE type = 'index'"
                 )->fetch();
             } catch (\PDOException $Exception) {
-                return array();
+                return [];
             }
 
             return $result;
@@ -1143,7 +1143,7 @@ class Tables
     protected function clear(
         $str
     ) {
-        return str_replace(array('\\', "\0", '`'), '', $str);
+        return str_replace(['\\', "\0", '`'], '', $str);
     }
 
     /**
@@ -1179,7 +1179,7 @@ class Tables
         }
 
         if (is_array($index)) {
-            $fulltext = "`" . implode("`,`", $index) . "`";
+            $fulltext = "`".implode("`,`", $index)."`";
         } else {
             $index    = $this->clear($index);
             $fulltext = "`{$index}`";
