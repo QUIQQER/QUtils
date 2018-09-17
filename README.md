@@ -2,11 +2,11 @@
 QUIQQER Utils
 ========
 
-Hilfs Klassen von und für QUIQQER.
-Diese Klassen sind und müssen unabhängig von QUIQQER funktionieren.
+Helper-Classes from and for QUIQQER.  
+These classes (have to) work independently from QUIQQER.
 
 
-Packetname:
+Package Name:
 
     quiqqer/utils
 
@@ -14,19 +14,19 @@ Packetname:
 Features
 --------
 
-- Datenbank Layer -> einfache Verbindung zu / mit PDO
-- QDOM -> DOM ähnliche Klasse für PHP
-- PHP QUI Control Klasse
-- Request, Security, Math, Sting Utils (Helfer)
+- Database-Layer -> easy connection to/via PDO
+- QDOM -> DOM-like classes for PHP
+- PHP QUI Control Class
+- Request, Security, Math, Sting Utils (Helpers)
 
 
 Installation
 ------------
 
-Der Paketname ist: quiqqer/utils
+The package name is: `quiqqer/utils`
 
 
-Mitwirken
+Contribute
 ----------
 
 - Issue Tracker: https://dev.quiqqer.com/quiqqer/qutils/issues
@@ -36,8 +36,9 @@ Mitwirken
 Support
 -------
 
-Falls Sie ein Fehler gefunden haben oder Verbesserungen wünschen,
-Dann können Sie gerne an support@pcsg.de eine E-Mail schreiben.
+If you found any flaws, have any wishes or suggestions you can send an email
+to [support@pcsg.de](mailto:support@pcsg.de) to inform us about your concerns.  
+We will try to respond to your request and forward it to the responsible developer.
 
 
 License
@@ -46,7 +47,7 @@ License
 LGPL-3.0+
 
 
-Entwickler
+Usage
 --------
 
 **composer.json**
