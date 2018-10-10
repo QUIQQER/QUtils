@@ -1024,8 +1024,7 @@ class Tables
             $columnValue = '';
         }
 
-        $query
-            = "
+        $query = "
             ALTER TABLE `{$table}`
             MODIFY COLUMN `{$index}`
             {$columnType} {$columnValue} AUTO_INCREMENT
