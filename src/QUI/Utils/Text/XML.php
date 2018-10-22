@@ -77,7 +77,7 @@ class XML
                 continue;
             }
 
-            $params = array(
+            $params = [
                 'text'    => DOM::getTextFromNode($Item),
                 'locale'  => DOM::getTextFromNode($Item, false),
                 'name'    => $Item->getAttribute('name'),
@@ -85,7 +85,7 @@ class XML
                 'require' => $Item->getAttribute('require'),
                 'exec'    => $Item->getAttribute('exec'),
                 'onClick' => 'QUI.Menu.menuClick'
-            );
+            ];
 
             $Parent = $Menu;
 
@@ -136,6 +136,8 @@ class XML
      * @param bool $withCustomParams - Should custom parameters be considered?
      *
      * @return QUI\Config|boolean - Config | false
+     *
+     * @throws QUi\Exception
      */
     public static function getConfigFromXml($file, $withCustomParams = false)
     {
@@ -241,10 +243,10 @@ class XML
         $Path = new \DOMXPath($Dom);
 
         $tools = $Path->query("//console/tool");
-        $list  = array();
+        $list  = [];
 
         if (!$tools->length) {
-            return array();
+            return [];
         }
 
         for ($i = 0; $i < $tools->length; $i++) {
@@ -283,7 +285,7 @@ class XML
         $Path = new \DOMXPath($Dom);
 
         $CSSList = $Path->query("//wysiwyg/css");
-        $files   = array();
+        $files   = [];
 
         for ($i = 0; $i < $CSSList->length; $i++) {
             $files[] = $CSSList->item($i)->getAttribute('src');
@@ -305,10 +307,10 @@ class XML
         $database = $Dom->getElementsByTagName('database');
 
         if (!$database->length) {
-            return array();
+            return [];
         }
 
-        $dbfields = array();
+        $dbfields = [];
         $Database = $database->item(0);
 
         /* @var $Database \DOMElement */
@@ -391,14 +393,14 @@ class XML
         $events = $Dom->getElementsByTagName('events');
 
         if (!$events->length) {
-            return array();
+            return [];
         }
 
         /* @var $Event \DOMElement */
         $Event = $events->item(0);
         $list  = $Event->getElementsByTagName('event');
 
-        $result = array();
+        $result = [];
 
         for ($i = 0, $len = $list->length; $i < $len; $i++) {
             $result[] = $list->item($i);
@@ -420,7 +422,7 @@ class XML
         $Path = new \DOMXPath($Dom);
 
         $types  = $Path->query("//site/types/type");
-        $result = array();
+        $result = [];
 
         $package = str_replace(OPT_DIR, '', dirname($file));
 
@@ -430,11 +432,11 @@ class XML
 
             foreach ($events as $Event) {
                 /* @var $Event \DOMElement */
-                $result[] = array(
+                $result[] = [
                     'on'   => $Event->getAttribute('on'),
                     'fire' => $Event->getAttribute('fire'),
                     'type' => $package.':'.$Type->getAttribute('type')
-                );
+                ];
             }
         }
 
@@ -453,7 +455,7 @@ class XML
     {
         $Path    = new \DOMXPath(self::getDomFromXml($file));
         $layouts = $Path->query("//site/layouts/layout");
-        $result  = array();
+        $result  = [];
 
         /* @var $Layout \DOMElement */
         foreach ($layouts as $Layout) {
@@ -508,7 +510,7 @@ class XML
         $locales = $Dom->getElementsByTagName('locales');
 
         if (!$locales->length) {
-            return array();
+            return [];
         }
 
         /* @var $Locales \DOMElement */
@@ -516,21 +518,21 @@ class XML
         $groups  = $Locales->getElementsByTagName('groups');
 
         if (!$groups->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($g = 0, $glen = $groups->length; $g < $glen; $g++) {
             /* @var $Group \DOMElement */
             $Group      = $groups->item($g);
             $localelist = $Group->getElementsByTagName('locale');
 
-            $locales = array(
+            $locales = [
                 'group'    => $Group->getAttribute('name'),
-                'locales'  => array(),
+                'locales'  => [],
                 'datatype' => $Group->getAttribute('datatype')
-            );
+            ];
 
             for ($c = 0; $c < $localelist->length; $c++) {
                 $Locale = $localelist->item($c);
@@ -546,11 +548,11 @@ class XML
                 }
 
                 /* @var $Locale \DOMElement */
-                $params = array(
+                $params = [
                     'name'     => $Locale->getAttribute('name'),
                     'html'     => $Locale->getAttribute('html') ? true : false,
                     'priority' => $priority
-                );
+                ];
 
                 $translations = $Locale->childNodes;
 
@@ -586,7 +588,7 @@ class XML
         $menu = $Dom->getElementsByTagName('menu');
 
         if (!$menu->length) {
-            return array();
+            return [];
         }
 
         /* @var $Menu \DOMElement */
@@ -594,10 +596,10 @@ class XML
         $items = $Menu->getElementsByTagName('item');
 
         if (!$items->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($c = 0; $c < $items->length; $c++) {
             $Item = $items->item($c);
@@ -628,10 +630,10 @@ class XML
         $package = $Path->query("//quiqqer/package");
 
         if (!$package->length) {
-            return array();
+            return [];
         }
 
-        $result     = array();
+        $result     = [];
         $Package    = $package->item(0);
         $childNodes = $Package->childNodes;
 
@@ -655,7 +657,7 @@ class XML
 
         // preview images
         $previews          = $Path->query("//quiqqer/package/preview/image");
-        $result['preview'] = array();
+        $result['preview'] = [];
 
         foreach ($previews as $Image) {
             /* @var $Image \DOMElement */
@@ -664,7 +666,7 @@ class XML
 
         // provider
         $provider           = $Path->query("//quiqqer/package/provider");
-        $result['provider'] = array();
+        $result['provider'] = [];
 
         foreach ($provider as $Provider) {
             /* @var $Provider \DOMElement */
@@ -677,7 +679,7 @@ class XML
                 }
 
                 if (!isset($result['provider'][$Node->nodeName])) {
-                    $result['provider'][$Node->nodeName] = array();
+                    $result['provider'][$Node->nodeName] = [];
                 }
 
                 $result['provider'][$Node->nodeName][] = $Node->getAttribute('src');
@@ -702,10 +704,10 @@ class XML
         $panels = $Path->query("//quiqqer/panels/panel");
 
         if (!$panels->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($i = 0, $len = $panels->length; $i < $len; $i++) {
             $result[] = DOM::parsePanelToArray(
@@ -729,11 +731,11 @@ class XML
         $permissions = $Dom->getElementsByTagName('permissions');
 
         if (!$permissions || !$permissions->length) {
-            return array();
+            return [];
         }
 
         $package = str_replace(
-            array(OPT_DIR, '/permissions.xml'),
+            [OPT_DIR, '/permissions.xml'],
             '',
             $file
         );
@@ -745,10 +747,10 @@ class XML
         $permission  = $Permissions->getElementsByTagName('permission');
 
         if (!$permission || !$permission->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($i = 0; $i < $permission->length; $i++) {
             $data = DOM::parsePermissionToArray(
@@ -775,7 +777,7 @@ class XML
     {
         $Dom  = self::getDomFromXml($file);
         $Path = new \DOMXPath($Dom);
-        $list = array();
+        $list = [];
 
         $categories = $Path->query("//settings/window/categories/category");
 
@@ -835,10 +837,10 @@ class XML
         $windows = $Path->query("//quiqqer/settings/window");
 
         if (!$windows->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($i = 0, $len = $windows->length; $i < $len; $i++) {
             $result[] = $windows->item($i);
@@ -862,10 +864,10 @@ class XML
         $windows = $Path->query("//quiqqer/project/settings/window");
 
         if (!$windows->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($i = 0, $len = $windows->length; $i < $len; $i++) {
             $result[] = $windows->item($i);
@@ -888,7 +890,7 @@ class XML
         $sites = $Dom->getElementsByTagName('site');
 
         if (!$sites->length) {
-            return array();
+            return [];
         }
 
         /* @var $Sites \DOMElement */
@@ -896,14 +898,14 @@ class XML
         $types = $Sites->getElementsByTagName('types');
 
         if (!$types->length) {
-            return array();
+            return [];
         }
 
         /* @var $Types \DOMElement */
         $Types    = $types->item(0);
         $typeList = $Types->getElementsByTagName('type');
 
-        $result = array();
+        $result = [];
 
         for ($c = 0; $c < $typeList->length; $c++) {
             $Type = $typeList->item($c);
@@ -944,7 +946,7 @@ class XML
         $window = $Dom->getElementsByTagName('window');
 
         if (!$window->length) {
-            return array();
+            return [];
         }
 
         return DOM::getTabs($window->item(0));
@@ -960,7 +962,7 @@ class XML
         $window = $Path->query("//site/window");
 
         if (!$window->length) {
-            return array();
+            return [];
         }
 
         return DOM::getTabs($window->item(0));
@@ -979,7 +981,7 @@ class XML
         $template = $Dom->getElementsByTagName('template_engines');
 
         if (!$template->length) {
-            return array();
+            return [];
         }
 
         /* @var $Template \DOMElement */
@@ -987,10 +989,10 @@ class XML
         $engines  = $Template->getElementsByTagName('engine');
 
         if (!$engines->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($c = 0; $c < $engines->length; $c++) {
             $Engine = $engines->item($c);
@@ -1018,7 +1020,7 @@ class XML
         $editors = $Dom->getElementsByTagName('editors');
 
         if (!$editors->length) {
-            return array();
+            return [];
         }
 
         /* @var $Editors \DOMElement */
@@ -1026,10 +1028,10 @@ class XML
         $list    = $Editors->getElementsByTagName('editor');
 
         if (!$list->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($c = 0; $c < $list->length; $c++) {
             $Editor = $list->item($c);
@@ -1057,10 +1059,10 @@ class XML
         $widgets = $Dom->getElementsByTagName('widgets');
 
         if (!$widgets->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         for ($w = 0; $w < $widgets->length; $w++) {
             $Widgets = $widgets->item($w);
@@ -1226,6 +1228,17 @@ class XML
 
         $Config->save();
 
+        if (strpos($file, 'quiqqer/quiqqer/admin/settings/cache.xml') !== false) {
+            // if cache settings are set, this must be in the global conf
+            // workaround for quiqqer/quiqqer#726
+            $noCache = $Config->get('general', 'nocache');
+
+            self::setConfigFromXml(
+                OPT_DIR.'quiqqer/quiqqer/admin/settings/conf.xml',
+                ['globals' => ['cache' => $noCache ? 0 : 1]]
+            );
+        }
+
         // @todo muss in paket klasse ausgelagert werden
         // package config?
         if (strpos($file, OPT_DIR) !== false) {
@@ -1235,7 +1248,7 @@ class XML
             try {
                 $Package = QUI::getPackage($_file[0].'/'.$_file[1]);
 
-                QUI::getEvents()->fireEvent('packageConfigSave', array($Package, $params));
+                QUI::getEvents()->fireEvent('packageConfigSave', [$Package, $params]);
             } catch (QUI\Exception $Exception) {
             }
         }
@@ -1316,9 +1329,9 @@ class XML
                 }
 
                 if ($table['no-site-reference'] !== true && $noLang === false) {
-                    $fields = array(
+                    $fields = [
                                   'id' => 'bigint(20) NOT NULL PRIMARY KEY'
-                              ) + $fields;
+                              ] + $fields;
                 }
 
                 // Projekte durchgehen

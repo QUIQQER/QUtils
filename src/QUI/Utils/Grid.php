@@ -21,7 +21,7 @@ class Grid extends QUI\QDOM
      *
      * @param array $params - optional
      */
-    public function __construct($params = array())
+    public function __construct($params = [])
     {
         // defaults
         $this->setAttribute('max', 50);
@@ -37,9 +37,9 @@ class Grid extends QUI\QDOM
      *
      * @return array
      */
-    public function parseDBParams($params = array())
+    public function parseDBParams($params = [])
     {
-        $_params = array();
+        $query = [];
 
         if (isset($params['perPage'])) {
             $this->setAttribute('max', $params['perPage']);
@@ -53,16 +53,14 @@ class Grid extends QUI\QDOM
             $page  = ($this->getAttribute('page') - 1);
             $start = $page * $this->getAttribute('max');
 
-            $_params['limit'] = $start.','.$this->getAttribute('max');
+            $query['limit'] = $start.','.$this->getAttribute('max');
         }
 
         if (isset($params['limit'])) {
-            $_params['limit'] = $params['limit'];
+            $query['limit'] = $params['limit'];
         }
 
-        if (isset($params['sortOn'])
-            && !empty($params['sortOn'])
-        ) {
+        if (isset($params['sortOn']) && !empty($params['sortOn'])) {
             $sortBy = '';
             $sortOn = $params['sortOn'];
 
@@ -74,10 +72,10 @@ class Grid extends QUI\QDOM
                 $sortBy = '';
             }
 
-            $_params['order'] = $sortOn.' '.$sortBy;
+            $query['order'] = $sortOn.' '.$sortBy;
         }
 
-        return $_params;
+        return $query;
     }
 
     /**
@@ -94,11 +92,11 @@ class Grid extends QUI\QDOM
             $count = count($data);
         }
 
-        return array(
+        return [
             'data'  => $data,
             'page'  => $this->getAttribute('page'),
             'total' => $count
-        );
+        ];
     }
 
     /**
@@ -116,10 +114,10 @@ class Grid extends QUI\QDOM
         $end   = $page * $limit;
         $start = $end - $limit;
 
-        return array(
+        return [
             'data'  => array_slice($data, $start, $limit),
             'page'  => $page,
             'total' => $count
-        );
+        ];
     }
 }

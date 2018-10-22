@@ -14,7 +14,6 @@ namespace QUI\Utils\System;
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qui.system
  */
-
 class Debug
 {
     /**
@@ -22,7 +21,7 @@ class Debug
      *
      * @var array
      */
-    public static $times = array();
+    public static $times = [];
 
     /**
      * create the output flag
@@ -49,11 +48,11 @@ class Debug
             return;
         }
 
-        $params         = array();
+        $params         = [];
         $params['time'] = microtime(true);
 
         if (self::$debug_memory) {
-            $params['memory'] = ' MEMORY: ' . memory_get_usage();
+            $params['memory'] = ' MEMORY: '.memory_get_usage();
         }
 
         if (is_string($step)) {
@@ -74,7 +73,7 @@ class Debug
             return '';
         }
 
-        $str = $_SERVER['REQUEST_URI'] . "\n\n";
+        $str = $_SERVER['REQUEST_URI']."\n\n";
 
         $before_time = false;
         $before_key  = false;
@@ -98,15 +97,15 @@ class Debug
                 $key = $params['step'];
             }
 
-            $str .= $before_key . ' -> ' . $key . ' : ';
-            $str .= sprintf('%.3f', ($params['time'] - $before_time)) . "\n";
+            $str .= $before_key.' -> '.$key.' : ';
+            $str .= sprintf('%.3f', ($params['time'] - $before_time))."\n";
 
             $before_time = $params['time'];
             $before_key  = $key;
         }
 
-        $str .= "\nOverall: " . sprintf('%.3f', ($before_time - $start))
-                . " Sekunden\n\n";
+        $str .= "\nOverall: ".sprintf('%.3f', ($before_time - $start))
+                ." Sekunden\n\n";
 
         return $str;
     }
