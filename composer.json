@@ -1,7 +1,7 @@
 {
   "name": "quiqqer\/utils",
   "type": "library",
-  "description": "QUIQQER Utils - helper Classes",
+  "description": "Helper libraries from and for QUIQQER.",
   "version": "dev-dev",
   "license": "LGPL-3.0+",
   "authors": [
