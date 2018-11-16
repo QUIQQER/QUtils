@@ -73,14 +73,14 @@ class DOM
                 $type = 'xml';
             }
 
-            $ToolbarTab = new Toolbar\Tab(array(
+            $ToolbarTab = new Toolbar\Tab([
                 'name'    => $Tab->getAttribute('name'),
                 'text'    => $text,
                 'image'   => $image,
                 'plugin'  => $plugin,
                 'wysiwyg' => $type == 'wysiwyg' ? true : false,
                 'type'    => $type
-            ));
+            ]);
 
             foreach ($Tab->attributes as $attr) {
                 $name = $attr->nodeName;
@@ -176,14 +176,14 @@ class DOM
      */
     public static function dbTableDomToArray(\DOMNode $Table)
     {
-        $result = array(
+        $result = [
             'suffix'            => $Table->getAttribute('name'),
             'engine'            => $Table->getAttribute('engine'),
             'no-site-reference' => false,
             'no-project-lang'   => false,
             'no-auto-update'    => false,
             'site-types'        => false
-        );
+        ];
 
         if ((int)$Table->getAttribute('no-site-reference') === 1) {
             $result['no-site-reference'] = true;
@@ -204,7 +204,7 @@ class DOM
             );
         }
 
-        $_fields = array();
+        $_fields = [];
 
         // table fields
         $fields = $Table->getElementsByTagName('field');
@@ -308,9 +308,9 @@ class DOM
             }
         }
 
-        return array(
+        return [
             trim($Field->nodeValue) => $str
-        );
+        ];
     }
 
     /**
@@ -322,9 +322,9 @@ class DOM
      */
     public static function dbPrimaryDomToArray(\DOMNode $Primary)
     {
-        return array(
+        return [
             'primary' => explode(',', $Primary->nodeValue)
-        );
+        ];
     }
 
     /**
@@ -336,9 +336,9 @@ class DOM
      */
     public static function dbUniqueDomToArray(\DOMNode $Unique)
     {
-        return array(
+        return [
             'unique' => explode(',', $Unique->nodeValue)
-        );
+        ];
     }
 
     /**
@@ -350,9 +350,9 @@ class DOM
      */
     public static function dbIndexDomToArray(\DOMNode $Index)
     {
-        return array(
+        return [
             'index' => [trim($Index->nodeValue)]
-        );
+        ];
     }
 
     /**
@@ -364,9 +364,9 @@ class DOM
      */
     public static function dbAutoIncrementDomToArray(\DOMNode $AI)
     {
-        return array(
+        return [
             'auto_increment' => trim($AI->nodeValue)
-        );
+        ];
     }
 
     /**
@@ -378,9 +378,9 @@ class DOM
      */
     public static function dbAutoFullextDomToArray(\DOMNode $Fulltext)
     {
-        return array(
+        return [
             'fulltext' => trim($Fulltext->nodeValue)
-        );
+        ];
     }
 
     /**
@@ -394,10 +394,10 @@ class DOM
         $tablist = $DOMNode->getElementsByTagName('tab');
 
         if (!$tablist->length) {
-            return array();
+            return [];
         }
 
-        $tabs = array();
+        $tabs = [];
 
         for ($c = 0; $c < $tablist->length; $c++) {
             $Tab = $tablist->item($c);
@@ -420,12 +420,10 @@ class DOM
      *        $Object - string = path to user.xml File
      *
      * @return string
-     *
-     * @throws QUI\Exception
      */
     public static function getTabHTML($name, $Object)
     {
-        $tabs = array();
+        $tabs = [];
 
         if (is_string($Object)) {
             if (file_exists($Object)) {
@@ -468,12 +466,12 @@ class DOM
                             }
 
 
-                            $Engine->assign(array(
+                            $Engine->assign([
                                 'Site'    => $Object,
                                 'Project' => $Object->getProject(),
                                 'Plugins' => QUI::getPluginManager(),
                                 'QUI'     => new QUI()
-                            ));
+                            ]);
 
                             return $Engine->fetch($file).$extra;
                         }
@@ -512,10 +510,10 @@ class DOM
         $btnlist = $Dom->getElementsByTagName('categories');
 
         if (!$btnlist->length) {
-            return array();
+            return [];
         }
 
-        $result   = array();
+        $result   = [];
         $children = $btnlist->item(0)->childNodes;
 
         for ($i = 0; $i < $children->length; $i++) {
@@ -619,10 +617,10 @@ class DOM
         $Element = $loc->item(0);
 
         if ($translate === false) {
-            return array(
+            return [
                 $Element->getAttribute('group'),
                 $Element->getAttribute('var')
-            );
+            ];
         }
 
         return QUI::getLocale()->get(
@@ -645,14 +643,14 @@ class DOM
         $Styles = $Path->query("//wysiwyg/styles/style");
 
         if (!$Styles->length) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         /* @var $Style \DOMElement */
         foreach ($Styles as $Style) {
-            $attributeList = array();
+            $attributeList = [];
             $attributes    = $Style->getElementsByTagName('attribute');
 
             /* @var $Attribute \DOMElement */
@@ -661,11 +659,11 @@ class DOM
                     = trim($Attribute->nodeValue);
             }
 
-            $result[] = array(
+            $result[] = [
                 'text'       => self::getTextFromNode($Style, $translate),
                 'element'    => $Style->getAttribute('element'),
                 'attributes' => $attributeList
-            );
+            ];
         }
 
         return $result;
@@ -759,19 +757,19 @@ class DOM
             $Settings = $settings->item(0);
 
             if (!$settings->length) {
-                return array();
+                return [];
             }
         }
 
         $configs = $Settings->getElementsByTagName('config');
 
         if (!$configs->length) {
-            return array();
+            return [];
         }
 
         $projects = QUI\Projects\Manager::getProjects();
         $children = $configs->item(0)->childNodes;
-        $result   = array();
+        $result   = [];
 
         for ($i = 0; $i < $children->length; $i++) {
             /* @var $Param \DOMElement */
@@ -801,10 +799,10 @@ class DOM
                     foreach ($custom as $Custom) {
                         $customParam = trim($Custom->nodeValue);
 
-                        $result[$name][$customParam] = array(
+                        $result[$name][$customParam] = [
                             'type'    => 'string',
                             'default' => ''
-                        );
+                        ];
                     }
                 }
             }
@@ -893,7 +891,7 @@ class DOM
     public static function parsePanelToArray(\DOMNode $Node)
     {
         if ($Node->nodeName != 'panel') {
-            return array();
+            return [];
         }
 
         $require = $Node->getAttribute('require');
@@ -917,12 +915,12 @@ class DOM
             $image = self::parseVar($Images->item(0)->nodeValue);
         }
 
-        return array(
+        return [
             'image'   => $image,
             'title'   => $title,
             'text'    => $text,
             'require' => $require
-        );
+        ];
     }
 
     /**
@@ -935,7 +933,7 @@ class DOM
     public static function parsePermissionToArray(\DOMNode $Node)
     {
         if ($Node->nodeName != 'permission') {
-            return array();
+            return [];
         }
 
         $perm    = $Node->getAttribute('name');
@@ -950,12 +948,12 @@ class DOM
         $type = QUI\Permissions\Manager::parseType($Node->getAttribute('type'));
         $area = QUI\Permissions\Manager::parseArea($Node->getAttribute('area'));
 
-        return array(
+        return [
             'name'         => $perm,
             'area'         => $area,
             'type'         => $type,
             'defaultvalue' => $default
-        );
+        ];
     }
 
     /**
@@ -965,8 +963,6 @@ class DOM
      * @param $Plugin - optional
      *
      * @return string
-     *
-     * @throws QUI\Exception
      */
     public static function parseCategoryToHTML($Category, $Plugin = false)
     {
@@ -980,7 +976,12 @@ class DOM
             return '';
         }
 
-        $Engine = QUI::getTemplateManager()->getEngine(true);
+        try {
+            $Engine = QUI::getTemplateManager()->getEngine(true);
+        } catch (QUI\Exception $Exception) {
+            return '';
+        }
+
         $result = '';
 
         for ($c = 0; $c < $children->length; $c++) {
@@ -998,11 +999,11 @@ class DOM
                 $file = self::parseVar($Entry->nodeValue);
 
                 if (file_exists($file)) {
-                    $Engine->assign(array(
+                    $Engine->assign([
                         'Plugin'  => $Plugin,
                         'Plugins' => QUI::getPluginManager(),
                         'QUI'     => new QUI()
-                    ));
+                    ]);
 
                     $result .= $Engine->fetch($file);
                 }
@@ -1087,11 +1088,11 @@ class DOM
                             $file = self::parseVar($Set->nodeValue);
 
                             if (file_exists($file)) {
-                                $Engine->assign(array(
+                                $Engine->assign([
                                     'Plugin'  => $Plugin,
                                     'Plugins' => QUI::getPluginManager(),
                                     'QUI'     => new QUI()
-                                ));
+                                ]);
 
                                 $result .= $Engine->fetch($file);
                             }
@@ -1153,7 +1154,7 @@ class DOM
         }
 
         $type    = 'text';
-        $classes = array();
+        $classes = [];
         $dataQui = '';
         $data    = '';
 
@@ -1308,7 +1309,7 @@ class DOM
      */
     public static function parseConfs($confs)
     {
-        $result = array();
+        $result = [];
 
         foreach ($confs as $Conf) {
             /* @var $Conf \DOMElement */
@@ -1330,10 +1331,10 @@ class DOM
                 );
             }
 
-            $result[$Conf->getAttribute('name')] = array(
+            $result[$Conf->getAttribute('name')] = [
                 'type'    => $type,
                 'default' => $default
-            );
+            ];
         }
 
         return $result;
@@ -1348,7 +1349,7 @@ class DOM
      */
     public static function parseVar($value)
     {
-        $replaces = array(
+        $replaces = [
             URL_BIN_DIR,
             URL_OPT_DIR,
             URL_USR_DIR,
@@ -1358,13 +1359,13 @@ class DOM
             SYS_DIR,
             CMS_DIR,
             USR_DIR
-        );
+        ];
 
 
         $value = trim($value);
 
         $value = str_replace(
-            array(
+            [
                 'URL_BIN_DIR/',
                 'URL_OPT_DIR/',
                 'URL_USR_DIR/',
@@ -1374,13 +1375,13 @@ class DOM
                 'SYS_DIR/',
                 'CMS_DIR/',
                 'USR_DIR/'
-            ),
+            ],
             $replaces,
             $value
         );
 
         $value = str_replace(
-            array(
+            [
                 'URL_BIN_DIR',
                 'URL_OPT_DIR',
                 'URL_USR_DIR',
@@ -1390,7 +1391,7 @@ class DOM
                 'SYS_DIR',
                 'CMS_DIR',
                 'USR_DIR'
-            ),
+            ],
             $replaces,
             $value
         );
