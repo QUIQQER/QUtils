@@ -36,9 +36,12 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function __construct($children = array(), $allowed = [])
     {
-        if (is_array($allowed)) {
-            $this->allowed = $allowed;
+        if (!is_array($allowed)) {
+            $allowed = [$allowed];
         }
+
+        $this->allowed = $allowed;
+
 
         foreach ($children as $Child) {
             $this->append($Child);
