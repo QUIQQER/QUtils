@@ -63,14 +63,20 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     //region Collection methods
 
     /**
-     * Append an allowed child to the collection
+     * Append an allowed child to the collection.
+     * If $key is set, it's placed at the position specified in $key.
      *
      * @param mixed $Child
+     * @param int $key
      */
-    public function append($Child)
+    public function append($Child, $key = null)
     {
         if ($this->isAllowed($Child)) {
-            $this->children[] = $Child;
+            if (is_null($key)) {
+                $this->children[] = $Child;
+            } else {
+                $this->children[$key] = $Child;
+            }
         }
     }
 
@@ -246,7 +252,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     {
         return in_array($Child, $this->children);
     }
-    
+
     /**
      * Converts the collection to an array
      *
