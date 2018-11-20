@@ -142,7 +142,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function get($key)
     {
-        if (empty($this->children) || !isset($this->children[$key])) {
+        if (empty($this->children) || !$this->isSet($key)) {
             throw new Exception('Item not found, Collection ist empty');
         }
 
