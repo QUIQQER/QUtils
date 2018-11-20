@@ -201,6 +201,19 @@ class Collection implements \IteratorAggregate, \ArrayAccess
         return !!$this->length();
     }
 
+
+    /**
+     * Returns true if an element is set at the given key.
+     *
+     * @param $key
+     *
+     * @return boolean
+     */
+    public function isSet($key)
+    {
+        return isset($this->children[$key]);
+    }
+
     /**
      * Returns last children in the collection or throws Exception
      *
