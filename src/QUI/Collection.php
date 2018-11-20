@@ -237,6 +237,17 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     }
 
     /**
+     * Returns whether the collection contains the given child or not.
+     *
+     * @param $Child
+     * @return bool
+     */
+    public function contains($Child)
+    {
+        return in_array($Child, $this->children);
+    }
+    
+    /**
      * Converts the collection to an array
      *
      * @return array
