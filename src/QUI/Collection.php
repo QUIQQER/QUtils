@@ -32,9 +32,14 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * Collection constructor.
      *
      * @param array $children - list of children
+     * @param array $allowed - list of allowed (class-)types
      */
-    public function __construct($children = array())
+    public function __construct($children = array(), $allowed = [])
     {
+        if (is_array($allowed)) {
+            $this->allowed = $allowed;
+        }
+
         foreach ($children as $Child) {
             $this->append($Child);
         }
