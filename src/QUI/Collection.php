@@ -62,7 +62,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             $allowed = $params['allowed'];
         }
 
-        return new Collection($children);
+        return new Collection($children, $allowed);
     }
 
     //region Collection methods
