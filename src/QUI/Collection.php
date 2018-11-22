@@ -47,14 +47,9 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public static function getInstance($params = array())
     {
         $children = array();
-        $allowed  = array();
 
         if (isset($params['children']) && is_array($params['children'])) {
             $children = $params['children'];
-        }
-
-        if (isset($params['allowed']) && is_array($params['allowed'])) {
-            $allowed = $params['allowed'];
         }
 
         return new Collection($children);
