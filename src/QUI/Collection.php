@@ -9,6 +9,8 @@ namespace QUI;
 /**
  * Class Collection
  * Collects children from a specific class / classes
+ * To specify allowed types you should extend this class.
+ * Then set the $allowed variable there.
  *
  * @package QUI
  */
@@ -22,7 +24,8 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     protected $children = array();
 
     /**
-     * List of allowed children classes
+     * List of allowed children classes.
+     * You have to extend this class to set the allowed types.
      *
      * @var array
      */
