@@ -52,7 +52,8 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             $children = $params['children'];
         }
 
-        return new Collection($children);
+        $class = get_called_class();
+        return new $class($children);
     }
 
     //region Collection methods
