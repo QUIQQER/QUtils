@@ -321,11 +321,14 @@ class Collection implements \IteratorAggregate, \ArrayAccess
 
     /**
      * @param mixed $offset
+     *
      * @return bool
+     *
+     * @deprecated Use isSet($offset) instead.
      */
     public function offsetExists($offset)
     {
-        return isset($this->children[$offset]);
+        return $this->isSet($offset);
     }
 
     /**
@@ -340,18 +343,12 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     /**
      * @param mixed $offset
      * @param mixed $Child
+     *
+     * @deprecated Use append($Child, $offset) instead
      */
     public function offsetSet($offset, $Child)
     {
-        if ($this->isAllowed($Child) === false) {
-            return;
-        }
-
-        if (is_null($offset)) {
-            $this->children[] = $Child;
-        } else {
-            $this->children[$offset] = $Child;
-        }
+        $this->append($Child, $offset);
     }
 
     /**
