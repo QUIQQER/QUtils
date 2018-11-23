@@ -9,6 +9,8 @@ namespace QUI;
 /**
  * Class Collection
  * Collects children from a specific class / classes
+ * To specify allowed types you should extend this class.
+ * Then set the $allowed variable there.
  *
  * @package QUI
  */
@@ -22,7 +24,8 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     protected $children = array();
 
     /**
-     * List of allowed children classes
+     * List of allowed children classes.
+     * You have to extend this class to set the allowed types.
      *
      * @var array
      */
@@ -47,30 +50,32 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public static function getInstance($params = array())
     {
         $children = array();
-        $allowed  = array();
 
         if (isset($params['children']) && is_array($params['children'])) {
             $children = $params['children'];
         }
 
-        if (isset($params['allowed']) && is_array($params['allowed'])) {
-            $allowed = $params['allowed'];
-        }
-
-        return new Collection($children);
+        $class = get_called_class();
+        return new $class($children);
     }
 
     //region Collection methods
 
     /**
-     * Append an allowed child to the collection
+     * Append an allowed child to the collection.
+     * If $key is set, it's placed at the position specified in $key.
      *
      * @param mixed $Child
+     * @param int $key
      */
-    public function append($Child)
+    public function append($Child, $key = null)
     {
         if ($this->isAllowed($Child)) {
-            $this->children[] = $Child;
+            if (is_null($key)) {
+                $this->children[] = $Child;
+            } else {
+                $this->children[$key] = $Child;
+            }
         }
     }
 
@@ -174,7 +179,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function isEmpty()
     {
-        return !$this->length();
+        return empty($this->children);
     }
 
     /**
@@ -184,7 +189,20 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function isNotEmpty()
     {
-        return !!$this->length();
+        return !empty($this->children);
+    }
+
+
+    /**
+     * Returns true if an element is set at the given key.
+     *
+     * @param $key
+     *
+     * @return boolean
+     */
+    public function isSet($key)
+    {
+        return isset($this->children[$key]);
     }
 
     /**
@@ -234,6 +252,17 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public function sort(callable $function)
     {
         usort($this->children, $function);
+    }
+
+    /**
+     * Returns whether the collection contains the given child or not.
+     *
+     * @param $Child
+     * @return bool
+     */
+    public function contains($Child)
+    {
+        return in_array($Child, $this->children);
     }
 
     /**
