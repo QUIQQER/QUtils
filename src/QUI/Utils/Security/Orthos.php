@@ -47,7 +47,7 @@ class Orthos
      *
      * @return string
      */
-    public static function clearNoneCharacters($str = '', $allowedList = array())
+    public static function clearNoneCharacters($str = '', $allowedList = [])
     {
         $chars = 'a-zA-Z0-9';
 
@@ -68,10 +68,10 @@ class Orthos
     public static function clearArray($data)
     {
         if (!is_array($data)) {
-            return array();
+            return [];
         }
 
-        $cleanData = array();
+        $cleanData = [];
 
         foreach ($data as $key => $str) {
             if (is_array($data[$key])) {
@@ -94,7 +94,25 @@ class Orthos
      */
     public static function clearPath($path)
     {
-        return str_replace(array('../', '..'), '', $path);
+        return str_replace(['../', '..'], '', $path);
+    }
+
+    /**
+     * cleans a file name
+     * characters that may become dangerous for file names, will be removed
+     *
+     * @param $filename
+     * @return mixed
+     */
+    public static function clearFilename($filename)
+    {
+        $filename = str_replace(
+            [" ", '"', "'", "&", "/", "\\", "?", "#"],
+            '_',
+            $filename
+        );
+
+        return $filename;
     }
 
     /**
@@ -382,7 +400,7 @@ class Orthos
     {
         $split = explode('@', $mail);
 
-        $adresses = array(
+        $adresses = [
             'anonbox.net',
             'bumpymail.com',
             'centermail.com',
@@ -440,7 +458,7 @@ class Orthos
             'spoofmail.de',
             'fivemail.de',
             'giantmail.de'
-        );
+        ];
 
         if (!isset($split[1])) {
             return false;
@@ -477,7 +495,7 @@ class Orthos
         }
         // alle zeichen undd HEX codes werden mit leer ersetzt
         $value = str_replace(
-            array(
+            [
                 '<',
                 '%3C',
                 '>',
@@ -488,7 +506,7 @@ class Orthos
                 '%5C',
                 '\'',
                 '%27',
-            ),
+            ],
             '',
             $value
         );
@@ -511,7 +529,7 @@ class Orthos
 
         // special reserved url characters
         // @see https://de.wikipedia.org/wiki/URL-Encoding#Relevante_ASCII-Zeichen_in_.25-Darstellung
-        $reservedChars = array(
+        $reservedChars = [
             "!",
             "#",
             "$",
@@ -531,7 +549,7 @@ class Orthos
             "@",
             "[",
             "]"
-        );
+        ];
 
         // replace special chars with replacement character
         $str = str_replace($reservedChars, $replace, $str);
@@ -543,7 +561,7 @@ class Orthos
         $str = trim($str, $replace);
 
         // reduce multiple replacement chars in a row
-        $str = preg_replace('#\\' . $replace . '{2,}#i', $replace, $str);
+        $str = preg_replace('#\\'.$replace.'{2,}#i', $replace, $str);
 
         return StringHelper::toLower($str);
     }
@@ -557,6 +575,7 @@ class Orthos
     public static function escapeHTML($str)
     {
         $str = htmlspecialchars($str);
+
         return $str;
     }
 }

@@ -21,7 +21,7 @@ class Url
      *
      * @var array
      */
-    public static $Curls = array();
+    public static $Curls = [];
 
     /**
      * Get the Curl Objekt
@@ -32,10 +32,10 @@ class Url
      * @return resource
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
-    public static function curl($url, $curlparams = array())
+    public static function curl($url, $curlparams = [])
     {
         $url  = str_replace(' ', '+', $url); // URL Fix
-        $hash = md5(serialize($url) . serialize($curlparams));
+        $hash = md5(serialize($url).serialize($curlparams));
 
         if (isset(self::$Curls[$hash]) && self::$Curls[$hash]) {
             return self::$Curls[$hash];
@@ -67,10 +67,10 @@ class Url
      * @param string $url
      * @param array $curlparams - see Utils_Request_Url::Curl (optional)
      *
-     * @return array
+     * @return mixed
      * @throws \QUI\Exception
      */
-    public static function get($url, $curlparams = array())
+    public static function get($url, $curlparams = [])
     {
         $Curl = self::curl($url, $curlparams);
         $data = self::exec($Curl);
@@ -78,7 +78,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new QUI\Exception('Fehler bei der Anfrage ' . $error);
+            throw new QUI\Exception('Fehler bei der Anfrage '.$error);
         }
 
         curl_close($Curl);
@@ -95,9 +95,13 @@ class Url
      *
      * @return boolean
      */
-    public static function search($url, $search, $curlparams = array())
+    public static function search($url, $search, $curlparams = [])
     {
-        $content = self::get($url, $curlparams);
+        try {
+            $content = self::get($url, $curlparams);
+        } catch (QUI\Exception $Exception) {
+            return false;
+        }
 
         return strpos($content, $search) === false ? false : true;
     }
@@ -112,7 +116,7 @@ class Url
      * @return mixed
      * @throws \QUI\Exception
      */
-    public static function getInfo($url, $info = false, $curlparams = array())
+    public static function getInfo($url, $info = false, $curlparams = [])
     {
         $Curl = self::curl($url, $curlparams);
 
@@ -127,7 +131,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new QUI\Exception('Fehler bei der Anfrage ' . $error);
+            throw new QUI\Exception('Fehler bei der Anfrage '.$error);
         }
 
         curl_close($Curl);
