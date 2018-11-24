@@ -56,6 +56,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
         }
 
         $class = get_called_class();
+
         return new $class($children);
     }
 
@@ -273,6 +274,22 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public function toArray()
     {
         return $this->children;
+    }
+
+
+    /**
+     * Returns a new collection filtered by the function passed as $callback
+     * Uses array_filter function internally.
+     * @see http://php.net/manual/de/function.array-filter.php
+     *
+     * @param callable $callback
+     * @param int $flag
+     *
+     * @return Collection
+     */
+    public function filter(callable $callback, int $flag = 0)
+    {
+        return new $this(array_filter($this->children, $callback, $flag));
     }
 
     //endregion
