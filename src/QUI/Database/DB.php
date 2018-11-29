@@ -421,6 +421,8 @@ class DB extends QUI\QDOM
      * @param array $params (see at createQuery())
      * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
+     * @throws QUI\Database\Exception
+     *
      * @return array
      */
     public function fetch(
@@ -493,6 +495,8 @@ class DB extends QUI\QDOM
      * @param array $data
      * @param array $where
      *
+     * @throws QUI\Database\Exception
+     *
      * @return \PDOStatement
      */
     public function update($table, $data, $where)
@@ -510,6 +514,8 @@ class DB extends QUI\QDOM
      * @param string $table
      * @param array $data
      *
+     * @throws QUI\Database\Exception
+     *
      * @return \PDOStatement
      */
     public function insert($table, $data)
@@ -525,6 +531,8 @@ class DB extends QUI\QDOM
      *
      * @param string $table - Name of the Database Table
      * @param array $where - data field, where statement
+     *
+     * @throws QUI\Database\Exception
      *
      * @return \PDOStatement
      */
