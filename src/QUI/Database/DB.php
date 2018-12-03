@@ -344,7 +344,10 @@ class DB extends QUI\QDOM
      * @param array $params (see at createQuery())
      *
      * @return \PDOStatement
+     *
      * @throws QUI\Database\Exception
+     * @throws QUI\ExceptionStack
+     * @throws QUI\Exception
      */
     public function exec(array $params = array())
     {
