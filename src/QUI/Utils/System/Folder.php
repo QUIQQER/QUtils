@@ -85,7 +85,12 @@ class Folder
             );
 
             foreach ($Iterator as $Object) {
-                $folderSize += $Object->getSize();
+                try {
+                    $folderSize += $Object->getSize();
+                } catch (\RuntimeException $RuntimeException) {
+                    // If getSize() fails (e.g. at broken symlinks) we get here
+                    continue;
+                }
             }
         }
 
