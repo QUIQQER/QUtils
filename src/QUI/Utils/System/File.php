@@ -995,25 +995,14 @@ class File
     /**
      * Return the size of an folder
      *
+     * @deprecated Use `QUI\Utils\System\Folder::getFolderSize($path)` instead.
+     *
      * @param $path
      * @return int
      */
     public static function getDirectorySize($path)
     {
-        $bytesTotal = 0;
-        $path       = realpath($path);
-
-        if ($path !== false && $path != '' && file_exists($path)) {
-            $Iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
-            );
-
-            foreach ($Iterator as $Object) {
-                $bytesTotal += $Object->getSize();
-            }
-        }
-
-        return $bytesTotal;
+        return Folder::getFolderSize($path, true);
     }
 
     /**
