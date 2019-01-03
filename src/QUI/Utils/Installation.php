@@ -6,6 +6,9 @@
 
 namespace QUI\Utils;
 
+use QUI\Cache\Manager;
+use QUI\Exception;
+use QUI\System\Log;
 use QUI\Utils\System\Folder;
 
 /**
@@ -14,6 +17,12 @@ use QUI\Utils\System\Folder;
  */
 class Installation
 {
+    /** @var string Key used to store the amount of files in cache */
+    const CACHE_KEY_FILE_COUNT = "installation_file_count";
+
+    /** @var string Key used to store the timestamp of when the files where counted */
+    const CACHE_KEY_FILE_COUNT_TIMESTAMP = "installation_file_count_timestamp";
+
     /**
      * Returns the size of the whole QUIQQER installation in bytes.
      * By default the value is returned from cache.
@@ -42,8 +51,76 @@ class Installation
     }
 
 
-    public static function countAllFiles($force = false)
+    /**
+     * Returns how many files are inside the QUIQQER installation.
+     * By default the value is returned from cache.
+     * If there is no value in cache, null is returned, unless you set the force parameter to true.
+     * Only if you really need to get a freshly calculated result, you may set the force parameter to true.
+     * When using the force parameter expect timeouts since the calculation could take a lot of time.
+     *
+     * @param boolean $force - Force a calculation of the folder's size. Values aren't returned from cache. Expect timeouts.
+     *
+     * @return int|null - The amount of files or null if no cached value is present
+     */
+    public static function getAllFileCount($force = false)
     {
-        // TODO: implementieren
+        if ($force) {
+            return self::countAllFiles();
+        }
+
+        try {
+            $fileCount = Manager::get(self::CACHE_KEY_FILE_COUNT);
+        } catch (Exception $Exception) {
+            $fileCount = null;
+        }
+
+        return $fileCount;
+    }
+
+    /**
+     * Returns the timestamp when the files were counted.
+     * Returns null if there is no data in the cache.
+     *
+     * @return int|null
+     */
+    public static function getAllFileCountTimestamp()
+    {
+        try {
+            $timestamp = Manager::get(self::CACHE_KEY_FILE_COUNT_TIMESTAMP);
+        } catch (Exception $Exception) {
+            $timestamp = null;
+        }
+
+        return $timestamp;
+    }
+
+    /**
+     * Counts all files inside the QUIQQER installation folder
+     *
+     * @param boolean $doNotCache - Should the result be stored in cache?
+     *
+     * @return int
+     */
+    protected static function countAllFiles($doNotCache = false)
+    {
+        $fileCount = iterator_count(
+            new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(CMS_DIR, \FilesystemIterator::SKIP_DOTS)
+            )
+        );
+
+        if ($doNotCache) {
+            return $fileCount;
+        }
+
+        // Store the folder size and the current time as timestamp in cache
+        try {
+            Manager::set(self::CACHE_KEY_FILE_COUNT, $fileCount);
+            Manager::set(self::CACHE_KEY_FILE_COUNT_TIMESTAMP, time());
+        } catch (\Exception $Exception) {
+            Log::writeException($Exception);
+        }
+
+        return $fileCount;
     }
 }
