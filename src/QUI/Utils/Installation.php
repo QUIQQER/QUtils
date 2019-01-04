@@ -123,4 +123,40 @@ class Installation
 
         return $fileCount;
     }
+
+    /**
+     * Returns the size of the installation's var/ folder in bytes.
+     * If the first parameter is set to true the var/cache/ folder is excluded.
+     *
+     * By default the value is returned from cache.
+     * If there is no value in cache, null is returned, unless you set the force parameter to true.
+     * Only if you really need to get a freshly calculated result, you may set the force parameter to true.
+     * When using the force parameter expect timeouts since the calculation could take a lot of time.
+     *
+     * @param boolean $excludeCacheFolder - Exclude the var/cache/ folder from the result
+     * @param boolean $force - Force a calculation of the folder's size. Values aren't returned from cache. Expect timeouts.
+     *
+     * @return int|null - The amount of files or null if no cached value is present
+     */
+    public static function getVarFolderSize($excludeCacheFolder = false, $force = false)
+    {
+        $size = Folder::getFolderSize(VAR_DIR, $force);
+
+        if ($size && $excludeCacheFolder) {
+            $size -= Manager::getCacheFolderSize($force);
+        }
+
+        return $size;
+    }
+
+    /**
+     * Returns the timestamp when the whole QUIQQER installation folder's size was stored in cache.
+     * Returns null if there is no data in the cache.
+     *
+     * @return int|null
+     */
+    public static function getVarFolderSizeTimestamp()
+    {
+        return Folder::getFolderSizeTimestamp(VAR_DIR);
+    }
 }
