@@ -56,6 +56,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
         }
 
         $class = get_called_class();
+
         return new $class($children);
     }
 
@@ -275,6 +276,22 @@ class Collection implements \IteratorAggregate, \ArrayAccess
         return $this->children;
     }
 
+
+    /**
+     * Returns a new collection filtered by the function passed as $callback
+     * Uses array_filter function internally.
+     * @see http://php.net/manual/de/function.array-filter.php
+     *
+     * @param callable $callback
+     * @param int $flag
+     *
+     * @return Collection
+     */
+    public function filter(callable $callback, int $flag = 0)
+    {
+        return new $this(array_filter($this->children, $callback, $flag));
+    }
+
     //endregion
 
     //region Helper
@@ -321,11 +338,14 @@ class Collection implements \IteratorAggregate, \ArrayAccess
 
     /**
      * @param mixed $offset
+     *
      * @return bool
+     *
+     * @deprecated Use isSet($offset) instead.
      */
     public function offsetExists($offset)
     {
-        return isset($this->children[$offset]);
+        return $this->isSet($offset);
     }
 
     /**
@@ -340,18 +360,12 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     /**
      * @param mixed $offset
      * @param mixed $Child
+     *
+     * @deprecated Use append($Child, $offset) instead
      */
     public function offsetSet($offset, $Child)
     {
-        if ($this->isAllowed($Child) === false) {
-            return;
-        }
-
-        if (is_null($offset)) {
-            $this->children[] = $Child;
-        } else {
-            $this->children[$offset] = $Child;
-        }
+        $this->append($Child, $offset);
     }
 
     /**
