@@ -405,7 +405,7 @@ class DB extends QUI\QDOM
             $Exception = new QUI\Database\Exception($message, $Exception->getCode());
 
             if (class_exists('QUI\System\Log')) {
-                QUI\System\Log::writeRecursive($Exception);
+                QUI\System\Log::writeException($Exception);
             }
 
             throw $Exception;
