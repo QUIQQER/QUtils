@@ -102,7 +102,7 @@ class Zip
      *
      * @param string[] $files - Paths of the files to zip
      * @param string $zipfile - Path to the zip file (folders have to already exist)
-     * 
+     *
      * @throws QUI\Exception
      */
     public static function zipFiles($files, $zipfile)
@@ -115,7 +115,7 @@ class Zip
             throw new QUI\Exception('cannot open ' . $zipfile);
         }
 
-        if (!is_array($files) || count($files) < 0) {
+        if (!is_array($files) || count($files) == 0) {
             throw new QUI\Exception("You need to specify at least one file to zip in an array");
         }
 
