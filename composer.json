@@ -1,5 +1,5 @@
 {
-  "name": "quiqqer\/utils",
+  "name": "quiqqer/utils",
   "type": "library",
   "description": "Helper libraries from and for QUIQQER.",
   "version": "dev-dev",
@@ -18,7 +18,7 @@
   },
   "require": {
     "php": ">=5.3",
-    "dusank\/knapsack": "8.*"
+    "dusank/knapsack": "8.*"
   },
   "autoload": {
     "psr-4": {
