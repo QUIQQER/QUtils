@@ -1,5 +1,5 @@
 {
-  "name": "quiqqer\/utils",
+  "name": "quiqqer/utils",
   "type": "library",
   "version": "dev-master",
   "description": "Helper libraries from and for QUIQQER.",
@@ -10,6 +10,12 @@
       "email": "leutz@pcsg.de",
       "homepage": "http:\/\/www.pcsg.de",
       "role": "Developer"
+    },
+    {
+      "name": "Jan Wennrich",
+      "email": "support@pcsg.de",
+      "homepage": "https:\/\/www.pcsg.de",
+      "role": "Developer"
     }
   ],
   "support": {
@@ -18,7 +24,7 @@
   },
   "require": {
     "php": ">=5.3",
-    "dusank\/knapsack": "8.*"
+    "dusank/knapsack": "8.*"
   },
   "autoload": {
     "psr-4": {
