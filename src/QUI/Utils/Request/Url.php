@@ -45,10 +45,6 @@ class Url
         curl_setopt($Curl, CURLOPT_URL, $url);
         curl_setopt($Curl, CURLOPT_RETURNTRANSFER, true);
 
-        // ssl
-        curl_setopt($Curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($Curl, CURLOPT_SSL_VERIFYHOST, 0);
-
         curl_setopt($Curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($Curl, CURLOPT_TIMEOUT, 10);
 
