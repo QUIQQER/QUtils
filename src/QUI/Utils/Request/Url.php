@@ -35,7 +35,7 @@ class Url
     public static function curl($url, $curlparams = [])
     {
         $url  = str_replace(' ', '+', $url); // URL Fix
-        $hash = md5(serialize($url).serialize($curlparams));
+        $hash = md5(serialize($url) . serialize($curlparams));
 
         if (isset(self::$Curls[$hash]) && self::$Curls[$hash]) {
             return self::$Curls[$hash];
@@ -74,7 +74,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new QUI\Exception('Fehler bei der Anfrage '.$error);
+            throw new QUI\Exception('Fehler bei der Anfrage ' . $error);
         }
 
         curl_close($Curl);
@@ -127,7 +127,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new QUI\Exception('Fehler bei der Anfrage '.$error);
+            throw new QUI\Exception('Fehler bei der Anfrage ' . $error);
         }
 
         curl_close($Curl);
@@ -178,5 +178,30 @@ class Url
         }
 
         return curl_exec($Curl);
+    }
+
+    /**
+     * Returns if a given URL is reachable.
+     * Reachable means that the return code equals 200.
+     *
+     * @param $url
+     *
+     * @return bool
+     */
+    public static function isReachable($url)
+    {
+        $curlParams = [
+            CURLOPT_HEADER         => true,
+            CURLOPT_NOBODY         => true,
+            CURLOPT_FOLLOWLOCATION => true
+        ];
+
+        try {
+            $returnCode = QUI\Utils\Request\Url::getInfo($url, CURLINFO_HTTP_CODE, $curlParams);
+        } catch (QUI\Exception $exception) {
+            return false;
+        }
+
+        return $returnCode == 200;
     }
 }
