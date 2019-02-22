@@ -197,10 +197,11 @@ class DB extends QUI\QDOM
      *
      * @param array $params
      *        array(
-     *        'insert' => 'table'
-     *        'update' => 'table'
-     *        'delete' => 'table'
-     *        'count'  => 'field'
+     *        'insert'  => 'table'
+     *        'replace' => 'table'
+     *        'update'  => 'table'
+     *        'delete'  => 'table'
+     *        'count'   => 'field'
      *
      *        'from' => array('table1', 'table2'),
      *        'from' => 'table1',
@@ -251,6 +252,10 @@ class DB extends QUI\QDOM
             } else {
                 $query = $this->createQueryInsert($params['insert']);
             }
+        }
+
+        if (isset($params['replace']) && !empty($params['replace'])) {
+            $query = $this->createQueryReplace($params['replace']);
         }
 
         if (isset($params['update']) && !empty($params['update'])) {
@@ -530,6 +535,27 @@ class DB extends QUI\QDOM
     }
 
     /**
+     * If a dataset's primary/unique already exists, the old dataset is replaced.
+     * If the dataset does not exist yet, the dataset is inserted.
+     *
+     * @param string $table
+     * @param array $data
+     *
+     * @throws QUI\Database\Exception
+     * @throws QUI\ExceptionStack
+     * @throws QUI\Exception
+     *
+     * @return \PDOStatement
+     */
+    public function replace($table, $data)
+    {
+        return $this->exec(array(
+            'replace' => $table,
+            'set'     => $data
+        ));
+    }
+
+    /**
      * Löscht einen Datensatz
      *
      * @param string $table - Name of the Database Table
@@ -578,6 +604,18 @@ class DB extends QUI\QDOM
     public static function createQueryInsert($params)
     {
         return 'INSERT INTO `'.$params.'` ';
+    }
+
+    /**
+     * Replace Query Abschnitt
+     *
+     * @param string $params
+     *
+     * @return string
+     */
+    public static function createQueryReplace($params)
+    {
+        return 'REPLACE INTO `'.$params.'` ';
     }
 
     /**
