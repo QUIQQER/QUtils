@@ -141,7 +141,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * PDO Objekt bekommen
+     * Return the internal PDO Object
      *
      * @return \PDO
      */
@@ -169,7 +169,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Datenbank Objekt für Tabellen
+     * Database object for tables
      *
      * @return \QUI\Database\Tables
      */
@@ -193,7 +193,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Ein Query String erstellen
+     * Creates a query
      *
      * @param array $params
      *        array(
@@ -230,7 +230,7 @@ class DB extends QUI\QDOM
      * @return array
      *    array(
      *        'query'   => string  - SQL String
-     *        'prepare' => array() - Prepared Statemanet Vars
+     *        'prepare' => array() - Prepared Statement Vars
      *    )
      */
     public function createQuery(array $params = [])
@@ -303,8 +303,7 @@ class DB extends QUI\QDOM
             if (strpos($query, 'WHERE') === false) {
                 $query .= $where['where'];
             } else {
-                $query .= ' AND ('.str_replace('WHERE', '', $where['where'])
-                          .')';
+                $query .= ' AND ('.str_replace('WHERE', '', $where['where']).')';
             }
 
             $prepare = array_merge($prepare, $where['prepare']);
@@ -318,7 +317,7 @@ class DB extends QUI\QDOM
         }
 
         if (isset($params['group']) && !empty($params['group'])) {
-            $query .= ' GROUP BY '.$params['group'];
+            $query .= $this->createQueryGroupBy($params['group']);
         }
 
         if (isset($params['limit']) && !empty($params['limit'])) {
@@ -343,7 +342,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Query ausführen und ein PDOStatement bekommen
+     * Execute query and returned a PDOStatement
      * (Prepare Statement)
      *
      * @param array $params (see at createQuery())
@@ -482,9 +481,9 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Query ausführen und als Ergebnisse bekommen
-     * Das Query wird direkt überrgeben!
-     * Besser ->fetch() nutzen und die Parameter als Array übergeben
+     * Execute query and get results
+     * The query is passed directly!
+     * Better use ->fetch() and pass the parameters as array
      *
      * @param string $query
      * @param integer $FETCH_STYLE - \PDO::FETCH*
@@ -523,7 +522,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Aktualisiert einen Datensatz
+     * Updates a record
      *
      * @param string $table
      * @param array $data
@@ -543,7 +542,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Aktualisiert einen Datensatz
+     * Insert a record
      *
      * @param string $table
      * @param array $data
@@ -580,7 +579,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Löscht einen Datensatz
+     * Deletes a record
      *
      * @param string $table - Name of the Database Table
      * @param array $where - data field, where statement
@@ -599,7 +598,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * SELECT Query Abschnitt
+     * SELECT Query
      *
      * @param array $params
      *
@@ -611,15 +610,24 @@ class DB extends QUI\QDOM
             return 'SELECT * ';
         }
 
-        if (is_array($params['select'])) {
-            return 'SELECT '.implode(',', $params['select']).' ';
+        if (is_string($params['select'])) {
+            $params['select'] = explode(',', $params['select']);
         }
 
-        return 'SELECT '.$params['select'].' ';
+        foreach ($params['select'] as $key => $select) {
+            $select = '`'.self::cleanupStringForDatabase($select).'`';
+
+            // eq `Mainproject_de_sites.id` need to be `Mainproject_de_sites`.`id`
+            $select = str_replace('.', '`.`', $select);
+
+            $params['select'][$key] = $select;
+        }
+
+        return 'SELECT '.implode(',', $params['select']).' ';
     }
 
     /**
-     * Insert Query Abschnitt
+     * Insert Query
      *
      * @param string $params
      *
@@ -627,11 +635,11 @@ class DB extends QUI\QDOM
      */
     public static function createQueryInsert($params)
     {
-        return 'INSERT INTO `'.$params.'` ';
+        return 'INSERT INTO `'.self::cleanupStringForDatabase($params).'` ';
     }
 
     /**
-     * Replace Query Abschnitt
+     * Replace Query
      *
      * @param string $params
      *
@@ -639,11 +647,11 @@ class DB extends QUI\QDOM
      */
     public static function createQueryReplace($params)
     {
-        return 'REPLACE INTO `'.$params.'` ';
+        return 'REPLACE INTO `'.self::cleanupStringForDatabase($params).'` ';
     }
 
     /**
-     * Update Query Abschnitt
+     * Update Query
      *
      * @param string $params
      *
@@ -651,11 +659,11 @@ class DB extends QUI\QDOM
      */
     public static function createQueryUpdate($params)
     {
-        return 'UPDATE `'.$params.'` ';
+        return 'UPDATE `'.self::cleanupStringForDatabase($params).'` ';
     }
 
     /**
-     * Delete Query Abschnitt
+     * Delete Query
      *
      * @return string
      */
@@ -665,7 +673,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * COUNT() Query Abschnitt
+     * COUNT() Query
      *
      * @param array|string $params
      *
@@ -674,10 +682,12 @@ class DB extends QUI\QDOM
     public static function createQueryCount($params)
     {
         if (is_array($params) && isset($params['select'])) {
-            $query = ' SELECT COUNT('.$params['select'].') ';
+            $query = ' SELECT COUNT(`';
+            $query .= self::cleanupStringForDatabase($params['select']);
+            $query .= '`) ';
 
             if (isset($params['as'])) {
-                $query .= 'AS '.$params['as'].' ';
+                $query .= 'AS `'.self::cleanupStringForDatabase($params['as']).'` ';
             }
 
             return $query;
@@ -686,14 +696,14 @@ class DB extends QUI\QDOM
         $query = ' SELECT COUNT(*) ';
 
         if (is_string($params)) {
-            $query .= 'AS '.$params.' ';
+            $query .= 'AS `'.self::cleanupStringForDatabase($params).'` ';
         }
 
         return $query;
     }
 
     /**
-     * FROM Query Abschnitt
+     * FROM Query
      *
      * @param string|array $params
      *
@@ -702,33 +712,33 @@ class DB extends QUI\QDOM
     public static function createQueryFrom($params)
     {
         if (is_string($params)) {
-            return ' FROM `'.$params.'` ';
+            return ' FROM `'.self::cleanupStringForDatabase($params).'` ';
         }
-
-        $sql = '';
 
         if (is_array($params)) {
-            $sql  = ' FROM ';
-            $from = implode('`', array_unique($params));
-            $from = '`'.str_replace('`', '`,`', $from).'`';
+            $from = array_unique($params);
 
-            $sql .= $from;
+            foreach ($from as $key => $entry) {
+                $from[$key] = '`'.self::cleanupStringForDatabase($entry).'`';
+            }
+
+            return ' FROM '.implode(',', $from);
         }
 
-        return $sql;
+        return '';
     }
 
     /**
-     * WHERE Query Abschnitt
+     * WHERE Query
      *
      * @param string|array $params
      * @param string $type - if more than one where, you can specific the where typ (OR, AND)
      *
      * @return array array(
-     *        'where' => 'WHERE param = :param',
-     *      'prepare' => array(
-     *          'param' => value
-     *      )
+     *     'where' => 'WHERE param = :param',
+     *     'prepare' => array(
+     *         'param' => value
+     *     )
      * )
      */
     public static function createQueryWhere($params, $type = 'AND')
@@ -921,7 +931,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Where Statement als OR
+     * Where Statement with OR
      *
      * @param array $params
      *
@@ -933,10 +943,10 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * SET Query Abschnitt
+     * SET Query
      *
      * @param string|array $params
-     * @param string|boolean $driver - depricated
+     * @param string|boolean $driver - deprecated
      *
      * @return array
      */
@@ -1022,6 +1032,7 @@ class DB extends QUI\QDOM
      * @param array $params - the set params
      *
      * @return array
+     * @deprecated
      */
     public static function createQuerySQLiteInsert($params)
     {
@@ -1071,18 +1082,6 @@ class DB extends QUI\QDOM
             return '';
         }
 
-        $cleanup = function ($str) {
-            $str = str_replace(
-                ['"', "'", ';', '`', '´', '--', '/*', '+'],
-                '',
-                $str
-            );
-
-            $str = trim($str);
-
-            return $str;
-        };
-
         if (is_string($params)) {
             $sql   = ' ORDER BY ';
             $query = [];
@@ -1097,16 +1096,16 @@ class DB extends QUI\QDOM
                 $desc  = strtolower(mb_substr($value, -4)) === 'desc';
 
                 if ($asc === false && $desc === false) {
-                    $query[] = '`'.$cleanup($value).'`';
+                    $query[] = '`'.self::cleanupStringForDatabase($value).'`';
                     continue;
                 }
 
                 if ($asc !== false) {
-                    $query[] = '`'.$cleanup(mb_substr($value, 0, -3)).'` ASC';
+                    $query[] = '`'.self::cleanupStringForDatabase(mb_substr($value, 0, -3)).'` ASC';
                     continue;
                 }
 
-                $query[] = '`'.$cleanup(mb_substr($value, 0, -4)).'` DESC';
+                $query[] = '`'.self::cleanupStringForDatabase(mb_substr($value, 0, -4)).'` DESC';
             }
 
             return $sql.implode(',', $query);
@@ -1118,7 +1117,7 @@ class DB extends QUI\QDOM
 
             foreach ($params as $key => $sort) {
                 if (!is_string($key)) {
-                    $query[] = '`'.$cleanup($sort).'`';
+                    $query[] = '`'.self::cleanupStringForDatabase($sort).'`';
                     continue;
                 }
 
@@ -1133,7 +1132,7 @@ class DB extends QUI\QDOM
                         $sort = '';
                 }
 
-                $query[] = '`'.$cleanup($key).'` '.$sort;
+                $query[] = '`'.self::cleanupStringForDatabase($key).'` '.$sort;
             }
 
             return $sql.implode(',', $query);
@@ -1143,7 +1142,49 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Limit Query Abschnitt
+     * Group By Query
+     *
+     * @param $params
+     * @return string
+     */
+    public static function createQueryGroupBy($params)
+    {
+        if (empty($params)) {
+            return '';
+        }
+
+        if (is_string($params)) {
+            $sql   = ' GROUP BY ';
+            $query = [];
+
+            $params = trim($params, ',');
+            $params = trim($params);
+            $params = explode(',', $params);
+
+            foreach ($params as $key => $value) {
+                $value   = trim($value);
+                $query[] = '`'.self::cleanupStringForDatabase($value).'`';
+            }
+
+            return $sql.implode(',', $query);
+        }
+
+        if (is_array($params)) {
+            $sql   = ' GROUP BY ';
+            $query = [];
+
+            foreach ($params as $key => $sort) {
+                $query[] = '`'.self::cleanupStringForDatabase($sort).'`';
+            }
+
+            return $sql.implode(',', $query);
+        }
+
+        return '';
+    }
+
+    /**
+     * Limit Query
      *
      * @param string|integer $params
      *
@@ -1258,5 +1299,24 @@ class DB extends QUI\QDOM
         }
 
         return true;
+    }
+
+    /**
+     * Remove signs which can cause sql injections
+     *
+     * @param $str
+     * @return mixed|string
+     */
+    public static function cleanupStringForDatabase($str)
+    {
+        $str = str_replace(
+            ['"', "'", ';', '`', '´', '--', '/*', '+'],
+            '',
+            $str
+        );
+
+        $str = trim($str);
+
+        return $str;
     }
 }
