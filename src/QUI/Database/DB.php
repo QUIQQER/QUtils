@@ -616,9 +616,12 @@ class DB extends QUI\QDOM
         }
 
         foreach ($params['select'] as $key => $select) {
-            $select = Orthos::cleanupDatabaseFieldName($select);
+            if ($select === '*') {
+                $params['select'][$key] = $select;
+                continue;
+            }
 
-            $params['select'][$key] = $select;
+            $params['select'][$key] = Orthos::cleanupDatabaseFieldName($select);
         }
 
         return 'SELECT '.implode(',', $params['select']).' ';
