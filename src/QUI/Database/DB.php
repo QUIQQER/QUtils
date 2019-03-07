@@ -54,14 +54,14 @@ class DB extends QUI\QDOM
      * - options (optional)
      * - driver (optional)
      */
-    public function __construct($attributes = array())
+    public function __construct($attributes = [])
     {
         // defaults
         $this->setAttribute('host', 'localhost');
         $this->setAttribute('driver', 'mysql');
-        $this->setAttribute('options', array(
+        $this->setAttribute('options', [
             \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-        ));
+        ]);
 
         if (isset($attributes['driver']) && empty($attributes['driver'])) {
             unset($attributes['driver']);
@@ -233,10 +233,10 @@ class DB extends QUI\QDOM
      *        'prepare' => array() - Prepared Statemanet Vars
      *    )
      */
-    public function createQuery(array $params = array())
+    public function createQuery(array $params = [])
     {
         $query   = $this->createQuerySelect($params);
-        $prepare = array();
+        $prepare = [];
 
         /**
          * Start Block
@@ -330,16 +330,16 @@ class DB extends QUI\QDOM
 
         // debuging
         if (isset($params['debug'])) {
-            QUI\System\Log::writeRecursive(array(
+            QUI\System\Log::writeRecursive([
                 'query'   => $query,
                 'prepare' => $prepare
-            ));
+            ]);
         }
 
-        return array(
+        return [
             'query'   => $query,
             'prepare' => $prepare
-        );
+        ];
     }
 
     /**
@@ -354,7 +354,7 @@ class DB extends QUI\QDOM
      * @throws QUI\ExceptionStack
      * @throws QUI\Exception
      */
-    public function exec(array $params = array())
+    public function exec(array $params = [])
     {
         if (class_exists('QUI') && QUI::$Events !== null) {
             QUI::getEvents()->fireEvent('dataBaseQueryCreate', [$this]);
@@ -434,7 +434,7 @@ class DB extends QUI\QDOM
      * @return array
      */
     public function fetch(
-        array $params = array(),
+        array $params = [],
         $FETCH_STYLE = \PDO::FETCH_ASSOC
     ) {
         $Statement = $this->exec($params);
@@ -509,11 +509,11 @@ class DB extends QUI\QDOM
      */
     public function update($table, $data, $where)
     {
-        return $this->exec(array(
+        return $this->exec([
             'update' => $table,
             'set'    => $data,
             'where'  => $where
-        ));
+        ]);
     }
 
     /**
@@ -528,10 +528,10 @@ class DB extends QUI\QDOM
      */
     public function insert($table, $data)
     {
-        return $this->exec(array(
+        return $this->exec([
             'insert' => $table,
             'set'    => $data
-        ));
+        ]);
     }
 
     /**
@@ -549,10 +549,10 @@ class DB extends QUI\QDOM
      */
     public function replace($table, $data)
     {
-        return $this->exec(array(
+        return $this->exec([
             'replace' => $table,
             'set'     => $data
-        ));
+        ]);
     }
 
     /**
@@ -567,11 +567,11 @@ class DB extends QUI\QDOM
      */
     public function delete($table, $where)
     {
-        return $this->exec(array(
+        return $this->exec([
             'delete' => true,
             'from'   => $table,
             'where'  => $where
-        ));
+        ]);
     }
 
     /**
@@ -710,13 +710,13 @@ class DB extends QUI\QDOM
     public static function createQueryWhere($params, $type = 'AND')
     {
         if (is_string($params)) {
-            return array(
+            return [
                 'where'   => ' WHERE '.$params,
-                'prepare' => array()
-            );
+                'prepare' => []
+            ];
         }
 
-        $prepare = array();
+        $prepare = [];
         $sql     = '';
 
         if (is_array($params)) {
@@ -724,7 +724,7 @@ class DB extends QUI\QDOM
             $max = count($params) - 1;
 
             $sql     = ' WHERE ';
-            $prepare = array();
+            $prepare = [];
 
             foreach ($params as $key => $value) {
                 switch ($type) {
@@ -890,10 +890,10 @@ class DB extends QUI\QDOM
             }
         }
 
-        return array(
+        return [
             'where'   => $sql,
             'prepare' => $prepare
-        );
+        ];
     }
 
     /**
@@ -919,10 +919,10 @@ class DB extends QUI\QDOM
     public static function createQuerySet($params, $driver = false)
     {
         if (is_string($params)) {
-            return array(
+            return [
                 'set'     => ' SET '.$params,
-                'prepare' => array()
-            );
+                'prepare' => []
+            ];
         }
 
         // SQLITE
@@ -963,7 +963,7 @@ class DB extends QUI\QDOM
         }
         */
         // Standard SQL
-        $prepare = array();
+        $prepare = [];
         $sql     = '';
 
         if (is_array($params)) {
@@ -971,7 +971,7 @@ class DB extends QUI\QDOM
             $max = count($params) - 1;
 
             $sql     = ' SET ';
-            $prepare = array();
+            $prepare = [];
 
             foreach ($params as $key => $value) {
                 $sql .= '`'.$key.'` = :setv'.$i;
@@ -986,10 +986,10 @@ class DB extends QUI\QDOM
             }
         }
 
-        return array(
+        return [
             'set'     => $sql,
             'prepare' => $prepare
-        );
+        ];
     }
 
     /**
@@ -1006,8 +1006,8 @@ class DB extends QUI\QDOM
         $max = count($set_params) - 1;
         $i   = 0;
 
-        $prepare = array();
-        $values  = array();
+        $prepare = [];
+        $values  = [];
 
         $sql = self::createQueryInsert($params['insert']);
         $sql .= ' (';
@@ -1028,10 +1028,10 @@ class DB extends QUI\QDOM
 
         $sql .= ') VALUES ('.implode(',', $values).')';
 
-        return array(
+        return [
             'insert'  => $sql,
             'prepare' => $prepare
-        );
+        ];
     }
 
     /**
@@ -1049,7 +1049,7 @@ class DB extends QUI\QDOM
 
         if (is_array($params) && !empty($params)) {
             $sql        = ' ORDER BY ';
-            $sortFields = array();
+            $sortFields = [];
 
             foreach ($params as $key => $sort) {
                 if (is_string($key)) {
@@ -1075,22 +1075,22 @@ class DB extends QUI\QDOM
     public static function createQueryLimit($params)
     {
         $sql     = ' LIMIT ';
-        $prepare = array();
+        $prepare = [];
 
         if (strpos($params, ',') === false) {
             $limit1 = (int)trim($params);
 
-            $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
+            $prepare[':limit1'] = [$limit1, \PDO::PARAM_INT];
 
             $sql .= ':limit1';
         } else {
             $limit = explode(',', $params);
 
             if (!isset($limit[0]) || !isset($limit[1])) {
-                return array(
+                return [
                     'limit'   => '',
                     'prepare' => $prepare
-                );
+                ];
             }
 
             $limit1 = (int)trim($limit[0]);
@@ -1104,16 +1104,16 @@ class DB extends QUI\QDOM
                 $limit2 = 0;
             }
 
-            $prepare[':limit1'] = array($limit1, \PDO::PARAM_INT);
-            $prepare[':limit2'] = array($limit2, \PDO::PARAM_INT);
+            $prepare[':limit1'] = [$limit1, \PDO::PARAM_INT];
+            $prepare[':limit2'] = [$limit2, \PDO::PARAM_INT];
 
             $sql .= ':limit1,:limit2';
         }
 
-        return array(
+        return [
             'limit'   => $sql,
             'prepare' => $prepare
-        );
+        ];
     }
 
     /**
@@ -1124,7 +1124,7 @@ class DB extends QUI\QDOM
      *
      * @return bool
      */
-    public static function isOrderValid($value, $allowed = array())
+    public static function isOrderValid($value, $allowed = [])
     {
         if (!is_string($value)) {
             return false;
@@ -1170,7 +1170,7 @@ class DB extends QUI\QDOM
      *
      * @return bool
      */
-    public static function isWhereValid(array $where, $allowed = array())
+    public static function isWhereValid(array $where, $allowed = [])
     {
         $allowed = array_flip($allowed);
 
