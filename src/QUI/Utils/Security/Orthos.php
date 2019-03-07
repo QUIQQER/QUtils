@@ -169,9 +169,10 @@ class Orthos
     {
         $str = preg_replace('/[^0-9,a-z,A-Z$_.]/i', '', $str);
         $str = str_replace('..', '', $str);
-        $str = str_replace('.', '`.`', $str);
         $str = trim($str);
         $str = trim($str, '`');
+
+        $str = str_replace('.', '`.`', $str);
         $str = '`'.$str.'`';
 
         return $str;
