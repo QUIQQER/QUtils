@@ -351,13 +351,18 @@ class DB extends QUI\QDOM
      * @return \PDOStatement
      *
      * @throws QUI\Database\Exception
-     * @throws QUI\ExceptionStack
-     * @throws QUI\Exception
      */
     public function exec(array $params = [])
     {
         if (class_exists('QUI') && QUI::$Events !== null) {
-            QUI::getEvents()->fireEvent('dataBaseQueryCreate', [$this]);
+            try {
+                QUI::getEvents()->fireEvent('dataBaseQueryCreate', [$this]);
+            } catch (QUI\Exception $Exception) {
+                throw new QUI\Database\Exception(
+                    $Exception->getMessage(),
+                    $Exception->getCode()
+                );
+            }
         }
 
         $start = microtime();
@@ -365,7 +370,14 @@ class DB extends QUI\QDOM
 
 
         if (class_exists('QUI') && QUI::$Events !== null) {
-            QUI::getEvents()->fireEvent('dataBaseQuery', [$this, $query]);
+            try {
+                QUI::getEvents()->fireEvent('dataBaseQuery', [$this, $query]);
+            } catch (QUI\Exception $Exception) {
+                throw new QUI\Database\Exception(
+                    $Exception->getMessage(),
+                    $Exception->getCode()
+                );
+            }
         }
 
         if (isset($params['debug'])) {
@@ -395,15 +407,22 @@ class DB extends QUI\QDOM
             $message .= print_r($query, true);
 
             if (class_exists('QUI') && QUI::$Events !== null) {
-                QUI::getEvents()->fireEvent(
-                    'dataBaseQueryEnd',
-                    [$this, $query, $start, microtime()]
-                );
+                try {
+                    QUI::getEvents()->fireEvent(
+                        'dataBaseQueryEnd',
+                        [$this, $query, $start, microtime()]
+                    );
 
-                QUI::getEvents()->fireEvent(
-                    'dataBaseQueryError',
-                    [$this, $Exception, $query, $start, microtime()]
-                );
+                    QUI::getEvents()->fireEvent(
+                        'dataBaseQueryError',
+                        [$this, $Exception, $query, $start, microtime()]
+                    );
+                } catch (QUI\Exception $Exception) {
+                    throw new QUI\Database\Exception(
+                        $Exception->getMessage(),
+                        $Exception->getCode()
+                    );
+                }
             }
 
 
@@ -417,14 +436,21 @@ class DB extends QUI\QDOM
         }
 
         if (class_exists('QUI') && QUI::$Events !== null) {
-            QUI::getEvents()->fireEvent('dataBaseQueryEnd', [$this, $query, $start, microtime()]);
+            try {
+                QUI::getEvents()->fireEvent('dataBaseQueryEnd', [$this, $query, $start, microtime()]);
+            } catch (QUI\Exception $Exception) {
+                throw new QUI\Database\Exception(
+                    $Exception->getMessage(),
+                    $Exception->getCode()
+                );
+            }
         }
 
         return $Statement;
     }
 
     /**
-     * Query ausführen und als die Ergebnisse bekommen
+     * Execute query and get as the results
      *
      * @param array $params (see at createQuery())
      * @param integer $FETCH_STYLE - \PDO::FETCH*
@@ -542,8 +568,6 @@ class DB extends QUI\QDOM
      * @param array $data
      *
      * @throws QUI\Database\Exception
-     * @throws QUI\ExceptionStack
-     * @throws QUI\Exception
      *
      * @return \PDOStatement
      */
@@ -1035,7 +1059,7 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Order Query Abschnitt
+     * Order Query
      *
      * @param array|string $params
      *
@@ -1043,23 +1067,76 @@ class DB extends QUI\QDOM
      */
     public static function createQueryOrder($params)
     {
-        if (is_string($params)) {
-            return ' ORDER BY '.$params;
+        if (empty($params)) {
+            return '';
         }
 
-        if (is_array($params) && !empty($params)) {
-            $sql        = ' ORDER BY ';
-            $sortFields = [];
+        $cleanup = function ($str) {
+            $str = str_replace(
+                ['"', "'", ';', '`', '´', '--', '/*', '+'],
+                '',
+                $str
+            );
 
-            foreach ($params as $key => $sort) {
-                if (is_string($key)) {
-                    $sortFields[] = '`'.$key.'` '.$sort;
-                } else {
-                    $sortFields[] = '`'.$sort.'`';
+            $str = trim($str);
+
+            return $str;
+        };
+
+        if (is_string($params)) {
+            $sql   = ' ORDER BY ';
+            $query = [];
+
+            $params = trim($params, ',');
+            $params = trim($params);
+            $params = explode(',', $params);
+
+            foreach ($params as $key => $value) {
+                $value = trim($value);
+                $asc   = strtolower(mb_substr($value, -3)) === 'asc';
+                $desc  = strtolower(mb_substr($value, -4)) === 'desc';
+
+                if ($asc === false && $desc === false) {
+                    $query[] = '`'.$cleanup($value).'`';
+                    continue;
                 }
+
+                if ($asc !== false) {
+                    $query[] = '`'.$cleanup(mb_substr($value, 0, -3)).'` ASC';
+                    continue;
+                }
+
+                $query[] = '`'.$cleanup(mb_substr($value, 0, -4)).'` DESC';
             }
 
-            return $sql.implode(',', $sortFields);
+            return $sql.implode(',', $query);
+        }
+
+        if (is_array($params)) {
+            $sql   = ' ORDER BY ';
+            $query = [];
+
+            foreach ($params as $key => $sort) {
+                if (!is_string($key)) {
+                    $query[] = '`'.$cleanup($sort).'`';
+                    continue;
+                }
+
+                $sort = strtoupper($sort);
+
+                switch ($sort) {
+                    case 'ASC':
+                    case 'DESC':
+                        break;
+
+                    default:
+                        $sort = '';
+                }
+
+                $query[] = '`'.$cleanup($key).'` '.$sort;
+            }
+
+            return $sql.implode(',', $query);
         }
 
         return '';
