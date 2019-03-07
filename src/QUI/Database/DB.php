@@ -7,6 +7,7 @@
 namespace QUI\Database;
 
 use QUI;
+use QUI\Utils\Security\Orthos;
 
 /**
  * QUIQQER DataBase Layer
@@ -615,7 +616,7 @@ class DB extends QUI\QDOM
         }
 
         foreach ($params['select'] as $key => $select) {
-            $select = '`'.self::cleanupStringForDatabase($select).'`';
+            $select = Orthos::cleanupDatabaseFieldName($select);
 
             // eq `Mainproject_de_sites.id` need to be `Mainproject_de_sites`.`id`
             $select = str_replace('.', '`.`', $select);
@@ -635,7 +636,7 @@ class DB extends QUI\QDOM
      */
     public static function createQueryInsert($params)
     {
-        return 'INSERT INTO `'.self::cleanupStringForDatabase($params).'` ';
+        return 'INSERT INTO '.Orthos::cleanupDatabaseFieldName($params);
     }
 
     /**
@@ -647,7 +648,7 @@ class DB extends QUI\QDOM
      */
     public static function createQueryReplace($params)
     {
-        return 'REPLACE INTO `'.self::cleanupStringForDatabase($params).'` ';
+        return 'REPLACE INTO '.Orthos::cleanupDatabaseFieldName($params);
     }
 
     /**
@@ -659,7 +660,7 @@ class DB extends QUI\QDOM
      */
     public static function createQueryUpdate($params)
     {
-        return 'UPDATE `'.self::cleanupStringForDatabase($params).'` ';
+        return 'UPDATE '.Orthos::cleanupDatabaseFieldName($params);
     }
 
     /**
@@ -682,12 +683,12 @@ class DB extends QUI\QDOM
     public static function createQueryCount($params)
     {
         if (is_array($params) && isset($params['select'])) {
-            $query = ' SELECT COUNT(`';
-            $query .= self::cleanupStringForDatabase($params['select']);
-            $query .= '`) ';
+            $query = ' SELECT COUNT(';
+            $query .= Orthos::cleanupDatabaseFieldName($params['select']);
+            $query .= ') ';
 
             if (isset($params['as'])) {
-                $query .= 'AS `'.self::cleanupStringForDatabase($params['as']).'` ';
+                $query .= 'AS '.Orthos::cleanupDatabaseFieldName($params['as']);
             }
 
             return $query;
@@ -696,7 +697,7 @@ class DB extends QUI\QDOM
         $query = ' SELECT COUNT(*) ';
 
         if (is_string($params)) {
-            $query .= 'AS `'.self::cleanupStringForDatabase($params).'` ';
+            $query .= 'AS '.Orthos::cleanupDatabaseFieldName($params);
         }
 
         return $query;
@@ -712,14 +713,14 @@ class DB extends QUI\QDOM
     public static function createQueryFrom($params)
     {
         if (is_string($params)) {
-            return ' FROM `'.self::cleanupStringForDatabase($params).'` ';
+            return ' FROM '.Orthos::cleanupDatabaseFieldName($params);
         }
 
         if (is_array($params)) {
             $from = array_unique($params);
 
             foreach ($from as $key => $entry) {
-                $from[$key] = '`'.self::cleanupStringForDatabase($entry).'`';
+                $from[$key] = Orthos::cleanupDatabaseFieldName($entry);
             }
 
             return ' FROM '.implode(',', $from);
@@ -1096,16 +1097,16 @@ class DB extends QUI\QDOM
                 $desc  = strtolower(mb_substr($value, -4)) === 'desc';
 
                 if ($asc === false && $desc === false) {
-                    $query[] = '`'.self::cleanupStringForDatabase($value).'`';
+                    $query[] = Orthos::cleanupDatabaseFieldName($value);
                     continue;
                 }
 
                 if ($asc !== false) {
-                    $query[] = '`'.self::cleanupStringForDatabase(mb_substr($value, 0, -3)).'` ASC';
+                    $query[] = Orthos::cleanupDatabaseFieldName(mb_substr($value, 0, -3)).' ASC';
                     continue;
                 }
 
-                $query[] = '`'.self::cleanupStringForDatabase(mb_substr($value, 0, -4)).'` DESC';
+                $query[] = Orthos::cleanupDatabaseFieldName(mb_substr($value, 0, -4)).' DESC';
             }
 
             return $sql.implode(',', $query);
@@ -1117,7 +1118,7 @@ class DB extends QUI\QDOM
 
             foreach ($params as $key => $sort) {
                 if (!is_string($key)) {
-                    $query[] = '`'.self::cleanupStringForDatabase($sort).'`';
+                    $query[] = Orthos::cleanupDatabaseFieldName($sort);
                     continue;
                 }
 
@@ -1132,7 +1133,7 @@ class DB extends QUI\QDOM
                         $sort = '';
                 }
 
-                $query[] = '`'.self::cleanupStringForDatabase($key).'` '.$sort;
+                $query[] = Orthos::cleanupDatabaseFieldName($key).' '.$sort;
             }
 
             return $sql.implode(',', $query);
@@ -1163,7 +1164,7 @@ class DB extends QUI\QDOM
 
             foreach ($params as $key => $value) {
                 $value   = trim($value);
-                $query[] = '`'.self::cleanupStringForDatabase($value).'`';
+                $query[] = Orthos::cleanupDatabaseFieldName($value);
             }
 
             return $sql.implode(',', $query);
@@ -1174,7 +1175,7 @@ class DB extends QUI\QDOM
             $query = [];
 
             foreach ($params as $key => $sort) {
-                $query[] = '`'.self::cleanupStringForDatabase($sort).'`';
+                $query[] = Orthos::cleanupDatabaseFieldName($sort);
             }
 
             return $sql.implode(',', $query);
@@ -1299,24 +1300,5 @@ class DB extends QUI\QDOM
         }
 
         return true;
-    }
-
-    /**
-     * Remove signs which can cause sql injections
-     *
-     * @param $str
-     * @return mixed|string
-     */
-    public static function cleanupStringForDatabase($str)
-    {
-        $str = str_replace(
-            ['"', "'", ';', '`', '´', '--', '/*', '+'],
-            '',
-            $str
-        );
-
-        $str = trim($str);
-
-        return $str;
     }
 }
