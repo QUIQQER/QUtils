@@ -618,9 +618,6 @@ class DB extends QUI\QDOM
         foreach ($params['select'] as $key => $select) {
             $select = Orthos::cleanupDatabaseFieldName($select);
 
-            // eq `Mainproject_de_sites.id` need to be `Mainproject_de_sites`.`id`
-            $select = str_replace('.', '`.`', $select);
-
             $params['select'][$key] = $select;
         }
 
