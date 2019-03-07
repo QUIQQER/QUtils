@@ -159,6 +159,24 @@ class Orthos
     }
 
     /**
+     * Remove signs which can cause sql injections
+     * This method should only be used for table names in order, group, from, select
+     *
+     * @param $str
+     * @return mixed|string
+     */
+    public static function cleanupDatabaseFieldName($str)
+    {
+        $str = preg_replace('/[^0-9,a-z,A-Z$_.]/i', '', $str);
+        $str = str_replace('..', '', $str);
+        $str = trim($str);
+        $str = trim($str, '`');
+        $str = '`'.$str.'`';
+
+        return $str;
+    }
+
+    /**
      * Befreit einen Shell Command String von Schadcode
      *
      * Nicht für Befehle mit Sonderzeichen benutzen (hierfür einzelne Argumente
