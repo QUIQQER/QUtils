@@ -527,7 +527,7 @@ class DB extends QUI\QDOM
      *
      * @param string $table
      * @param array $data
-     * @param array $where
+     * @param array|string $where
      *
      * @throws QUI\Database\Exception
      *
