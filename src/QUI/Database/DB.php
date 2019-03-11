@@ -1160,8 +1160,15 @@ class DB extends QUI\QDOM
             return ' ORDER BY '.implode(',', $query);
         }
 
+        // order function stuff
         if (isset($params['field']) || isset($params['function']) || isset($params['sort'])) {
-            return ' ORDER BY '.self::createQueryOrderFromArray($params);
+            $query = self::createQueryOrderFromArray($params);
+
+            if (!$query) {
+                return '';
+            }
+
+            return ' ORDER BY '.$query;
         }
 
         // order as array
@@ -1171,7 +1178,12 @@ class DB extends QUI\QDOM
             foreach ($params as $key => $sort) {
                 // order function stuff
                 if (isset($sort['field']) || isset($sort['function']) || isset($sort['sort'])) {
-                    $query[] = self::createQueryOrderFromArray($sort);
+                    $result = self::createQueryOrderFromArray($sort);
+
+                    if ($result) {
+                        $query[] = $result;
+                    }
+
                     continue;
                 }
 
