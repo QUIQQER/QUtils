@@ -621,10 +621,35 @@ class DB extends QUI\QDOM
                 continue;
             }
 
-            $params['select'][$key] = Orthos::cleanupDatabaseFieldName($select);
+            if (!is_array($select)) {
+                $params['select'][$key] = Orthos::cleanupDatabaseFieldName($select);
+                continue;
+            }
+
+            if (!isset($select['field']) || !isset($select['function'])) {
+                continue;
+            }
+
+            $fields = $select['field'];
+
+            if (!is_array($fields)) {
+                $fields = [$fields];
+            }
+
+            foreach ($fields as $k => $f) {
+                $fields[$k] = Orthos::cleanupDatabaseFieldName($f);
+            }
+
+            $function = $select['function'];
+            $function = preg_replace('/[^0-9,a-zA-Z_]/i', '', $function);
+            $function = trim($function);
+
+            $functionParams = implode(',', $fields);
+
+            $params['select'][$key] = $function.'('.$functionParams.')';
         }
 
-        return 'SELECT '.implode(',', $params['select']).' ';
+        return 'SELECT '.implode(', ', $params['select']).' ';
     }
 
     /**
