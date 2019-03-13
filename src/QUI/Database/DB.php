@@ -635,6 +635,11 @@ class DB extends QUI\QDOM
             $params['select'] = explode(',', $params['select']);
         }
 
+        // encapsulation
+        if (isset($params['select']['field']) || isset($params['select']['function'])) {
+            $params['select'] = [$params['select']];
+        }
+
         foreach ($params['select'] as $key => $select) {
             if ($select === '*') {
                 $params['select'][$key] = $select;
