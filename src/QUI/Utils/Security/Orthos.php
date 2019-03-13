@@ -167,6 +167,10 @@ class Orthos
      */
     public static function cleanupDatabaseFieldName($str)
     {
+        if (empty($str)) {
+            return '';
+        }
+
         $str = preg_replace('/[^0-9,a-z,A-Z$_.]/i', '', $str);
         $str = str_replace('..', '', $str);
         $str = trim($str);

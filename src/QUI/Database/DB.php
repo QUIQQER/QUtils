@@ -1266,7 +1266,7 @@ class DB extends QUI\QDOM
     protected static function createQueryOrderFromArray($params)
     {
         if (!isset($params['field'])) {
-            return false;
+            $params['field'] = '';
         }
 
         // order function stuff
