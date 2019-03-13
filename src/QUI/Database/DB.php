@@ -603,6 +603,26 @@ class DB extends QUI\QDOM
      *
      * @param array $params
      *
+     * 'select' => 'field'
+     *
+     * 'select' => ['field', 'field']
+     *
+     * 'select' => [
+     *      'field'    => 'fieldName'
+     *      'function' => 'COUNT'
+     * ]
+     *
+     * 'select' => [
+     *      [
+     *          'field'    => 'fieldName'
+     *          'function' => 'COUNT'
+     *      ],
+     *      [
+     *          'field'    => 'fieldName'
+     *          'function' => 'COUNT'
+     *      ]
+     * ]
+     *
      * @return string
      */
     public static function createQuerySelect($params)
@@ -637,6 +657,11 @@ class DB extends QUI\QDOM
             }
 
             foreach ($fields as $k => $f) {
+                if ($f === '*') {
+                    $fields[$k] = '*';
+                    continue;
+                }
+
                 $fields[$k] = Orthos::cleanupDatabaseFieldName($f);
             }
 
@@ -1100,6 +1125,29 @@ class DB extends QUI\QDOM
      *
      * @param array|string $params
      *
+     * 'order' => 'field DESC'
+     *
+     * 'order' => ['field', 'field']
+     *
+     * 'order' => [
+     *      'field'    => 'fieldName'
+     *      'sort'     => 'DESC',
+     *      'function' => 'RAND'
+     * ]
+     *
+     * 'order' => [
+     *      [
+     *          'field'    => 'fieldName'
+     *          'sort'     => 'DESC',
+     *          'function' => 'RAND'
+     *      ],
+     *      [
+     *          'field'    => 'fieldName'
+     *          'sort'     => 'DESC',
+     *          'function' => 'RAND'
+     *      ]
+     * ]
+     *
      * @return string
      */
     public static function createQueryOrder($params)
@@ -1108,8 +1156,8 @@ class DB extends QUI\QDOM
             return '';
         }
 
+        // string
         if (is_string($params)) {
-            $sql   = ' ORDER BY ';
             $query = [];
 
             $params = trim($params, ',');
@@ -1134,14 +1182,36 @@ class DB extends QUI\QDOM
                 $query[] = Orthos::cleanupDatabaseFieldName(mb_substr($value, 0, -4)).' DESC';
             }
 
-            return $sql.implode(',', $query);
+            return ' ORDER BY '.implode(',', $query);
         }
 
+        // order function stuff
+        if (isset($params['field']) || isset($params['function']) || isset($params['sort'])) {
+            $query = self::createQueryOrderFromArray($params);
+
+            if (!$query) {
+                return '';
+            }
+
+            return ' ORDER BY '.$query;
+        }
+
+        // order as array
         if (is_array($params)) {
-            $sql   = ' ORDER BY ';
             $query = [];
 
             foreach ($params as $key => $sort) {
+                // order function stuff
+                if (isset($sort['field']) || isset($sort['function']) || isset($sort['sort'])) {
+                    $result = self::createQueryOrderFromArray($sort);
+
+                    if ($result) {
+                        $query[] = $result;
+                    }
+
+                    continue;
+                }
+
                 if (!is_string($key)) {
                     $query[] = Orthos::cleanupDatabaseFieldName($sort);
                     continue;
@@ -1161,10 +1231,70 @@ class DB extends QUI\QDOM
                 $query[] = Orthos::cleanupDatabaseFieldName($key).' '.$sort;
             }
 
-            return $sql.implode(',', $query);
+            return ' ORDER BY '.implode(',', $query);
         }
 
         return '';
+    }
+
+    /**
+     * Return the sql query for an order array
+     *
+     * @param array $params
+     *
+     * 'order' => [
+     *      'field'    => 'fieldName'
+     *      'sort'     => 'DESC',
+     *      'function' => 'RAND'
+     * ]
+     *
+     * 'order' => [
+     *      [
+     *          'field'    => 'fieldName'
+     *          'sort'     => 'DESC',
+     *          'function' => 'RAND'
+     *      ],
+     *      [
+     *          'field'    => 'fieldName'
+     *          'sort'     => 'DESC',
+     *          'function' => 'RAND'
+     *      ]
+     * ]
+     *
+     * @return bool|string
+     */
+    protected static function createQueryOrderFromArray($params)
+    {
+        if (!isset($params['field'])) {
+            return false;
+        }
+
+        // order function stuff
+        $sorting = '';
+        $field   = Orthos::cleanupDatabaseFieldName($params['field']);
+
+        if (isset($params['sort'])) {
+            $sorting = strtoupper($params['sort']);
+
+            switch ($sorting) {
+                case 'ASC':
+                case 'DESC':
+                    break;
+
+                default:
+                    $sorting = '';
+            }
+        }
+
+        if (isset($params['function'])) {
+            $function = $params['function'];
+            $function = preg_replace('/[^0-9,a-zA-Z_]/i', '', $function);
+            $function = trim($function);
+
+            return $function.'('.$field.')'.' '.$sorting;
+        }
+
+        return $field.' '.$sorting;
     }
 
     /**
