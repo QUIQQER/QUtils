@@ -30,8 +30,8 @@ class Orthos
     public static function clear($str)
     {
         $str = self::removeHTML($str);
-        $str = self::clearPath($str);
         $str = self::clearFormRequest($str);
+        $str = self::clearPath($str);
 
         $str = htmlspecialchars($str);
 
