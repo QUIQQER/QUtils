@@ -603,6 +603,26 @@ class DB extends QUI\QDOM
      *
      * @param array $params
      *
+     * 'select' => 'field'
+     *
+     * 'select' => ['field', 'field']
+     *
+     * 'select' => [
+     *      'field'    => 'fieldName'
+     *      'function' => 'COUNT'
+     * ]
+     *
+     * 'select' => [
+     *      [
+     *          'field'    => 'fieldName'
+     *          'function' => 'COUNT'
+     *      ],
+     *      [
+     *          'field'    => 'fieldName'
+     *          'function' => 'COUNT'
+     *      ]
+     * ]
+     *
      * @return string
      */
     public static function createQuerySelect($params)
@@ -637,6 +657,11 @@ class DB extends QUI\QDOM
             }
 
             foreach ($fields as $k => $f) {
+                if ($f === '*') {
+                    $fields[$k] = '*';
+                    continue;
+                }
+
                 $fields[$k] = Orthos::cleanupDatabaseFieldName($f);
             }
 
