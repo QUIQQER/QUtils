@@ -86,7 +86,7 @@ class Orthos
     }
 
     /**
-     * Säubert eine Pfadangabe von eventuellen Änderungen des Pfades
+     * Clears a path of possible changes to the path
      *
      * @param string $path
      *
@@ -94,7 +94,10 @@ class Orthos
      */
     public static function clearPath($path)
     {
-        return str_replace(['../', '..'], '', $path);
+        $path = str_replace('\\', '', $path);
+        $path = str_replace(['../', '..'], '', $path);
+
+        return $path;
     }
 
     /**
