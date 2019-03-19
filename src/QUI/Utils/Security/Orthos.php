@@ -582,7 +582,7 @@ class Orthos
         $str = str_replace($reservedChars, $replace, $str);
 
         // filter non-letters and non-numbers and non-allowed url characters
-        $str = preg_replace('#[^\p{L}\d-_.~]+#iu', $replace, $str);
+        $str = preg_replace('#[^\p{L}\d\-_.~]+#iu', $replace, $str);
 
         // trim outer and double replacement characters
         $str = trim($str, $replace);
