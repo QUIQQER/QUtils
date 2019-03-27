@@ -11,7 +11,6 @@ namespace QUI;
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
  */
-
 class ExceptionStack extends Exception
 {
     /**
@@ -19,7 +18,7 @@ class ExceptionStack extends Exception
      *
      * @var array
      */
-    protected $list = array();
+    protected $list = [];
 
     /**
      * Adds an exception to the stack
@@ -34,7 +33,7 @@ class ExceptionStack extends Exception
 
         /* @var $Exc Exception */
         foreach ($this->list as $Exc) {
-            $message .= $Exc->getMessage() . "\n";
+            $message .= $Exc->getMessage()."\n";
         }
 
         $this->message = $message;
@@ -68,7 +67,7 @@ class ExceptionStack extends Exception
      */
     public function getContext()
     {
-        $context = array();
+        $context = [];
 
         /* @var $Exc Exception */
         foreach ($this->list as $Exc) {

@@ -53,7 +53,7 @@ class StringHelper
      */
     public static function JSString($value)
     {
-        if (is_string($value)) {
+        if (\is_string($value)) {
             return $value;
         }
 
@@ -71,11 +71,11 @@ class StringHelper
      */
     public static function pathinfo($path, $options = false)
     {
-        if (!file_exists($path)) {
-            throw new QUI\Exception('File ' . $path . ' not exists');
+        if (!\file_exists($path)) {
+            throw new QUI\Exception('File '.$path.' not exists');
         }
 
-        $info = pathinfo($path);
+        $info = \pathinfo($path);
 
         if ($options == PATHINFO_DIRNAME) {
             return $info['dirname'];
@@ -107,7 +107,7 @@ class StringHelper
      */
     public static function replaceDblSlashes($path)
     {
-        return preg_replace('/[\/]{2,}/', "/", $path);
+        return \preg_replace('/[\/]{2,}/', "/", $path);
     }
 
     /**
@@ -120,8 +120,8 @@ class StringHelper
      */
     public static function removeLineBreaks($text, $replace = '')
     {
-        return str_replace(
-            array("\r\n", "\n\r", "\n", "\r"),
+        return \str_replace(
+            ["\r\n", "\n\r", "\n", "\r"],
             $replace,
             $text
         );
@@ -137,28 +137,28 @@ class StringHelper
     public static function removeDblSigns($str)
     {
         $_str = $str;
-        $_str = utf8_decode($_str);
+        $_str = \utf8_decode($_str);
 
-        for ($i = 0, $len = mb_strlen($str); $i < $len; $i++) {
-            $char = mb_substr($str, $i, 1);
+        for ($i = 0, $len = \mb_strlen($str); $i < $len; $i++) {
+            $char = \mb_substr($str, $i, 1);
 
             if (empty($char)) {
                 continue;
             }
 
-            $char = addslashes($char);
-            $char = preg_quote($char);
+            $char = \addslashes($char);
+            $char = \preg_quote($char);
 
             if ($char === '#') {
-                $char = '\\' . $char;
+                $char = '\\'.$char;
             }
 
-            $regex = '#([' . $char . ']){2,}#';
+            $regex = '#(['.$char.']){2,}#';
 
-            $_str = preg_replace($regex, "$1", $_str);
+            $_str = \preg_replace($regex, "$1", $_str);
         }
 
-        $_str = utf8_encode($_str);
+        $_str = \utf8_encode($_str);
 
         return $_str;
     }
@@ -172,7 +172,7 @@ class StringHelper
      */
     public static function removeLastSlash($str)
     {
-        return preg_replace(
+        return \preg_replace(
             '/\/($|\?|\#)/U',
             '\1',
             $str
@@ -188,7 +188,7 @@ class StringHelper
      */
     public static function firstToUpper($str)
     {
-        return ucfirst(self::toLower($str));
+        return \ucfirst(self::toLower($str));
     }
 
     /**
@@ -200,7 +200,7 @@ class StringHelper
      */
     public static function toLower($string)
     {
-        return mb_strtolower($string);
+        return \mb_strtolower($string);
     }
 
     /**
@@ -212,7 +212,7 @@ class StringHelper
      */
     public static function toUpper($string)
     {
-        return mb_strtoupper($string);
+        return \mb_strtoupper($string);
     }
 
     /**
@@ -227,7 +227,7 @@ class StringHelper
         $test1 = false;
         $test2 = false;
 
-        if (preg_match('%^(?:
+        if (\preg_match('%^(?:
                   [\x09\x0A\x0D\x20-\x7E]            # ASCII
                    | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
                 | \xE0[\xA0-\xBF][\x80-\xBF]         # excluding overlongs
@@ -241,7 +241,7 @@ class StringHelper
             $test1 = true;
         }
 
-        if (!((bool)preg_match(
+        if (!((bool)\preg_match(
             '~[\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\xC0\xC1]~ms',
             $str
         ))
@@ -266,7 +266,7 @@ class StringHelper
     public static function toUTF8($str)
     {
         if (!self::isValidUTF8($str)) {
-            return utf8_encode($str);
+            return \utf8_encode($str);
         }
 
         return $str;
@@ -281,15 +281,15 @@ class StringHelper
      */
     public static function sentence($text)
     {
-        $d = strpos($text, '.');
-        $a = strpos($text, '!');
-        $q = strpos($text, '?');
+        $d = \strpos($text, '.');
+        $a = \strpos($text, '!');
+        $q = \strpos($text, '?');
 
         if ($d === false && $a === false && $q === false) {
             return '';
         }
 
-        $_min_vars = array();
+        $_min_vars = [];
 
         if ($d !== false) {
             $_min_vars[] = $d;
@@ -303,8 +303,8 @@ class StringHelper
             $_min_vars[] = $q;
         }
 
-        return trim(
-            substr($text, 0, min($_min_vars) + 1)
+        return \trim(
+            \substr($text, 0, \min($_min_vars) + 1)
         );
     }
 
@@ -318,7 +318,7 @@ class StringHelper
      */
     public static function parseFloat($str)
     {
-        if (is_float($str)) {
+        if (\is_float($str)) {
             return $str;
         }
 
@@ -326,9 +326,9 @@ class StringHelper
             return 0;
         }
         // @todo lokaliesierung richtig prüfen localeconv()
-        if (strstr((string)$str, ",")) {
-            $str = str_replace(".", "", (string)$str);
-            $str = str_replace(",", ".", (string)$str);
+        if (\strstr((string)$str, ",")) {
+            $str = \str_replace(".", "", (string)$str);
+            $str = \str_replace(",", ".", (string)$str);
         }
 
         $minus = false;
@@ -337,10 +337,10 @@ class StringHelper
             $minus = true;
         }
 
-        if (preg_match("#([0-9\.]+)#", $str, $match)) {
-            $result = floatval($match[0]);
+        if (\preg_match("#([0-9\.]+)#", $str, $match)) {
+            $result = \floatval($match[0]);
         } else {
-            $result = floatval($str);
+            $result = \floatval($str);
         }
 
 
@@ -360,19 +360,19 @@ class StringHelper
      */
     public static function number2db($value)
     {
-        $larr   = localeconv();
-        $search = array(
+        $larr   = \localeconv();
+        $search = [
             $larr['decimal_point'],
             $larr['mon_decimal_point'],
             $larr['thousands_sep'],
             $larr['mon_thousands_sep'],
             $larr['currency_symbol'],
             $larr['int_curr_symbol']
-        );
+        ];
 
-        $replace = array('.', '.', '', '', '', '');
+        $replace = ['.', '.', '', '', '', ''];
 
-        return str_replace($search, $replace, $value);
+        return \str_replace($search, $replace, $value);
     }
 
     /**
@@ -386,15 +386,15 @@ class StringHelper
      */
     public static function tagCloud($tags, $start = 26, $min = 10)
     {
-        if (!is_array($tags)) {
-            $tags = array();
+        if (!\is_array($tags)) {
+            $tags = [];
         }
 
-        for ($i = 0, $len = count($tags); $i < $len; $i++) {
+        for ($i = 0, $len = \count($tags); $i < $len; $i++) {
             $tags[$i]['count'] = $i;
         }
 
-        shuffle($tags);
+        \shuffle($tags);
 
         $str = '';
 
@@ -405,9 +405,7 @@ class StringHelper
                 $size = $min;
             }
 
-            $str
-                .= '<a href="' . $entry['url'] . '" style="font-size: ' . $size . 'px">'
-                   . $entry['tag'] . '</a> ';
+            $str .= '<a href="'.$entry['url'].'" style="font-size: '.$size.'px">'.$entry['tag'].'</a> ';
         }
 
         return $str;
@@ -422,18 +420,18 @@ class StringHelper
      */
     public static function getUrlAttributes($url)
     {
-        $url = str_replace('&amp;', '&', $url);
-        $url = explode('?', $url);
-        $att = array();
+        $url = \str_replace('&amp;', '&', $url);
+        $url = \explode('?', $url);
+        $att = [];
 
         if (!isset($url[1])) {
             return $att;
         }
 
-        $att_ = explode('&', $url[1]);
+        $att_ = \explode('&', $url[1]);
 
         foreach ($att_ as $a) {
-            $item          = explode('=', $a);
+            $item          = \explode('=', $a);
             $att[$item[0]] = $item[1];
         }
 
@@ -449,16 +447,16 @@ class StringHelper
      */
     public static function getHTMLAttributes($html)
     {
-        $cleaned = preg_replace('/\s+=\s+/', '=', $html);
+        $cleaned = \preg_replace('/\s+=\s+/', '=', $html);
 
-        preg_match_all('/(?:^|\s)([\w|-]+)="([^">]+)"/', $cleaned, $qatts);
-        preg_match_all('/(?:^|\s)([\w|-]+)=([^"\s>]+)/', $cleaned, $patts);
-        $allatts = array_merge($patts[1], $qatts[1]);
-        $allvals = array_merge($patts[2], $qatts[2]);
+        \preg_match_all('/(?:^|\s)([\w|-]+)="([^">]+)"/', $cleaned, $qatts);
+        \preg_match_all('/(?:^|\s)([\w|-]+)=([^"\s>]+)/', $cleaned, $patts);
+        $allatts = \array_merge($patts[1], $qatts[1]);
+        $allvals = \array_merge($patts[2], $qatts[2]);
 
-        $attributes = array();
+        $attributes = [];
 
-        for ($i = 0; $i <= count($allatts) - 1; $i++) {
+        for ($i = 0; $i <= \count($allatts) - 1; $i++) {
             $attributes[$allatts[$i]] = $allvals[$i];
         }
 
@@ -474,19 +472,19 @@ class StringHelper
      */
     public static function splitStyleAttributes($style)
     {
-        $attributes = array();
-        $style      = trim($style);
-        $style      = explode(';', $style);
+        $attributes = [];
+        $style      = \trim($style);
+        $style      = \explode(';', $style);
 
         foreach ($style as $att) {
-            $att_ = explode(':', $att);
+            $att_ = \explode(':', $att);
 
             if (!isset($att_[1])) {
                 continue;
             }
 
-            $key = self::toLower(trim($att_[0]));
-            $val = self::toLower(trim($att_[1]));
+            $key = self::toLower(\trim($att_[0]));
+            $val = self::toLower(\trim($att_[1]));
 
             $attributes[$key] = $val;
         }
@@ -505,15 +503,15 @@ class StringHelper
      */
     public static function replaceLast($search, $replace, $string)
     {
-        if (strpos($string, $search) === false) {
+        if (\strpos($string, $search) === false) {
             return $string;
         }
 
-        return substr_replace(
+        return \substr_replace(
             $string,
             $replace,
-            strrpos($string, $search),
-            strlen($search)
+            \strrpos($string, $search),
+            \strlen($search)
         );
     }
 
@@ -530,14 +528,14 @@ class StringHelper
      */
     public static function match($pattern, $string, $flags = 0)
     {
-        if (function_exists('fnmatch')) {
-            return fnmatch($pattern, $string, $flags);
+        if (\function_exists('fnmatch')) {
+            return \fnmatch($pattern, $string, $flags);
         }
 
         // solution if fnmatch doesn't exist
         // found on http://php.net/manual/de/function.fnmatch.php
         $modifiers  = null;
-        $transforms = array(
+        $transforms = [
             '\*'   => '.*',
             '\?'   => '.',
             '\[\!' => '[^',
@@ -545,7 +543,7 @@ class StringHelper
             '\]'   => ']',
             '\.'   => '\.',
             '\\'   => '\\\\'
-        );
+        ];
 
         // Forward slash in string must be in pattern:
         if ($flags & FNM_PATHNAME) {
@@ -564,17 +562,17 @@ class StringHelper
 
         // Period at start must be the same as pattern:
         if ($flags & FNM_PERIOD) {
-            if (strpos($string, '.') === 0 && strpos($pattern, '.') !== 0) {
+            if (\strpos($string, '.') === 0 && \strpos($pattern, '.') !== 0) {
                 return false;
             }
         }
 
         $pattern = '#^'
-                   . strtr(preg_quote($pattern, '#'), $transforms)
-                   . '$#'
-                   . $modifiers;
+                   .\strtr(\preg_quote($pattern, '#'), $transforms)
+                   .'$#'
+                   .$modifiers;
 
-        return (boolean)preg_match($pattern, $string);
+        return (boolean)\preg_match($pattern, $string);
     }
 
     /**
@@ -587,10 +585,10 @@ class StringHelper
      */
     public static function strReplaceFromEnd($search, $replace, $subject)
     {
-        $pos = strrpos($subject, $search);
+        $pos = \strrpos($subject, $search);
 
         if ($pos !== false) {
-            $subject = substr_replace($subject, $replace, $pos, strlen($search));
+            $subject = \substr_replace($subject, $replace, $pos, \strlen($search));
         }
 
         return $subject;

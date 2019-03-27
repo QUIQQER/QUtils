@@ -50,28 +50,28 @@ class Webserver
     public static function detectApacheVersion()
     {
         # Attempt detection by apache2 module
-        if (function_exists('apache_get_version')) {
-            $version = apache_get_version();
+        if (\function_exists('apache_get_version')) {
+            $version = \apache_get_version();
             $regex   = "/Apache\\/([0-9\\.]*)/i";
-            $res     = preg_match($regex, $version, $matches);
+            $res     = \preg_match($regex, $version, $matches);
 
             if ($res && isset($matches[1])) {
                 $version     = $matches[1];
-                $verionParts = explode(".", $version);
+                $verionParts = \explode(".", $version);
 
                 return $verionParts;
             }
         }
 
         # Attempt detection by system shell
-        if (\QUI\Utils\System::isShellFunctionEnabled("shell_exec") && !empty(shell_exec("which apache2"))) {
-            $version = shell_exec('apache2 -v');
+        if (\QUI\Utils\System::isShellFunctionEnabled("shell_exec") && !empty(\shell_exec("which apache2"))) {
+            $version = \shell_exec('apache2 -v');
             $regex   = "/Apache\\/([0-9\\.]*)/i";
-            $res     = preg_match($regex, $version, $matches);
+            $res     = \preg_match($regex, $version, $matches);
             if ($res && isset($matches[1])) {
                 $version = $matches[1];
 
-                $verionParts = explode(".", $version);
+                $verionParts = \explode(".", $version);
 
                 return $verionParts;
             }
@@ -93,11 +93,11 @@ class Webserver
         }
 
         $server = $_SERVER['SERVER_SOFTWARE'];
-        if (strpos($server, "apache") !== false) {
+        if (\strpos($server, "apache") !== false) {
             return self::WEBSERVER_APACHE;
         }
 
-        if (strpos($server, "nginx") !== false) {
+        if (\strpos($server, "nginx") !== false) {
             return self::WEBSERVER_NGINX;
         }
 
@@ -116,11 +116,11 @@ class Webserver
             throw new Exception("Could not retrieve Serverdata");
         }
 
-        if (!empty(shell_exec("which apache2"))) {
+        if (!empty(\shell_exec("which apache2"))) {
             return self::WEBSERVER_APACHE;
         }
 
-        if (!empty(shell_exec("which nginx"))) {
+        if (!empty(\shell_exec("which nginx"))) {
             return self::WEBSERVER_NGINX;
         }
 

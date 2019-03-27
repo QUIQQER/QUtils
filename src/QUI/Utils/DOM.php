@@ -198,10 +198,7 @@ class DOM
         }
 
         if ($Table->getAttribute('site-types')) {
-            $result['site-types'] = explode(
-                ',',
-                $Table->getAttribute('site-types')
-            );
+            $result['site-types'] = \explode(',', $Table->getAttribute('site-types'));
         }
 
         $_fields = [];
@@ -210,7 +207,7 @@ class DOM
         $fields = $Table->getElementsByTagName('field');
 
         for ($i = 0; $i < $fields->length; $i++) {
-            $_fields = array_merge(
+            $_fields = \array_merge(
                 $_fields,
                 self::dbFieldDomToArray($fields->item($i))
             );
@@ -220,7 +217,7 @@ class DOM
         $primary = $Table->getElementsByTagName('primary');
 
         for ($i = 0; $i < $primary->length; $i++) {
-            $result = array_merge(
+            $result = \array_merge(
                 $result,
                 self::dbPrimaryDomToArray($primary->item($i))
             );
@@ -230,7 +227,7 @@ class DOM
         $unique = $Table->getElementsByTagName('unique');
 
         for ($i = 0; $i < $unique->length; $i++) {
-            $result = array_merge(
+            $result = \array_merge(
                 $result,
                 self::dbUniqueDomToArray($unique->item($i))
             );
@@ -240,7 +237,7 @@ class DOM
         $index = $Table->getElementsByTagName('index');
 
         for ($i = 0; $i < $index->length; $i++) {
-            $result = array_merge_recursive(
+            $result = \array_merge_recursive(
                 $result,
                 self::dbIndexDomToArray($index->item($i))
             );
@@ -250,7 +247,7 @@ class DOM
         $autoincrement = $Table->getElementsByTagName('auto_increment');
 
         for ($i = 0; $i < $autoincrement->length; $i++) {
-            $result = array_merge(
+            $result = \array_merge(
                 $result,
                 self::dbAutoIncrementDomToArray($autoincrement->item($i))
             );
@@ -260,7 +257,7 @@ class DOM
         $fulltext = $Table->getElementsByTagName('fulltext');
 
         for ($i = 0; $i < $fulltext->length; $i++) {
-            $result = array_merge(
+            $result = \array_merge(
                 $result,
                 self::dbAutoFullextDomToArray($fulltext->item($i))
             );
@@ -303,13 +300,13 @@ class DOM
             );
 
             // if NULL is not mentioned (neither "NULL" nor "NOT NULL") assume "NOT NULL"
-            if (mb_strpos($structure, 'null') === false) {
+            if (\mb_strpos($structure, 'null') === false) {
                 $str .= 'NOT NULL';
             }
         }
 
         return [
-            trim($Field->nodeValue) => $str
+            \trim($Field->nodeValue) => $str
         ];
     }
 
@@ -323,7 +320,7 @@ class DOM
     public static function dbPrimaryDomToArray(\DOMNode $Primary)
     {
         return [
-            'primary' => explode(',', $Primary->nodeValue)
+            'primary' => \explode(',', $Primary->nodeValue)
         ];
     }
 
@@ -337,7 +334,7 @@ class DOM
     public static function dbUniqueDomToArray(\DOMNode $Unique)
     {
         return [
-            'unique' => explode(',', $Unique->nodeValue)
+            'unique' => \explode(',', $Unique->nodeValue)
         ];
     }
 
@@ -351,7 +348,7 @@ class DOM
     public static function dbIndexDomToArray(\DOMNode $Index)
     {
         return [
-            'index' => [trim($Index->nodeValue)]
+            'index' => [\trim($Index->nodeValue)]
         ];
     }
 
@@ -365,7 +362,7 @@ class DOM
     public static function dbAutoIncrementDomToArray(\DOMNode $AI)
     {
         return [
-            'auto_increment' => trim($AI->nodeValue)
+            'auto_increment' => \trim($AI->nodeValue)
         ];
     }
 
@@ -379,7 +376,7 @@ class DOM
     public static function dbAutoFullextDomToArray(\DOMNode $Fulltext)
     {
         return [
-            'fulltext' => trim($Fulltext->nodeValue)
+            'fulltext' => \trim($Fulltext->nodeValue)
         ];
     }
 
@@ -425,20 +422,20 @@ class DOM
     {
         $tabs = [];
 
-        if (is_string($Object)) {
-            if (file_exists($Object)) {
+        if (\is_string($Object)) {
+            if (\file_exists($Object)) {
                 $tabs = Text\XML::getTabsFromXml($Object);
             }
         } else {
-            if (get_class($Object) === 'QUI\\Projects\\Project') {
+            if (\get_class($Object) === 'QUI\\Projects\\Project') {
                 /* @var $Object QUI\Projects\Project */
                 // tabs welche ein projekt zur Verfügung stellt
                 $tabs = Text\XML::getTabsFromXml(
                     USR_DIR.'lib/'.$Object->getAttribute('name').'/user.xml'
                 );
             } else {
-                if (get_class($Object) === 'QUI\\Projects\\Site'
-                    || get_class($Object) === 'QUI\\Projects\\Site\\Edit'
+                if (\get_class($Object) === 'QUI\\Projects\\Site'
+                    || \get_class($Object) === 'QUI\\Projects\\Site\\Edit'
                 ) {
                     /* @var $Object QUI\Projects\Site */
                     /* @var $Tab \DOMElement */
@@ -448,7 +445,7 @@ class DOM
                     if ($Tab->getAttribute('template')) {
                         $file = self::parseVar($Tab->getAttribute('template'));
 
-                        if (file_exists($file)) {
+                        if (\file_exists($file)) {
                             // site extra settings
                             $extra = '';
 
@@ -574,12 +571,12 @@ class DOM
                 foreach ($projects as $project) {
                     $Button->setAttribute(
                         'text',
-                        str_replace('{$project}', $project, $Button->getAttribute('text'))
+                        \str_replace('{$project}', $project, $Button->getAttribute('text'))
                     );
 
                     $Button->setAttribute(
                         'title',
-                        str_replace('{$project}', $project, $Button->getAttribute('title'))
+                        \str_replace('{$project}', $project, $Button->getAttribute('title'))
                     );
 
                     $Button->setAttribute('section', $project);
@@ -655,8 +652,7 @@ class DOM
 
             /* @var $Attribute \DOMElement */
             foreach ($attributes as $Attribute) {
-                $attributeList[$Attribute->getAttribute('name')]
-                    = trim($Attribute->nodeValue);
+                $attributeList[$Attribute->getAttribute('name')] = \trim($Attribute->nodeValue);
             }
 
             $result[] = [
@@ -716,7 +712,7 @@ class DOM
      */
     public static function getInnerBodyFromHTML($html)
     {
-        return preg_replace('/(.*)<body>(.*)<\/body>(.*)/si', '$2', $html);
+        return \preg_replace('/(.*)<body>(.*)<\/body>(.*)/si', '$2', $html);
     }
 
     /**
@@ -797,7 +793,7 @@ class DOM
                     $custom = $Param->getElementsByTagName('custom');
 
                     foreach ($custom as $Custom) {
-                        $customParam = trim($Custom->nodeValue);
+                        $customParam = \trim($Custom->nodeValue);
 
                         $result[$name][$customParam] = [
                             'type'    => 'string',
@@ -966,7 +962,7 @@ class DOM
      */
     public static function parseCategoryToHTML($Category, $Plugin = false)
     {
-        if (is_bool($Category)) {
+        if (\is_bool($Category)) {
             return '';
         }
 
@@ -998,7 +994,7 @@ class DOM
             if ($Entry->nodeName == 'template') {
                 $file = self::parseVar($Entry->nodeValue);
 
-                if (file_exists($file)) {
+                if (\file_exists($file)) {
                     $Engine->assign([
                         'Plugin'  => $Plugin,
                         'Plugins' => QUI::getPluginManager(),
@@ -1087,7 +1083,7 @@ class DOM
                         case 'template':
                             $file = self::parseVar($Set->nodeValue);
 
-                            if (file_exists($file)) {
+                            if (\file_exists($file)) {
                                 $Engine->assign([
                                     'Plugin'  => $Plugin,
                                     'Plugins' => QUI::getPluginManager(),
@@ -1166,10 +1162,10 @@ class DOM
 
         foreach ($attributes as $Attribute) {
             /* @var $Attribute \DOMAttr */
-            $name  = htmlspecialchars($Attribute->name);
-            $value = htmlspecialchars($Attribute->value);
+            $name  = \htmlspecialchars($Attribute->name);
+            $value = \htmlspecialchars($Attribute->value);
 
-            if (strpos($name, 'data-') !== false) {
+            if (\strpos($name, 'data-') !== false) {
                 $data .= " {$name}=\"{$value}\"";
                 continue;
             }
@@ -1197,7 +1193,7 @@ class DOM
         }
 
 
-        $id   = $Input->getAttribute('conf').'-'.time();
+        $id   = $Input->getAttribute('conf').'-'.\time();
         $Text = $Input->getElementsByTagName('text');
         $Desc = $Input->getElementsByTagName('description');
 
@@ -1219,7 +1215,7 @@ class DOM
             $result .= '<input type="'.$type.'" 
                            name="'.$Input->getAttribute('conf').'"
                            id= "'.$id.'" 
-                           class="'.implode(' ', $nodeClasses).'" 
+                           class="'.\implode(' ', $nodeClasses).'" 
                            '.$dataQui.'
                            '.$data.'
             />';
@@ -1243,7 +1239,7 @@ class DOM
         $result .= ' type="'.$type.'"';
         $result .= ' name="'.$Input->getAttribute('conf').'"';
         $result .= ' id= "'.$id.'"';
-        $result .= ' class="'.implode(' ', $classes).'" ';
+        $result .= ' class="'.\implode(' ', $classes).'" ';
         $result .= $dataQui;
         $result .= $data;
         $result .= ' />';
@@ -1362,9 +1358,9 @@ class DOM
         ];
 
 
-        $value = trim($value);
+        $value = \trim($value);
 
-        $value = str_replace(
+        $value = \str_replace(
             [
                 'URL_BIN_DIR/',
                 'URL_OPT_DIR/',
@@ -1380,7 +1376,7 @@ class DOM
             $value
         );
 
-        $value = str_replace(
+        $value = \str_replace(
             [
                 'URL_BIN_DIR',
                 'URL_OPT_DIR',

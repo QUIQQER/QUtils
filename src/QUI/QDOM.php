@@ -24,7 +24,7 @@ class QDOM
      *
      * @var array
      */
-    protected $attributes = array();
+    protected $attributes = [];
 
     /**
      * Exist the attribute in the object?
@@ -79,7 +79,7 @@ class QDOM
      */
     public function setAttributes($attributes)
     {
-        if (!is_array($attributes)) {
+        if (!\is_array($attributes)) {
             return $this;
         }
 
@@ -134,7 +134,7 @@ class QDOM
      */
     public function getType()
     {
-        return get_class($this);
+        return \get_class($this);
     }
 
     /**
@@ -156,10 +156,10 @@ class QDOM
     public function __toString()
     {
         if ($this->getAttribute('name')) {
-            return 'Object ' . get_class($this) . '(' . $this->getAttribute('name')
-                   . ');';
+            return 'Object '.\get_class($this).'('.$this->getAttribute('name')
+                   .');';
         }
 
-        return 'Object ' . get_class($this) . '();';
+        return 'Object '.\get_class($this).'();';
     }
 }

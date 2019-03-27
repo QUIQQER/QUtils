@@ -24,7 +24,6 @@ use QUI;
  *
  * $Trans->translate('House');
  */
-
 class PSpell extends QUI\QDOM
 {
     /**
@@ -53,18 +52,18 @@ class PSpell extends QUI\QDOM
 
 
         // PSpell Config
-        $Config = pspell_config_create(
+        $Config = \pspell_config_create(
             $this->getAttribute('lang'),
             $this->getAttribute('dialect')
         );
 
-        pspell_config_mode($Config, "PSPELL_FAST");
+        \pspell_config_mode($Config, "PSPELL_FAST");
 
         if ($this->getAttribute('personal')) {
-            pspell_config_personal($Config, $this->getAttribute('personal'));
+            \pspell_config_personal($Config, $this->getAttribute('personal'));
         }
 
-        $this->Spell = pspell_new($Config);
+        $this->Spell = \pspell_new($Config);
     }
 
     /**
@@ -75,7 +74,7 @@ class PSpell extends QUI\QDOM
      */
     public static function check()
     {
-        if (!function_exists('pspell_new')) {
+        if (!\function_exists('pspell_new')) {
             throw new QUI\Exception('PSpell is not installed');
         }
 
@@ -87,10 +86,10 @@ class PSpell extends QUI\QDOM
      *
      * @param string $word
      *
-     * @return string
+     * @return array
      */
     public function translate($word)
     {
-        return pspell_suggest($this->Spell, $word);
+        return \pspell_suggest($this->Spell, $word);
     }
 }

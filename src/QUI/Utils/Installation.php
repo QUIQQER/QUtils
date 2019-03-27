@@ -103,7 +103,7 @@ class Installation
      */
     protected static function countAllFiles($doNotCache = false)
     {
-        $fileCount = iterator_count(
+        $fileCount = \iterator_count(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(CMS_DIR, \FilesystemIterator::SKIP_DOTS)
             )

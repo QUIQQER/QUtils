@@ -89,7 +89,7 @@ class Grid extends QUI\QDOM
     public function parseResult($data, $count = false)
     {
         if ($count === false) {
-            $count = count($data);
+            $count = \count($data);
         }
 
         return [
@@ -110,12 +110,12 @@ class Grid extends QUI\QDOM
      */
     public static function getResult($data, $page, $limit)
     {
-        $count = count($data);
+        $count = \count($data);
         $end   = $page * $limit;
         $start = $end - $limit;
 
         return [
-            'data'  => array_slice($data, $start, $limit),
+            'data'  => \array_slice($data, $start, $limit),
             'page'  => $page,
             'total' => $count
         ];

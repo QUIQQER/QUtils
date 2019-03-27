@@ -36,7 +36,7 @@ class Zip
      */
     public static function check()
     {
-        if (!class_exists('ZipArchive')) {
+        if (!\class_exists('ZipArchive')) {
             throw new QUI\Exception(
                 'Class ZipArchive not exist',
                 404
@@ -55,21 +55,21 @@ class Zip
      *
      * @throws QUI\Exception
      */
-    public static function zip($folder, $zipfile, $ignore = array())
+    public static function zip($folder, $zipfile, $ignore = [])
     {
         self::check();
 
         $Zip = new \ZipArchive();
 
         if ($Zip->open($zipfile, \ZIPARCHIVE::CREATE) !== true) {
-            throw new QUI\Exception('cannot open ' . $zipfile);
+            throw new QUI\Exception('cannot open '.$zipfile);
         }
 
-        if (!is_array($ignore)) {
-            $ignore = array();
+        if (!\is_array($ignore)) {
+            $ignore = [];
         }
 
-        if (substr($folder, -1) != '/') {
+        if (\substr($folder, -1) != '/') {
             $folder .= '/';
         }
 
@@ -81,13 +81,13 @@ class Zip
                 continue;
             }
 
-            $oldfolder = $folder . $_folder;
+            $oldfolder = $folder.$_folder;
 
-            for ($i = 0, $len = count($_file); $i < $len; $i++) {
-                if (file_exists($oldfolder . $_file[$i])) {
+            for ($i = 0, $len = \count($_file); $i < $len; $i++) {
+                if (\file_exists($oldfolder.$_file[$i])) {
                     $Zip->addFile(
-                        $oldfolder . $_file[$i],
-                        $_folder . $_file[$i]
+                        $oldfolder.$_file[$i],
+                        $_folder.$_file[$i]
                     );
                 }
             }
@@ -112,7 +112,7 @@ class Zip
         $Zip = new \ZipArchive();
 
         if ($Zip->open($zipfile, \ZIPARCHIVE::CREATE) !== true) {
-            throw new QUI\Exception('cannot open ' . $zipfile);
+            throw new QUI\Exception('cannot open '.$zipfile);
         }
 
         if (!is_array($files) || count($files) == 0) {
@@ -120,8 +120,8 @@ class Zip
         }
 
         foreach ($files as $file) {
-            if (file_exists($file)) {
-                $Zip->addFile($file, basename($file));
+            if (\file_exists($file)) {
+                $Zip->addFile($file, \basename($file));
             }
         }
 
@@ -141,9 +141,9 @@ class Zip
     {
         self::check();
 
-        if (!file_exists($zipfile)) {
+        if (!\file_exists($zipfile)) {
             throw new QUI\Exception(
-                'Zip Archive ' . $zipfile . ' doesn\'t exist',
+                'Zip Archive '.$zipfile.' doesn\'t exist',
                 404
             );
         }

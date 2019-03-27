@@ -29,7 +29,7 @@ class XML
      */
     public static function addXMLFileToMenu(QUI\Controls\Contextmenu\Bar $Menu, $file, $User = null)
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             return;
         }
 
@@ -48,12 +48,12 @@ class XML
                 return true;
             }
 
-            if (!class_exists('\QUI\Permissions\Permission') ||
-                !class_exists('\QUI')) {
+            if (!\class_exists('\QUI\Permissions\Permission') ||
+                !\class_exists('\QUI')) {
                 return true;
             }
 
-            $permissions = explode(',', $permissions);
+            $permissions = \explode(',', $permissions);
 
             foreach ($permissions as $permission) {
                 if (!QUI\Permissions\Permission::hasPermission($permission, $User)) {
@@ -90,9 +90,9 @@ class XML
             $Parent = $Menu;
 
             if ($Item->getAttribute('parent') != '/') {
-                $parent_path = explode(
+                $parent_path = \explode(
                     '/',
-                    trim($Item->getAttribute('parent'), '/')
+                    \trim($Item->getAttribute('parent'), '/')
                 );
 
                 foreach ($parent_path as $parent) {
@@ -162,9 +162,9 @@ class XML
 
         if (!$name || empty($name)) {
             // plugin conf???
-            $dirname = dirname($file);
-            $package = str_replace(
-                dirname(dirname($dirname)).'/',
+            $dirname = \dirname($file);
+            $package = \str_replace(
+                \dirname(\dirname($dirname)).'/',
                 '',
                 $dirname
             );
@@ -181,10 +181,10 @@ class XML
 
         $ini_file = CMS_DIR.'etc/'.$name.'.ini.php';
 
-        QUI\Utils\System\File::mkdir(dirname($ini_file));
+        QUI\Utils\System\File::mkdir(\dirname($ini_file));
 
-        if (!file_exists($ini_file)) {
-            file_put_contents($ini_file, '');
+        if (!\file_exists($ini_file)) {
+            \file_put_contents($ini_file, '');
         }
 
         $Config = new QUI\Config($ini_file);
@@ -201,7 +201,7 @@ class XML
 
             foreach ($key as $value => $entry) {
                 // no special characters allowed
-                if (preg_match('/[^0-9_a-zA-Z]/', $value)) {
+                if (\preg_match('/[^0-9_a-zA-Z]/', $value)) {
                     continue;
                 }
 
@@ -257,9 +257,9 @@ class XML
 
             if (!empty($file)) {
                 $file = DOM::parseVar($file);
-                $file = Orthos::clearPath(realpath($file));
+                $file = Orthos::clearPath(\realpath($file));
 
-                if (file_exists($file)) {
+                if (\file_exists($file)) {
                     include_once $file;
                 }
             }
@@ -359,11 +359,11 @@ class XML
      */
     public static function getDomFromXml($filename)
     {
-        if (strpos($filename, '.xml') === false) {
+        if (\strpos($filename, '.xml') === false) {
             return new \DOMDocument();
         }
 
-        if (!file_exists($filename)) {
+        if (!\file_exists($filename)) {
             return new \DOMDocument();
         }
 
@@ -424,7 +424,7 @@ class XML
         $types  = $Path->query("//site/types/type");
         $result = [];
 
-        $package = str_replace(OPT_DIR, '', dirname($file));
+        $package = \str_replace(OPT_DIR, '', \dirname($file));
 
         foreach ($types as $Type) {
             /* @var $Type \DOMElement */
@@ -734,7 +734,7 @@ class XML
             return [];
         }
 
-        $package = str_replace(
+        $package = \str_replace(
             [OPT_DIR, '/permissions.xml'],
             '',
             $file
@@ -1095,7 +1095,7 @@ class XML
                     continue;
                 }
 
-                $Widget->setAttribute('name', md5($file.$c));
+                $Widget->setAttribute('name', \md5($file.$c));
 
                 $result[] = $Widget;
             }
@@ -1122,7 +1122,7 @@ class XML
 
         /* @var $Widget \DOMElement */
         $Widget = $widget->item(0);
-        $Widget->setAttribute('name', md5($file));
+        $Widget->setAttribute('name', \md5($file));
 
         return $Widget;
     }
@@ -1153,12 +1153,12 @@ class XML
 
 
         $checkFnMatch = function ($key, $keyList) {
-            if (!is_array($keyList)) {
+            if (!\is_array($keyList)) {
                 return false;
             }
 
             foreach ($keyList as $keyEntry) {
-                if (fnmatch($keyEntry, $key)) {
+                if (\fnmatch($keyEntry, $key)) {
                     return $keyEntry;
                 }
             }
@@ -1167,7 +1167,7 @@ class XML
         };
 
         foreach ($params as $section => $param) {
-            if (!is_array($param)) {
+            if (!\is_array($param)) {
                 continue;
             }
 
@@ -1177,7 +1177,7 @@ class XML
                 }
 
                 // no special characters allowed
-                if (preg_match('/[^0-9_a-zA-Z]/', $key)) {
+                if (\preg_match('/[^0-9_a-zA-Z]/', $key)) {
                     continue;
                 }
 
@@ -1228,7 +1228,7 @@ class XML
 
         $Config->save();
 
-        if (strpos($file, 'quiqqer/quiqqer/admin/settings/cache.xml') !== false) {
+        if (\strpos($file, 'quiqqer/quiqqer/admin/settings/cache.xml') !== false) {
             // if cache settings are set, this must be in the global conf
             // workaround for quiqqer/quiqqer#726
             $noCache = $Config->get('general', 'nocache');
@@ -1241,9 +1241,9 @@ class XML
 
         // @todo muss in paket klasse ausgelagert werden
         // package config?
-        if (strpos($file, OPT_DIR) !== false) {
-            $_file = str_replace(OPT_DIR, '', $file);
-            $_file = explode('/', $_file);
+        if (\strpos($file, OPT_DIR) !== false) {
+            $_file = \str_replace(OPT_DIR, '', $file);
+            $_file = \explode('/', $_file);
 
             try {
                 $Package = QUI::getPackage($_file[0].'/'.$_file[1]);
@@ -1295,8 +1295,8 @@ class XML
                 }
 
                 foreach ($index as $ind) {
-                    if (strpos($ind, ',') !== false) {
-                        $Table->setIndex($tbl, explode(',', $ind));
+                    if (\strpos($ind, ',') !== false) {
+                        $Table->setIndex($tbl, \explode(',', $ind));
                     } else {
                         $Table->setIndex($tbl, $ind);
                     }
@@ -1336,7 +1336,7 @@ class XML
 
                 // Projekte durchgehen
                 foreach ($projects as $name => $params) {
-                    $langs = explode(',', $params['langs']);
+                    $langs = \explode(',', $params['langs']);
 
                     foreach ($langs as $lang) {
                         $tbl = QUI::getDBTableName($name.'_'.$lang.'_'.$suffix);
@@ -1354,15 +1354,15 @@ class XML
                         if (isset($table['index'])) {
                             $index = [];
 
-                            if (isset($table['index']) && !is_array($table['index'])) {
+                            if (isset($table['index']) && !\is_array($table['index'])) {
                                 $index[] = $table['index'];
-                            } elseif (isset($table['index']) && is_array($table['index'])) {
+                            } elseif (isset($table['index']) && \is_array($table['index'])) {
                                 $index = $table['index'];
                             }
 
                             foreach ($index as $ind) {
-                                if (strpos($ind, ',') !== false) {
-                                    $Table->setIndex($tbl, explode(',', $ind));
+                                if (\strpos($ind, ',') !== false) {
+                                    $Table->setIndex($tbl, \explode(',', $ind));
                                 } else {
                                     $Table->setIndex($tbl, $ind);
                                 }
@@ -1384,14 +1384,14 @@ class XML
         // php executes
         if (isset($dbfields['execute'])) {
             foreach ($dbfields['execute'] as $exec) {
-                $exec = str_replace('\\\\', '\\', $exec);
+                $exec = \str_replace('\\\\', '\\', $exec);
 
-                if (!is_callable($exec)) {
+                if (!\is_callable($exec)) {
                     QUI\System\Log::addInfo($exec.' not callable');
                     continue;
                 }
 
-                call_user_func($exec);
+                \call_user_func($exec);
             }
         }
     }
@@ -1408,7 +1408,7 @@ class XML
     {
         $dbFields = self::getDataBaseFromXml($xmlfile);
 
-        if (!count($dbFields)) {
+        if (!\count($dbFields)) {
             return;
         }
 

@@ -31,7 +31,7 @@ class System
      */
     public static function getMemoryLimit()
     {
-        return File::getBytes(ini_get('memory_limit'));
+        return File::getBytes(\ini_get('memory_limit'));
     }
 
     /**
@@ -57,7 +57,7 @@ class System
     public static function isProtocolSecure()
     {
         if (isset($_SERVER['HTTPS'])) {
-            $https = strtolower($_SERVER['HTTPS']);
+            $https = \strtolower($_SERVER['HTTPS']);
 
             if ($https == 'on') {
                 return true;
@@ -82,9 +82,9 @@ class System
      */
     public static function getUploadMaxFileSize()
     {
-        return min(
-            (int)ini_get('upload_max_filesize'),
-            (int)ini_get('post_max_size')
+        return \min(
+            (int)\ini_get('upload_max_filesize'),
+            (int)\ini_get('post_max_size')
         );
     }
 
@@ -103,7 +103,7 @@ class System
         }
 
         // 80% abfragen
-        $usage = (int)(memory_get_usage() / 1024 / 1000); // in MB
+        $usage = (int)(\memory_get_usage() / 1024 / 1000); // in MB
         $max   = (int)self::$memory_limit;
         $_max  = $max / 100 * 80; // 80%
 
@@ -142,7 +142,6 @@ class System
      */
     public static function isShellFunctionEnabled($func)
     {
-        return is_callable($func)
-               && false === stripos(ini_get('disable_functions'), $func);
+        return \is_callable($func) && false === \stripos(\ini_get('disable_functions'), $func);
     }
 }

@@ -12,7 +12,6 @@ namespace QUI;
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
  */
-
 class Exception extends \Exception
 {
     /**
@@ -20,14 +19,14 @@ class Exception extends \Exception
      *
      * @var array
      */
-    protected $attributes = array();
+    protected $attributes = [];
 
     /**
      * context data
      *
      * @var array
      */
-    protected $context = array();
+    protected $context = [];
 
     /**
      * Constructor
@@ -36,20 +35,20 @@ class Exception extends \Exception
      * @param integer $code - Errorcode der Exception
      * @param array $context - [optional] Context data, which data
      */
-    public function __construct($message = null, $code = 0, $context = array())
+    public function __construct($message = null, $code = 0, $context = [])
     {
-        if (is_array($message)) {
+        if (\is_array($message)) {
             if (!isset($message[0]) || !isset($message[1])) {
-                $message = implode(',', $message);
+                $message = \implode(',', $message);
             } else {
-                $params = array();
+                $params = [];
 
                 if (isset($message[2])) {
                     $params = $message[2];
                 }
 
                 $context['locale'] = $message;
-                
+
                 $message = \QUI::getUserBySession()->getLocale()->get(
                     $message[0],
                     $message[1],
@@ -72,7 +71,7 @@ class Exception extends \Exception
      */
     public function getType()
     {
-        return get_class($this);
+        return \get_class($this);
     }
 
     /**
@@ -143,7 +142,7 @@ class Exception extends \Exception
      */
     public function setAttributes($attributes)
     {
-        if (!is_array($attributes)) {
+        if (!\is_array($attributes)) {
             return $this;
         }
 
