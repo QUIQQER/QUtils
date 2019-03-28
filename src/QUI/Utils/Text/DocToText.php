@@ -29,7 +29,7 @@ class DocToText
      */
     public static function convert($file)
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             throw new QUI\Exception('File could not be read.', 404);
         }
 
@@ -70,9 +70,9 @@ class DocToText
             );
 
             // $text = strip_tags($Doc->saveXML());
-            $text = preg_replace('#<[^>]+>#', ' ', $Doc->saveXML());
-            $text = preg_replace('/([ ]){2,}/', "$1", $text);
-            $text = trim($text);
+            $text = \preg_replace('#<[^>]+>#', ' ', $Doc->saveXML());
+            $text = \preg_replace('/([ ]){2,}/', "$1", $text);
+            $text = \trim($text);
 
             $Zip->close();
 
@@ -93,15 +93,15 @@ class DocToText
      */
     public static function convertDoc($filename)
     {
-        if (!file_exists($filename)) {
+        if (!\file_exists($filename)) {
             throw new QUI\Exception('File could not be read.', 404);
         }
 
-        if (!($fh = fopen($filename, 'r'))) {
+        if (!($fh = \fopen($filename, 'r'))) {
             throw new QUI\Exception('File could not be read.', 404);
         }
 
-        $headers = fread($fh, 0xA00);
+        $headers = \fread($fh, 0xA00);
 
         # 1 = (ord(n)*1) ; Document has from 0 to 255 characters
         $n1 = (ord($headers[0x21C]) - 1);
@@ -117,8 +117,8 @@ class DocToText
 
         # Total length of text in the document
         $textLength          = ($n1 + $n2 + $n3 + $n4);
-        $extracted_plaintext = fread($fh, $textLength);
+        $extracted_plaintext = \fread($fh, $textLength);
 
-        return utf8_encode(nl2br($extracted_plaintext));
+        return \utf8_encode(\nl2br($extracted_plaintext));
     }
 }

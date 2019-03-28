@@ -12,7 +12,6 @@ namespace QUI\Utils;
  * @author  www.pcsg.de (Henning Leutz)
  * @package com.pcsg.qutils
  */
-
 class Convert
 {
     /**
@@ -32,15 +31,15 @@ class Convert
     {
         switch ($type) {
             case 2:
-                $price = number_format(round($price, 2), '2', ',', '.');
+                $price = \number_format(\round($price, 2), '2', ',', '.');
                 break;
 
             case 3:
-                $price = number_format(round($price, 2), '2', '.', ',');
+                $price = \number_format(\round($price, 2), '2', '.', ',');
                 break;
 
             default:
-                $price = round($price, 2);
+                $price = \round($price, 2);
                 break;
         }
 
@@ -60,11 +59,11 @@ class Convert
             return '0 B';
         }
 
-        $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        $power = $bytes > 0 ? \floor(\log($bytes, 1024)) : 0;
 
-        return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' '
-        . $units[$power];
+        return \number_format($bytes / pow(1024, $power), 2, '.', ',').' '
+               .$units[$power];
     }
 
 
@@ -77,16 +76,16 @@ class Convert
      */
     public static function convertChars($conv)
     {
-        $conv = str_replace("Ä", chr(196), $conv);
-        $conv = str_replace("ä", chr(228), $conv);
-        $conv = str_replace("Ö", chr(214), $conv);
-        $conv = str_replace("ö", chr(246), $conv);
-        $conv = str_replace("Ü", chr(220), $conv);
-        $conv = str_replace("ü", chr(252), $conv);
-        $conv = str_replace("ß", chr(223), $conv);
-        $conv = str_replace("'", chr(39), $conv);
-        $conv = str_replace("´", chr(180), $conv);
-        $conv = str_replace("`", chr(96), $conv);
+        $conv = \str_replace("Ä", \chr(196), $conv);
+        $conv = \str_replace("ä", \chr(228), $conv);
+        $conv = \str_replace("Ö", \chr(214), $conv);
+        $conv = \str_replace("ö", \chr(246), $conv);
+        $conv = \str_replace("Ü", \chr(220), $conv);
+        $conv = \str_replace("ü", \chr(252), $conv);
+        $conv = \str_replace("ß", \chr(223), $conv);
+        $conv = \str_replace("'", \chr(39), $conv);
+        $conv = \str_replace("´", \chr(180), $conv);
+        $conv = \str_replace("`", \chr(96), $conv);
 
         return $conv;
     }
@@ -100,11 +99,11 @@ class Convert
      */
     public static function convertMySqlDatetime($str)
     {
-        list($date, $time) = explode(' ', $str);
-        list($year, $month, $day) = explode('-', $date);
-        list($hour, $minute, $second) = explode(':', $time);
+        list($date, $time) = \explode(' ', $str);
+        list($year, $month, $day) = \explode('-', $date);
+        list($hour, $minute, $second) = \explode(':', $time);
 
-        $timestamp = mktime($hour, $minute, $second, $month, $day, $year);
+        $timestamp = \mktime($hour, $minute, $second, $month, $day, $year);
 
         return $timestamp;
     }
@@ -121,24 +120,24 @@ class Convert
     public static function convertUrlChars($conv, $code = 0)
     {
         if ($code == 0) {
-            $conv = str_replace("Ä", "Ae", $conv);
-            $conv = str_replace("ä", "ae", $conv);
-            $conv = str_replace("Ö", "Oe", $conv);
-            $conv = str_replace("ö", "oe", $conv);
-            $conv = str_replace("Ü", "Ue", $conv);
-            $conv = str_replace("ü", "ue", $conv);
-            $conv = str_replace("ß", "sz", $conv);
+            $conv = \str_replace("Ä", "Ae", $conv);
+            $conv = \str_replace("ä", "ae", $conv);
+            $conv = \str_replace("Ö", "Oe", $conv);
+            $conv = \str_replace("ö", "oe", $conv);
+            $conv = \str_replace("Ü", "Ue", $conv);
+            $conv = \str_replace("ü", "ue", $conv);
+            $conv = \str_replace("ß", "sz", $conv);
 
             return $conv;
         }
 
-        $conv = str_replace("Ae", "Ä", $conv);
-        $conv = str_replace("ae", "ä", $conv);
-        $conv = str_replace("Oe", "Ö", $conv);
-        $conv = str_replace("oe", "ö", $conv);
-        $conv = str_replace("Ue", "Ü", $conv);
-        $conv = str_replace("ue", "ü", $conv);
-        $conv = str_replace("sz", "ß", $conv);
+        $conv = \str_replace("Ae", "Ä", $conv);
+        $conv = \str_replace("ae", "ä", $conv);
+        $conv = \str_replace("Oe", "Ö", $conv);
+        $conv = \str_replace("oe", "ö", $conv);
+        $conv = \str_replace("Ue", "Ü", $conv);
+        $conv = \str_replace("ue", "ü", $conv);
+        $conv = \str_replace("sz", "ß", $conv);
 
         return $conv;
     }
@@ -152,7 +151,7 @@ class Convert
      */
     public static function convertRoman($str)
     {
-        $signs = array(
+        $signs = [
             'À' => 'A',
             'à' => 'a',
             'Á' => 'A',
@@ -224,10 +223,10 @@ class Convert
             'Ÿ' => 'Y',
             'ÿ' => 'y',
             'ß' => 'ss'
-        );
+        ];
 
         foreach ($signs as $from => $to) {
-            $str = str_replace($from, $to, $str);
+            $str = \str_replace($from, $to, $str);
         }
 
         return $str;
@@ -249,26 +248,26 @@ class Convert
         // Work out if hash given
         $hash = '';
 
-        if (stristr($hex, '#')) {
-            $hex  = str_replace('#', '', $hex);
+        if (\stristr($hex, '#')) {
+            $hex  = \str_replace('#', '', $hex);
             $hash = '#';
         }
 
         /// HEX TO RGB
-        $rgb = array(
-            hexdec(substr($hex, 0, 2)),
-            hexdec(substr($hex, 2, 2)),
-            hexdec(substr($hex, 4, 2))
-        );
+        $rgb = [
+            \hexdec(\substr($hex, 0, 2)),
+            \hexdec(\substr($hex, 2, 2)),
+            \hexdec(\substr($hex, 4, 2))
+        ];
 
         for ($i = 0; $i < 3; $i++) {
             if ($percent > 0) {
                 // Lighter
-                $rgb[$i] = round($rgb[$i] * $percent) + round(255 * (1 - $percent));
+                $rgb[$i] = \round($rgb[$i] * $percent) + \round(255 * (1 - $percent));
             } else {
                 // Darker
                 $positivePercent = $percent - ($percent * 2);
-                $rgb[$i]         = round($rgb[$i] * $positivePercent) + round(0 * (1 - $positivePercent));
+                $rgb[$i]         = \round($rgb[$i] * $positivePercent) + \round(0 * (1 - $positivePercent));
             }
 
             if ($rgb[$i] > 255) {
@@ -281,15 +280,15 @@ class Convert
 
         for ($i = 0; $i < 3; $i++) {
             // Convert the decimal digit to hex
-            $hexDigit = dechex($rgb[$i]);
+            $hexDigit = \dechex($rgb[$i]);
             // Add a leading zero if necessary
-            if (strlen($hexDigit) == 1) {
-                $hexDigit = "0" . $hexDigit;
+            if (\strlen($hexDigit) == 1) {
+                $hexDigit = "0".$hexDigit;
             }
             // Append to the hex string
             $hex .= $hexDigit;
         }
 
-        return $hash . $hex;
+        return $hash.$hex;
     }
 }

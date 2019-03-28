@@ -79,7 +79,7 @@ class Folder
         $folderSize = 0;
 
         // Sum up all file sizes
-        if ($path !== false && $path != '' && file_exists($path)) {
+        if ($path !== false && $path != '' && \file_exists($path)) {
             $Iterator = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
             );
@@ -120,12 +120,12 @@ class Folder
     protected static function sanitizePath($path)
     {
         // Add slash to the end of the path if it's not present
-        if (substr($path, strlen($path) - 1) != '/') {
+        if (\substr($path, \strlen($path) - 1) != '/') {
             $path .= '/';
         }
 
         // Canonicalize the path
-        $path = realpath($path);
+        $path = \realpath($path);
 
         return $path;
     }
@@ -140,7 +140,7 @@ class Folder
     {
         $path = self::sanitizePath($path);
 
-        return "folder_size_" . sha1($path);
+        return "folder_size_".sha1($path);
     }
 
     /**
@@ -153,6 +153,6 @@ class Folder
     {
         $path = self::sanitizePath($path);
 
-        return "folder_size_timestamp_" . sha1($path);
+        return "folder_size_timestamp_".sha1($path);
     }
 }

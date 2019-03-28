@@ -28,10 +28,10 @@ class Word
         $str = $text;
 
         // html raus
-        $str = strip_tags($str);
-        $str = explode(' ', $str);
+        $str = \strip_tags($str);
+        $str = \explode(' ', $str);
 
-        $result = array();
+        $result = [];
 
         foreach ($str as $entry) {
             if (self::isUseful($entry) == false) {
@@ -47,8 +47,8 @@ class Word
             $result[$entry] = 1;
         }
 
-        asort($result);
-        $result = array_reverse($result);
+        \asort($result);
+        $result = \array_reverse($result);
 
         return $result;
     }
@@ -64,47 +64,47 @@ class Word
      */
     public static function isUseful($word)
     {
-        if (strlen($word) <= 1) {
+        if (\strlen($word) <= 1) {
             return false;
         }
 
         // Kleingeschriebene Wörter raus
-        if (strtolower($word{0}) == $word{0}) {
+        if (\strtolower($word{0}) == $word{0}) {
             return false;
         }
 
-        if (preg_match('/[^a-zA-Z]/i', $word)) {
+        if (\preg_match('/[^a-zA-Z]/i', $word)) {
             return false;
         }
 
         // Wörter mit 2 Grossbuchstaben
-        $w0 = utf8_encode(
-            strtoupper(
-                str_replace(
-                    array('ä', 'ö', 'ü'),
-                    array('Ä', 'Ö', 'Ü'),
+        $w0 = \utf8_encode(
+            \strtoupper(
+                \str_replace(
+                    ['ä', 'ö', 'ü'],
+                    ['Ä', 'Ö', 'Ü'],
                     $word{0}
                 )
             )
         );
 
         $w1 = utf8_encode(
-            strtoupper(
-                str_replace(
-                    array('ä', 'ö', 'ü'),
-                    array('Ä', 'Ö', 'Ü'),
+            \strtoupper(
+                \str_replace(
+                    ['ä', 'ö', 'ü'],
+                    ['Ä', 'Ö', 'Ü'],
                     $word{1}
                 )
             )
         );
 
         // Wörter mit weniger als 3 Buchstaben
-        if (strlen($word) <= 3) {
+        if (\strlen($word) <= 3) {
             return false;
         }
 
         // Wörter welche nicht erlaubt sind
-        $not = array(
+        $not = [
             'ab',
             'aus',
             'von',
@@ -329,21 +329,21 @@ class Word
             'zuletzt',
             'also',
             'davon'
-        );
+        ];
 
-        $_word = strtolower($word);
+        $_word = \strtolower($word);
 
-        if (in_array($_word, $not)) {
+        if (\in_array($_word, $not)) {
             return false;
         }
 
         /*  *gegen*  */
-        if (strpos($word, 'gegen') !== false) {
+        if (\strpos($word, 'gegen') !== false) {
             return false;
         }
 
         /* search*  */
-        $beginings = array(
+        $beginings = [
             'außer',
             'ober',
             'unter,	welch',
@@ -393,10 +393,10 @@ class Word
             'wollte',
             'durfte',
             'machte'
-        );
+        ];
 
         foreach ($beginings as $search) {
-            $pos = strpos($_word, $search);
+            $pos = \strpos($_word, $search);
 
             if ($pos === false) {
                 continue;
@@ -408,7 +408,7 @@ class Word
         }
 
         /* *search  */
-        $endings = array(
+        $endings = [
             'mal',
             'sofern',
             'soweit',
@@ -421,10 +421,10 @@ class Word
             'mitten',
             'jenige',
             'selbe'
-        );
+        ];
 
         foreach ($endings as $search) {
-            if (preg_match('/(.*?)' . $search . '$/i', $word)) {
+            if (\preg_match('/(.*?)'.$search.'$/i', $word)) {
                 return false;
             }
         }

@@ -15,7 +15,6 @@ namespace QUI;
  * @package com.pcsg.qutils
  * @deprecated
  */
-
 class Log
 {
     /**
@@ -26,19 +25,19 @@ class Log
      */
     public static function write($message, $filename = 'messages')
     {
-        if (!defined('VAR_DIR')) {
-            error_log($message . "\n", 3);
+        if (!\defined('VAR_DIR')) {
+            \error_log($message."\n", 3);
 
             return;
         }
 
-        $dir  = VAR_DIR . 'log/';
-        $file = $dir . $filename . date('-Y-m-d') . '.log';
+        $dir  = VAR_DIR.'log/';
+        $file = $dir.$filename.\date('-Y-m-d').'.log';
 
         // Log Verzeichnis erstellen
         Utils\System\File::mkdir($dir);
 
-        error_log($message . "\n", 3, $file);
+        \error_log($message."\n", 3, $file);
     }
 
     /**
@@ -49,7 +48,7 @@ class Log
      */
     public static function writeRecursive($object, $filename = 'messages')
     {
-        self::write(print_r($object, true), $filename);
+        self::write(\print_r($object, true), $filename);
     }
 
     /**
@@ -60,7 +59,7 @@ class Log
      */
     public static function writeException($Exception, $filename = 'error')
     {
-        $message = $Exception->getCode() . " :: \n\n";
+        $message = $Exception->getCode()." :: \n\n";
         $message .= $Exception->getMessage();
 
         self::write($message, $filename);

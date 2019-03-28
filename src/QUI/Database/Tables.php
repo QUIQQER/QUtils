@@ -119,7 +119,7 @@ class Tables
 
         $data = $Stmnt->fetchAll();
 
-        return count($data) > 0 ? true : false;
+        return \count($data) > 0 ? true : false;
     }
 
     /**
@@ -190,7 +190,7 @@ class Tables
      */
     public function create($table, $fields, $engine = 'MYISAM')
     {
-        if (!is_array($fields)) {
+        if (!\is_array($fields)) {
             throw new Exception(
                 'No Array given \QUI\Database\Tables->createTable'
             );
@@ -228,9 +228,9 @@ class Tables
                 $sql .= '`'.$key.'` '.$type.',';
             }
 
-            $sql = substr($sql, 0, -1);
+            $sql = \substr($sql, 0, -1);
         } else {
-            $len = count($fields);
+            $len = \count($fields);
 
             for ($i = 0; $i < $len; $i++) {
                 $sql .= $fields[$i];
@@ -308,7 +308,10 @@ class Tables
      * @param string $table
      * @param array $fields
      * @param string $engine - optional, is only used when the table is created
+     *
      * @deprecated ->addColumn
+     *
+     * @throws Exception
      */
     public function appendFields($table, $fields, $engine = 'MYISAM')
     {
@@ -348,7 +351,7 @@ class Tables
 
         // Einzeln die Felder löschen
         foreach ($fields as $field) {
-            if (in_array($field, $tbl_fields)) {
+            if (\in_array($field, $tbl_fields)) {
                 $this->deleteColumn($table, $field);
             }
         }
@@ -385,7 +388,7 @@ class Tables
             $field = $this->clear($field);
             $type  = $this->parseFieldType($type);
 
-            if (!in_array($field, $tblFields)) {
+            if (!\in_array($field, $tblFields)) {
                 if ($this->isSQLite()) {
                     $Stmnt = $PDO->prepare("ALTER TABLE `{$table}` ADD COLUMN `{$field}` {$type}");
                     $Stmnt->execute();
@@ -407,22 +410,22 @@ class Tables
             }
 
             // change column
-            if (stripos($type, 'PRIMARY KEY') === false &&
+            if (\stripos($type, 'PRIMARY KEY') === false &&
                 !$this->issetPrimaryKey($table, $field)
             ) {
                 $change[] = "CHANGE `{$field}` `{$field}` {$type}";
             }
         }
 
-        if (!count($change)) {
+        if (!\count($change)) {
             return;
         }
 
         $query = "ALTER TABLE `{$table}` ";
-        $query .= implode(",\n", $change);
+        $query .= \implode(",\n", $change);
 
-        $query = str_replace('CURRENTTIMESTAMP', 'NOW()', $query);
-        $query = str_replace('DEFAULT  NOT NULL', "DEFAULT '' NOT NULL", $query);
+        $query = \str_replace('CURRENTTIMESTAMP', 'NOW()', $query);
+        $query = \str_replace('DEFAULT  NOT NULL', "DEFAULT '' NOT NULL", $query);
 
         $Stmnt = $PDO->prepare($query);
 
@@ -454,7 +457,7 @@ class Tables
 
             $data = $Stmnt->fetchAll();
 
-            return count($data) > 0 ? true : false;
+            return \count($data) > 0 ? true : false;
         }
 
         // sqlite part
@@ -615,7 +618,7 @@ class Tables
      */
     public function issetPrimaryKey($table, $key)
     {
-        if (is_array($key)) {
+        if (\is_array($key)) {
             foreach ($key as $entry) {
                 if ($this->issetPrimaryKeyHelper($table, $entry) == false) {
                     return false;
@@ -693,7 +696,7 @@ class Tables
         $query = "ALTER TABLE `{$queryTable}` ADD PRIMARY KEY({$queryKeys})";
 
         // if key exists, drop it
-        if (is_array($key)) {
+        if (\is_array($key)) {
             foreach ($key as $k) {
                 if ($this->issetPrimaryKey($table, $k)) {
                     $query = "ALTER TABLE  `{$queryTable}` DROP PRIMARY KEY , ADD PRIMARY KEY({$queryKeys});";
@@ -795,7 +798,7 @@ class Tables
      */
     public function issetUniqueColumn($table, $unique)
     {
-        if (is_array($unique)) {
+        if (\is_array($unique)) {
             foreach ($unique as $entry) {
                 if ($this->issetUniqueColumnHelper($table, $entry) == false) {
                     return false;
@@ -827,7 +830,7 @@ class Tables
 
         $uniques = $this->getUniqueColumns($table);
 
-        return in_array($unique, $uniques);
+        return \in_array($unique, $uniques);
     }
 
     /**
@@ -844,7 +847,7 @@ class Tables
      */
     public function issetIndex($table, $key)
     {
-        if (is_array($key)) {
+        if (\is_array($key)) {
             foreach ($key as $entry) {
                 if ($this->issetIndexHelper($table, $entry) == false) {
                     return false;
@@ -1049,10 +1052,8 @@ class Tables
      * @return boolean
      * @throws QUI\Exception
      */
-    public function setFulltext(
-        $table,
-        $index
-    ) {
+    public function setFulltext($table, $index)
+    {
         // no fulltext in sqlite
         if ($this->isSQLite()) {
             throw new QUI\Exception('Use USING fts4 for SQLite');
@@ -1085,15 +1086,13 @@ class Tables
      * @return boolean
      * @throws QUI\Exception
      */
-    public function issetFulltext(
-        $table,
-        $key
-    ) {
+    public function issetFulltext($table, $key)
+    {
         if ($this->isSQLite()) {
             throw new QUI\Exception('Use USING fts4 for SQLite');
         }
 
-        if (is_array($key)) {
+        if (\is_array($key)) {
             foreach ($key as $entry) {
                 if ($this->issetFulltextHelper($table, $entry) == false) {
                     return false;
@@ -1114,10 +1113,8 @@ class Tables
      *
      * @return boolean
      */
-    protected function issetFulltextHelper(
-        $table,
-        $key
-    ) {
+    protected function issetFulltextHelper($table, $key)
+    {
         $keys = $this->getKeys($table);
 
         foreach ($keys as $entry) {
@@ -1139,10 +1136,9 @@ class Tables
      *
      * @return string
      */
-    protected function clear(
-        $str
-    ) {
-        return str_replace(['\\', "\0", '`'], '', $str);
+    protected function clear($str)
+    {
+        return \str_replace(['\\', "\0", '`'], '', $str);
     }
 
     /**
@@ -1152,11 +1148,10 @@ class Tables
      *
      * @return string
      */
-    protected function parseFieldType(
-        $fieldType
-    ) {
-        $fieldType = preg_replace("/[^a-zA-Z0-9() '_,]/", "", $fieldType);
-        $fieldType = strtoupper($fieldType);
+    protected function parseFieldType($fieldType)
+    {
+        $fieldType = \preg_replace("/[^a-zA-Z0-9() '_,]/", "", $fieldType);
+        $fieldType = \strtoupper($fieldType);
 
         return $fieldType;
     }
@@ -1168,17 +1163,16 @@ class Tables
      *
      * @return string
      */
-    protected function inList(
-        $index
-    ) {
-        if (is_array($index)) {
+    protected function inList($index)
+    {
+        if (\is_array($index)) {
             foreach ($index as $k => $v) {
                 $index[$k] = $this->clear($v);
             }
         }
 
-        if (is_array($index)) {
-            $fulltext = "`".implode("`,`", $index)."`";
+        if (\is_array($index)) {
+            $fulltext = "`".\implode("`,`", $index)."`";
         } else {
             $index    = $this->clear($index);
             $fulltext = "`{$index}`";

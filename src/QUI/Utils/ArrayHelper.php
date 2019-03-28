@@ -26,7 +26,7 @@ class ArrayHelper
     public static function isAssoc(array $array)
     {
         foreach ($array as $key => $value) {
-            if (is_int($key)) {
+            if (\is_int($key)) {
                 return false;
             }
         }
@@ -43,9 +43,9 @@ class ArrayHelper
      */
     public static function toAssoc(array $array)
     {
-        $result = array();
+        $result = [];
 
-        for ($i = 0, $len = count($array); $i < $len; $i++) {
+        for ($i = 0, $len = \count($array); $i < $len; $i++) {
             $result[$array[$i]] = true;
         }
 
@@ -61,15 +61,15 @@ class ArrayHelper
      */
     public static function objectToArray($obj)
     {
-        $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
-        $arr  = array();
+        $_arr = \is_object($obj) ? \get_object_vars($obj) : $obj;
+        $arr  = [];
 
-        if (!is_array($_arr)) {
+        if (!\is_array($_arr)) {
             return $arr;
         }
 
         foreach ($_arr as $key => $val) {
-            if (is_array($val) || is_object($val)) {
+            if (\is_array($val) || \is_object($val)) {
                 $val = self::objectToArray($val);
             }
 
@@ -86,7 +86,7 @@ class ArrayHelper
      *
      * @return Object
      */
-    public static function arrayToObject($array = array())
+    public static function arrayToObject($array = [])
     {
         // its the easiest way
         return (object)$array;
@@ -101,14 +101,14 @@ class ArrayHelper
      */
     public static function cleanup($array, $delimiter = ',')
     {
-        if (is_bool($array)) {
-            return array();
+        if (\is_bool($array)) {
+            return [];
         }
 
-        if (!is_array($array)) {
-            $array = explode($delimiter, $array);
+        if (!\is_array($array)) {
+            $array = \explode($delimiter, $array);
         }
 
-        return array_filter(array_unique($array));
+        return \array_filter(\array_unique($array));
     }
 }

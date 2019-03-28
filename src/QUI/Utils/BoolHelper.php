@@ -12,7 +12,6 @@ namespace QUI\Utils;
  * @author  www.pcsg.de (Henning Leutz
  * @package com.pcsg.qui.utils
  */
-
 class BoolHelper
 {
     /**
@@ -41,11 +40,11 @@ class BoolHelper
      */
     public static function JSBool($value)
     {
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return $value;
         }
 
-        if (is_integer($value)) {
+        if (\is_integer($value)) {
             if ($value == 1) {
                 return true;
             }

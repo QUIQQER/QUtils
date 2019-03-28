@@ -497,11 +497,11 @@ class File
     {
         $sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
 
-        for ($i = 0, $len = count($sizes); $i < $len - 1 && $size >= 1024; $i++) {
+        for ($i = 0, $len = \count($sizes); $i < $len - 1 && $size >= 1024; $i++) {
             $size /= 1024;
         }
 
-        return round($size, $round).' '.$sizes[$i];
+        return \round($size, $round).' '.$sizes[$i];
     }
 
     /**
@@ -515,9 +515,9 @@ class File
     {
         $last = '';
 
-        if (is_string($val)) {
-            $val  = trim($val);
-            $last = strtolower(mb_substr($val, -1));
+        if (\is_string($val)) {
+            $val  = \trim($val);
+            $last = \strtolower(\mb_substr($val, -1));
         }
 
         $val = (int)$val;
@@ -551,19 +551,19 @@ class File
      */
     public static function unlink($file)
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             return true;
         }
 
-        if (!is_dir($file)) {
-            return unlink($file);
+        if (!\is_dir($file)) {
+            return \unlink($file);
         }
 
         // create a var_dir temp folder
-        $var_folder = VAR_DIR.'tmp/'.str_replace([' ', '.'], '', microtime());
+        $var_folder = VAR_DIR.'tmp/'.\str_replace([' ', '.'], '', \microtime());
 
-        while (file_exists($var_folder)) {
-            $var_folder = VAR_DIR.'tmp/'.str_replace([' ', '.'], '', microtime());
+        while (\file_exists($var_folder)) {
+            $var_folder = VAR_DIR.'tmp/'.\str_replace([' ', '.'], '', \microtime());
         }
 
         // move to var dir, its faster
@@ -581,8 +581,8 @@ class File
      */
     public static function move($from, $to)
     {
-        if (file_exists($from) && !file_exists($to)) {
-            rename($from, $to);
+        if (\file_exists($from) && !\file_exists($to)) {
+            \rename($from, $to);
 
             return true;
         }
@@ -605,21 +605,21 @@ class File
      */
     public static function copy($from, $to)
     {
-        if (file_exists($to)) {
+        if (\file_exists($to)) {
             throw new QUI\Exception(
                 'Can\'t copy File. File exists '.$to,
                 500
             );
         }
 
-        if (!file_exists($from)) {
+        if (!\file_exists($from)) {
             throw new QUI\Exception(
                 'Can\'t copy File. File not exists '.$from,
                 500
             );
         }
 
-        return copy($from, $to);
+        return \copy($from, $to);
     }
 
     /**
@@ -636,7 +636,7 @@ class File
      */
     public static function getInfo($file, $params = [])
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             throw new QUI\Exception(
                 'QUI\Utils\System\File::getInfo()  File "'.$file
                 .'" does not exist',
@@ -647,7 +647,7 @@ class File
         $info = [];
 
         if (isset($params['pathinfo']) || $params == false) {
-            $p = pathinfo($file);
+            $p = \pathinfo($file);
 
             $info = [
                 'dirname'   => false,
@@ -674,12 +674,12 @@ class File
         }
 
         if (isset($params['filesize']) || $params == false) {
-            $info['filesize'] = filesize($file);
+            $info['filesize'] = \filesize($file);
         }
 
         if (isset($params['imagesize']) || $params == false) {
             try {
-                $r = getimagesize($file);
+                $r = \getimagesize($file);
 
                 $info['width']  = $r[0];
                 $info['height'] = $r[1];
@@ -689,24 +689,24 @@ class File
         }
 
         if (isset($params['mime_type']) || $params == false) {
-            if (function_exists('mime_content_type')) { // PHP interne Funktionen
-                $info['mime_type'] = mime_content_type($file);
-            } elseif (function_exists('finfo_open')
-                      && function_exists('finfo_file')
+            if (\function_exists('mime_content_type')) { // PHP interne Funktionen
+                $info['mime_type'] = \mime_content_type($file);
+            } elseif (\function_exists('finfo_open')
+                      && \function_exists('finfo_file')
             ) { // PECL
-                $finfo             = finfo_open(FILEINFO_MIME);
-                $part              = explode(';', finfo_file($finfo, $file));
+                $finfo             = \finfo_open(FILEINFO_MIME);
+                $part              = \explode(';', \finfo_file($finfo, $file));
                 $info['mime_type'] = $part[0];
             }
 
             // Falls beides nicht vorhanden ist
             // BAD
             if (!isset($info['mime_type']) || empty($info['mime_type'])) {
-                $file     = strtolower($file);
+                $file     = \strtolower($file);
                 $mimtypes = self::getMimeTypes();
 
-                if (isset($mimtypes[strrchr($file, '.')])) {
-                    $info['mime_type'] = $mimtypes[strrchr($file, '.')];
+                if (isset($mimtypes[\strrchr($file, '.')])) {
+                    $info['mime_type'] = $mimtypes[\strrchr($file, '.')];
                 } else {
                     $info['mime_type'] = false;
                 }
@@ -750,6 +750,8 @@ class File
      *
      * @return boolean
      * @deprecated Use QUI\Utils\Image::resize
+     *
+     * @throws QUI\Exception
      */
     public static function resize(
         $original,
@@ -775,6 +777,8 @@ class File
      * @param integer $left
      *
      * @deprecated Use QUI\Utils\Image::watermark
+     *
+     * @throws QUI\Exception
      */
     public static function watermark(
         $image,
@@ -808,31 +812,31 @@ class File
      */
     public static function find($path, $find)
     {
-        if (!is_dir($path)) {
+        if (!\is_dir($path)) {
             return [];
         }
 
-        $dh     = opendir($path);
+        $dh     = \opendir($path);
         $result = [];
 
-        while (($file = readdir($dh)) !== false) {
-            if (substr($file, 0, 1) == '.') {
+        while (($file = \readdir($dh)) !== false) {
+            if (\substr($file, 0, 1) == '.') {
                 continue;
             }
 
             $rfile = "{$path}/{$file}";
 
-            if (is_dir($rfile)) {
-                $result = array_merge($result, self::find($rfile, $find));
+            if (\is_dir($rfile)) {
+                $result = \array_merge($result, self::find($rfile, $find));
                 continue;
             }
 
-            if (fnmatch($find, $file)) {
+            if (\fnmatch($find, $file)) {
                 $result[] = $rfile;
             }
         }
 
-        closedir($dh);
+        \closedir($dh);
 
         return $result;
     }
@@ -847,7 +851,7 @@ class File
      */
     public function readDirRecursiv($folder, $flatten = false)
     {
-        if (substr($folder, strlen($folder) - 1) != '/') {
+        if (\substr($folder, \strlen($folder) - 1) != '/') {
             $folder .= '/';
         }
 
@@ -856,7 +860,7 @@ class File
 
         $this->readDirRecursiveHelper($folder);
 
-        ksort($this->files);
+        \ksort($this->files);
 
 
         if ($flatten) {
@@ -882,16 +886,16 @@ class File
     private function readDirRecursiveHelper($folder)
     {
         $_f   = $this->readDir($folder);
-        $_tmp = str_replace($this->start_folder, '', $folder);
+        $_tmp = \str_replace($this->start_folder, '', $folder);
 
         foreach ($_f as $f) {
-            if (substr($folder, strlen($folder) - 1) != '/') {
+            if (\substr($folder, \strlen($folder) - 1) != '/') {
                 $folder .= '/';
             }
 
             $dir = $folder.$f;
 
-            if (is_dir($dir)) {
+            if (\is_dir($dir)) {
                 $this->readDirRecursiveHelper($dir.'/');
             } else {
                 if ($folder == $this->start_folder) {
@@ -917,41 +921,41 @@ class File
         $only_files = false,
         $order_by_date = false
     ) {
-        if (!is_dir($folder)) {
+        if (!\is_dir($folder)) {
             return [];
         }
 
-        $folder = '/'.trim($folder, '/').'/';
+        $folder = '/'.\trim($folder, '/').'/';
 
-        $handle = opendir($folder);
+        $handle = \opendir($folder);
         $files  = [];
 
-        while ($file = readdir($handle)) {
+        while ($file = \readdir($handle)) {
             if ($file == "." || $file == "..") {
                 continue;
             }
 
             if ($only_files == true) {
-                if (is_file($folder.$file) && $order_by_date == false) {
-                    array_push($files, $file);
+                if (\is_file($folder.$file) && $order_by_date == false) {
+                    \array_push($files, $file);
                 }
 
-                if (is_file($folder.$file) && $order_by_date == true) {
-                    $files[filemtime($folder.$file)] = $file;
+                if (\is_file($folder.$file) && $order_by_date == true) {
+                    $files[\filemtime($folder.$file)] = $file;
                 }
 
                 continue;
             }
 
             if ($order_by_date == true) {
-                $files[filemtime($folder.$file)] = $file;
+                $files[\filemtime($folder.$file)] = $file;
                 continue;
             }
 
-            array_push($files, $file);
+            \array_push($files, $file);
         }
 
-        closedir($handle);
+        \closedir($handle);
 
         return $files;
     }
@@ -967,15 +971,15 @@ class File
      */
     public static function deleteDir($dir)
     {
-        if (!file_exists($dir)) {
+        if (!\file_exists($dir)) {
             return true;
         }
 
-        if (!is_dir($dir)) {
-            return unlink($dir);
+        if (!\is_dir($dir)) {
+            return \unlink($dir);
         }
 
-        foreach (scandir($dir) as $item) {
+        foreach (\scandir($dir) as $item) {
             if ($item == '.' || $item == '..') {
                 continue;
             }
@@ -989,7 +993,7 @@ class File
             }
         }
 
-        return rmdir($dir);
+        return \rmdir($dir);
     }
 
     /**
@@ -1017,17 +1021,17 @@ class File
      */
     public static function download($host, $path, $local)
     {
-        if (file_exists($local)) {
+        if (\file_exists($local)) {
             throw new QUI\Exception(
                 'Conflicting Request; Local File exist;',
                 409
             );
         }
 
-        $content = file_get_contents('http://'.$host.'/'.$path);
-        file_put_contents($local, $content);
+        $content = \file_get_contents('http://'.$host.'/'.$path);
+        \file_put_contents($local, $content);
 
-        if (file_exists($local)) {
+        if (\file_exists($local)) {
             return true;
         }
 
@@ -1050,25 +1054,25 @@ class File
     public static function send($filePath, $rate = 0, $downloadFileName = null)
     {
         // Check if file exists
-        if (!is_file($filePath)) {
+        if (!\is_file($filePath)) {
             throw new QUI\Exception('File not found.'); // #locale
         }
 
         // get more information about the file
-        $filename = basename($filePath);
+        $filename = \basename($filePath);
 
         if (!empty($downloadFileName)) {
             $filename = $downloadFileName;
         }
 
-        $size     = filesize($filePath);
-        $finfo    = finfo_open(FILEINFO_MIME);
-        $mimetype = finfo_file($finfo, realpath($filePath));
+        $size     = \filesize($filePath);
+        $finfo    = \finfo_open(FILEINFO_MIME);
+        $mimetype = \finfo_file($finfo, \realpath($filePath));
 
-        finfo_close($finfo);
+        \finfo_close($finfo);
 
         // Create file handle
-        $fp = fopen($filePath, 'rb');
+        $fp = \fopen($filePath, 'rb');
 
         $seekStart = 0;
         $seekEnd   = $size;
@@ -1076,19 +1080,19 @@ class File
         // Check if only a specific part should be sent
         if (isset($_SERVER['HTTP_RANGE'])) {
             // If so, calculate the range to use
-            $range     = explode('-', substr($_SERVER['HTTP_RANGE'], 6));
-            $seekStart = intval($range[0]);
+            $range     = \explode('-', \substr($_SERVER['HTTP_RANGE'], 6));
+            $seekStart = \intval($range[0]);
 
             if ($range[1] > 0) {
-                $seekEnd = intval($range[1]);
+                $seekEnd = \intval($range[1]);
             }
 
             // Seek to the start
-            fseek($fp, $seekStart);
+            \fseek($fp, $seekStart);
 
             // Set headers incl range info
-            header('HTTP/1.1 206 Partial Content');
-            header(sprintf(
+            \header('HTTP/1.1 206 Partial Content');
+            \header(\sprintf(
                 'Content-Range: bytes %d-%d/%d',
                 $seekStart,
                 $seekEnd,
@@ -1096,19 +1100,19 @@ class File
             ));
         } else {
             // Set headers for full file
-            header('HTTP/1.1 200 OK');
+            \header('HTTP/1.1 200 OK');
         }
 
         // Output some headers
-        header('Cache-Control: private');
-        header('Content-Type: '.$mimetype.'; charset=utf-8');
-        header('Content-Disposition: attachment; filename="'.$filename.'"');
-        header('Content-Transfer-Encoding: binary');
-        header("Content-Description: File Transfer");
-        header('Content-Length: '.($seekEnd - $seekStart));
-        header('Accept-Ranges: bytes');
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($filePath))
-               .' GMT');
+        \header('Cache-Control: private');
+        \header('Content-Type: '.$mimetype.'; charset=utf-8');
+        \header('Content-Disposition: attachment; filename="'.$filename.'"');
+        \header('Content-Transfer-Encoding: binary');
+        \header("Content-Description: File Transfer");
+        \header('Content-Length: '.($seekEnd - $seekStart));
+        \header('Accept-Ranges: bytes');
+        \header('Last-Modified: '.\gmdate('D, d M Y H:i:s', \filemtime($filePath))
+                .' GMT');
 
         $block = 1024;
         // limit download speed
@@ -1117,23 +1121,23 @@ class File
         }
 
         // disable timeout before download starts
-        set_time_limit(0);
+        \set_time_limit(0);
 
         // Send file until end is reached
-        while (!feof($fp)) {
-            $timeStart = microtime(true);
-            echo fread($fp, $block);
-            flush();
-            $wait = (microtime(true) - $timeStart) * 1000000;
+        while (!\feof($fp)) {
+            $timeStart = \microtime(true);
+            echo \fread($fp, $block);
+            \flush();
+            $wait = (\microtime(true) - $timeStart) * 1000000;
 
             // if speedlimit is defined, make sure to only send specified bytes per second
             if ($rate > 0) {
-                usleep(1000000 - $wait);
+                \usleep(1000000 - $wait);
             }
         }
 
         // Close handle
-        fclose($fp);
+        \fclose($fp);
     }
 
     /**
@@ -1148,11 +1152,11 @@ class File
     {
         QUI\Utils\System\File::mkdir($dstdir);
 
-        if (substr($dstdir, -1) != '/') {
+        if (\substr($dstdir, -1) != '/') {
             $dstdir = $dstdir.'/';
         }
 
-        if (substr($srcdir, -1) != '/') {
+        if (\substr($srcdir, -1) != '/') {
             $srcdir = $srcdir.'/';
         }
 
@@ -1164,7 +1168,7 @@ class File
             $File->mkdir($dstdir.$folder);
 
             // files kopieren
-            for ($i = 0, $len = count($file); $i < $len; $i++) {
+            for ($i = 0, $len = \count($file); $i < $len; $i++) {
                 $from = $srcdir.$folder.$file[$i];
                 $to   = $dstdir.$folder.$file[$i];
 
@@ -1176,7 +1180,7 @@ class File
             }
         }
 
-        if (count($errors)) {
+        if (\count($errors)) {
             return $errors;
         }
 
@@ -1195,18 +1199,18 @@ class File
     public static function mkdir($path, $mode = 0)
     {
         // Wenn schon existiert dann schluss -> true
-        if (is_dir($path) || file_exists($path)) {
+        if (\is_dir($path) || \file_exists($path)) {
             return true;
         }
 
-        if (substr($path, -1, strlen($path)) == '/') {
-            $path = substr($path, 0, -1);
+        if (\substr($path, -1, \strlen($path)) == '/') {
+            $path = \substr($path, 0, -1);
         }
 
-        $p_e   = explode('/', $path);
+        $p_e   = \explode('/', $path);
         $p_tmp = '';
 
-        for ($i = 0, $len = count($p_e); $i < $len; $i++) {
+        for ($i = 0, $len = \count($p_e); $i < $len; $i++) {
             $p_tmp .= '/'.$p_e[$i];
 
             if ($p_tmp == '/') {
@@ -1214,9 +1218,9 @@ class File
             }
 
             // windows fix
-            if (strpos($p_tmp, ':') == 2) {
-                if (strpos($p_tmp, '/') == 0) {
-                    $p_tmp = substr($p_tmp, 1);
+            if (\strpos($p_tmp, ':') == 2) {
+                if (\strpos($p_tmp, '/') == 0) {
+                    $p_tmp = \substr($p_tmp, 1);
                 }
             }
 
@@ -1226,16 +1230,16 @@ class File
                 continue;
             }
 
-            if (!is_dir($p_tmp) || !file_exists($p_tmp)) {
+            if (!\is_dir($p_tmp) || !\file_exists($p_tmp)) {
                 if ($mode != 0) {
-                    mkdir($p_tmp, $mode);
+                    \mkdir($p_tmp, $mode);
                 } else {
-                    mkdir($p_tmp);
+                    \mkdir($p_tmp);
                 }
             }
         }
 
-        if (is_dir($path) && file_exists($path)) {
+        if (\is_dir($path) && \file_exists($path)) {
             return true;
         }
 
@@ -1251,13 +1255,13 @@ class File
      */
     public static function mkfile($file)
     {
-        if (file_exists($file)) {
+        if (\file_exists($file)) {
             return true;
         }
 
-        self::mkdir(dirname($file));
+        self::mkdir(\dirname($file));
 
-        return file_put_contents($file, '');
+        return \file_put_contents($file, '');
     }
 
     /**
@@ -1269,11 +1273,11 @@ class File
      */
     public static function getFileContent($file)
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             return '';
         }
 
-        return file_get_contents($file);
+        return \file_get_contents($file);
     }
 
     /**
@@ -1284,10 +1288,10 @@ class File
      */
     public static function putLineToFile($file, $line = '')
     {
-        $fp = fopen($file, 'a');
+        $fp = \fopen($file, 'a');
 
-        fwrite($fp, $line."\n");
-        fclose($fp);
+        \fwrite($fp, $line."\n");
+        \fclose($fp);
     }
 
     /**
@@ -1299,16 +1303,16 @@ class File
      */
     public static function checkOpenBaseDir($path)
     {
-        $obd = ini_get('open_basedir');
+        $obd = \ini_get('open_basedir');
 
         if (empty($obd)) {
             return true;
         }
 
-        $obd = explode(':', $obd);
+        $obd = \explode(':', $obd);
 
         foreach ($obd as $dir) {
-            if (strpos($path, $dir) === 0) {
+            if (\strpos($path, $dir) === 0) {
                 return true;
             }
         }
@@ -1325,21 +1329,21 @@ class File
      */
     public static function downloadHeader($file)
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             throw new QUI\Exception('File not exist '.$file, 404);
         }
 
         $finfo = self::getInfo($file);
 
-        header('Expires: Thu, 19 Nov 1981 08:52:00 GMT');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: no-cache');
-        header('Content-type: application/'.$finfo['extension']);
-        header('Content-Disposition: attachment; filename="'.basename($file)
+        \header('Expires: Thu, 19 Nov 1981 08:52:00 GMT');
+        \header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        \header('Pragma: no-cache');
+        \header('Content-type: application/'.$finfo['extension']);
+        \header('Content-Disposition: attachment; filename="'.\basename($file)
                .'"');
 
         // Inhalt des gespeicherten Dokuments senden
-        readfile($file);
+        \readfile($file);
         exit;
     }
 
@@ -1352,28 +1356,28 @@ class File
      */
     public static function fileHeader($file)
     {
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             throw new QUI\Exception('File not exist '.$file, 404);
         }
 
         $finfo = self::getInfo($file);
 
-        header("Content-Type: ".$finfo['mime_type']);
-        header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
-        header("Pragma: public");
-        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-        header("Accept-Ranges: bytes");
-        header(
-            "Content-Disposition: inline; filename=\"".pathinfo($file, PATHINFO_BASENAME)."\""
+        \header("Content-Type: ".$finfo['mime_type']);
+        \header("Expires: ".\gmdate("D, d M Y H:i:s")." GMT");
+        \header("Pragma: public");
+        \header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        \header("Accept-Ranges: bytes");
+        \header(
+            "Content-Disposition: inline; filename=\"".\pathinfo($file, PATHINFO_BASENAME)."\""
         );
-        header("Content-Size: ".$finfo['filesize']);
-        header("Content-Length: ".$finfo['filesize']);
-        header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-        header("Connection: Keep-Alive");
+        \header("Content-Size: ".$finfo['filesize']);
+        \header("Content-Length: ".$finfo['filesize']);
+        \header("Last-Modified: ".\gmdate("D, d M Y H:i:s")." GMT");
+        \header("Connection: Keep-Alive");
 
-        $fo_file = fopen($file, "r");
-        $fr_file = fread($fo_file, filesize($file));
-        fclose($fo_file);
+        $fo_file = \fopen($file, "r");
+        $fr_file = \fread($fo_file, \filesize($file));
+        \fclose($fo_file);
 
         echo $fr_file;
         exit;
@@ -1388,9 +1392,9 @@ class File
      */
     public static function getFileSize($url)
     {
-        if (substr($url, 0, 4) == 'http') {
-            $x = array_change_key_case(
-                get_headers($url, 1),
+        if (\substr($url, 0, 4) == 'http') {
+            $x = \array_change_key_case(
+                \get_headers($url, 1),
                 CASE_LOWER
             );
 
@@ -1398,13 +1402,13 @@ class File
                 $x['content-length'] = '0';
             }
 
-            if (strcasecmp($x[0], 'HTTP/1.1 200 OK') != 0) {
+            if (\strcasecmp($x[0], 'HTTP/1.1 200 OK') != 0) {
                 $x = $x['content-length'][1];
             } else {
                 $x = $x['content-length'];
             }
         } else {
-            $x = @filesize($url);
+            $x = @\filesize($url);
         }
 
         return $x;

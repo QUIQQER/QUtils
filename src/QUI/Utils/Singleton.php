@@ -3,6 +3,7 @@
 /**
  * This file contains QUI\Utils\Singleton
  */
+
 namespace QUI\Utils;
 
 /**
@@ -15,7 +16,7 @@ abstract class Singleton
     /**
      * @var null
      */
-    protected static $instances = array();
+    protected static $instances = [];
 
     /**
      * Return the instance
@@ -24,7 +25,7 @@ abstract class Singleton
      */
     public static function getInstance()
     {
-        $class = get_called_class();
+        $class = \get_called_class();
 
         if (!isset(self::$instances[$class])) {
             self::$instances[$class] = new $class();

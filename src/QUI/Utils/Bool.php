@@ -14,7 +14,6 @@ namespace QUI\Utils;
  *
  * @deprecated
  */
-
 class Bool extends BoolHelper
 {
 

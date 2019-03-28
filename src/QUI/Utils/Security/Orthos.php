@@ -33,7 +33,7 @@ class Orthos
         $str = self::clearFormRequest($str);
         $str = self::clearPath($str);
 
-        $str = htmlspecialchars($str);
+        $str = \htmlspecialchars($str);
 
         return $str;
     }
@@ -51,11 +51,11 @@ class Orthos
     {
         $chars = 'a-zA-Z0-9';
 
-        if (is_array($allowedList)) {
-            $chars .= implode($allowedList);
+        if (\is_array($allowedList)) {
+            $chars .= \implode($allowedList);
         }
 
-        return preg_replace("/[^{$chars}]/", "", $str);
+        return \preg_replace("/[^{$chars}]/", "", $str);
     }
 
     /**
@@ -67,14 +67,14 @@ class Orthos
      */
     public static function clearArray($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             return [];
         }
 
         $cleanData = [];
 
         foreach ($data as $key => $str) {
-            if (is_array($data[$key])) {
+            if (\is_array($data[$key])) {
                 $cleanData[$key] = self::clearArray($data[$key]);
                 continue;
             }
@@ -94,8 +94,8 @@ class Orthos
      */
     public static function clearPath($path)
     {
-        $path = str_replace('\\', '', $path);
-        $path = str_replace(['../', '..'], '', $path);
+        $path = \str_replace('\\', '', $path);
+        $path = \str_replace(['../', '..'], '', $path);
 
         return $path;
     }
@@ -109,7 +109,7 @@ class Orthos
      */
     public static function clearFilename($filename)
     {
-        $filename = str_replace(
+        $filename = \str_replace(
             [" ", '"', "'", "&", "/", "\\", "?", "#"],
             '_',
             $filename
@@ -127,7 +127,7 @@ class Orthos
      */
     public static function removeHTML($text)
     {
-        return strip_tags($text);
+        return \strip_tags($text);
     }
 
     /**
@@ -150,11 +150,11 @@ class Orthos
      */
     public static function clearMySQL($str, $escape = true)
     {
-        if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
-            $str = stripslashes($str);
+        if (\function_exists('get_magic_quotes_gpc') && \get_magic_quotes_gpc()) {
+            $str = \stripslashes($str);
         }
 
-        if ($escape && class_exists('QUI')) {
+        if ($escape && \class_exists('QUI')) {
             $str = \QUI::getPDO()->quote($str);
         }
 
@@ -174,12 +174,12 @@ class Orthos
             return '';
         }
 
-        $str = preg_replace('/[^0-9,a-z,A-Z$_.]/i', '', $str);
-        $str = str_replace('..', '', $str);
-        $str = trim($str);
-        $str = trim($str, '`');
+        $str = \preg_replace('/[^0-9,a-z,A-Z$_.]/i', '', $str);
+        $str = \str_replace('..', '', $str);
+        $str = \trim($str);
+        $str = \trim($str, '`');
 
-        $str = str_replace('.', '`.`', $str);
+        $str = \str_replace('.', '`.`', $str);
         $str = '`'.$str.'`';
 
         return $str;
@@ -197,7 +197,7 @@ class Orthos
      */
     public static function clearShell($str)
     {
-        return escapeshellcmd($str);
+        return \escapeshellcmd($str);
     }
 
     /**
@@ -208,7 +208,7 @@ class Orthos
      */
     public static function clearShellArg($str)
     {
-        return escapeshellarg($str);
+        return \escapeshellarg($str);
     }
 
     /**
@@ -290,19 +290,19 @@ class Orthos
      */
     public static function checkdate($day, $month, $year)
     {
-        if (!is_int($day)) {
+        if (!\is_int($day)) {
             return false;
         }
 
-        if (!is_int($month)) {
+        if (!\is_int($month)) {
             return false;
         }
 
-        if (!is_int($year)) {
+        if (!\is_int($year)) {
             return false;
         }
 
-        return checkdate($month, $day, $year);
+        return \checkdate($month, $day, $year);
     }
 
     /**
@@ -329,7 +329,7 @@ class Orthos
      */
     public static function checkMailSyntax($email)
     {
-        return preg_match(
+        return \preg_match(
             '/^([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,64}\@{1}([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,248}\.{1}([a-z]){2,6}$/',
             $email
         );
@@ -345,12 +345,12 @@ class Orthos
     public static function checkMySqlDatetimeSyntax($date)
     {
         // Nur Zahlen erlaubt
-        if (preg_match('/[^0-9- :]/i', $date)) {
+        if (\preg_match('/[^0-9- :]/i', $date)) {
             return false;
         }
 
         // Syntaxprüfung
-        if (!preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date)) {
+        if (!\preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $date)) {
             return false;
         }
 
@@ -379,12 +379,12 @@ class Orthos
     public static function checkMySqlDateSyntax($date)
     {
         // Nur Zahlen erlaubt
-        if (preg_match('/[^0-9- :]/i', $date)) {
+        if (\preg_match('/[^0-9- :]/i', $date)) {
             return false;
         }
 
         // Syntaxprüfung
-        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $date)) {
+        if (!\preg_match("/^\d{4}-\d{2}-\d{2}$/", $date)) {
             return false;
         }
 
@@ -400,17 +400,17 @@ class Orthos
      */
     public static function getPassword($length = 10)
     {
-        if (!is_int($length)) {
+        if (!\is_int($length)) {
             $length = 10;
         }
 
         $newPass = "";
         $string  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()[]{}?!$%&/=*+~,.;:<>-_";
 
-        mt_srand((double)microtime() * 1000000);
+        \mt_srand((double)\microtime() * 1000000);
 
         for ($i = 1; $i <= $length; $i++) {
-            $newPass .= substr($string, mt_rand(0, strlen($string) - 1), 1);
+            $newPass .= \substr($string, \mt_rand(0, \strlen($string) - 1), 1);
         }
 
         return $newPass;
@@ -425,7 +425,7 @@ class Orthos
      */
     public static function isSpamMail($mail)
     {
-        $split = explode('@', $mail);
+        $split = \explode('@', $mail);
 
         $adresses = [
             'anonbox.net',
@@ -492,7 +492,7 @@ class Orthos
         }
 
         foreach ($adresses as $entry) {
-            if (strpos($split[1], $entry) !== false) {
+            if (\strpos($split[1], $entry) !== false) {
                 return true;
             }
         }
@@ -509,19 +509,19 @@ class Orthos
      */
     public static function clearFormRequest($value)
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             foreach ($value as $key => $entry) {
                 $value[$key] = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
             }
         } else {
-            if (!is_string($value)) {
+            if (!\is_string($value)) {
                 return '';
             }
 
-            $value = htmlspecialchars_decode($value);
+            $value = \htmlspecialchars_decode($value);
         }
         // alle zeichen undd HEX codes werden mit leer ersetzt
-        $value = str_replace(
+        $value = \str_replace(
             [
                 '<',
                 '%3C',
@@ -550,7 +550,7 @@ class Orthos
      */
     public static function urlEncodeString($str, $replace = "-")
     {
-        if (!is_string($replace)) {
+        if (!\is_string($replace)) {
             $replace = "-";
         }
 
@@ -579,16 +579,16 @@ class Orthos
         ];
 
         // replace special chars with replacement character
-        $str = str_replace($reservedChars, $replace, $str);
+        $str = \str_replace($reservedChars, $replace, $str);
 
         // filter non-letters and non-numbers and non-allowed url characters
-        $str = preg_replace('#[^\p{L}\d\-_.~]+#iu', $replace, $str);
+        $str = \preg_replace('#[^\p{L}\d\-_.~]+#iu', $replace, $str);
 
         // trim outer and double replacement characters
-        $str = trim($str, $replace);
+        $str = \trim($str, $replace);
 
         // reduce multiple replacement chars in a row
-        $str = preg_replace('#\\'.$replace.'{2,}#i', $replace, $str);
+        $str = \preg_replace('#\\'.$replace.'{2,}#i', $replace, $str);
 
         return StringHelper::toLower($str);
     }
@@ -601,7 +601,7 @@ class Orthos
      */
     public static function escapeHTML($str)
     {
-        $str = htmlspecialchars($str);
+        $str = \htmlspecialchars($str);
 
         return $str;
     }

@@ -30,7 +30,7 @@ class GetText extends QUI\QDOM
     public function __construct($lang, $domain, $dir)
     {
         $this->setLanguage($lang);
-        $this->setAttribute('domain', str_replace('/', '_', $domain));
+        $this->setAttribute('domain', \str_replace('/', '_', $domain));
         $this->setAttribute('dir', $dir);
     }
 
@@ -41,7 +41,7 @@ class GetText extends QUI\QDOM
      */
     public function fileExist()
     {
-        return file_exists($this->getFile());
+        return \file_exists($this->getFile());
     }
 
     /**
@@ -50,11 +50,11 @@ class GetText extends QUI\QDOM
      */
     public function getFile()
     {
-        $locale = trim($this->getAttribute('locale'));
-        $dir    = trim($this->getAttribute('dir'));
-        $domain = trim($this->getAttribute('domain'));
+        $locale = \trim($this->getAttribute('locale'));
+        $dir    = \trim($this->getAttribute('dir'));
+        $domain = \trim($this->getAttribute('domain'));
 
-        return $dir . $locale . '/LC_MESSAGES/' . $domain . '.mo';
+        return $dir.$locale.'/LC_MESSAGES/'.$domain.'.mo';
     }
 
     /**
@@ -64,11 +64,12 @@ class GetText extends QUI\QDOM
      */
     public function setLanguage($lang)
     {
-        if (strlen($lang) == 2) {
-            $lower = mb_strtolower($lang);
-            $upper = mb_strtoupper($lang);
+        if (\strlen($lang) == 2) {
+            $lower = \mb_strtolower($lang);
+            $upper = \mb_strtoupper($lang);
 
-            $this->setAttribute('locale', $lower . '_' . $upper);
+            $this->setAttribute('locale', $lower.'_'.$upper);
+
             return;
         }
 
@@ -86,7 +87,7 @@ class GetText extends QUI\QDOM
     {
         $this->set();
 
-        return gettext($key);
+        return \gettext($key);
     }
 
     /**
@@ -107,12 +108,12 @@ class GetText extends QUI\QDOM
         );
         */
 
-        bindtextdomain(
+        \bindtextdomain(
             $this->getAttribute('domain'),
             $this->getAttribute('dir')
         );
-        bind_textdomain_codeset($this->getAttribute('domain'), 'UTF-8');
+        \bind_textdomain_codeset($this->getAttribute('domain'), 'UTF-8');
 
-        textdomain($this->getAttribute('domain'));
+        \textdomain($this->getAttribute('domain'));
     }
 }

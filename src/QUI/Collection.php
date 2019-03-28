@@ -21,7 +21,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @var array
      */
-    protected $children = array();
+    protected $children = [];
 
     /**
      * List of allowed children classes.
@@ -29,14 +29,14 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @var array
      */
-    protected $allowed = array();
+    protected $allowed = [];
 
     /**
      * Collection constructor.
      *
      * @param array $children - list of children
      */
-    public function __construct($children = array())
+    public function __construct($children = [])
     {
         foreach ($children as $Child) {
             $this->append($Child);
@@ -47,15 +47,15 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param array $params
      * @return Collection
      */
-    public static function getInstance($params = array())
+    public static function getInstance($params = [])
     {
-        $children = array();
+        $children = [];
 
-        if (isset($params['children']) && is_array($params['children'])) {
+        if (isset($params['children']) && \is_array($params['children'])) {
             $children = $params['children'];
         }
 
-        $class = get_called_class();
+        $class = \get_called_class();
 
         return new $class($children);
     }
@@ -72,7 +72,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public function append($Child, $key = null)
     {
         if ($this->isAllowed($Child)) {
-            if (is_null($key)) {
+            if (\is_null($key)) {
                 $this->children[] = $Child;
             } else {
                 $this->children[$key] = $Child;
@@ -85,7 +85,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function clear()
     {
-        $this->children = array();
+        $this->children = [];
     }
 
     /**
@@ -160,7 +160,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             return;
         }
 
-        $children = array();
+        $children = [];
 
         foreach ($this->children as $key => $Sibling) {
             if ($pos == $key) {
@@ -230,7 +230,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function length()
     {
-        return count($this->children);
+        return \count($this->children);
     }
 
     /**
@@ -241,7 +241,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function map(callable $function)
     {
-        return array_map($function, $this->children);
+        return \array_map($function, $this->children);
     }
 
     /**
@@ -252,7 +252,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function sort(callable $function)
     {
-        usort($this->children, $function);
+        \usort($this->children, $function);
     }
 
     /**
@@ -263,7 +263,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function contains($Child)
     {
-        return in_array($Child, $this->children);
+        return \in_array($Child, $this->children);
     }
 
     /**
@@ -289,7 +289,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function filter(callable $callback, int $flag = 0)
     {
-        return new $this(array_filter($this->children, $callback, $flag));
+        return new $this(\array_filter($this->children, $callback, $flag));
     }
 
     //endregion
@@ -305,13 +305,13 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     protected function isAllowed($Child)
     {
         $allowed = $this->allowed;
-        $key     = array_keys($this->allowed);
+        $key     = \array_keys($this->allowed);
 
         if (empty($allowed)) {
             return true;
         }
 
-        if (isset($key[get_class($Child)])) {
+        if (isset($key[\get_class($Child)])) {
             return true;
         }
 

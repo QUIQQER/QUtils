@@ -10,7 +10,6 @@ namespace QUI\Control;
  *
  * @author www.pcsg.de (Henning Leutz)
  */
-
 class Manager
 {
     /**
@@ -18,7 +17,7 @@ class Manager
      *
      * @var array
      */
-    protected static $cssFilesloaded = array();
+    protected static $cssFilesloaded = [];
 
     /**
      * Return the CSS Files from the loaded Controls
@@ -27,7 +26,7 @@ class Manager
      */
     public static function getCSSFiles()
     {
-        return array_keys(self::$cssFilesloaded);
+        return \array_keys(self::$cssFilesloaded);
     }
 
     /**
@@ -41,11 +40,11 @@ class Manager
         $result = '';
 
         foreach ($files as $file) {
-            if (!file_exists($file)) {
+            if (!\file_exists($file)) {
                 continue;
             }
 
-            $css = file_get_contents($file);
+            $css = \file_get_contents($file);
 
             $result .= '<style>';
             $result .= $css;
@@ -79,11 +78,11 @@ class Manager
         $search  = '</head>';
         $replace = self::getCSS();
 
-        return substr_replace(
+        return \substr_replace(
             $html,
-            $replace . '</head>',
-            strrpos($string, $search),
-            strlen($search)
+            $replace.'</head>',
+            \strrpos($string, $search),
+            \strlen($search)
         );
     }
 }

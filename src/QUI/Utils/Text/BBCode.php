@@ -24,35 +24,35 @@ class BBCode extends QUI\QDOM
      *
      * @var string
      */
-    protected $projects = array();
+    protected $projects = [];
 
     /**
      * internal smiley list
      *
      * @var array
      */
-    protected $smileys = array();
+    protected $smileys = [];
 
     /**
      * internal output smileys
      *
      * @var array
      */
-    protected $output_smiley = array();
+    protected $output_smiley = [];
 
     /**
      * bbcode to html plugin list
      *
      * @var array
      */
-    protected $plugins_bbcode_to_html = array();
+    protected $plugins_bbcode_to_html = [];
 
     /**
      * html to bbcode plugin list
      *
      * @var array
      */
-    protected $plugins_html_to_bbcode = array();
+    protected $plugins_html_to_bbcode = [];
 
     /**
      * Wandelt HTML Tags in BBCode um
@@ -64,7 +64,7 @@ class BBCode extends QUI\QDOM
     public function parseToBBCode($html)
     {
         // Normal HTML Elemente
-        $bbcode = str_replace(array(
+        $bbcode = str_replace([
             '<b>',
             '</b>',
             '<strong>',
@@ -95,7 +95,7 @@ class BBCode extends QUI\QDOM
             '</h5>',
             '<h6>',
             '</h6>'
-        ), array(
+        ], [
             '[b]',
             '[/b]',
             '[b]',
@@ -126,11 +126,11 @@ class BBCode extends QUI\QDOM
             '[/h5]',
             '[h6]',
             '[/h6]'
-        ), $html);
+        ], $html);
 
         // Block Elemente
-        $bbcode = preg_replace(
-            array(
+        $bbcode = \preg_replace(
+            [
                 '/<p[^>]*>(.*?)<\/p>/i',
                 '/<pre[^>]*>(.*?)<\/pre>/i',
                 '/<b [^>]*>/i',
@@ -139,8 +139,8 @@ class BBCode extends QUI\QDOM
                 '/<u [^>]*>/i',
                 '/<ul [^>]*>/i',
                 '/<li [^>]*>/i'
-            ),
-            array(
+            ],
+            [
                 '[p]\\1[/p]',
                 '[code]\\1[/code]',
                 '[b]',
@@ -149,46 +149,46 @@ class BBCode extends QUI\QDOM
                 '[u]',
                 '[ul]',
                 '[li]'
-            ),
+            ],
             $bbcode
         );
 
         $_smileys            = $this->getSmileyArrays();
         $this->output_smiley = $_smileys['classes'];
 
-        $bbcode = preg_replace_callback(
+        $bbcode = \preg_replace_callback(
             '#<span([^>]*)><span>(.*?)<\/span><\/span>#is',
-            array(&$this, "outputsmileys"),
+            [&$this, "outputsmileys"],
             $bbcode
         );
 
-        $bbcode = preg_replace_callback(
+        $bbcode = \preg_replace_callback(
             '#<div([^>]*)>(.*?)<\/div>#is',
-            array(&$this, "output"),
+            [&$this, "output"],
             $bbcode
         );
 
-        $bbcode = preg_replace_callback(
+        $bbcode = \preg_replace_callback(
             '#<span([^>]*)>(.*?)<\/span>#is',
-            array(&$this, "output"),
+            [&$this, "output"],
             $bbcode
         );
 
-        $bbcode = preg_replace_callback(
+        $bbcode = \preg_replace_callback(
             '#<a([^>]*)>(.*?)<\/a>#is',
-            array(&$this, "outputlink"),
+            [&$this, "outputlink"],
             $bbcode
         );
 
-        $bbcode = preg_replace_callback(
+        $bbcode = \preg_replace_callback(
             '#<img([^>]*)>#i',
-            array(&$this, "outputImages"),
+            [&$this, "outputImages"],
             $bbcode
         );
 
         // delete Line breaks
-        $bbcode = str_replace(array("\r\n", "\n", "\r"), '', $bbcode);
-        $bbcode = str_replace(array("<br>", "<br />"), "\n", $bbcode);
+        $bbcode = \str_replace(["\r\n", "\n", "\r"], '', $bbcode);
+        $bbcode = \str_replace(["<br>", "<br />"], "\n", $bbcode);
 
         $bbcode = QUI\Utils\Security\Orthos::removeHTML($bbcode);
 
@@ -203,11 +203,11 @@ class BBCode extends QUI\QDOM
      */
     private function output($params)
     {
-        $params[1] = str_replace('\"', '"', $params[1]);
+        $params[1] = \str_replace('\"', '"', $params[1]);
 
-        if (strpos($params[1], 'style="') === false) {
-            if (substr($params[0], 0, 4) == '<div') {
-                return '<br />' . $params[2] . '<br />';
+        if (\strpos($params[1], 'style="') === false) {
+            if (\substr($params[0], 0, 4) == '<div') {
+                return '<br />'.$params[2].'<br />';
             }
 
             return $params[2];
@@ -217,43 +217,43 @@ class BBCode extends QUI\QDOM
         $str = $params[2];
         $_s  = $params[1];
 
-        $_s = preg_replace(
-            array('/style="([^"]*)"/i'),
-            array('\\1'),
+        $_s = \preg_replace(
+            ['/style="([^"]*)"/i'],
+            ['\\1'],
             $_s
         );
 
-        if (strpos($_s, 'font-weight') && strpos($_s, 'bold')) {
-            $str = '[b]' . $str . '[/b]';
+        if (\strpos($_s, 'font-weight') && \strpos($_s, 'bold')) {
+            $str = '[b]'.$str.'[/b]';
         }
 
-        if (strpos($_s, 'font-style') && strpos($_s, 'italic')) {
-            $str = '[i]' . $str . '[/i]';
+        if (\strpos($_s, 'font-style') && \strpos($_s, 'italic')) {
+            $str = '[i]'.$str.'[/i]';
         }
 
-        if (strpos($_s, 'text-decoration') && strpos($_s, 'underline')) {
-            $str = '[u]' . $str . '[/u]';
+        if (\strpos($_s, 'text-decoration') && \strpos($_s, 'underline')) {
+            $str = '[u]'.$str.'[/u]';
         }
 
-        if (strpos($_s, 'text-decoration') && strpos($_s, 'line-through')) {
-            $str = '[s]' . $str . '[/s]';
+        if (\strpos($_s, 'text-decoration') && \strpos($_s, 'line-through')) {
+            $str = '[s]'.$str.'[/s]';
         }
 
 
-        if (strpos($_s, 'text-align') && strpos($_s, 'center')) {
-            $str = '[center]' . $str . '[/center]';
+        if (\strpos($_s, 'text-align') && \strpos($_s, 'center')) {
+            $str = '[center]'.$str.'[/center]';
         }
 
-        if (strpos($_s, 'text-align') && strpos($_s, 'left')) {
-            $str = '[left]' . $str . '[/left]';
+        if (\strpos($_s, 'text-align') && \strpos($_s, 'left')) {
+            $str = '[left]'.$str.'[/left]';
         }
 
-        if (strpos($_s, 'text-align') && strpos($_s, 'right')) {
-            $str = '[right]' . $str . '[/right]';
+        if (\strpos($_s, 'text-align') && \strpos($_s, 'right')) {
+            $str = '[right]'.$str.'[/right]';
         }
 
-        if (substr($params[0], 0, 4) == '<div') {
-            return '<br />' . $str . '<br />';
+        if (\substr($params[0], 0, 4) == '<div') {
+            return '<br />'.$str.'<br />';
         }
 
         return $str;
@@ -268,9 +268,9 @@ class BBCode extends QUI\QDOM
     protected function outputsmileys($_s)
     {
         // Smileys
-        $_s = preg_replace(
-            array('/.class="([^"]*)"/i'),
-            array('\\1'),
+        $_s = \preg_replace(
+            ['/.class="([^"]*)"/i'],
+            ['\\1'],
             $_s
         );
 
@@ -294,15 +294,15 @@ class BBCode extends QUI\QDOM
      */
     protected function outputlink($params)
     {
-        $attributes = str_replace('\"', '"', $params[1]);
+        $attributes = \str_replace('\"', '"', $params[1]);
         $cssclass   = 'extern';
 
-        if (strpos($attributes, 'class="intern"')) {
+        if (\strpos($attributes, 'class="intern"')) {
             $cssclass = 'intern';
         }
 
-        $url  = preg_replace('/(.*?)href="([^"]+).*"/is', '\\2', $attributes);
-        $link = '[url="' . $url . '" class="' . $cssclass . '"]' . $params[2] . '[/url]';
+        $url  = \preg_replace('/(.*?)href="([^"]+).*"/is', '\\2', $attributes);
+        $link = '[url="'.$url.'" class="'.$cssclass.'"]'.$params[2].'[/url]';
 
         return $link;
     }
@@ -318,16 +318,16 @@ class BBCode extends QUI\QDOM
      */
     protected function outputImages($params)
     {
-        $img = str_replace('\"', '"', $params[0]);
+        $img = \str_replace('\"', '"', $params[0]);
 
         // Falls in der eigenen Sammlung schon vorhanden
-        if (strpos($img, 'image.php') !== false
-            && strpos($img, 'pms=1') !== false
+        if (\strpos($img, 'image.php') !== false
+            && \strpos($img, 'pms=1') !== false
         ) {
             $att = QUI\Utils\StringHelper::getHTMLAttributes($img);
 
             if (isset($att['src'])) {
-                $src = str_replace('&amp;', '&', $att['src']);
+                $src = \str_replace('&amp;', '&', $att['src']);
                 $url = QUI\Utils\StringHelper::getUrlAttributes($src);
 
                 if (isset($url['project']) && $url['id']) {
@@ -338,7 +338,6 @@ class BBCode extends QUI\QDOM
                         try {
                             $Project                  = new QUI\Projects\Project($project);
                             $this->projects[$project] = $Project;
-
                         } catch (QUI\Exception $e) {
                             return '';
                         }
@@ -355,19 +354,19 @@ class BBCode extends QUI\QDOM
                         return '';
                     }
 
-                    $str         = '[img="' . $Image->getUrl(true) . '" ';
+                    $str         = '[img="'.$Image->getUrl(true).'" ';
                     $_attributes = $this->size($att);
 
                     if (isset($_attributes['width'])) {
-                        $str .= ' width="' . $_attributes['width'] . '"';
+                        $str .= ' width="'.$_attributes['width'].'"';
                     }
 
                     if (isset($_attributes['height'])) {
-                        $str .= ' height="' . $_attributes['height'] . '"';
+                        $str .= ' height="'.$_attributes['height'].'"';
                     }
 
                     if (isset($att['align'])) {
-                        $str .= ' align="' . $att['align'] . '"';
+                        $str .= ' align="'.$att['align'].'"';
                     }
 
                     $str .= ']';
@@ -377,7 +376,7 @@ class BBCode extends QUI\QDOM
             }
         }
 
-        if (strpos($img, '/media/cache/')
+        if (\strpos($img, '/media/cache/')
             || $this->getAttribute('extern_image')
         ) {
             $att = QUI\Utils\StringHelper::getHTMLAttributes($img);
@@ -386,20 +385,20 @@ class BBCode extends QUI\QDOM
                 return '';
             }
 
-            $str = '[img="' . $att['src'] . '"';
+            $str = '[img="'.$att['src'].'"';
 
             $_attributes = $this->size($att);
 
             if (isset($_attributes['width'])) {
-                $str .= ' width="' . $_attributes['width'] . '"';
+                $str .= ' width="'.$_attributes['width'].'"';
             }
 
             if (isset($_attributes['height'])) {
-                $str .= ' height="' . $_attributes['height'] . '"';
+                $str .= ' height="'.$_attributes['height'].'"';
             }
 
             if (isset($att['align'])) {
-                $str .= ' align="' . $att['align'] . '"';
+                $str .= ' align="'.$att['align'].'"';
             }
 
             $str .= ']';
@@ -420,7 +419,7 @@ class BBCode extends QUI\QDOM
      */
     protected function size($attributes)
     {
-        $size = array();
+        $size = [];
 
         if (isset($attributes['style'])) {
             $style = QUI\Utils\StringHelper::splitStyleAttributes($attributes['style']);
@@ -432,7 +431,6 @@ class BBCode extends QUI\QDOM
             if (isset($style['height'])) {
                 $size['height'] = (int)$style['height'];
             }
-
         } else {
             if (isset($attributes['width'])) {
                 $size['width'] = (int)$attributes['width'];
@@ -461,7 +459,7 @@ class BBCode extends QUI\QDOM
         }
 
         // Normal HTML Elemente
-        $html = str_replace(array(
+        $html = \str_replace([
             '[b]',
             '[/b]',
             '[i]',
@@ -501,7 +499,7 @@ class BBCode extends QUI\QDOM
             ':confused:',
             ':shocked:'
             */
-        ), array(
+        ], [
             '<b>',
             '</b>',
             '<i>',
@@ -541,47 +539,47 @@ class BBCode extends QUI\QDOM
             '<span class="smile_confused"><span>:S</span></span>',
             '<span class="smile_shocked"><span>:O</span></span>'
             */
-        ), $bbcode);
+        ], $bbcode);
 
         // Smileys
         $smileys = $this->getSmileyArrays();
-        $html    = str_replace($smileys['code'], $smileys['replace'], $html);
+        $html    = \str_replace($smileys['code'], $smileys['replace'], $html);
 
         // Block Elemente
-        $html = preg_replace(
-            array(
+        $html = \preg_replace(
+            [
                 '/\[p\](.*?)\[\/p\]/',
                 '/\[code\](.*?)\[\/code\]/',
                 '/\[php\](.*?)\[\/php\]/',
-            ),
-            array(
+            ],
+            [
                 '<p>\\1</p>',
                 '<pre class="code">\\1</pre>',
                 '<pre class="php">\\1</pre>'
-            ),
+            ],
             $html
         );
 
-        $html = preg_replace_callback(
+        $html = \preg_replace_callback(
             '/\[url=([^\]]*)\](.*?)\[\/url\]/is',
-            array(&$this, "outputlinkhtml"),
+            [&$this, "outputlinkhtml"],
             $html
         );
 
-        $html = preg_replace_callback(
+        $html = \preg_replace_callback(
             '/\[img=([^\]]*)]/is',
-            array(&$this, "outputImageHtml"),
+            [&$this, "outputImageHtml"],
             $html
         );
 
-        $html = preg_replace_callback(
+        $html = \preg_replace_callback(
             '/\[email([^\]]*)](.*?)\[\/email\]/is',
-            array(&$this, "outputMailHtml"),
+            [&$this, "outputMailHtml"],
             $html
         );
 
         // Line breaks
-        $html = str_replace(array("\r\n", "\n", "\r"), "<br />", $html);
+        $html = \str_replace(["\r\n", "\n", "\r"], "<br />", $html);
 
         return $html;
     }
@@ -593,24 +591,23 @@ class BBCode extends QUI\QDOM
      */
     protected function getSmileyArrays()
     {
-        $_s_code    = array();
-        $_s_replace = array();
-        $_s_classes = array();
+        $_s_code    = [];
+        $_s_replace = [];
+        $_s_classes = [];
         $_smileys   = $this->smileys;
 
         foreach ($_smileys as $smiley => $class) {
-            $_s_code[] = $smiley;
-            $_s_replace[]
-                       = '<span class="' . $class . '"><span>' . $smiley . '</span></span>';
+            $_s_code[]    = $smiley;
+            $_s_replace[] = '<span class="'.$class.'"><span>'.$smiley.'</span></span>';
 
             $_s_classes[$class] = $smiley;
         }
 
-        return array(
-            'code' => $_s_code,
+        return [
+            'code'    => $_s_code,
             'replace' => $_s_replace,
             'classes' => $_s_classes
-        );
+        ];
     }
 
     /**
@@ -623,17 +620,17 @@ class BBCode extends QUI\QDOM
     protected function outputlinkhtml($params)
     {
         $link = $params[2];
-        $url  = preg_replace('/"([^"]+).*"(.*?)/is', '\\1', $params[1]);
+        $url  = \preg_replace('/"([^"]+).*"(.*?)/is', '\\1', $params[1]);
 
         $cssclass = 'extern';
 
-        if (strpos($url, 'http://') === false) {
+        if (\strpos($url, 'http://') === false) {
             $cssclass = 'intern';
         }
 
-        $url = str_replace(array('"', "'"), '', $url);
+        $url = \str_replace(['"', "'"], '', $url);
 
-        return '<a href="' . $url . '" class="' . $cssclass . '">' . $link . '</a>';
+        return '<a href="'.$url.'" class="'.$cssclass.'">'.$link.'</a>';
     }
 
     /**
@@ -646,14 +643,14 @@ class BBCode extends QUI\QDOM
     protected function outputImageHtml($params)
     {
         $str = '<img ';
-        $p   = explode(' ', $params[1]);
+        $p   = \explode(' ', $params[1]);
 
-        $str .= 'src="' . str_replace('"', '', $p[0]) . '" ';
+        $str .= 'src="'.\str_replace('"', '', $p[0]).'" ';
         unset($p[0]);
 
         foreach ($p as $value) {
             if (!empty($value)) {
-                $str .= $value . ' ';
+                $str .= $value.' ';
             }
         }
 
@@ -672,14 +669,14 @@ class BBCode extends QUI\QDOM
     protected function outputMailHtml($params)
     {
         $str  = '<a ';
-        $mail = str_replace('=', '', $params[1]);
+        $mail = \str_replace('=', '', $params[1]);
 
         if (empty($mail)) {
             $mail = $params[2];
         }
 
-        $str .= 'href="mailto:' . $mail . '"';
-        $str .= '>' . $params[2] . '</a>';
+        $str .= 'href="mailto:'.$mail.'"';
+        $str .= '>'.$params[2].'</a>';
 
         return $str;
     }

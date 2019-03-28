@@ -28,7 +28,7 @@ class Config
      *
      * @var array
      */
-    private $iniParsedArray = array();
+    private $iniParsedArray = [];
 
     /**
      * constructor
@@ -38,19 +38,19 @@ class Config
      */
     public function __construct($filename = '')
     {
-        if (!file_exists($filename) && substr($filename, -4) !== '.php') {
+        if (!\file_exists($filename) && \substr($filename, -4) !== '.php') {
             $filename .= '.php';
         }
 
-        if (!file_exists($filename)) {
+        if (!\file_exists($filename)) {
             return;
         }
 
         $this->iniFilename    = $filename;
-        $this->iniParsedArray = @parse_ini_file($filename, true);
+        $this->iniParsedArray = @\parse_ini_file($filename, true);
 
         if ($this->iniParsedArray === false) {
-            throw new QUI\Exception('Can\'t parse ini file ' . $filename);
+            throw new QUI\Exception('Can\'t parse ini file '.$filename);
         }
     }
 
@@ -60,7 +60,7 @@ class Config
      */
     public function reload()
     {
-        $this->iniParsedArray = @parse_ini_file($this->iniFilename, true);
+        $this->iniParsedArray = @\parse_ini_file($this->iniFilename, true);
     }
 
     /**
@@ -80,7 +80,7 @@ class Config
      */
     public function toJSON()
     {
-        return json_encode($this->iniParsedArray);
+        return \json_encode($this->iniParsedArray);
     }
 
     /**
@@ -153,9 +153,9 @@ class Config
      *
      * @return boolean
      */
-    public function setSection($section = false, $array = array())
+    public function setSection($section = false, $array = [])
     {
-        if (!is_array($array)) {
+        if (!\is_array($array)) {
             return false;
         }
 
@@ -229,7 +229,7 @@ class Config
      */
     public function set($section = false, $key = null, $value = null)
     {
-        if (is_array($key) && $key === null) {
+        if (\is_array($key) && $key === null) {
             return $this->setSection($section, $key);
         }
 
@@ -252,6 +252,7 @@ class Config
 
         if ($key === null) {
             unset($this->iniParsedArray[$section]);
+
             return true;
         }
 
@@ -279,39 +280,39 @@ class Config
             $filename = $this->iniFilename;
         }
 
-        if (!is_writeable($filename)) {
+        if (!\is_writeable($filename)) {
             $filename = Utils\Security\Orthos::clear($filename);
 
             throw new Exception(
-                'Config ' . $filename . ' is not writable'
+                'Config '.$filename.' is not writable'
             );
         }
 
-        $SFfdescriptor = fopen($filename, "w");
+        $SFfdescriptor = \fopen($filename, "w");
 
-        fwrite($SFfdescriptor, ";<?php exit; ?>\n"); // php security
+        \fwrite($SFfdescriptor, ";<?php exit; ?>\n"); // php security
 
         foreach ($this->iniParsedArray as $section => $array) {
-            if (is_array($array)) {
-                fwrite($SFfdescriptor, "[" . $section . "]\n");
+            if (\is_array($array)) {
+                \fwrite($SFfdescriptor, "[".$section."]\n");
 
                 foreach ($array as $key => $value) {
-                    fwrite(
+                    \fwrite(
                         $SFfdescriptor,
-                        $key . '="' . $this->clean($value) . "\"\n"
+                        $key.'="'.$this->clean($value)."\"\n"
                     );
                 }
 
-                fwrite($SFfdescriptor, "\n");
+                \fwrite($SFfdescriptor, "\n");
             } else {
-                fwrite(
+                \fwrite(
                     $SFfdescriptor,
-                    $section . '="' . $this->clean($array) . "\"\n"
+                    $section.'="'.$this->clean($array)."\"\n"
                 );
             }
         }
 
-        fclose($SFfdescriptor);
+        \fclose($SFfdescriptor);
     }
 
     /**
@@ -323,8 +324,8 @@ class Config
      */
     protected function clean($value)
     {
-        $value = str_replace(array("\r\n", "\n", "\r"), '', $value);
-        $value = str_replace('"', '\"', $value);
+        $value = \str_replace(["\r\n", "\n", "\r"], '', $value);
+        $value = \str_replace('"', '\"', $value);
 
         return $value;
     }
