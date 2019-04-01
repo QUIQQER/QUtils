@@ -156,8 +156,7 @@ class QDOM
     public function __toString()
     {
         if ($this->getAttribute('name')) {
-            return 'Object '.\get_class($this).'('.$this->getAttribute('name')
-                   .');';
+            return 'Object '.\get_class($this).'('.$this->getAttribute('name').');';
         }
 
         return 'Object '.\get_class($this).'();';
