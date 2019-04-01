@@ -33,7 +33,7 @@ class Settings
      */
     public static function getInstance()
     {
-        if (is_null(self::$Instance)) {
+        if (\is_null(self::$Instance)) {
             self::$Instance = new self();
         }
 
@@ -65,7 +65,7 @@ class Settings
      */
     public function setXMLPath($xmlPath)
     {
-        if (is_string($xmlPath)) {
+        if (\is_string($xmlPath)) {
             $this->xmlPath = $xmlPath;
         }
     }
@@ -77,13 +77,13 @@ class Settings
      */
     public function getPanel($xmlFiles)
     {
-        $result = array(
+        $result = [
             'title' => '',
             'icon'  => ''
-        );
+        ];
 
-        if (is_string($xmlFiles)) {
-            $xmlFiles = array($xmlFiles);
+        if (\is_string($xmlFiles)) {
+            $xmlFiles = [$xmlFiles];
         }
 
         foreach ($xmlFiles as $xmlFile) {
@@ -105,11 +105,11 @@ class Settings
                 $Icon  = $Window->getElementsByTagName('icon');
 
                 if ($Title->length) {
-                    $result['title'] = htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
+                    $result['title'] = \htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
                 }
 
                 if ($Icon->length) {
-                    $result['icon'] = htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
+                    $result['icon'] = \htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
                 }
 
                 // if params exists
@@ -142,11 +142,11 @@ class Settings
      */
     public function getCategories($xmlFiles)
     {
-        if (is_string($xmlFiles)) {
-            $xmlFiles = array($xmlFiles);
+        if (\is_string($xmlFiles)) {
+            $xmlFiles = [$xmlFiles];
         }
 
-        $Collection = Collection::from(array());
+        $Collection = Collection::from([]);
 
         $findIndex = function ($array, $name) {
             foreach ($array as $key => $item) {
@@ -159,11 +159,11 @@ class Settings
         };
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!file_exists($xmlFile)) {
+            if (!\file_exists($xmlFile)) {
                 $xmlFile = CMS_DIR.$xmlFile;
             }
 
-            if (!file_exists($xmlFile)) {
+            if (!\file_exists($xmlFile)) {
                 continue;
             }
 
@@ -185,7 +185,7 @@ class Settings
                 }
 
                 $entry['items'] = new Collection(
-                    array_merge(
+                    \array_merge(
                         $entry['items']->toArray(),
                         $data['items']->toArray()
                     )
@@ -224,13 +224,13 @@ class Settings
     {
         $Collection = Collection::from([]);
 
-        $data = array(
+        $data = [
             'name'    => $Category->getAttribute('name'),
             'index'   => $Category->getAttribute('index'),
             'require' => $Category->getAttribute('require'),
             'title'   => '',
             'items'   => $Collection
-        );
+        ];
 
         foreach ($Category->childNodes as $Child) {
             if ($Child->nodeName == '#text') {
@@ -272,17 +272,18 @@ class Settings
      */
     public function parseSettings(\DOMElement $Setting)
     {
-        $data = array(
+        $data = [
             'name'  => $Setting->getAttribute('name'),
             'title' => '',
             'index' => $Setting->getAttribute('index'),
             'icon'  => $Setting->getAttribute('icon'),
-            'items' => array()
-        );
+            'items' => []
+        ];
 
-        $items = array();
+        $items = [];
 
         foreach ($Setting->childNodes as $Child) {
+            /* @var $Child \DOMElement */
             if ($Child->nodeName == '#text') {
                 continue;
             }
@@ -299,34 +300,46 @@ class Settings
                 continue;
             }
 
+            $item = null;
+
             if ($Child->nodeName == 'text') {
-                $items[] = DOM::getTextFromNode($Child);
-                continue;
+                $item = DOM::getTextFromNode($Child);
             }
 
             if ($Child->nodeName == 'input') {
-                $items[] = DOMParser::inputDomToString($Child);
-                continue;
+                $item = DOMParser::inputDomToString($Child);
             }
 
             if ($Child->nodeName == 'select') {
-                $items[] = DOMParser::selectDomToString($Child);
-                continue;
+                $item = DOMParser::selectDomToString($Child);
             }
 
             if ($Child->nodeName == 'textarea') {
-                $items[] = DOMParser::textareaDomToString($Child);
-                continue;
+                $item = DOMParser::textareaDomToString($Child);
             }
 
             if ($Child->nodeName == 'group') {
-                $items[] = DOMParser::groupDomToString($Child);
-                continue;
+                $item = DOMParser::groupDomToString($Child);
             }
 
             if ($Child->nodeName == 'button') {
-                $items[] = DOMParser::buttonDomToString($Child);
+                $item = DOMParser::buttonDomToString($Child);
             }
+
+            if ($item === null) {
+                continue;
+            }
+
+            if ($Child->getAttribute('row-style')) {
+                $items[] = [
+                    'rowStyle' => $Child->getAttribute('row-style'),
+                    'content'  => $item
+                ];
+
+                continue;
+            }
+
+            $items[] = $item;
         }
 
         if ($Setting->hasAttributes()) {
@@ -377,7 +390,7 @@ class Settings
                 $result .= '<table class="data-table data-table-flexbox">';
                 $result .= '<thead><tr><th>';
 
-                if (is_array($setting['title'])) {
+                if (\is_array($setting['title'])) {
                     $result .= QUI::getLocale()->get($setting['title'][0], $setting['title'][1]);
                 } else {
                     $result .= $setting['title'];
@@ -387,8 +400,22 @@ class Settings
                 $result .= '<tbody>';
 
                 foreach ($setting['items'] as $item) {
-                    $result .= '<tr><td>';
-                    $result .= $item;
+                    if (\is_string($item)) {
+                        $result .= '<tr><td>';
+                        $result .= $item;
+                        $result .= '</td></tr>';
+                        continue;
+                    }
+
+                    if (empty($item['rowStyle'])) {
+                        $result .= '<tr><td>';
+                        $result .= $item['content'];
+                        $result .= '</td></tr>';
+                        continue;
+                    }
+
+                    $result .= '<tr style="'.$item['rowStyle'].'"><td>';
+                    $result .= $item['content'];
                     $result .= '</td></tr>';
                 }
 
