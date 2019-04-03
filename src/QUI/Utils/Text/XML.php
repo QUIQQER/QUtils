@@ -653,6 +653,11 @@ class XML
                 $result['image'] = DOM::parseVar($Node->getAttribute('src'));
                 continue;
             }
+
+            if ($Node->nodeName === 'template_parent') {
+                $result['template_parent'] = trim($Node->nodeValue);
+                continue;
+            }
         }
 
         // preview images
