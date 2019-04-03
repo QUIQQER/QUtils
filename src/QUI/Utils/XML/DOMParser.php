@@ -58,7 +58,7 @@ class DOMParser
         $input = '<input type="'.$type.'"
                            name="'.$attributes['conf'].'"
                            id="'.$attributes['id'].'"
-                           class="'.implode(' ', $classes).'"
+                           class="'.\implode(' ', $classes).'"
                            '.$attributes['attributes'].'
                     />';
 
@@ -149,7 +149,7 @@ class DOMParser
                      data-qui="controls/usersAndGroups/Select"
                      name="'.$attributes['conf'].'"
                      id="'.$attributes['id'].'"
-                     class="'.implode(' ', $attributes['class']).'"
+                     class="'.\implode(' ', $attributes['class']).'"
                      '.$attributes['attributes'].'
                  />';
 
@@ -178,7 +178,7 @@ class DOMParser
                      data-qui="qui/controls/buttons/Button"
                      name="'.$attributes['conf'].'"
                      id="'.$attributes['id'].'"
-                     class="'.implode(' ', $attributes['class']).'"
+                     class="'.\implode(' ', $attributes['class']).'"
                      '.$attributes['attributes'].'
                  >'.$attributes['text'].'</button>';
 
@@ -193,7 +193,7 @@ class DOMParser
      */
     public static function getAttributes(\DOMNode $Node)
     {
-        $id   = $Node->getAttribute('conf').'-'.time();
+        $id   = $Node->getAttribute('conf').'-'.\time();
         $conf = $Node->getAttribute('conf');
 
         // Attributes
@@ -202,8 +202,8 @@ class DOMParser
 
         foreach ($Node->attributes as $Attribute) {
             /* @var $Attribute \DOMAttr */
-            $name  = htmlspecialchars($Attribute->name);
-            $value = htmlspecialchars($Attribute->value);
+            $name  = \htmlspecialchars($Attribute->name);
+            $value = \htmlspecialchars($Attribute->value);
 
             if ($name === 'conf') {
                 continue;
@@ -221,10 +221,10 @@ class DOMParser
         }
 
         // classes
-        $class = array();
+        $class = [];
 
         if ($Node->getAttribute('class')) {
-            $class[] = htmlspecialchars($Node->getAttribute('class'));
+            $class[] = \htmlspecialchars($Node->getAttribute('class'));
         }
 
 
@@ -233,7 +233,7 @@ class DOMParser
         $text = '';
 
         if ($Text->length) {
-            $text = htmlspecialchars(DOM::getTextFromNode($Text->item(0)));
+            $text = \htmlspecialchars(DOM::getTextFromNode($Text->item(0)));
         }
 
 
@@ -245,16 +245,24 @@ class DOMParser
             $desc = DOM::getTextFromNode($Desc->item(0));
         }
 
+        // label styles
+        $labelStyles = '';
 
-        return array(
-            'id'         => $id,
-            'text'       => $text,
-            'conf'       => $conf,
-            'desc'       => $desc,
-            'attributes' => $data,
-            'class'      => $class,
-            'label'      => $label
-        );
+        if ($Node->getAttribute('label-style')) {
+            $labelStyles = $Node->getAttribute('label-style');
+        }
+
+
+        return [
+            'id'          => $id,
+            'text'        => $text,
+            'conf'        => $conf,
+            'desc'        => $desc,
+            'attributes'  => $data,
+            'class'       => $class,
+            'label'       => $label,
+            'label-style' => $labelStyles
+        ];
     }
 
     /**
@@ -264,17 +272,22 @@ class DOMParser
      */
     protected static function createHTML($fieldHTML, $attributes)
     {
-        $isCheckbox = strpos($fieldHTML, 'type="checkbox"');
+        $isCheckbox = \strpos($fieldHTML, 'type="checkbox"');
+        $labelStyle = '';
+
+        if (!empty($attributes['label-style'])) {
+            $labelStyle = ' style="'.$attributes['label-style'].'"';
+        }
 
         if (!isset($attributes['label']) || $attributes['label'] != false) {
-            $string = '<label class="field-container">';
+            $string = '<label class="field-container"'.$labelStyle.'>';
             $string .= '<div class="field-container-item" title="'.$attributes['text'].'">';
             $string .= $attributes['text'];
             $string .= '</div>';
             $string .= $fieldHTML;
             $string .= '</label>';
         } else {
-            $string = '<div class="field-container">';
+            $string = '<div class="field-container" '.$labelStyle.'>';
             $string .= $fieldHTML;
             $string .= '</div>';
         }
