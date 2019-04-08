@@ -21,7 +21,7 @@ class Math
      * @param integer|Float $amount
      * @param integer|Float $total
      *
-     * @return integer
+     * @return integer|float
      *
      * @example $percent = QUI\Utils\Math::percent(20, 60); $percent=>33
      * @example echo QUI\Utils\Math::percent(50, 100) .'%';
@@ -32,7 +32,10 @@ class Math
             return 0;
         }
 
-        return \number_format(($amount * 100) / $total, 0);
+        $result = \number_format(($amount * 100) / $total, 0);
+        $result = \floatval($result);
+
+        return $result;
     }
 
     /**
