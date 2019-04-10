@@ -136,13 +136,19 @@ class System
     /**
      * Check if a shell function is callable
      *
-     * @param string $func - Name of the shell function (e.g. exec, shell_exec, etc.)
+     * @param string $function - Name of the shell function (e.g. exec, shell_exec, etc.)
      *
      * @return boolean
      */
-    public static function isShellFunctionEnabled($func)
+    public static function isShellFunctionEnabled($function)
     {
-        return \is_callable($func) && false === \stripos(\ini_get('disable_functions'), $func);
+        if (!\is_callable($function)) {
+            return false;
+        }
+
+        $disabledFunctions = \explode(',', \ini_get('disable_functions'));
+
+        return !\in_array($function, $disabledFunctions);
     }
 
 
