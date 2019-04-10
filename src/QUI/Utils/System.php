@@ -142,6 +142,8 @@ class System
      */
     public static function isShellFunctionEnabled($func)
     {
-        return \is_callable($func) && false === \stripos(\ini_get('disable_functions'), $func);
+        exec("command -v {$func}", $output, $returnCode);
+
+        return $returnCode == 0;
     }
 }
