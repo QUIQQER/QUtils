@@ -144,4 +144,24 @@ class System
     {
         return \is_callable($func) && false === \stripos(\ini_get('disable_functions'), $func);
     }
+
+
+    /**
+     * Returns if a given system function (e.g. 'ls') is callable (via exec).
+     * Requires exec to be enabled. If it's not, false will always be returned.
+     *
+     * @param string $function
+     *
+     * @return bool
+     */
+    public static function isSystemFunctionCallable($function)
+    {
+        if (!static::isShellFunctionEnabled('exec')) {
+            return false;
+        }
+
+        exec("command -v {$function}", $output, $returnCode);
+
+        return $returnCode == 0;
+    }
 }
