@@ -136,7 +136,7 @@ class System
     /**
      * Check if a shell function is callable
      *
-     * @param string $func - Name of the shell function, eq: ls
+     * @param string $func - Name of the shell function (e.g. exec, shell_exec, etc.)
      *
      * @return boolean
      */
