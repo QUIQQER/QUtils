@@ -136,12 +136,38 @@ class System
     /**
      * Check if a shell function is callable
      *
-     * @param string $func - Name of the shell function, eq: ls
+     * @param string $function - Name of the shell function (e.g. exec, shell_exec, etc.)
      *
      * @return boolean
      */
-    public static function isShellFunctionEnabled($func)
+    public static function isShellFunctionEnabled($function)
     {
-        return \is_callable($func) && false === \stripos(\ini_get('disable_functions'), $func);
+        if (!\is_callable($function)) {
+            return false;
+        }
+
+        $disabledFunctions = \explode(',', \ini_get('disable_functions'));
+
+        return !\in_array($function, $disabledFunctions);
+    }
+
+
+    /**
+     * Returns if a given system function (e.g. 'ls') is callable (via exec).
+     * Requires exec to be enabled. If it's not, false will always be returned.
+     *
+     * @param string $function
+     *
+     * @return bool
+     */
+    public static function isSystemFunctionCallable($function)
+    {
+        if (!static::isShellFunctionEnabled('exec')) {
+            return false;
+        }
+
+        exec("command -v {$function}", $output, $returnCode);
+
+        return $returnCode == 0;
     }
 }

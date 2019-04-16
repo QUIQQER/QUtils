@@ -103,11 +103,23 @@ class Installation
      */
     protected static function countAllFiles($doNotCache = false)
     {
-        $fileCount = \iterator_count(
-            new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(CMS_DIR, \FilesystemIterator::SKIP_DOTS)
-            )
-        );
+        $fileCount = null;
+
+        if (System::isSystemFunctionCallable('find') && System::isSystemFunctionCallable('wc')) {
+            exec('find ' . CMS_DIR . ' -type f | wc -l', $output);
+
+            if (isset($output[0]) && is_numeric($output[0])) {
+                $fileCount = $output[0];
+            }
+        }
+
+        if ($fileCount == null) {
+            $fileCount = \iterator_count(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator(CMS_DIR, \FilesystemIterator::SKIP_DOTS)
+                )
+            );
+        }
 
         if ($doNotCache) {
             return $fileCount;
