@@ -1232,9 +1232,9 @@ class File
 
             if (!\is_dir($p_tmp) || !\file_exists($p_tmp)) {
                 if ($mode != 0) {
-                    \mkdir($p_tmp, $mode);
+                    @\mkdir($p_tmp, $mode);
                 } else {
-                    \mkdir($p_tmp);
+                    @\mkdir($p_tmp);
                 }
             }
         }
