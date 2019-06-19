@@ -81,7 +81,12 @@ class Folder
         // Sum up all file sizes
         if ($path !== false && $path != '' && \file_exists($path)) {
             $Iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
+                new \RecursiveDirectoryIterator(
+                    $path,
+                    \FilesystemIterator::SKIP_DOTS
+                ),
+                \RecursiveIteratorIterator::SELF_FIRST,
+                \RecursiveIteratorIterator::CATCH_GET_CHILD
             );
 
             foreach ($Iterator as $Object) {
