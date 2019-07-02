@@ -94,8 +94,8 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             // If it is, we can just merge it's content to our children.
             // instanceof can not be used here because it would allow more specific collections.
             // More specific collections could allow other children then our collection allows.
-            if (get_class($Collection) == get_class($this)) {
-                $this->children = array_merge($this->children, $Collection->toArray());
+            if (\get_class($Collection) == \get_class($this)) {
+                $this->children = \array_merge($this->children, $Collection->toArray());
                 continue;
             }
 
