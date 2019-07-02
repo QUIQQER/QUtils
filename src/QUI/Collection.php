@@ -311,7 +311,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param callable $callback
      * @param int $flag
      *
-     * @return Collection
+     * @return $this
      */
     public function filter(callable $callback, int $flag = 0)
     {
