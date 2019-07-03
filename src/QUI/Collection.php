@@ -80,6 +80,32 @@ class Collection implements \IteratorAggregate, \ArrayAccess
         }
     }
 
+
+    /**
+     * Merges one or more collections into this collection.
+     *
+     * @param Collection ...$Collections
+     */
+    public function merge(...$Collections)
+    {
+        foreach ($Collections as $Collection) {
+            /** @var Collection $Collection */
+            // Check if the given collection is of the same type as our collection.
+            // If it is, we can just merge it's content to our children.
+            // instanceof can not be used here because it would allow more specific collections.
+            // More specific collections could allow other children then our collection allows.
+            if (\get_class($Collection) == \get_class($this)) {
+                $this->children = \array_merge($this->children, $Collection->toArray());
+                continue;
+            }
+
+            // Append every child individually, to make sure only allowed children are added to our collection
+            foreach ($Collection->toArray() as $Child) {
+                $this->append($Child);
+            }
+        }
+    }
+
     /**
      * Clears the complete collection
      */
@@ -285,7 +311,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param callable $callback
      * @param int $flag
      *
-     * @return Collection
+     * @return $this
      */
     public function filter(callable $callback, int $flag = 0)
     {

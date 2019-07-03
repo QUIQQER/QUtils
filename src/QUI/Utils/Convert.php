@@ -108,6 +108,19 @@ class Convert
         return $timestamp;
     }
 
+
+    /**
+     * Converts a given DateTime object to a string that can be used with MySQL's Datetime-datatype.
+     *
+     * @param \DateTime $DateTime
+     *
+     * @return string
+     */
+    public static function convertToMysqlDatetime($DateTime)
+    {
+        return $DateTime->format('Y-m-d H:i:s');
+    }
+
     /**
      * Convert umlauts e.g. ä to ae, u in ue etc.
      * it used to url converting
