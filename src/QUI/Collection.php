@@ -180,7 +180,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
             return;
         }
 
-        if ($pos === false || $this->length() > $pos) {
+        if ($pos === false || $this->length() <= $pos) {
             $this->children[] = $Child;
 
             return;
