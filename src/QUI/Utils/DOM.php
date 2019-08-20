@@ -383,7 +383,7 @@ class DOM
     /**
      * Return the tabs
      *
-     * @param  \DOMElement|\DOMNode $DOMNode
+     * @param \DOMElement|\DOMNode $DOMNode
      * @return array
      */
     public static function getTabs(\DOMElement $DOMNode)
@@ -466,7 +466,6 @@ class DOM
                             $Engine->assign([
                                 'Site'    => $Object,
                                 'Project' => $Object->getProject(),
-                                'Plugins' => QUI::getPluginManager(),
                                 'QUI'     => new QUI()
                             ]);
 
@@ -956,11 +955,10 @@ class DOM
      * Wandelt ein Kategorie DomNode in entsprechendes HTML um
      *
      * @param \DOMNode|\DOMElement $Category
-     * @param $Plugin - optional
      *
      * @return string
      */
-    public static function parseCategoryToHTML($Category, $Plugin = false)
+    public static function parseCategoryToHTML($Category)
     {
         if (\is_bool($Category)) {
             return '';
@@ -996,9 +994,7 @@ class DOM
 
                 if (\file_exists($file)) {
                     $Engine->assign([
-                        'Plugin'  => $Plugin,
-                        'Plugins' => QUI::getPluginManager(),
-                        'QUI'     => new QUI()
+                        'QUI' => new QUI()
                     ]);
 
                     $result .= $Engine->fetch($file);
@@ -1085,9 +1081,7 @@ class DOM
 
                             if (\file_exists($file)) {
                                 $Engine->assign([
-                                    'Plugin'  => $Plugin,
-                                    'Plugins' => QUI::getPluginManager(),
-                                    'QUI'     => new QUI()
+                                    'QUI' => new QUI()
                                 ]);
 
                                 $result .= $Engine->fetch($file);
