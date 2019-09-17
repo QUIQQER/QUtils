@@ -431,7 +431,8 @@ class DB extends QUI\QDOM
             $Exception = new QUI\Database\Exception($message, $Exception->getCode());
 
             if (\class_exists('QUI\System\Log')) {
-                QUI\System\Log::writeException($Exception);
+                QUI\System\Log::addError($Exception->getMessage());
+                QUI\System\Log::writeDebugException($Exception);
             }
 
             throw $Exception;
@@ -457,9 +458,9 @@ class DB extends QUI\QDOM
      * @param array $params (see at createQuery())
      * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
+     * @return array
      * @throws QUI\Database\Exception
      *
-     * @return array
      */
     public function fetch(
         array $params = [],
@@ -480,7 +481,11 @@ class DB extends QUI\QDOM
                 break;
         }
 
-        return $Statement->fetchAll($FETCH_STYLE);
+        $result = $Statement->fetchAll($FETCH_STYLE);
+        $Statement->closeCursor();
+        $Statement = null;
+
+        return $result;
     }
 
     /**
@@ -491,9 +496,9 @@ class DB extends QUI\QDOM
      * @param string $query
      * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
+     * @return array
      * @throws QUI\Database\Exception
      *
-     * @return array
      */
     public function fetchSQL($query, $FETCH_STYLE = \PDO::FETCH_ASSOC)
     {
@@ -531,9 +536,9 @@ class DB extends QUI\QDOM
      * @param array $data
      * @param array|string $where
      *
+     * @return \PDOStatement
      * @throws QUI\Database\Exception
      *
-     * @return \PDOStatement
      */
     public function update($table, $data, $where)
     {
@@ -550,9 +555,9 @@ class DB extends QUI\QDOM
      * @param string $table
      * @param array $data
      *
+     * @return \PDOStatement
      * @throws QUI\Database\Exception
      *
-     * @return \PDOStatement
      */
     public function insert($table, $data)
     {
@@ -569,9 +574,9 @@ class DB extends QUI\QDOM
      * @param string $table
      * @param array $data
      *
+     * @return \PDOStatement
      * @throws QUI\Database\Exception
      *
-     * @return \PDOStatement
      */
     public function replace($table, $data)
     {
@@ -587,9 +592,9 @@ class DB extends QUI\QDOM
      * @param string $table - Name of the Database Table
      * @param array $where - data field, where statement
      *
+     * @return \PDOStatement
      * @throws QUI\Database\Exception
      *
-     * @return \PDOStatement
      */
     public function delete($table, $where)
     {
