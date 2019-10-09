@@ -438,6 +438,32 @@ class StringHelper
         return $att;
     }
 
+
+    /**
+     * Turns a URL parsed via parse_url back into a string.
+     *
+     * @param $parsedUrl
+     *
+     * @return string
+     *
+     * @author "thomas at gielfeldt dot com" on php.net (https://www.php.net/manual/de/function.parse-url.php#106731)
+     */
+    public static function unparseUrl($parsedUrl)
+    {
+        $scheme   = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
+        $host     = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+        $port     = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
+        $user     = isset($parsedUrl['user']) ? $parsedUrl['user'] : '';
+        $pass     = isset($parsedUrl['pass']) ? ':' . $parsedUrl['pass'] : '';
+        $pass     = ($user || $pass) ? "$pass@" : '';
+        $path     = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+        $query    = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
+        $fragment = isset($parsedUrl['fragment']) ? '#' . $parsedUrl['fragment'] : '';
+
+        return "$scheme$user$pass$host$port$path$query$fragment";
+    }
+    
+    
     /**
      * Gibt die Attribute eines HTML Strings zurück
      *
