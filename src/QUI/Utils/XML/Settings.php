@@ -87,11 +87,11 @@ class Settings
         }
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!file_exists($xmlFile)) {
+            if (!\file_exists($xmlFile)) {
                 $xmlFile = CMS_DIR.$xmlFile;
             }
 
-            if (!file_exists($xmlFile)) {
+            if (!\file_exists($xmlFile)) {
                 continue;
             }
 
@@ -173,7 +173,8 @@ class Settings
             $categories = $Path->query($this->xmlPath."/categories/category");
 
             foreach ($categories as $Category) {
-                $data = $this->parseCategory($Category);
+                $data         = $this->parseCategory($Category);
+                $data['file'] = $xmlFile;
 
                 $entry = $Collection->find(function ($item) use ($data) {
                     return $data['name'] == $item['name'];
