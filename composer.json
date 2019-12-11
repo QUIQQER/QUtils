@@ -1,34 +1,33 @@
 {
-  "name": "quiqqer/utils",
-  "type": "library",
-  "description": "Helper libraries from and for QUIQQER.",
-  "version": "dev-dev",
-  "license": "LGPL-3.0+",
-  "authors": [
-    {
-      "name": "Henning Leutz",
-      "email": "leutz@pcsg.de",
-      "homepage": "http:\/\/www.pcsg.de",
-      "role": "Developer"
+    "name": "quiqqer\/utils",
+    "type": "library",
+    "description": "Helper libraries from and for QUIQQER.",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Henning Leutz",
+            "email": "leutz@pcsg.de",
+            "homepage": "http:\/\/www.pcsg.de",
+            "role": "Developer"
+        },
+        {
+            "name": "Jan Wennrich",
+            "email": "support@pcsg.de",
+            "homepage": "https:\/\/www.pcsg.de",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "support@pcsg.de",
+        "url": "http:\/\/www.pcsg.de"
     },
-    {
-      "name": "Jan Wennrich",
-      "email": "support@pcsg.de",
-      "homepage": "https:\/\/www.pcsg.de",
-      "role": "Developer"
+    "require": {
+        "php": ">=5.3",
+        "dusank\/knapsack": "8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "QUI\\": "src\/QUI"
+        }
     }
-  ],
-  "support": {
-    "email": "support@pcsg.de",
-    "url": "http:\/\/www.pcsg.de"
-  },
-  "require": {
-    "php": ">=5.3",
-    "dusank/knapsack": "8.*"
-  },
-  "autoload": {
-    "psr-4": {
-      "QUI\\": "src\/QUI"
-    }
-  }
 }
