@@ -333,7 +333,7 @@ class StringHelper
 
         $minus = false;
 
-        if ($str{0} == '-' || $str < 0) {
+        if ($str[0] == '-' || $str < 0) {
             $minus = true;
         }
 
