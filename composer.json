@@ -1,7 +1,6 @@
 {
-  "name": "quiqqer/utils",
+  "name": "quiqqer\/utils",
   "type": "library",
-  "version": "dev-master",
   "description": "Helper libraries from and for QUIQQER.",
   "license": "LGPL-3.0+",
   "authors": [
@@ -24,7 +23,7 @@
   },
   "require": {
     "php": ">=5.3",
-    "dusank/knapsack": "8.*"
+    "dusank\/knapsack": "8.*"
   },
   "autoload": {
     "psr-4": {
