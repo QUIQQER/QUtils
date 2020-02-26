@@ -63,7 +63,7 @@ class DB extends QUI\QDOM
         $this->setAttribute('host', 'localhost');
         $this->setAttribute('driver', 'mysql');
         $this->setAttribute('options', [
-            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
         ]);
 
         if (isset($attributes['driver']) && empty($attributes['driver'])) {
