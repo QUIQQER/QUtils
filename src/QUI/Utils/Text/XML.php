@@ -1259,7 +1259,7 @@ class XML
         }
 
         // clear cache
-        QUI\Cache\Manager::clearAll();
+        QUI\Cache\Manager::clearCompleteQuiqqerCache();
     }
 
     /**
