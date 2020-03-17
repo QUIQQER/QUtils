@@ -489,6 +489,30 @@ class DB extends QUI\QDOM
     }
 
     /**
+     * Execute the query and dont execute a fetch
+     *
+     * @param $query
+     * @return \PDOStatement|false
+     * @throws Exception
+     *
+     */
+    public function execSQL($query)
+    {
+        $Statement = $this->getPDO()->prepare($query);
+
+        try {
+            $Statement->execute();
+        } catch (\PDOException $Exception) {
+            $message = $Exception->getMessage();
+            $message .= \print_r($query, true);
+
+            throw new QUI\Database\Exception($message, $Exception->getCode());
+        }
+
+        return $Statement;
+    }
+
+    /**
      * Execute query and get results
      * The query is passed directly!
      * Better use ->fetch() and pass the parameters as array
@@ -502,16 +526,7 @@ class DB extends QUI\QDOM
      */
     public function fetchSQL($query, $FETCH_STYLE = \PDO::FETCH_ASSOC)
     {
-        $Statement = $this->getPDO()->prepare($query);
-
-        try {
-            $Statement->execute();
-        } catch (\PDOException $Exception) {
-            $message = $Exception->getMessage();
-            $message .= \print_r($query, true);
-
-            throw new QUI\Database\Exception($message, $Exception->getCode());
-        }
+        $Statement = $this->execSQL($query);
 
         switch ($FETCH_STYLE) {
             case \PDO::FETCH_ASSOC:
