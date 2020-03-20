@@ -66,7 +66,7 @@ class Folder
      * Calculates and returns the size of the package folder in bytes.
      * The result is also stored in cache by default. Set the doNotCache parameter to true to prevent this.
      *
-     * This process may take a lot of time -> Expect timeouts!
+     * This process may take a lot of time
      *
      * @param string $path - The folder's path
      * @param boolean $doNotCache - Don't store the result in cache. Off by default.
@@ -90,13 +90,20 @@ class Folder
             );
 
             foreach ($Iterator as $Object) {
+                /** @var \RecursiveDirectoryIterator $Object */
                 try {
+                    // To prevent timeouts we always reset the time limit to two seconds
+                    \set_time_limit(2);
                     $folderSize += $Object->getSize();
                 } catch (\RuntimeException $RuntimeException) {
                     // If getSize() fails (e.g. at broken symlinks) we get here
                     continue;
                 }
             }
+
+            // Reset the time limit to it's default value.
+            // This ensures that following code execution doesn't timeout after two seconds.
+            \set_time_limit(\ini_get('max_execution_time'));
         }
 
         if ($doNotCache) {
