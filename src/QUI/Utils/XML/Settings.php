@@ -73,9 +73,10 @@ class Settings
     /**
      *
      * @param $xmlFiles
+     * @param $windowName
      * @return array
      */
-    public function getPanel($xmlFiles)
+    public function getPanel($xmlFiles, $windowName = false)
     {
         $result = [
             'title' => '',
@@ -99,16 +100,24 @@ class Settings
             $Path    = new \DOMXPath($Dom);
             $windows = $Path->query($this->xmlPath);
 
+            if (!$windows->length) {
+                continue;
+            }
+
             foreach ($windows as $Window) {
                 /* @var $Window \DOMElement */
                 $Title = $Window->getElementsByTagName('title');
                 $Icon  = $Window->getElementsByTagName('icon');
 
-                if ($Title->length) {
+                if ($windowName && $windowName !== $Window->getAttribute('name')) {
+                    continue;
+                }
+
+                if ($Title->length && $Title->item(0)->parentNode === $Window) {
                     $result['title'] = \htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
                 }
 
-                if ($Icon->length) {
+                if ($Icon->length && $Icon->item(0) !== '' && $Icon->item(0)->parentNode === $Window) {
                     $result['icon'] = \htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
                 }
 
@@ -130,6 +139,7 @@ class Settings
         };
 
         $result['categories'] = $this->getCategories($xmlFiles)->sort($sortByIndex);
+        $result['name']       = $windowName;
 
         return $result;
     }
@@ -174,7 +184,7 @@ class Settings
 
             foreach ($categories as $Category) {
                 $data         = $this->parseCategory($Category);
-                $data['file'] = $xmlFile;
+                $data['file'] = \str_replace(CMS_DIR, '', $xmlFile);
 
                 $entry = $Collection->find(function ($item) use ($data) {
                     return $data['name'] == $item['name'];
