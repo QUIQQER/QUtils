@@ -202,6 +202,17 @@ class Settings
                     )
                 );
 
+                $files = [];
+
+                if (\is_string($entry['file'])) {
+                    $files[] = $entry['file'];
+                } else {
+                    $files = $entry['file'];
+                }
+
+                $files[]       = $data['file'];
+                $entry['file'] = $files;
+
                 // find index
                 $index = $findIndex($Collection->toArray(), $entry['name']);
 
