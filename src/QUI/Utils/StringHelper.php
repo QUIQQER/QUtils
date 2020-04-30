@@ -432,7 +432,7 @@ class StringHelper
 
         foreach ($att_ as $a) {
             $item          = \explode('=', $a);
-            $att[$item[0]] = $item[1];
+            $att[$item[0]] = isset($item[1]) ? $item[1] : null;
         }
 
         return $att;
