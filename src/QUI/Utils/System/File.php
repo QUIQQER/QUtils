@@ -600,8 +600,8 @@ class File
      * @param string $from
      * @param string $to
      *
-     * @throws QUI\Exception
      * @return boolean
+     * @throws QUI\Exception
      */
     public static function copy($from, $to)
     {
@@ -631,8 +631,8 @@ class File
      *                       imagesize=Bildgrösse;
      *                       mime_type=mime_type
      *
-     * @throws QUI\Exception
      * @return array
+     * @throws QUI\Exception
      */
     public static function getInfo($file, $params = [])
     {
@@ -749,9 +749,9 @@ class File
      * @param integer $new_height
      *
      * @return boolean
+     * @throws QUI\Exception
      * @deprecated Use QUI\Utils\Image::resize
      *
-     * @throws QUI\Exception
      */
     public static function resize(
         $original,
@@ -776,9 +776,9 @@ class File
      * @param integer $top
      * @param integer $left
      *
+     * @throws QUI\Exception
      * @deprecated Use QUI\Utils\Image::watermark
      *
-     * @throws QUI\Exception
      */
     public static function watermark(
         $image,
@@ -999,10 +999,10 @@ class File
     /**
      * Return the size of an folder
      *
-     * @deprecated Use `QUI\Utils\System\Folder::getFolderSize($path)` instead.
-     *
      * @param $path
      * @return int
+     * @deprecated Use `QUI\Utils\System\Folder::getFolderSize($path)` instead.
+     *
      */
     public static function getDirectorySize($path)
     {
@@ -1146,7 +1146,7 @@ class File
      * @param string $srcdir
      * @param string $dstdir
      *
-     * @return boolean
+     * @return boolean|array
      */
     public static function dircopy($srcdir, $dstdir)
     {
@@ -1196,51 +1196,21 @@ class File
      *
      * @return boolean
      */
-    public static function mkdir($path, $mode = 0)
+    public static function mkdir($path, $mode = false)
     {
-        // Wenn schon existiert dann schluss -> true
-        if (\is_dir($path) || \file_exists($path)) {
+        if (\is_dir($path)) {
             return true;
         }
 
-        if (\substr($path, -1, \strlen($path)) == '/') {
-            $path = \substr($path, 0, -1);
-        }
+        $prev_path = \substr($path, 0, \strrpos($path, '/', -2) + 1);
+        $return    = self::mkdir($prev_path, $mode);
 
-        $p_e   = \explode('/', $path);
-        $p_tmp = '';
-
-        for ($i = 0, $len = \count($p_e); $i < $len; $i++) {
-            $p_tmp .= '/'.$p_e[$i];
-
-            if ($p_tmp == '/') {
-                continue;
+        if ($return && \is_writable($prev_path)) {
+            if ($mode === false) {
+                return \mkdir($path);
             }
 
-            // windows fix
-            if (\strpos($p_tmp, ':') == 2) {
-                if (\strpos($p_tmp, '/') == 0) {
-                    $p_tmp = \substr($p_tmp, 1);
-                }
-            }
-
-            $p_tmp = QUI\Utils\StringHelper::replaceDblSlashes($p_tmp);
-
-            if (!self::checkOpenBaseDir($p_tmp)) {
-                continue;
-            }
-
-            if (!\is_dir($p_tmp) || !\file_exists($p_tmp)) {
-                if ($mode != 0) {
-                    @\mkdir($p_tmp, $mode);
-                } else {
-                    @\mkdir($p_tmp);
-                }
-            }
-        }
-
-        if (\is_dir($path) && \file_exists($path)) {
-            return true;
+            return \mkdir($path, $mode);
         }
 
         return false;
@@ -1340,7 +1310,7 @@ class File
         \header('Pragma: no-cache');
         \header('Content-type: application/'.$finfo['extension']);
         \header('Content-Disposition: attachment; filename="'.\basename($file)
-               .'"');
+                .'"');
 
         // Inhalt des gespeicherten Dokuments senden
         \readfile($file);
