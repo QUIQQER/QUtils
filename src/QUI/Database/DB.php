@@ -832,8 +832,9 @@ class DB extends QUI\QDOM
         $sql     = '';
 
         if (\is_array($params)) {
-            $i   = 0;
-            $max = \count($params) - 1;
+            $i     = 0;
+            $inKey = 0;
+            $max   = \count($params) - 1;
 
             $sql     = ' WHERE ';
             $prepare = [];
@@ -894,15 +895,12 @@ class DB extends QUI\QDOM
 
                             $sql .= ':in'.$prepareKey;
                         } else {
-                            $in       = $i;
                             $bindKeys = [];
 
                             foreach ($value['value'] as $val) {
-                                $bindKey           = 'in'.$in;
+                                $bindKey           = 'in'.$inKey++;
                                 $prepare[$bindKey] = $val;
                                 $bindKeys[]        = ':'.$bindKey;
-
-                                $in++;
                             }
 
                             if (!empty($bindKeys)) {
@@ -919,15 +917,12 @@ class DB extends QUI\QDOM
 
                             $sql .= ':notin'.$prepareKey;
                         } else {
-                            $in       = $i;
                             $bindKeys = [];
 
                             foreach ($value['value'] as $val) {
-                                $bindKey           = 'notin'.$in;
+                                $bindKey           = 'notin'.$inKey++;
                                 $prepare[$bindKey] = $val;
                                 $bindKeys[]        = ':'.$bindKey;
-
-                                $in++;
                             }
 
                             if (!empty($bindKeys)) {
