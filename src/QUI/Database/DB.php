@@ -832,8 +832,9 @@ class DB extends QUI\QDOM
         $sql     = '';
 
         if (\is_array($params)) {
-            $i   = 0;
-            $max = \count($params) - 1;
+            $i     = 0;
+            $inKey = 0;
+            $max   = \count($params) - 1;
 
             $sql     = ' WHERE ';
             $prepare = [];
@@ -894,17 +895,16 @@ class DB extends QUI\QDOM
 
                             $sql .= ':in'.$prepareKey;
                         } else {
-                            $in = 0;
+                            $bindKeys = [];
 
                             foreach ($value['value'] as $val) {
-                                $prepare['in'.$in] = $val;
+                                $bindKey           = 'in'.$inKey++;
+                                $prepare[$bindKey] = $val;
+                                $bindKeys[]        = ':'.$bindKey;
+                            }
 
-                                if ($in != 0) {
-                                    $sql .= ', ';
-                                }
-
-                                $sql .= ':in'.$in;
-                                $in++;
+                            if (!empty($bindKeys)) {
+                                $sql .= \implode(', ', $bindKeys);
                             }
                         }
 
@@ -917,17 +917,16 @@ class DB extends QUI\QDOM
 
                             $sql .= ':notin'.$prepareKey;
                         } else {
-                            $in = 0;
+                            $bindKeys = [];
 
                             foreach ($value['value'] as $val) {
-                                $prepare['notin'.$in] = $val;
+                                $bindKey           = 'notin'.$inKey++;
+                                $prepare[$bindKey] = $val;
+                                $bindKeys[]        = ':'.$bindKey;
+                            }
 
-                                if ($in != 0) {
-                                    $sql .= ', ';
-                                }
-
-                                $sql .= ':notin'.$in;
-                                $in++;
+                            if (!empty($bindKeys)) {
+                                $sql .= \implode(', ', $bindKeys);
                             }
                         }
 
