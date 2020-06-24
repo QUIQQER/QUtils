@@ -33,9 +33,14 @@ class DOMParser
 
         $type    = 'text';
         $classes = $attributes['class'];
+        $dataQui = '';
 
         if ($Input->getAttribute('type')) {
             $type = $Input->getAttribute('type');
+        }
+
+        if ($Input->getAttribute('data-qui')) {
+            $dataQui = 'data-qui="'.$Input->getAttribute('data-qui').'"';
         }
 
         switch ($type) {
@@ -60,6 +65,7 @@ class DOMParser
                            id="'.$attributes['id'].'"
                            class="'.\implode(' ', $classes).'"
                            '.$attributes['attributes'].'
+                           '.$dataQui.'
                     />';
 
         if ($type == 'radio') {
@@ -88,12 +94,18 @@ class DOMParser
         }
 
         $attributes = self::getAttributes($TextArea);
+        $dataQui    = '';
+
+        if ($TextArea->getAttribute('data-qui')) {
+            $dataQui = 'data-qui="'.$TextArea->getAttribute('data-qui').'"';
+        }
 
         $textArea = '<textarea
             name="'.$attributes['conf'].'"
             id="'.$attributes['id'].'"
             class="field-container-field"
             '.$attributes['attributes'].'
+            '.$dataQui.'
         ></textarea>';
 
         return self::createHTML($textArea, $attributes);
@@ -110,11 +122,17 @@ class DOMParser
         }
 
         $attributes = self::getAttributes($Select);
+        $dataQui    = '';
+
+        if ($Select->getAttribute('data-qui')) {
+            $dataQui = 'data-qui="'.$Select->getAttribute('data-qui').'"';
+        }
 
         $select = '<select
             name="'.$attributes['conf'].'"
             id="'.$attributes['id'].'"
             class="field-container-field"
+            '.$dataQui.'
         >';
 
         // Options
@@ -143,6 +161,12 @@ class DOMParser
             return '';
         }
 
+        $dataQui = '';
+
+        if ($Group->getAttribute('data-qui')) {
+            $dataQui = 'data-qui="'.$Group->getAttribute('data-qui').'"';
+        }
+
         $attributes = self::getAttributes($Group);
 
         $input = '<input type="hidden"
@@ -151,6 +175,7 @@ class DOMParser
                      id="'.$attributes['id'].'"
                      class="'.\implode(' ', $attributes['class']).'"
                      '.$attributes['attributes'].'
+                     '.$dataQui.'
                  />';
 
         return self::createHTML($input, $attributes);
@@ -172,6 +197,12 @@ class DOMParser
             return '';
         }
 
+        $dataQui = '';
+
+        if ($Button->getAttribute('data-qui')) {
+            $dataQui = 'data-qui="'.$Button->getAttribute('data-qui').'"';
+        }
+
         $attributes = self::getAttributes($Button);
 
         $button = '<button
@@ -180,6 +211,7 @@ class DOMParser
                      id="'.$attributes['id'].'"
                      class="'.\implode(' ', $attributes['class']).'"
                      '.$attributes['attributes'].'
+                     '.$dataQui.'
                  >'.$attributes['text'].'</button>';
 
         return self::createHTML($button, $attributes);

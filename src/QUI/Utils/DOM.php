@@ -1152,6 +1152,10 @@ class DOM
             $type = $Input->getAttribute('type');
         }
 
+        if ($Input->getAttribute('data-qui')) {
+            $dataQui = 'data-qui="'.$Input->getAttribute('data-qui').'"';
+        }
+
         $attributes = $Input->attributes;
 
         foreach ($attributes as $Attribute) {
@@ -1264,7 +1268,7 @@ class DOM
         $Text    = $TextArea->getElementsByTagName('text');
         $dataQui = '';
 
-        if ($TextArea->getAttribute('data - qui')) {
+        if ($TextArea->getAttribute('data-qui')) {
             $dataQui = 'data-qui="'.$TextArea->getAttribute('data-qui').'"';
         }
 
