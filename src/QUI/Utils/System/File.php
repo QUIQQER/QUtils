@@ -1294,10 +1294,11 @@ class File
      * Enter description here...
      *
      * @param string $file
+     * @param bool $deleteFile (optional) - Delete file after send [default: false]
      *
      * @throws QUI\Exception
      */
-    public static function downloadHeader($file)
+    public static function downloadHeader($file, $deleteFile = false)
     {
         if (!\file_exists($file)) {
             throw new QUI\Exception('File not exist '.$file, 404);
@@ -1314,6 +1315,11 @@ class File
 
         // Inhalt des gespeicherten Dokuments senden
         \readfile($file);
+
+        if ($deleteFile) {
+            \unlink($file);
+        }
+
         exit;
     }
 
