@@ -150,10 +150,6 @@ class Orthos
      */
     public static function clearMySQL($str, $escape = true)
     {
-        if (\function_exists('get_magic_quotes_gpc') && \get_magic_quotes_gpc()) {
-            $str = \stripslashes($str);
-        }
-
         if ($escape && \class_exists('QUI')) {
             $str = \QUI::getPDO()->quote($str);
         }
