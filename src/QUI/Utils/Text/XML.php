@@ -1291,7 +1291,7 @@ class XML
                     $Table->setUniqueColumns($tbl, $table['unique']);
                 }
 
-                if (!empty($table['comment'])) {
+                if (!empty($table['comment']) && \method_exists($Table, 'setComment')) {
                     $Table->setComment($tbl, $table['comment']);
                 }
 
