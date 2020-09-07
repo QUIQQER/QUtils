@@ -204,6 +204,16 @@ class DOM
         $_fields = [];
 
         // table fields
+        $comments = $Table->getElementsByTagName('comment');
+
+        foreach ($comments as $Comment) {
+            $comment = $Comment->nodeValue;
+            $comment = \substr($comment, 0, 1024); // mysql comment limit
+
+            $result['comment'] = $comment;
+        }
+
+        // table fields
         $fields = $Table->getElementsByTagName('field');
 
         for ($i = 0; $i < $fields->length; $i++) {

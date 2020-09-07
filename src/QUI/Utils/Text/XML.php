@@ -1291,11 +1291,15 @@ class XML
                     $Table->setUniqueColumns($tbl, $table['unique']);
                 }
 
+                if (!empty($table['comment'])) {
+                    $Table->setComment($tbl, $table['comment']);
+                }
+
                 $index = [];
 
-                if (isset($table['index']) && !is_array($table['index'])) {
+                if (isset($table['index']) && !\is_array($table['index'])) {
                     $index[] = $table['index'];
-                } elseif (isset($table['index']) && is_array($table['index'])) {
+                } elseif (isset($table['index']) && \is_array($table['index'])) {
                     $index = $table['index'];
                 }
 
