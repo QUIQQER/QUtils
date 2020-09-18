@@ -7,8 +7,6 @@ use QUI\Utils\System;
 
 /**
  * Class Webserver
- *
- * @package QUI\Utils\System
  */
 class Webserver
 {

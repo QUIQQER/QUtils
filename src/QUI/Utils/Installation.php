@@ -13,7 +13,6 @@ use QUI\Utils\System\Folder;
 
 /**
  * Class Installation
- * @package QUI\Utils
  */
 class Installation
 {
@@ -106,7 +105,7 @@ class Installation
         $fileCount = null;
 
         if (System::isSystemFunctionCallable('find') && System::isSystemFunctionCallable('wc')) {
-            exec('find ' . CMS_DIR . ' -type f | wc -l', $output);
+            exec('find '.CMS_DIR.' -type f | wc -l', $output);
 
             if (isset($output[0]) && is_numeric($output[0])) {
                 $fileCount = $output[0];

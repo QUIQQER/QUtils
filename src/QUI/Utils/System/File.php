@@ -14,8 +14,6 @@ use QUI;
  *
  * @author  www.pcsg.de (Henning Leutz)
  * @author  www.pcsg.de (Moritz Leutz)
- *
- * @package com.pcsg.qutils
  */
 class File
 {

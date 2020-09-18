@@ -24,8 +24,6 @@ if (class_exists('Imagick')) {
      * IMAGICK_SYSTEM = Image Magick is on the system shell available;
      * GDLIB          = GDLib is via php available;
      * false          = no image library is available :(
-     *
-     * @package com.pcsg.qutils.image
      */
     define('IMAGE_LIBRARY', false);
 }
@@ -39,7 +37,6 @@ if (class_exists('Imagick')) {
  * @uses    imagick on the shell, if it enabled
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  *
  * @deprecated better use http://image.intervention.io/
  *

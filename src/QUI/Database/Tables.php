@@ -13,7 +13,6 @@ use QUI;
  *
  * @uses    PDO
  * @author  www.pcsg.de (Henning Leutz)
- * @package quiqqer/utils
  */
 class Tables
 {

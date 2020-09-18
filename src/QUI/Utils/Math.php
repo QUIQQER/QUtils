@@ -10,7 +10,6 @@ namespace QUI\Utils;
  * Commonly used mathematical functions
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  */
 class Math
 {

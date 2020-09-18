@@ -11,8 +11,6 @@ use QUI\Utils\DOM;
 /**
  * Class DOMParser
  * New DOM parser, replaces \QUI\Utils\DOM
- *
- * @package QUI\Utils\XML
  */
 class DOMParser
 {

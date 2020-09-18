@@ -8,8 +8,6 @@ namespace QUI\Utils;
 
 /**
  * Class Singleton
- *
- * @package QUI\Utils
  */
 abstract class Singleton
 {

@@ -14,8 +14,6 @@ use QUI;
  *
  * @copyright www.pcsg.de (Henning Leutz)
  * @uses      ZipArchive
- *
- * @package   QUI\Archiver
  */
 class Zip
 {

@@ -12,7 +12,6 @@ mb_internal_encoding('UTF-8');
  * Helper for word handling
  *
  * @author  www.pcsg.de (Henning Leutz
- * @package com.pcsg.qutils
  */
 class Word
 {

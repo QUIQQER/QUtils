@@ -12,7 +12,6 @@ namespace QUI;
  * @todo    -> überdenken, da in QUI schon ein log manager gibt der auch mit plugins erweitert wird
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  * @deprecated
  */
 class Log

@@ -14,7 +14,6 @@ use QUI;
  * Easier access to gettext for QUIQQER
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils.translation
  *
  * @uses    gettext
  */

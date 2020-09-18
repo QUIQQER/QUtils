@@ -10,7 +10,6 @@ namespace QUI\Utils;
  * Convert class, helper for converting different values
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  */
 class Convert
 {
@@ -99,9 +98,9 @@ class Convert
      */
     public static function convertMySqlDatetime($str)
     {
-        list($date, $time) = \explode(' ', $str);
-        list($year, $month, $day) = \explode('-', $date);
-        list($hour, $minute, $second) = \explode(':', $time);
+        [$date, $time] = \explode(' ', $str);
+        [$year, $month, $day] = \explode('-', $date);
+        [$hour, $minute, $second] = \explode(':', $time);
 
         $timestamp = \mktime($hour, $minute, $second, $month, $day, $year);
 

@@ -12,7 +12,6 @@ use QUI;
  * Easier Access to pspell
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils.translation
  *
  * @uses    pspell
  * @todo    check it, class is at the moment not in use

@@ -11,8 +11,6 @@ namespace QUI;
  * Collects children from a specific class / classes
  * To specify allowed types you should extend this class.
  * Then set the $allowed variable there.
- *
- * @package QUI
  */
 class Collection implements \IteratorAggregate, \ArrayAccess
 {

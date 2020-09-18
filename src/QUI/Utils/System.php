@@ -13,7 +13,6 @@ use QUI\Utils\System\File;
  * Helper class for the system variables
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  */
 class System
 {
