@@ -1250,8 +1250,8 @@ class XML
 
         // @todo muss in paket klasse ausgelagert werden
         // package config?
-        if (\strpos($file, OPT_DIR) !== false) {
-            $_file = \str_replace(OPT_DIR, '', $file);
+        if (\strpos(URL_DIR.$file, URL_OPT_DIR) !== false) {
+            $_file = \str_replace(URL_OPT_DIR, '', URL_DIR.$file);
             $_file = \explode('/', $_file);
 
             try {
