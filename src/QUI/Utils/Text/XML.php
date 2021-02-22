@@ -192,7 +192,7 @@ class XML
 
         foreach ($params as $section => $key) {
             if (isset($key['default'])) {
-                if ($Config->existValue($section) !== false) {
+                if ($Config->existValue($section) === false) {
                     $Config->setValue($section, $key['default']);
                 }
 
