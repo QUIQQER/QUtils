@@ -11,7 +11,6 @@ namespace QUI\Utils\Tracking;
  * measures the length of time between measurement points
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils
  */
 class Timer
 {
@@ -29,7 +28,7 @@ class Timer
      */
     protected function time()
     {
-        list($utime, $time) = \explode(" ", \microtime());
+        [$utime, $time] = \explode(" ", \microtime());
 
         return ((float)$utime + (float)$time);
     }

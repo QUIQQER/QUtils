@@ -13,7 +13,6 @@ use QUI\Utils\Security\Orthos;
  * Converts a pdf to text
  *
  * @author   www.pcsg.de (Henning Leutz)
- * @package  com.pcsg.qui.utils.text
  *
  * @requires pdftotext (for ubuntu: sudo apt-get install poppler-utils)
  */

@@ -10,7 +10,6 @@ namespace QUI;
  * The Main Exception class for QUIQQER CMS and QUI Utils
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  */
 class Exception extends \Exception
 {
@@ -49,11 +48,13 @@ class Exception extends \Exception
 
                 $context['locale'] = $message;
 
-                $message = \QUI::getUserBySession()->getLocale()->get(
-                    $message[0],
-                    $message[1],
-                    $params
-                );
+                if (\class_exists('QUI')) {
+                    $message = \QUI::getUserBySession()->getLocale()->get(
+                        $message[0],
+                        $message[1],
+                        $params
+                    );
+                }
             }
         }
 

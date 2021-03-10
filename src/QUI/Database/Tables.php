@@ -13,7 +13,6 @@ use QUI;
  *
  * @uses    PDO
  * @author  www.pcsg.de (Henning Leutz)
- * @package quiqqer/utils
  */
 class Tables
 {
@@ -262,6 +261,28 @@ class Tables
     }
 
     /**
+     * Set a comment to a table
+     *
+     * @param string $table
+     * @param string $comment
+     */
+    public function setComment($table, $comment)
+    {
+        $PDO     = $this->DB->getPDO();
+        $comment = \trim($comment);
+        $comment = $PDO->quote($comment);
+
+        $query = "ALTER TABLE {$table} COMMENT = {$comment};";
+        $Stmnt = $PDO->prepare($query);
+
+        try {
+            $Stmnt->execute();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($query);
+        }
+    }
+
+    /**
      * Field Methods
      */
 
@@ -309,9 +330,9 @@ class Tables
      * @param array $fields
      * @param string $engine - optional, is only used when the table is created
      *
+     * @throws Exception
      * @deprecated ->addColumn
      *
-     * @throws Exception
      */
     public function appendFields($table, $fields, $engine = 'MYISAM')
     {
@@ -634,12 +655,12 @@ class Tables
     /**
      * Helper for issetPrimaryKey
      *
-     * @see issetPrimaryKey
-     *
      * @param string $table
      * @param string $key
      *
      * @return boolean
+     * @see issetPrimaryKey
+     *
      */
     protected function issetPrimaryKeyHelper($table, $key)
     {
@@ -814,12 +835,12 @@ class Tables
     /**
      * Helper for issetPrimaryKey
      *
-     * @see issetPrimaryKey
-     *
      * @param string $table
      * @param string $unique
      *
      * @return boolean
+     * @see issetPrimaryKey
+     *
      */
     protected function issetUniqueColumnHelper($table, $unique)
     {

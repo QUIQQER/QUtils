@@ -14,7 +14,6 @@ use QUI\System\Log;
  * The QDOM class emulate similar methods
  * like a DOMNode, its the main parent factory class
  *
- * @package com.pcsg.qutils
  * @author  www.pcsg.de (Henning Leutz)
  */
 class QDOM

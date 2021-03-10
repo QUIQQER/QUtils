@@ -12,7 +12,6 @@ use QUI;
  * QUIQQER BBcode class
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  *
  * @todo    check the class, the class is realy old, maybe this can be done better
  * @todo    docu translation

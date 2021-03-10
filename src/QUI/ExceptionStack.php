@@ -9,7 +9,6 @@ namespace QUI;
 /**
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qutils
  */
 class ExceptionStack extends Exception
 {

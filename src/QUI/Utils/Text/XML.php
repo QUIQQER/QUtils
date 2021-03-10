@@ -1187,7 +1187,7 @@ class XML
                 }
 
                 // default key for fn match
-                $defaultkeys  = array_keys($defaults[$section]);
+                $defaultkeys  = \array_keys($defaults[$section]);
                 $fnMatchFound = $checkFnMatch($key, $defaultkeys);
 
                 if (!$fnMatchFound && !isset($defaults[$section][$key])) {
@@ -1223,6 +1223,10 @@ class XML
                         break;
 
                     case 'string':
+                        if (!\is_string($value)) { // #workaround for quiqqer/erp#29
+                            $value = \json_encode($value);
+                        }
+
                         $value = QUI\Utils\Security\Orthos::cleanHTML($value);
                         break;
                 }
@@ -1246,8 +1250,8 @@ class XML
 
         // @todo muss in paket klasse ausgelagert werden
         // package config?
-        if (\strpos($file, OPT_DIR) !== false) {
-            $_file = \str_replace(OPT_DIR, '', $file);
+        if (\strpos(URL_DIR.$file, URL_OPT_DIR) !== false) {
+            $_file = \str_replace(URL_OPT_DIR, '', URL_DIR.$file);
             $_file = \explode('/', $_file);
 
             try {
@@ -1291,11 +1295,15 @@ class XML
                     $Table->setUniqueColumns($tbl, $table['unique']);
                 }
 
+                if (!empty($table['comment']) && \method_exists($Table, 'setComment')) {
+                    $Table->setComment($tbl, $table['comment']);
+                }
+
                 $index = [];
 
-                if (isset($table['index']) && !is_array($table['index'])) {
+                if (isset($table['index']) && !\is_array($table['index'])) {
                     $index[] = $table['index'];
-                } elseif (isset($table['index']) && is_array($table['index'])) {
+                } elseif (isset($table['index']) && \is_array($table['index'])) {
                     $index = $table['index'];
                 }
 

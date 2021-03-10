@@ -14,7 +14,6 @@ use DusanKasan\Knapsack\Collection;
 
 /**
  * Class Settings
- * @package QUI\Utils\XML
  */
 class Settings
 {

@@ -12,7 +12,6 @@ use QUI;
  * Executes a request to a URL
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.utils.request
  */
 class Url
 {

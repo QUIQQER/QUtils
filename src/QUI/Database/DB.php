@@ -14,7 +14,6 @@ use QUI\Utils\Security\Orthos;
  *
  * @uses    PDO
  * @author  www.pcsg.de (Henning Leutz)
- * @package quiqqer/utils
  */
 class DB extends QUI\QDOM
 {
@@ -45,6 +44,20 @@ class DB extends QUI\QDOM
     protected $version = false;
 
     /**
+     * indicates when the connection should be re-established
+     *
+     * @var int
+     */
+    protected $reconnectTimeout = 25000;
+
+    /**
+     * Time of the last connection
+     *
+     * @var int
+     */
+    protected $lastConnectTime = 0;
+
+    /**
      * Constructor
      *
      * @param array $attributes
@@ -73,26 +86,7 @@ class DB extends QUI\QDOM
         // Attributes
         $this->setAttributes($attributes);
 
-        $this->PDO = $this->getNewPDO();
-        $this->PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-        try {
-            $Date   = new \DateTime();
-            $offset = $Date->getOffset();
-
-            $offsetHours   = \round(\abs($offset) / 3600);
-            $offsetMinutes = \round((\abs($offset) - $offsetHours * 3600) / 60);
-
-            $offsetString = ($offset < 0 ? '-' : '+');
-            $offsetString .= (\strlen($offsetHours) < 2 ? '0' : '').$offsetHours;
-            $offsetString .= ':';
-            $offsetString .= (\strlen($offsetMinutes) < 2 ? '0' : '').$offsetMinutes;
-
-            $this->PDO->exec("SET time_zone = '{$offsetString}'");
-        } catch (\PDOException $Exception) {
-            QUI\System\Log::addError($Exception->getMessage());
-        }
-
+        $this->PDO    = $this->getNewPDO();
         $this->Tables = new Tables($this);
     }
 
@@ -107,6 +101,8 @@ class DB extends QUI\QDOM
      */
     public function getNewPDO()
     {
+        $this->lastConnectTime = time();
+
         if ($this->getAttribute('dsn') === false) {
             $dsn = $this->getAttribute('driver').
                    ':dbname='.$this->getAttribute('dbname').
@@ -124,17 +120,38 @@ class DB extends QUI\QDOM
             if ($this->getAttribute('driver') == 'sqlite') {
                 $this->sqlite = true;
 
-                return new \PDO(
+                $Pdo = new \PDO(
                     'sqlite:'.$this->getAttribute('dbname')
+                );
+            } else {
+                $Pdo = new \PDO(
+                    $this->getAttribute('dsn'),
+                    $this->getAttribute('user'),
+                    $this->getAttribute('password'),
+                    $this->getAttribute('options')
                 );
             }
 
-            return new \PDO(
-                $this->getAttribute('dsn'),
-                $this->getAttribute('user'),
-                $this->getAttribute('password'),
-                $this->getAttribute('options')
-            );
+            $Pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+            try {
+                $Date   = new \DateTime();
+                $offset = $Date->getOffset();
+
+                $offsetHours   = \round(\abs($offset) / 3600);
+                $offsetMinutes = \round((\abs($offset) - $offsetHours * 3600) / 60);
+
+                $offsetString = ($offset < 0 ? '-' : '+');
+                $offsetString .= (\strlen($offsetHours) < 2 ? '0' : '').$offsetHours;
+                $offsetString .= ':';
+                $offsetString .= (\strlen($offsetMinutes) < 2 ? '0' : '').$offsetMinutes;
+
+                $Pdo->exec("SET time_zone = '{$offsetString}'");
+            } catch (\PDOException $Exception) {
+                QUI\System\Log::addError($Exception->getMessage());
+            }
+
+            return $Pdo;
         } catch (\PDOException $Exception) {
             throw new QUI\Database\Exception(
                 $Exception->getMessage(),
@@ -152,6 +169,48 @@ class DB extends QUI\QDOM
     {
         return $this->PDO;
     }
+
+    // region reconnection
+
+    /**
+     * Reconnect the pdo connection to the sql server
+     *
+     * @throws Exception
+     */
+    public function reconnect()
+    {
+        if ($this->PDO) {
+            $this->PDO = null;
+        }
+
+        $this->PDO = $this->getNewPDO();
+    }
+
+    /**
+     * Set the reconnect timeout
+     *
+     * @param int $time - seconds
+     */
+    public function setReconnectTimeout($time)
+    {
+        $this->reconnectTimeout = $time;
+    }
+
+    /**
+     * Reconnect the connection if needed
+     *
+     * @throws Exception
+     */
+    protected function reconnectCheck()
+    {
+        $diff = time() - $this->lastConnectTime;
+
+        if ($diff > $this->reconnectTimeout) {
+            $this->reconnect();
+        }
+    }
+
+    //endregion
 
     /**
      * Return the server version of the database
@@ -466,6 +525,8 @@ class DB extends QUI\QDOM
         array $params = [],
         $FETCH_STYLE = \PDO::FETCH_ASSOC
     ) {
+        $this->reconnectCheck();
+
         $Statement = $this->exec($params);
 
         switch ($FETCH_STYLE) {
@@ -526,6 +587,8 @@ class DB extends QUI\QDOM
      */
     public function fetchSQL($query, $FETCH_STYLE = \PDO::FETCH_ASSOC)
     {
+        $this->reconnectCheck();
+
         $Statement = $this->execSQL($query);
 
         switch ($FETCH_STYLE) {

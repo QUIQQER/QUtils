@@ -10,7 +10,6 @@ namespace QUI\Utils;
  * Helper for bool type handling
  *
  * @author  www.pcsg.de (Henning Leutz
- * @package com.pcsg.qui.utils
  */
 class BoolHelper
 {

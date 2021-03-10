@@ -11,7 +11,6 @@ use QUI\System\Log;
 
 /**
  * Class Folder
- * @package QUI\Utils\System
  */
 class Folder
 {

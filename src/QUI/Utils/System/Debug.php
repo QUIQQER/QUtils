@@ -12,7 +12,6 @@ namespace QUI\Utils\System;
  * Log the system memory usage
  *
  * @author  www.pcsg.de (Henning Leutz)
- * @package com.pcsg.qui.system
  */
 class Debug
 {

@@ -15,7 +15,6 @@ use QUI;
  * @requires ZipArchive
  *
  * @author   www.pcsg.de (Henning Leutz)
- * @package  com.pcsg.qutils
  */
 class DocToText
 {
@@ -24,8 +23,8 @@ class DocToText
      *
      * @param string $file - path to file
      *
-     * @throws QUI\Exception
      * @return string
+     * @throws QUI\Exception
      */
     public static function convert($file)
     {
@@ -39,9 +38,9 @@ class DocToText
             throw new QUI\Exception('File could not be read.', 404);
         }
 
-        $data = QUI\Utils\System\File::getInfo($file, array(
+        $data = QUI\Utils\System\File::getInfo($file, [
             'mime_type' => true
-        ));
+        ]);
 
         // doc
         switch ($data['mime_type']) {
