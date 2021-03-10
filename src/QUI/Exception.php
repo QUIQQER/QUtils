@@ -48,11 +48,13 @@ class Exception extends \Exception
 
                 $context['locale'] = $message;
 
-                $message = \QUI::getUserBySession()->getLocale()->get(
-                    $message[0],
-                    $message[1],
-                    $params
-                );
+                if (\class_exists('QUI')) {
+                    $message = \QUI::getUserBySession()->getLocale()->get(
+                        $message[0],
+                        $message[1],
+                        $params
+                    );
+                }
             }
         }
 
