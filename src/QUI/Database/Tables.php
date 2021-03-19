@@ -432,7 +432,8 @@ class Tables
 
             // change column
             if (\stripos($type, 'PRIMARY KEY') === false &&
-                !$this->issetPrimaryKey($table, $field)
+                !$this->issetPrimaryKey($table, $field) &&
+                !$this->issetIndex($table, $field)
             ) {
                 $change[] = "CHANGE `{$field}` `{$field}` {$type}";
             }
