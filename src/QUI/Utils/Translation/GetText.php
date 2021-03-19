@@ -107,6 +107,15 @@ class GetText extends QUI\QDOM
         );
         */
 
+        if (empty($this->getAttribute('domain'))) {
+            QUI\System\Log::addWarning('Missing locale domain', [
+                'domain' => $this->getAttribute('domain'),
+                'dir'    => $this->getAttribute('dir'),
+            ]);
+
+            return;
+        }
+
         \bindtextdomain(
             $this->getAttribute('domain'),
             $this->getAttribute('dir')
