@@ -676,6 +676,10 @@ class XML
         foreach ($provider as $Provider) {
             /* @var $Provider \DOMElement */
             foreach ($Provider->childNodes as $Node) {
+                if ($Node->nodeType === \XML_COMMENT_NODE) {
+                    continue;
+                }
+
                 if ($Node->nodeType === \XML_TEXT_NODE
                     || $Node->nodeName == '#text'
                     || !$Node->getAttribute('src')
