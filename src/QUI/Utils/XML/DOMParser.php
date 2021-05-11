@@ -21,7 +21,7 @@ class DOMParser
      *
      * @return string
      */
-    public static function inputDomToString(\DOMNode $Input)
+    public static function inputDomToString(\DOMNode $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -37,7 +37,8 @@ class DOMParser
             $type = $Input->getAttribute('type');
         }
 
-        if ($Input->getAttribute('data-qui')) {
+        if ($Input->getAttribute('data-qui')
+            && strpos($attributes['attributes'], 'data-qui') === false) {
             $dataQui = 'data-qui="'.$Input->getAttribute('data-qui').'"';
         }
 
@@ -85,7 +86,7 @@ class DOMParser
      *
      * @return string
      */
-    public static function textareaDomToString(\DOMNode $TextArea)
+    public static function textareaDomToString(\DOMNode $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -94,7 +95,8 @@ class DOMParser
         $attributes = self::getAttributes($TextArea);
         $dataQui    = '';
 
-        if ($TextArea->getAttribute('data-qui')) {
+        if ($TextArea->getAttribute('data-qui')
+            && strpos($attributes['attributes'], 'data-qui') === false) {
             $dataQui = 'data-qui="'.$TextArea->getAttribute('data-qui').'"';
         }
 
@@ -113,7 +115,7 @@ class DOMParser
      * @param \DOMNode|\DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(\DOMNode $Select)
+    public static function selectDomToString(\DOMNode $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';
@@ -122,7 +124,8 @@ class DOMParser
         $attributes = self::getAttributes($Select);
         $dataQui    = '';
 
-        if ($Select->getAttribute('data-qui')) {
+        if ($Select->getAttribute('data-qui')
+            && strpos($attributes['attributes'], 'data-qui') === false) {
             $dataQui = 'data-qui="'.$Select->getAttribute('data-qui').'"';
         }
 
@@ -153,16 +156,10 @@ class DOMParser
      * @param \DOMNode|\DOMElement $Group
      * @return string
      */
-    public static function groupDomToString(\DOMNode $Group)
+    public static function groupDomToString(\DOMNode $Group): string
     {
         if ($Group->nodeName != 'group') {
             return '';
-        }
-
-        $dataQui = '';
-
-        if ($Group->getAttribute('data-qui')) {
-            $dataQui = 'data-qui="'.$Group->getAttribute('data-qui').'"';
         }
 
         $attributes = self::getAttributes($Group);
@@ -173,7 +170,6 @@ class DOMParser
                      id="'.$attributes['id'].'"
                      class="'.\implode(' ', $attributes['class']).'"
                      '.$attributes['attributes'].'
-                     '.$dataQui.'
                  />';
 
         return self::createHTML($input, $attributes);
@@ -186,19 +182,13 @@ class DOMParser
      *
      * @return string
      */
-    public static function buttonDomToString(\DOMNode $Button)
+    public static function buttonDomToString(\DOMNode $Button): string
     {
         if ($Button->nodeName != 'button'
             && $Button->getAttribute('type') != 'button'
             && $Button->getAttribute('type') != 'submit'
         ) {
             return '';
-        }
-
-        $dataQui = '';
-
-        if ($Button->getAttribute('data-qui')) {
-            $dataQui = 'data-qui="'.$Button->getAttribute('data-qui').'"';
         }
 
         $attributes = self::getAttributes($Button);
@@ -209,7 +199,6 @@ class DOMParser
                      id="'.$attributes['id'].'"
                      class="'.\implode(' ', $attributes['class']).'"
                      '.$attributes['attributes'].'
-                     '.$dataQui.'
                  >'.$attributes['text'].'</button>';
 
         return self::createHTML($button, $attributes);
@@ -221,7 +210,7 @@ class DOMParser
      * @param \DOMNode|\DOMElement $Node
      * @return array
      */
-    public static function getAttributes(\DOMNode $Node)
+    public static function getAttributes(\DOMNode $Node): array
     {
         $id   = $Node->getAttribute('conf').'-'.\time();
         $conf = $Node->getAttribute('conf');
@@ -300,7 +289,7 @@ class DOMParser
      * @param array $attributes
      * @return string
      */
-    protected static function createHTML($fieldHTML, $attributes)
+    protected static function createHTML(string $fieldHTML, array $attributes): string
     {
         $isCheckbox = \strpos($fieldHTML, 'type="checkbox"');
         $labelStyle = '';

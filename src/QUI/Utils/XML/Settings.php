@@ -30,7 +30,7 @@ class Settings
     /**
      * @return Settings
      */
-    public static function getInstance()
+    public static function getInstance(): ?Settings
     {
         if (\is_null(self::$Instance)) {
             self::$Instance = new self();
@@ -62,7 +62,7 @@ class Settings
      *
      * @param string $xmlPath
      */
-    public function setXMLPath($xmlPath)
+    public function setXMLPath(string $xmlPath)
     {
         if (\is_string($xmlPath)) {
             $this->xmlPath = $xmlPath;
@@ -72,10 +72,10 @@ class Settings
     /**
      *
      * @param $xmlFiles
-     * @param $windowName
+     * @param bool $windowName
      * @return array
      */
-    public function getPanel($xmlFiles, $windowName = false)
+    public function getPanel($xmlFiles, bool $windowName = false): array
     {
         $result = [
             'title' => '',
@@ -149,7 +149,7 @@ class Settings
      * @param array|string $xmlFiles
      * @return \DusanKasan\Knapsack\Collection
      */
-    public function getCategories($xmlFiles)
+    public function getCategories($xmlFiles): Collection
     {
         if (\is_string($xmlFiles)) {
             $xmlFiles = [$xmlFiles];
@@ -241,7 +241,7 @@ class Settings
      * @param \DOMElement $Category
      * @return array
      */
-    public function parseCategory(\DOMElement $Category)
+    public function parseCategory(\DOMElement $Category): array
     {
         $Collection = Collection::from([]);
 
@@ -254,7 +254,7 @@ class Settings
         ];
 
         foreach ($Category->childNodes as $Child) {
-            if ($Child->nodeName == '#text') {
+                if ($Child->nodeName == '#text') {
                 continue;
             }
 
@@ -291,7 +291,7 @@ class Settings
      * @param \DOMElement $Setting
      * @return array
      */
-    public function parseSettings(\DOMElement $Setting)
+    public function parseSettings(\DOMElement $Setting): array
     {
         $data = [
             'name'  => $Setting->getAttribute('name'),
@@ -387,7 +387,7 @@ class Settings
      * @param bool|string $categoryName
      * @return string
      */
-    public function getCategoriesHtml($files, $categoryName = false)
+    public function getCategoriesHtml($files, $categoryName = false): string
     {
         $Collection = $this->getCategories($files);
         $result     = '';
