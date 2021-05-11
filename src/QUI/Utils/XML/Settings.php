@@ -254,7 +254,7 @@ class Settings
         ];
 
         foreach ($Category->childNodes as $Child) {
-                if ($Child->nodeName == '#text') {
+            if ($Child->nodeName == '#text') {
                 continue;
             }
 
