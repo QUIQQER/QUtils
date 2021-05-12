@@ -72,10 +72,10 @@ class Settings
     /**
      *
      * @param $xmlFiles
-     * @param bool $windowName
+     * @param bool|string $windowName
      * @return array
      */
-    public function getPanel($xmlFiles, bool $windowName = false): array
+    public function getPanel($xmlFiles, $windowName = false): array
     {
         $result = [
             'title' => '',
