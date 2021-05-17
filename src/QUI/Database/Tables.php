@@ -278,7 +278,7 @@ class Tables
         try {
             $Stmnt->execute();
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError($query);
+            QUI\System\Log::addError($query.' :: '.$Exception->getMessage());
         }
     }
 
