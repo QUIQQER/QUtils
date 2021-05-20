@@ -925,8 +925,26 @@ class Tables
      */
     public function getAutoIncrementIndex($table)
     {
-        $table = $this->clear($table);
-        $query = "SHOW TABLE STATUS WHERE name = '{$table}';";
+        /**
+         * MySQL 8 introduced the variable 'information_schema_stats_expiry'
+         * which sets the caching time of table metadata (SHOW TABLE STATUS...).
+         *
+         * We have to disable this cache to get the true current AUTO_INCREMENT value.
+         *
+         * Thus we have to check first if this variable exists.
+         */
+        $mysql8CheckQuery = "SHOW VARIABLES LIKE '%information_schema_stats_expiry%'";
+        $result           = $this->DB->fetchSQL($mysql8CheckQuery);
+        $isMySql8         = !empty($result);
+
+        $table       = $this->clear($table);
+        $statusQuery = "SHOW TABLE STATUS WHERE name = '{$table}';";
+
+        if ($isMySql8) {
+            $query = "SET SESSION information_schema_stats_expiry=0; ".$statusQuery;
+        } else {
+            $query = $statusQuery;
+        }
 
         $PDO       = $this->DB->getPDO();
         $Statement = $PDO->prepare($query);
