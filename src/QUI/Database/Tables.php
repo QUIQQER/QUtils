@@ -937,17 +937,15 @@ class Tables
         $result           = $this->DB->fetchSQL($mysql8CheckQuery);
         $isMySql8         = !empty($result);
 
+        if ($isMySql8) {
+            $this->DB->execSQL("SET SESSION information_schema_stats_expiry=0");
+        }
+
         $table       = $this->clear($table);
         $statusQuery = "SHOW TABLE STATUS WHERE name = '{$table}';";
 
-        if ($isMySql8) {
-            $query = "SET SESSION information_schema_stats_expiry=0; ".$statusQuery;
-        } else {
-            $query = $statusQuery;
-        }
-
         $PDO       = $this->DB->getPDO();
-        $Statement = $PDO->prepare($query);
+        $Statement = $PDO->prepare($statusQuery);
         $Statement->execute();
 
         $result = $Statement->fetchAll();
