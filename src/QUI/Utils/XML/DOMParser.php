@@ -134,6 +134,7 @@ class DOMParser
             id="'.$attributes['id'].'"
             class="field-container-field"
             '.$dataQui.'
+            '.$attributes['attributes'].'
         >';
 
         // Options
