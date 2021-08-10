@@ -679,8 +679,10 @@ class File
             try {
                 $r = \getimagesize($file);
 
-                $info['width']  = $r[0];
-                $info['height'] = $r[1];
+                if ($r && is_array($r)) {
+                    $info['width']  = $r[0];
+                    $info['height'] = $r[1];
+                }
             } catch (\Exception $Exception) {
                 // ignore if not an image
             }
