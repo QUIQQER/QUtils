@@ -1359,6 +1359,10 @@ class XML
 
                 // Projekte durchgehen
                 foreach ($projects as $name => $params) {
+                    if (!isset($params['langs'])) {
+                        continue;
+                    }
+                    
                     $langs = \explode(',', $params['langs']);
 
                     foreach ($langs as $lang) {
