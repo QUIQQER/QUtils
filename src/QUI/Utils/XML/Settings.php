@@ -23,14 +23,14 @@ class Settings
     protected $xmlPath = '//settings/window';
 
     /**
-     * @var null
+     * @var null|Settings
      */
     protected static $Instance = null;
 
     /**
      * @return Settings
      */
-    public static function getInstance(): ?Settings
+    public static function getInstance(): Settings
     {
         if (\is_null(self::$Instance)) {
             self::$Instance = new self();
@@ -87,7 +87,7 @@ class Settings
         }
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!\file_exists($xmlFile)) {
+            if (!\str_contains(CMS_DIR, $xmlFile)) {
                 $xmlFile = CMS_DIR.$xmlFile;
             }
 
@@ -168,7 +168,7 @@ class Settings
         };
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!\file_exists($xmlFile)) {
+            if (!\str_contains(CMS_DIR, $xmlFile)) {
                 $xmlFile = CMS_DIR.$xmlFile;
             }
 
