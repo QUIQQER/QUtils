@@ -87,7 +87,7 @@ class Settings
         }
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!\str_contains($xmlFile, CMS_DIR)) {
+            if (strpos($xmlFile, CMS_DIR) === false) {
                 $xmlFile = CMS_DIR.$xmlFile;
             }
 
@@ -168,7 +168,7 @@ class Settings
         };
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!\str_contains($xmlFile, CMS_DIR)) {
+            if (strpos($xmlFile, CMS_DIR) === false) {
                 $xmlFile = CMS_DIR.$xmlFile;
             }
 
