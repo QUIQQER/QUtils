@@ -1207,7 +1207,7 @@ class DOM
 
 
         // create the html
-        $result = '<label class="field-container">';
+        $result = '<label class="field-container" for="' . $id . '">';
 
         if ($Text->item(0)) {
             $result .= '<span class="field-container-item">';
