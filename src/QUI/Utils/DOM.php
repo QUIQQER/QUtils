@@ -945,19 +945,28 @@ class DOM
         $default = false;
 
         $Default = $Node->getElementsByTagName('defaultvalue');
+        $RootPermission = $Node->getElementsByTagName('rootPermission');
 
         if ($Default && $Default->length) {
             $default = $Default->item(0)->nodeValue;
+        }
+
+        if ($RootPermission && $RootPermission->length) {
+            $rootPermission = $RootPermission->item(0)->nodeValue;
+        } else {
+            $rootPermission = null;
         }
 
         $type = QUI\Permissions\Manager::parseType($Node->getAttribute('type'));
         $area = QUI\Permissions\Manager::parseArea($Node->getAttribute('area'));
 
         return [
-            'name'         => $perm,
-            'area'         => $area,
-            'type'         => $type,
-            'defaultvalue' => $default
+            'name' => $perm,
+            'area' => $area,
+            'type' => $type,
+
+            'defaultvalue'   => $default,
+            'rootPermission' => $rootPermission
         ];
     }
 

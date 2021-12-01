@@ -28,18 +28,12 @@ class Url
      * @param string $url - Url
      * @param array $curlparams - Curl parameter
      *
-     * @return resource
+     * @return \CurlHandle
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
     public static function curl($url, $curlparams = [])
     {
         $url  = \str_replace(' ', '+', $url); // URL Fix
-        $hash = \md5(\serialize($url).\serialize($curlparams));
-
-        if (isset(self::$Curls[$hash]) && self::$Curls[$hash]) {
-            return self::$Curls[$hash];
-        }
-
         $Curl = \curl_init();
         \curl_setopt($Curl, CURLOPT_URL, $url);
         \curl_setopt($Curl, CURLOPT_RETURNTRANSFER, true);
@@ -50,8 +44,6 @@ class Url
         foreach ($curlparams as $k => $v) {
             \curl_setopt($Curl, $k, $v);
         }
-
-        self::$Curls[$url] = $Curl;
 
         return $Curl;
     }
@@ -137,7 +129,7 @@ class Url
     /**
      * exec the curl object
      *
-     * @param resource $Curl
+     * @param \CurlHandle $Curl
      *
      * @return mixed
      */
