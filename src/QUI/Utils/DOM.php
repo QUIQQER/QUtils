@@ -157,9 +157,9 @@ class DOM
         $string = '<p>';
         $string .= '<div class="btn-button" ';
 
-        $string .= 'data-text="'.$text.'" ';
-        $string .= 'data-click="'.$Button->getAttribute('onclick').'" ';
-        $string .= 'data-image="'.$Button->getAttribute('image').'" ';
+        $string .= 'data-text="' . $text . '" ';
+        $string .= 'data-click="' . $Button->getAttribute('onclick') . '" ';
+        $string .= 'data-image="' . $Button->getAttribute('image') . '" ';
 
         $string .= '></div>';
         $string .= '</p>';
@@ -297,7 +297,7 @@ class DOM
         }
 
         if ($Field->getAttribute('length')) {
-            $str .= '('.$Field->getAttribute('length').')';
+            $str .= '(' . $Field->getAttribute('length') . ')';
         }
 
         $str .= ' ';
@@ -428,7 +428,7 @@ class DOM
      *
      * @return string
      */
-    public static function getTabHTML($name, $Object)
+    public static function getTabHTML($name, $Object, $engineParams = [])
     {
         $tabs = [];
 
@@ -441,7 +441,7 @@ class DOM
                 /* @var $Object QUI\Projects\Project */
                 // tabs welche ein projekt zur Verfügung stellt
                 $tabs = Text\XML::getTabsFromXml(
-                    USR_DIR.'lib/'.$Object->getAttribute('name').'/user.xml'
+                    USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
                 );
             } else {
                 if (\get_class($Object) === 'QUI\\Projects\\Site'
@@ -459,7 +459,7 @@ class DOM
                             // site extra settings
                             $extra = '';
 
-                            if ($file == SYS_DIR.'template/site/settings.html') {
+                            if ($file == SYS_DIR . 'template/site/settings.html') {
                                 $extra = Utils::getExtraSettingsForSite($Object);
                             }
 
@@ -472,6 +472,7 @@ class DOM
                                 return '';
                             }
 
+                            $Engine->assign($engineParams);
 
                             $Engine->assign([
                                 'Site'    => $Object,
@@ -479,7 +480,7 @@ class DOM
                                 'QUI'     => new QUI()
                             ]);
 
-                            return $Engine->fetch($file).$extra;
+                            return $Engine->fetch($file) . $extra;
                         }
                     }
 
@@ -689,22 +690,22 @@ class DOM
         }
 
         $string = '<p>';
-        $string .= '<div class="btn-groups" name="'.$Group->getAttribute('conf').'"></div>';
+        $string .= '<div class="btn-groups" name="' . $Group->getAttribute('conf') . '"></div>';
 
         $text = $Group->getElementsByTagName('text');
 
         if ($text->length) {
-            $string .= '<span>'.
-                       self::getTextFromNode($text->item(0)).
-                       '</span>';
+            $string .= '<span>' .
+                self::getTextFromNode($text->item(0)) .
+                '</span>';
         }
 
         $desc = $Group->getElementsByTagName('description');
 
         if ($desc->length) {
-            $string .= '<div class="description">'.
-                       self::getTextFromNode($desc->item(0)).
-                       '</div>';
+            $string .= '<div class="description">' .
+                self::getTextFromNode($desc->item(0)) .
+                '</div>';
         }
 
         $string .= '</p>';
@@ -944,7 +945,7 @@ class DOM
         $perm    = $Node->getAttribute('name');
         $default = false;
 
-        $Default = $Node->getElementsByTagName('defaultvalue');
+        $Default        = $Node->getElementsByTagName('defaultvalue');
         $RootPermission = $Node->getElementsByTagName('rootPermission');
 
         if ($Default && $Default->length) {
@@ -1026,10 +1027,10 @@ class DOM
                 $name = '';
 
                 if ($Category->getAttribute('name')) {
-                    $name = ' data-name="'.$Category->getAttribute('name').'"';
+                    $name = ' data-name="' . $Category->getAttribute('name') . '"';
                 }
 
-                $result .= '<table class="data-table data-table-flexbox" '.$name.'><thead><tr><th>';
+                $result .= '<table class="data-table data-table-flexbox" ' . $name . '><thead><tr><th>';
                 $result .= self::getTextFromNode($Entry);
                 $result .= '</th></tr></thead></table>';
                 continue;
@@ -1041,10 +1042,10 @@ class DOM
                 $settings = $Entry->childNodes;
 
                 if ($Entry->getAttribute('name')) {
-                    $name = ' data-name="'.$Entry->getAttribute('name').'"';
+                    $name = ' data-name="' . $Entry->getAttribute('name') . '"';
                 }
 
-                $result .= '<table class="data-table data-table-flexbox" '.$name.'>';
+                $result .= '<table class="data-table data-table-flexbox" ' . $name . '>';
 
                 // title
                 $titles = $Entry->getElementsByTagName('title');
@@ -1072,7 +1073,7 @@ class DOM
 
                     switch ($Set->nodeName) {
                         case 'text':
-                            $result .= '<div>'.self::getTextFromNode($Set).'</div>';
+                            $result .= '<div>' . self::getTextFromNode($Set) . '</div>';
                             break;
 
                         case 'input':
@@ -1172,7 +1173,7 @@ class DOM
         }
 
         if ($Input->getAttribute('data-qui')) {
-            $dataQui = 'data-qui="'.$Input->getAttribute('data-qui').'"';
+            $dataQui = 'data-qui="' . $Input->getAttribute('data-qui') . '"';
         }
 
         $attributes = $Input->attributes;
@@ -1210,7 +1211,7 @@ class DOM
         }
 
 
-        $id   = $Input->getAttribute('conf').'-'.\time();
+        $id   = $Input->getAttribute('conf') . '-' . \time();
         $Text = $Input->getElementsByTagName('text');
         $Desc = $Input->getElementsByTagName('description');
 
@@ -1229,12 +1230,12 @@ class DOM
             $nodeClasses   = $classes;
             $nodeClasses[] = 'field-container-field';
 
-            $result .= '<input type="'.$type.'" 
-                           name="'.$Input->getAttribute('conf').'"
-                           id= "'.$id.'" 
-                           class="'.\implode(' ', $nodeClasses).'" 
-                           '.$dataQui.'
-                           '.$data.'
+            $result .= '<input type="' . $type . '" 
+                           name="' . $Input->getAttribute('conf') . '"
+                           id= "' . $id . '" 
+                           class="' . \implode(' ', $nodeClasses) . '" 
+                           ' . $dataQui . '
+                           ' . $data . '
             />';
 
             $result .= '</label>';
@@ -1253,10 +1254,10 @@ class DOM
         $result .= '<div class="field-container-field">';
 
         $result .= '<input';
-        $result .= ' type="'.$type.'"';
-        $result .= ' name="'.$Input->getAttribute('conf').'"';
-        $result .= ' id= "'.$id.'"';
-        $result .= ' class="'.\implode(' ', $classes).'" ';
+        $result .= ' type="' . $type . '"';
+        $result .= ' name="' . $Input->getAttribute('conf') . '"';
+        $result .= ' id= "' . $id . '"';
+        $result .= ' class="' . \implode(' ', $classes) . '" ';
         $result .= $dataQui;
         $result .= $data;
         $result .= ' />';
@@ -1288,13 +1289,13 @@ class DOM
         $dataQui = '';
 
         if ($TextArea->getAttribute('data-qui')) {
-            $dataQui = 'data-qui="'.$TextArea->getAttribute('data-qui').'"';
+            $dataQui = 'data-qui="' . $TextArea->getAttribute('data-qui') . '"';
         }
 
         $textarea = '<textarea
             class="field-container-field"
-            name="'.$TextArea->getAttribute('conf').'"
-            '.$dataQui.'
+            name="' . $TextArea->getAttribute('conf') . '"
+            ' . $dataQui . '
             ></textarea>';
 
 
@@ -1434,13 +1435,13 @@ class DOM
         $dataQui = '';
 
         if ($Select->getAttribute('data-qui')) {
-            $dataQui = ' data-qui="'.$Select->getAttribute('data-qui').'"';
+            $dataQui = ' data-qui="' . $Select->getAttribute('data-qui') . '"';
         }
 
         $select = '<select
                   class="field-container-field"
-                  name="'.$Select->getAttribute('conf').'"'.
-                  $dataQui.'
+                  name="' . $Select->getAttribute('conf') . '"' .
+            $dataQui . '
         >';
 
         // Options
@@ -1451,7 +1452,7 @@ class DOM
             $value = $Option->getAttribute('value');
             $html  = self::getTextFromNode($Option);
 
-            $select .= '<option value="'.$value.'">'.$html.'</option>';
+            $select .= '<option value="' . $value . '">' . $html . '</option>';
         }
 
         $select .= '</select>';
