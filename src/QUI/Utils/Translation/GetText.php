@@ -8,6 +8,16 @@ namespace QUI\Utils\Translation;
 
 use QUI;
 
+use function bind_textdomain_codeset;
+use function bindtextdomain;
+use function file_exists;
+use function mb_strtolower;
+use function mb_strtoupper;
+use function str_replace;
+use function strlen;
+use function textdomain;
+use function trim;
+
 /**
  * Bridge for gettext
  *
@@ -29,7 +39,7 @@ class GetText extends QUI\QDOM
     public function __construct($lang, $domain, $dir)
     {
         $this->setLanguage($lang);
-        $this->setAttribute('domain', \str_replace('/', '_', $domain));
+        $this->setAttribute('domain', str_replace('/', '_', $domain));
         $this->setAttribute('dir', $dir);
     }
 
@@ -40,7 +50,7 @@ class GetText extends QUI\QDOM
      */
     public function fileExist()
     {
-        return \file_exists($this->getFile());
+        return file_exists($this->getFile());
     }
 
     /**
@@ -49,11 +59,11 @@ class GetText extends QUI\QDOM
      */
     public function getFile()
     {
-        $locale = \trim($this->getAttribute('locale'));
-        $dir    = \trim($this->getAttribute('dir'));
-        $domain = \trim($this->getAttribute('domain'));
+        $locale = trim($this->getAttribute('locale'));
+        $dir    = trim($this->getAttribute('dir'));
+        $domain = trim($this->getAttribute('domain'));
 
-        return $dir.$locale.'/LC_MESSAGES/'.$domain.'.mo';
+        return $dir . $locale . '/LC_MESSAGES/' . $domain . '.mo';
     }
 
     /**
@@ -63,11 +73,11 @@ class GetText extends QUI\QDOM
      */
     public function setLanguage($lang)
     {
-        if (\strlen($lang) == 2) {
-            $lower = \mb_strtolower($lang);
-            $upper = \mb_strtoupper($lang);
+        if (strlen($lang) == 2) {
+            $lower = mb_strtolower($lang);
+            $upper = mb_strtoupper($lang);
 
-            $this->setAttribute('locale', $lower.'_'.$upper);
+            $this->setAttribute('locale', $lower . '_' . $upper);
 
             return;
         }
@@ -116,12 +126,12 @@ class GetText extends QUI\QDOM
             return;
         }
 
-        \bindtextdomain(
+        bindtextdomain(
             $this->getAttribute('domain'),
             $this->getAttribute('dir')
         );
-        \bind_textdomain_codeset($this->getAttribute('domain'), 'UTF-8');
+        bind_textdomain_codeset($this->getAttribute('domain'), 'UTF-8');
 
-        \textdomain($this->getAttribute('domain'));
+        textdomain($this->getAttribute('domain'));
     }
 }

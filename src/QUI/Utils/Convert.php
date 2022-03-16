@@ -6,6 +6,22 @@
 
 namespace QUI\Utils;
 
+use DateTime;
+
+use function chr;
+use function dechex;
+use function explode;
+use function floor;
+use function hexdec;
+use function log;
+use function mktime;
+use function number_format;
+use function round;
+use function str_replace;
+use function stristr;
+use function strlen;
+use function substr;
+
 /**
  * Convert class, helper for converting different values
  *
@@ -26,19 +42,19 @@ class Convert
      *
      * @return string
      */
-    public static function formPrice($price, $type = 1)
+    public static function formPrice(int $price, int $type = 1): string
     {
         switch ($type) {
             case 2:
-                $price = \number_format(\round($price, 2), '2', ',', '.');
+                $price = number_format(round($price, 2), '2', ',', '.');
                 break;
 
             case 3:
-                $price = \number_format(\round($price, 2), '2', '.', ',');
+                $price = number_format(round($price, 2), '2', '.', ',');
                 break;
 
             default:
-                $price = \round($price, 2);
+                $price = round($price, 2);
                 break;
         }
 
@@ -52,17 +68,16 @@ class Convert
      *
      * @return string
      */
-    public static function formatBytes($bytes)
+    public static function formatBytes(int $bytes): string
     {
         if (!$bytes) {
             return '0 B';
         }
 
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        $power = $bytes > 0 ? \floor(\log($bytes, 1024)) : 0;
+        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
 
-        return \number_format($bytes / pow(1024, $power), 2, '.', ',').' '
-               .$units[$power];
+        return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' ' . $units[$power];
     }
 
 
@@ -73,18 +88,18 @@ class Convert
      *
      * @return string
      */
-    public static function convertChars($conv)
+    public static function convertChars(string $conv): string
     {
-        $conv = \str_replace("Ä", \chr(196), $conv);
-        $conv = \str_replace("ä", \chr(228), $conv);
-        $conv = \str_replace("Ö", \chr(214), $conv);
-        $conv = \str_replace("ö", \chr(246), $conv);
-        $conv = \str_replace("Ü", \chr(220), $conv);
-        $conv = \str_replace("ü", \chr(252), $conv);
-        $conv = \str_replace("ß", \chr(223), $conv);
-        $conv = \str_replace("'", \chr(39), $conv);
-        $conv = \str_replace("´", \chr(180), $conv);
-        $conv = \str_replace("`", \chr(96), $conv);
+        $conv = str_replace("Ä", chr(196), $conv);
+        $conv = str_replace("ä", chr(228), $conv);
+        $conv = str_replace("Ö", chr(214), $conv);
+        $conv = str_replace("ö", chr(246), $conv);
+        $conv = str_replace("Ü", chr(220), $conv);
+        $conv = str_replace("ü", chr(252), $conv);
+        $conv = str_replace("ß", chr(223), $conv);
+        $conv = str_replace("'", chr(39), $conv);
+        $conv = str_replace("´", chr(180), $conv);
+        $conv = str_replace("`", chr(96), $conv);
 
         return $conv;
     }
@@ -96,13 +111,13 @@ class Convert
      *
      * @return integer
      */
-    public static function convertMySqlDatetime($str)
+    public static function convertMySqlDatetime(string $str): int
     {
-        [$date, $time] = \explode(' ', $str);
-        [$year, $month, $day] = \explode('-', $date);
-        [$hour, $minute, $second] = \explode(':', $time);
+        [$date, $time] = explode(' ', $str);
+        [$year, $month, $day] = explode('-', $date);
+        [$hour, $minute, $second] = explode(':', $time);
 
-        $timestamp = \mktime($hour, $minute, $second, $month, $day, $year);
+        $timestamp = mktime($hour, $minute, $second, $month, $day, $year);
 
         return $timestamp;
     }
@@ -111,11 +126,11 @@ class Convert
     /**
      * Converts a given DateTime object to a string that can be used with MySQL's Datetime-datatype.
      *
-     * @param \DateTime $DateTime
+     * @param DateTime $DateTime
      *
      * @return string
      */
-    public static function convertToMysqlDatetime($DateTime)
+    public static function convertToMysqlDatetime(DateTime $DateTime): string
     {
         return $DateTime->format('Y-m-d H:i:s');
     }
@@ -129,27 +144,27 @@ class Convert
      *
      * @return string
      */
-    public static function convertUrlChars($conv, $code = 0)
+    public static function convertUrlChars(string $conv, int $code = 0): string
     {
         if ($code == 0) {
-            $conv = \str_replace("Ä", "Ae", $conv);
-            $conv = \str_replace("ä", "ae", $conv);
-            $conv = \str_replace("Ö", "Oe", $conv);
-            $conv = \str_replace("ö", "oe", $conv);
-            $conv = \str_replace("Ü", "Ue", $conv);
-            $conv = \str_replace("ü", "ue", $conv);
-            $conv = \str_replace("ß", "sz", $conv);
+            $conv = str_replace("Ä", "Ae", $conv);
+            $conv = str_replace("ä", "ae", $conv);
+            $conv = str_replace("Ö", "Oe", $conv);
+            $conv = str_replace("ö", "oe", $conv);
+            $conv = str_replace("Ü", "Ue", $conv);
+            $conv = str_replace("ü", "ue", $conv);
+            $conv = str_replace("ß", "sz", $conv);
 
             return $conv;
         }
 
-        $conv = \str_replace("Ae", "Ä", $conv);
-        $conv = \str_replace("ae", "ä", $conv);
-        $conv = \str_replace("Oe", "Ö", $conv);
-        $conv = \str_replace("oe", "ö", $conv);
-        $conv = \str_replace("Ue", "Ü", $conv);
-        $conv = \str_replace("ue", "ü", $conv);
-        $conv = \str_replace("sz", "ß", $conv);
+        $conv = str_replace("Ae", "Ä", $conv);
+        $conv = str_replace("ae", "ä", $conv);
+        $conv = str_replace("Oe", "Ö", $conv);
+        $conv = str_replace("oe", "ö", $conv);
+        $conv = str_replace("Ue", "Ü", $conv);
+        $conv = str_replace("ue", "ü", $conv);
+        $conv = str_replace("sz", "ß", $conv);
 
         return $conv;
     }
@@ -161,7 +176,7 @@ class Convert
      *
      * @return string
      */
-    public static function convertRoman($str)
+    public static function convertRoman(string $str): string
     {
         $signs = [
             'À' => 'A',
@@ -238,7 +253,7 @@ class Convert
         ];
 
         foreach ($signs as $from => $to) {
-            $str = \str_replace($from, $to, $str);
+            $str = str_replace($from, $to, $str);
         }
 
         return $str;
@@ -252,34 +267,34 @@ class Convert
      * Possible values are from -1 to 1;
      *
      * @param string $hex - hex code
-     * @param int|float|double $percent - eq: 0.2 or -0.9
+     * @param int|float $percent - eq: 0.2 or -0.9
      * @return string
      */
-    public static function colorBrightness($hex, $percent)
+    public static function colorBrightness(string $hex, $percent): string
     {
         // Work out if hash given
         $hash = '';
 
-        if (\stristr($hex, '#')) {
-            $hex  = \str_replace('#', '', $hex);
+        if (stristr($hex, '#')) {
+            $hex  = str_replace('#', '', $hex);
             $hash = '#';
         }
 
         /// HEX TO RGB
         $rgb = [
-            \hexdec(\substr($hex, 0, 2)),
-            \hexdec(\substr($hex, 2, 2)),
-            \hexdec(\substr($hex, 4, 2))
+            hexdec(substr($hex, 0, 2)),
+            hexdec(substr($hex, 2, 2)),
+            hexdec(substr($hex, 4, 2))
         ];
 
         for ($i = 0; $i < 3; $i++) {
             if ($percent > 0) {
                 // Lighter
-                $rgb[$i] = \round($rgb[$i] * $percent) + \round(255 * (1 - $percent));
+                $rgb[$i] = round($rgb[$i] * $percent) + round(255 * (1 - $percent));
             } else {
                 // Darker
                 $positivePercent = $percent - ($percent * 2);
-                $rgb[$i]         = \round($rgb[$i] * $positivePercent) + \round(0 * (1 - $positivePercent));
+                $rgb[$i]         = round($rgb[$i] * $positivePercent) + round(0 * (1 - $positivePercent));
             }
 
             if ($rgb[$i] > 255) {
@@ -292,15 +307,15 @@ class Convert
 
         for ($i = 0; $i < 3; $i++) {
             // Convert the decimal digit to hex
-            $hexDigit = \dechex($rgb[$i]);
+            $hexDigit = dechex($rgb[$i]);
             // Add a leading zero if necessary
-            if (\strlen($hexDigit) == 1) {
-                $hexDigit = "0".$hexDigit;
+            if (strlen($hexDigit) == 1) {
+                $hexDigit = "0" . $hexDigit;
             }
             // Append to the hex string
             $hex .= $hexDigit;
         }
 
-        return $hash.$hex;
+        return $hash . $hex;
     }
 }

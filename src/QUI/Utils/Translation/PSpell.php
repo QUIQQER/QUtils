@@ -8,6 +8,15 @@ namespace QUI\Utils\Translation;
 
 use QUI;
 
+use QUI\Exception;
+
+use function function_exists;
+use function pspell_config_create;
+use function pspell_config_mode;
+use function pspell_config_personal;
+use function pspell_new;
+use function pspell_suggest;
+
 /**
  * Easier Access to pspell
  *
@@ -51,30 +60,30 @@ class PSpell extends QUI\QDOM
 
 
         // PSpell Config
-        $Config = \pspell_config_create(
+        $Config = pspell_config_create(
             $this->getAttribute('lang'),
             $this->getAttribute('dialect')
         );
 
-        \pspell_config_mode($Config, "PSPELL_FAST");
+        pspell_config_mode($Config, "PSPELL_FAST");
 
         if ($this->getAttribute('personal')) {
-            \pspell_config_personal($Config, $this->getAttribute('personal'));
+            pspell_config_personal($Config, $this->getAttribute('personal'));
         }
 
-        $this->Spell = \pspell_new($Config);
+        $this->Spell = pspell_new($Config);
     }
 
     /**
      * Check if pspell is installed
      *
      * @return boolean
-     * @throws \QUI\Exception
+     * @throws Exception
      */
     public static function check()
     {
-        if (!\function_exists('pspell_new')) {
-            throw new QUI\Exception('PSpell is not installed');
+        if (!function_exists('pspell_new')) {
+            throw new Exception('PSpell is not installed');
         }
 
         return true;
@@ -89,6 +98,6 @@ class PSpell extends QUI\QDOM
      */
     public function translate($word)
     {
-        return \pspell_suggest($this->Spell, $word);
+        return pspell_suggest($this->Spell, $word);
     }
 }

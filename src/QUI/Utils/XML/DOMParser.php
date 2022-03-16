@@ -6,7 +6,15 @@
 
 namespace QUI\Utils\XML;
 
+use DOMAttr;
+use DOMElement;
+use DOMNode;
 use QUI\Utils\DOM;
+
+use function htmlspecialchars;
+use function implode;
+use function strpos;
+use function time;
 
 /**
  * Class DOMParser
@@ -17,11 +25,11 @@ class DOMParser
     /**
      * Parse a <input> XML DOMNode
      *
-     * @param \DOMNode|\DOMElement $Input
+     * @param DOMNode|DOMElement $Input
      *
      * @return string
      */
-    public static function inputDomToString(\DOMNode $Input): string
+    public static function inputDomToString(DOMNode $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -39,7 +47,7 @@ class DOMParser
 
         if ($Input->getAttribute('data-qui')
             && strpos($attributes['attributes'], 'data-qui') === false) {
-            $dataQui = 'data-qui="'.$Input->getAttribute('data-qui').'"';
+            $dataQui = 'data-qui="' . $Input->getAttribute('data-qui') . '"';
         }
 
         switch ($type) {
@@ -59,20 +67,20 @@ class DOMParser
             $classes[] = 'field-container-field';
         }
 
-        $input = '<input type="'.$type.'"
-                           name="'.$attributes['conf'].'"
-                           id="'.$attributes['id'].'"
-                           class="'.\implode(' ', $classes).'"
-                           '.$attributes['attributes'].'
-                           '.$dataQui.'
+        $input = '<input type="' . $type . '"
+                           name="' . $attributes['conf'] . '"
+                           id="' . $attributes['id'] . '"
+                           class="' . implode(' ', $classes) . '"
+                           ' . $attributes['attributes'] . '
+                           ' . $dataQui . '
                     />';
 
         if ($type == 'radio') {
-            $input = '<div class="field-container-field">'.$input.'</div>';
+            $input = '<div class="field-container-field">' . $input . '</div>';
         }
 
         if ($type == 'checkbox') {
-            $input = '<div class="field-container-field">'.$input.$attributes['desc'].'</div>';
+            $input = '<div class="field-container-field">' . $input . $attributes['desc'] . '</div>';
         }
 
 
@@ -82,11 +90,11 @@ class DOMParser
     /**
      * Parse a <textarea> XML DOMNode
      *
-     * @param \DOMNode|\DOMElement $TextArea
+     * @param DOMNode|DOMElement $TextArea
      *
      * @return string
      */
-    public static function textareaDomToString(\DOMNode $TextArea): string
+    public static function textareaDomToString(DOMNode $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -97,25 +105,25 @@ class DOMParser
 
         if ($TextArea->getAttribute('data-qui')
             && strpos($attributes['attributes'], 'data-qui') === false) {
-            $dataQui = 'data-qui="'.$TextArea->getAttribute('data-qui').'"';
+            $dataQui = 'data-qui="' . $TextArea->getAttribute('data-qui') . '"';
         }
 
         $textArea = '<textarea
-            name="'.$attributes['conf'].'"
-            id="'.$attributes['id'].'"
+            name="' . $attributes['conf'] . '"
+            id="' . $attributes['id'] . '"
             class="field-container-field"
-            '.$attributes['attributes'].'
-            '.$dataQui.'
+            ' . $attributes['attributes'] . '
+            ' . $dataQui . '
         ></textarea>';
 
         return self::createHTML($textArea, $attributes);
     }
 
     /**
-     * @param \DOMNode|\DOMElement $Select
+     * @param DOMNode|DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(\DOMNode $Select): string
+    public static function selectDomToString(DOMNode $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';
@@ -126,26 +134,26 @@ class DOMParser
 
         if ($Select->getAttribute('data-qui')
             && strpos($attributes['attributes'], 'data-qui') === false) {
-            $dataQui = 'data-qui="'.$Select->getAttribute('data-qui').'"';
+            $dataQui = 'data-qui="' . $Select->getAttribute('data-qui') . '"';
         }
 
         $select = '<select
-            name="'.$attributes['conf'].'"
-            id="'.$attributes['id'].'"
+            name="' . $attributes['conf'] . '"
+            id="' . $attributes['id'] . '"
             class="field-container-field"
-            '.$dataQui.'
-            '.$attributes['attributes'].'
+            ' . $dataQui . '
+            ' . $attributes['attributes'] . '
         >';
 
         // Options
         $options = $Select->getElementsByTagName('option');
 
         foreach ($options as $Option) {
-            /* @var $Option \DOMElement */
+            /* @var $Option DOMElement */
             $value = $Option->getAttribute('value');
             $html  = DOM::getTextFromNode($Option);
 
-            $select .= '<option value="'.$value.'">'.$html.'</option>';
+            $select .= '<option value="' . $value . '">' . $html . '</option>';
         }
 
         $select .= '</select>';
@@ -154,10 +162,10 @@ class DOMParser
     }
 
     /**
-     * @param \DOMNode|\DOMElement $Group
+     * @param DOMNode|DOMElement $Group
      * @return string
      */
-    public static function groupDomToString(\DOMNode $Group): string
+    public static function groupDomToString(DOMNode $Group): string
     {
         if ($Group->nodeName != 'group') {
             return '';
@@ -167,10 +175,10 @@ class DOMParser
 
         $input = '<input type="hidden"
                      data-qui="controls/usersAndGroups/Select"
-                     name="'.$attributes['conf'].'"
-                     id="'.$attributes['id'].'"
-                     class="'.\implode(' ', $attributes['class']).'"
-                     '.$attributes['attributes'].'
+                     name="' . $attributes['conf'] . '"
+                     id="' . $attributes['id'] . '"
+                     class="' . implode(' ', $attributes['class']) . '"
+                     ' . $attributes['attributes'] . '
                  />';
 
         return self::createHTML($input, $attributes);
@@ -179,11 +187,11 @@ class DOMParser
     /**
      * Button Element
      *
-     * @param \DOMNode|\DOMElement $Button
+     * @param DOMNode|DOMElement $Button
      *
      * @return string
      */
-    public static function buttonDomToString(\DOMNode $Button): string
+    public static function buttonDomToString(DOMNode $Button): string
     {
         if ($Button->nodeName != 'button'
             && $Button->getAttribute('type') != 'button'
@@ -196,11 +204,11 @@ class DOMParser
 
         $button = '<button
                      data-qui="qui/controls/buttons/Button"
-                     name="'.$attributes['conf'].'"
-                     id="'.$attributes['id'].'"
-                     class="'.\implode(' ', $attributes['class']).'"
-                     '.$attributes['attributes'].'
-                 >'.$attributes['text'].'</button>';
+                     name="' . $attributes['conf'] . '"
+                     id="' . $attributes['id'] . '"
+                     class="' . implode(' ', $attributes['class']) . '"
+                     ' . $attributes['attributes'] . '
+                 >' . $attributes['text'] . '</button>';
 
         return self::createHTML($button, $attributes);
     }
@@ -208,12 +216,12 @@ class DOMParser
     /**
      * Return needle DOMNode Attributes
      *
-     * @param \DOMNode|\DOMElement $Node
+     * @param DOMNode|DOMElement $Node
      * @return array
      */
-    public static function getAttributes(\DOMNode $Node): array
+    public static function getAttributes(DOMNode $Node): array
     {
-        $id   = $Node->getAttribute('conf').'-'.\time();
+        $id   = $Node->getAttribute('conf') . '-' . time();
         $conf = $Node->getAttribute('conf');
 
         // Attributes
@@ -221,9 +229,9 @@ class DOMParser
         $data  = '';
 
         foreach ($Node->attributes as $Attribute) {
-            /* @var $Attribute \DOMAttr */
-            $name  = \htmlspecialchars($Attribute->name);
-            $value = \htmlspecialchars($Attribute->value);
+            /* @var $Attribute DOMAttr */
+            $name  = htmlspecialchars($Attribute->name);
+            $value = htmlspecialchars($Attribute->value);
 
             if ($name === 'conf') {
                 continue;
@@ -233,7 +241,7 @@ class DOMParser
                 continue;
             }
 
-            $data .= " {$name}=\"{$value}\"";
+            $data .= " $name=\"$value\"";
         }
 
         if ($Node->getAttribute('label') === 0 || $Node->getAttribute('label') === 'false') {
@@ -244,7 +252,7 @@ class DOMParser
         $class = [];
 
         if ($Node->getAttribute('class')) {
-            $class[] = \htmlspecialchars($Node->getAttribute('class'));
+            $class[] = htmlspecialchars($Node->getAttribute('class'));
         }
 
 
@@ -253,7 +261,7 @@ class DOMParser
         $text = '';
 
         if ($Text->length) {
-            $text = \htmlspecialchars(DOM::getTextFromNode($Text->item(0)));
+            $text = htmlspecialchars(DOM::getTextFromNode($Text->item(0)));
         }
 
 
@@ -292,28 +300,28 @@ class DOMParser
      */
     protected static function createHTML(string $fieldHTML, array $attributes): string
     {
-        $isCheckbox = \strpos($fieldHTML, 'type="checkbox"');
+        $isCheckbox = strpos($fieldHTML, 'type="checkbox"');
         $labelStyle = '';
 
         if (!empty($attributes['label-style'])) {
-            $labelStyle = ' style="'.$attributes['label-style'].'"';
+            $labelStyle = ' style="' . $attributes['label-style'] . '"';
         }
 
         if (!isset($attributes['label']) || $attributes['label'] != false) {
-            $string = '<label class="field-container"'.$labelStyle.'>';
-            $string .= '<div class="field-container-item" title="'.$attributes['text'].'">';
+            $string = '<label class="field-container"' . $labelStyle . '>';
+            $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
             $string .= $attributes['text'];
             $string .= '</div>';
             $string .= $fieldHTML;
             $string .= '</label>';
         } else {
-            $string = '<div class="field-container" '.$labelStyle.'>';
+            $string = '<div class="field-container" ' . $labelStyle . '>';
             $string .= $fieldHTML;
             $string .= '</div>';
         }
 
         if (!empty($attributes['desc']) && !$isCheckbox) {
-            $string .= '<div class="field-container-item-desc">'.$attributes['desc'].'</div>';
+            $string .= '<div class="field-container-item-desc">' . $attributes['desc'] . '</div>';
         }
 
         return $string;

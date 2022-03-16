@@ -6,6 +6,13 @@
 
 namespace QUI;
 
+use QUI;
+
+use function class_exists;
+use function get_class;
+use function implode;
+use function is_array;
+
 /**
  * The Main Exception class for QUIQQER CMS and QUI Utils
  *
@@ -36,9 +43,9 @@ class Exception extends \Exception
      */
     public function __construct($message = null, $code = 0, $context = [])
     {
-        if (\is_array($message)) {
+        if (is_array($message)) {
             if (!isset($message[0]) || !isset($message[1])) {
-                $message = \implode(',', $message);
+                $message = implode(',', $message);
             } else {
                 $params = [];
 
@@ -48,8 +55,8 @@ class Exception extends \Exception
 
                 $context['locale'] = $message;
 
-                if (\class_exists('QUI')) {
-                    $message = \QUI::getUserBySession()->getLocale()->get(
+                if (class_exists('QUI')) {
+                    $message = QUI::getUserBySession()->getLocale()->get(
                         $message[0],
                         $message[1],
                         $params
@@ -72,7 +79,7 @@ class Exception extends \Exception
      */
     public function getType()
     {
-        return \get_class($this);
+        return get_class($this);
     }
 
     /**
@@ -125,7 +132,7 @@ class Exception extends \Exception
      * @param string $name - name of the attribute
      * @param mixed $val - value of the attribute
      *
-     * @return \QUI\Exception this
+     * @return Exception this
      */
     public function setAttribute($name, $val)
     {
@@ -139,11 +146,11 @@ class Exception extends \Exception
      *
      * @param array $attributes
      *
-     * @return \QUI\Exception
+     * @return Exception
      */
     public function setAttributes($attributes)
     {
-        if (!\is_array($attributes)) {
+        if (!is_array($attributes)) {
             return $this;
         }
 

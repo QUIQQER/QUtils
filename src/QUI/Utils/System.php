@@ -9,6 +9,15 @@ namespace QUI\Utils;
 use QUI;
 use QUI\Utils\System\File;
 
+use function explode;
+use function filter_var;
+use function in_array;
+use function ini_get;
+use function is_callable;
+use function memory_get_usage;
+use function min;
+use function strtolower;
+
 /**
  * Helper class for the system variables
  *
@@ -21,16 +30,16 @@ class System
      *
      * @var integer
      */
-    public static $memory_limit = 128;
+    public static int $memory_limit = 128;
 
     /**
      * Return the PHP Memory Limit in bytes
      *
      * @return integer
      */
-    public static function getMemoryLimit()
+    public static function getMemoryLimit(): int
     {
-        return File::getBytes(\ini_get('memory_limit'));
+        return File::getBytes(ini_get('memory_limit'));
     }
 
     /**
@@ -39,7 +48,7 @@ class System
      * @return string
      * @example QUI\Utils\System::getProtocol(); -> http:// or https://
      */
-    public static function getProtocol()
+    public static function getProtocol(): string
     {
         if (self::isProtocolSecure()) {
             return 'https://';
@@ -53,10 +62,10 @@ class System
      *
      * @return boolean
      */
-    public static function isProtocolSecure()
+    public static function isProtocolSecure(): bool
     {
         if (isset($_SERVER['HTTPS'])) {
-            $https = \strtolower($_SERVER['HTTPS']);
+            $https = strtolower($_SERVER['HTTPS']);
 
             if ($https == 'on') {
                 return true;
@@ -79,11 +88,11 @@ class System
      *
      * @return integer
      */
-    public static function getUploadMaxFileSize()
+    public static function getUploadMaxFileSize(): int
     {
-        return \min(
-            (int)\ini_get('upload_max_filesize'),
-            (int)\ini_get('post_max_size')
+        return min(
+            (int)ini_get('upload_max_filesize'),
+            (int)ini_get('post_max_size')
         );
     }
 
@@ -95,14 +104,14 @@ class System
      *
      * @return boolean
      */
-    public static function memUsageToHigh()
+    public static function memUsageToHigh(): bool
     {
         if (!self::$memory_limit) {
             return false;
         }
 
         // 80% abfragen
-        $usage = (int)(\memory_get_usage() / 1024 / 1000); // in MB
+        $usage = (int)(memory_get_usage() / 1024 / 1000); // in MB
         $max   = (int)self::$memory_limit;
         $_max  = $max / 100 * 80; // 80%
 
@@ -118,7 +127,7 @@ class System
      *
      * @return string
      */
-    public static function getClientIP()
+    public static function getClientIP(): ?string
     {
         // CloudFlare network
         if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
@@ -142,9 +151,9 @@ class System
             $remote = $_SERVER['REMOTE_ADDR'];
         }
 
-        if (\filter_var($client, FILTER_VALIDATE_IP)) {
+        if (filter_var($client, FILTER_VALIDATE_IP)) {
             $ip = $client;
-        } elseif (\filter_var($forward, FILTER_VALIDATE_IP)) {
+        } elseif (filter_var($forward, FILTER_VALIDATE_IP)) {
             $ip = $forward;
         } else {
             $ip = $remote;
@@ -160,18 +169,17 @@ class System
      *
      * @return boolean
      */
-    public static function isShellFunctionEnabled($function)
+    public static function isShellFunctionEnabled($function): bool
     {
-        if (!\is_callable($function)) {
+        if (!is_callable($function)) {
             return false;
         }
 
-        $disabledFunctions = \explode(',', \ini_get('disable_functions'));
+        $disabledFunctions = explode(',', ini_get('disable_functions'));
 
-        return !\in_array($function, $disabledFunctions);
+        return !in_array($function, $disabledFunctions);
     }
-
-
+    
     /**
      * Returns if a given system function (e.g. 'ls') is callable (via exec).
      * Requires exec to be enabled. If it's not, false will always be returned.
@@ -180,7 +188,7 @@ class System
      *
      * @return bool
      */
-    public static function isSystemFunctionCallable($function)
+    public static function isSystemFunctionCallable($function): bool
     {
         if (!static::isShellFunctionEnabled('exec')) {
             return false;

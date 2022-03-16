@@ -6,7 +6,8 @@
 
 namespace QUI;
 
-use QUI\System\Log;
+use function get_class;
+use function is_array;
 
 /**
  * QUIQQER-DOM Class
@@ -34,7 +35,7 @@ class QDOM
      */
     public function existsAttribute($name)
     {
-        return isset($this->attributes[$name]) ? true : false;
+        return isset($this->attributes[$name]);
     }
 
     /**
@@ -78,7 +79,7 @@ class QDOM
      */
     public function setAttributes($attributes)
     {
-        if (!\is_array($attributes)) {
+        if (!is_array($attributes)) {
             return $this;
         }
 
@@ -133,7 +134,7 @@ class QDOM
      */
     public function getType()
     {
-        return \get_class($this);
+        return get_class($this);
     }
 
     /**
@@ -155,9 +156,9 @@ class QDOM
     public function __toString()
     {
         if ($this->getAttribute('name')) {
-            return 'Object '.\get_class($this).'('.$this->getAttribute('name').');';
+            return 'Object ' . get_class($this) . '(' . $this->getAttribute('name') . ');';
         }
 
-        return 'Object '.\get_class($this).'();';
+        return 'Object ' . get_class($this) . '();';
     }
 }

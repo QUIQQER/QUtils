@@ -13,5 +13,4 @@ namespace QUI\Database;
  */
 class Exception extends \QUI\Exception
 {
-
 }
