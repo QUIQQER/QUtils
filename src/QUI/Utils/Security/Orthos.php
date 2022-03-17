@@ -20,6 +20,7 @@ use function htmlspecialchars_decode;
 use function implode;
 use function is_array;
 use function is_int;
+use function is_numeric;
 use function is_string;
 use function microtime;
 use function mt_rand;
@@ -45,7 +46,7 @@ use function trim;
 class Orthos
 {
     /**
-     * Befreit einen String von allem möglichen Schadcode
+     * Cleans a string from all possible malicious code
      *
      * @param string $str
      *
@@ -83,7 +84,7 @@ class Orthos
     }
 
     /**
-     * Befreit ein Array von allem möglichen Schadcode
+     * Cleans an array from all possible malicious code
      *
      * @param array|mixed $data
      *
@@ -105,6 +106,11 @@ class Orthos
 
             if (is_string($str)) {
                 $cleanData[$key] = self::clear($str);
+                continue;
+            }
+
+            if (is_numeric($str)) {
+                $cleanData[$key] = $str;
                 continue;
             }
 
@@ -150,7 +156,7 @@ class Orthos
     }
 
     /**
-     * Enfernt HTML aus dem Text
+     * Removes HTML from the text
      *
      * @param string $text
      *
@@ -162,7 +168,7 @@ class Orthos
     }
 
     /**
-     * Befreit einen MySQL Command String von Schadcode
+     * Cleans a MySQL command string from malicious code
      *
      * If you are using this function to build SQL statements,
      * you are strongly recommended to use PDO::prepare() to prepare
@@ -179,7 +185,7 @@ class Orthos
      *
      * @deprecated use PDO::quote (QUI::getPDO()->quote())
      */
-    public static function clearMySQL($str, $escape = true)
+    public static function clearMySQL(string $str, bool $escape = true): string
     {
         if ($escape && class_exists('QUI')) {
             $str = QUI::getPDO()->quote($str);
@@ -213,52 +219,52 @@ class Orthos
     }
 
     /**
-     * Befreit einen Shell Command String von Schadcode
+     * Cleans a shell command string from malicious code
      *
-     * Nicht für Befehle mit Sonderzeichen benutzen (hierfür einzelne Argumente
-     * mit Orthos::clearShellArg() säubern.
+     * Do not use for commands with special characters
+     * (for this, clean individual arguments with Orthos::clearShellArg()).
      *
      * @param string $str - Command
      *
      * @return string
      */
-    public static function clearShell($str)
+    public static function clearShell(string $str): string
     {
         return escapeshellcmd($str);
     }
 
     /**
-     * Setzt ein Shell-Argument in einfache Anführungszeichen und escaped diese
+     * Encloses a shell argument in single quotes and escapes them
      *
      * @param string $str - Shell-Argument
      * @return string
      */
-    public static function clearShellArg($str)
+    public static function clearShellArg(string $str): string
     {
         return escapeshellarg($str);
     }
 
     /**
-     * Enter description here...
+     * Parse a string, bool, float to an integer value
      *
-     * @param string $str
+     * @param string|bool|float $str
      *
      * @return integer
      */
-    public static function parseInt($str)
+    public static function parseInt($str): int
     {
         return (int)$str;
     }
 
     /**
-     * Säubert "böses" HTML raus
-     * Zum Beispiel für Wiki
+     * Cleans out "bad" HTML
+     * You can use this for example for wiki text
      *
      * @param string $str
      *
      * @return string
      */
-    public static function cleanHTML($str)
+    public static function cleanHTML(string $str): string
     {
         $BBCode = new BBCode();
 
@@ -269,15 +275,15 @@ class Orthos
     }
 
     /**
-     * Prüft Datumsteile nach Korrektheit
-     * Bei Korrektheit kommt $val wieder zurück ansonsten 0
+     * Checks date parts for correctness
+     * If correct, $val returns otherwise 0
      *
-     * @param integer $val
+     * @param integer|string $val
      * @param string $type - DAY | MONTH | YEAR
      *
      * @return integer
      */
-    public static function date($val, $type = 'DAY')
+    public static function date($val, string $type = 'DAY'): int
     {
         if ($type == 'MONTH') {
             $val = self::parseInt($val);
@@ -307,7 +313,7 @@ class Orthos
     }
 
     /**
-     * Prüft ein Datum auf Korrektheit
+     * Checks a date for correctness
      *
      * @param integer $day
      * @param integer $month
@@ -315,7 +321,7 @@ class Orthos
      *
      * @return boolean
      */
-    public static function checkdate($day, $month, $year)
+    public static function checkdate($day, $month, $year): bool
     {
         if (!is_int($day)) {
             return false;
@@ -342,19 +348,19 @@ class Orthos
      * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      *
      */
-    public static function removeLineBreaks($text)
+    public static function removeLineBreaks($text): string
     {
         return StringHelper::removeLineBreaks($text, '');
     }
 
     /**
-     * Prüft eine Mail Adresse auf Syntax
+     * Checks a mail address for syntax
      *
      * @param string $email - Mail Adresse
      *
      * @return boolean
      */
-    public static function checkMailSyntax($email)
+    public static function checkMailSyntax($email): bool
     {
         return preg_match(
             '/^([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,64}\@{1}([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,248}\.{1}([a-z]){2,6}$/i',
@@ -369,7 +375,7 @@ class Orthos
      *
      * @return boolean
      */
-    public static function checkMySqlDatetimeSyntax($date)
+    public static function checkMySqlDatetimeSyntax($date): bool
     {
         // Nur Zahlen erlaubt
         if (preg_match('/[^0-9- :]/i', $date)) {
@@ -391,7 +397,7 @@ class Orthos
      *
      * @return boolean
      */
-    public static function checkMySqlTimestampSyntax($date)
+    public static function checkMySqlTimestampSyntax($date): bool
     {
         return self::checkMySqlDatetimeSyntax($date);
     }
@@ -403,7 +409,7 @@ class Orthos
      *
      * @return boolean
      */
-    public static function checkMySqlDateSyntax($date)
+    public static function checkMySqlDateSyntax($date): bool
     {
         // Nur Zahlen erlaubt
         if (preg_match('/[^0-9- :]/i', $date)) {
@@ -425,7 +431,7 @@ class Orthos
      *
      * @return string
      */
-    public static function getPassword($length = 10)
+    public static function getPassword($length = 10): string
     {
         if (!is_int($length)) {
             $length = 10;
@@ -444,13 +450,13 @@ class Orthos
     }
 
     /**
-     * Prüft ob die Mail Adresse eine Spam Wegwerf Mail Adresse ist
+     * Checks whether the mail address is a disposable spam mail address.
      *
      * @param string $mail - E-Mail Adresse
      *
      * @return boolean
      */
-    public static function isSpamMail($mail)
+    public static function isSpamMail($mail): bool
     {
         $split = explode('@', $mail);
 
@@ -528,13 +534,13 @@ class Orthos
     }
 
     /**
-     * Löscht alle Zeichen aus einem Request welches für ein XSS verwendet werden könnte
+     * Deletes all characters from a request that could be used for an XSS.
      *
      * @param string $value
      *
      * @return string
      */
-    public static function clearFormRequest($value)
+    public static function clearFormRequest($value): string
     {
         if (is_array($value)) {
             foreach ($value as $key => $entry) {
@@ -575,7 +581,7 @@ class Orthos
      * @param string $replace - replacement character for unsafe / ambiguous characters
      * @return string - filtered string
      */
-    public static function urlEncodeString($str, $replace = "-")
+    public static function urlEncodeString($str, $replace = "-"): string
     {
         if (!is_string($replace)) {
             $replace = "-";
@@ -626,10 +632,8 @@ class Orthos
      * @param string $str
      * @return string
      */
-    public static function escapeHTML($str)
+    public static function escapeHTML(string $str): string
     {
-        $str = htmlspecialchars($str);
-
-        return $str;
+        return htmlspecialchars($str);
     }
 }

@@ -11,7 +11,6 @@ use QUI;
 
 use function array_change_key_case;
 use function array_merge;
-use function array_push;
 use function basename;
 use function closedir;
 use function copy;
@@ -74,7 +73,7 @@ use function unlink;
 use function usleep;
 
 /**
- * File Objekt
+ * File Object
  * Contains methods for file operations
  *
  * @author  www.pcsg.de (Henning Leutz)
@@ -85,19 +84,19 @@ class File
     /**
      * @var array
      */
-    protected $files;
+    protected array $files;
 
     /**
      * @var string
      */
-    protected $start_folder;
+    protected string $start_folder;
 
     /**
-     * Return a array with all available mime types and they endings
+     * Return an array with all available mime types and their endings
      *
      * @return array
      */
-    public static function getMimeTypes()
+    public static function getMimeTypes(): array
     {
         return [
             '.3dmf'      => 'x-world/x-3dmf',
@@ -556,7 +555,7 @@ class File
      *
      * @return string
      */
-    public static function formatSize($size, $round = 0)
+    public static function formatSize(int $size, int $round = 0): string
     {
         $sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
 
@@ -570,11 +569,11 @@ class File
     /**
      * Returns the Bytes of a php ini value
      *
-     * @param string $val - 129M
+     * @param string|int $val - 129M
      *
      * @return integer
      */
-    public static function getBytes($val)
+    public static function getBytes($val): int
     {
         $last = '';
 
@@ -612,7 +611,7 @@ class File
      *
      * @throws QUI\Exception
      */
-    public static function unlink($file)
+    public static function unlink(string $file): bool
     {
         if (!file_exists($file)) {
             return true;
@@ -642,7 +641,7 @@ class File
      * @return boolean
      * @throws QUI\Exception
      */
-    public static function move($from, $to)
+    public static function move(string $from, string $to): bool
     {
         if (file_exists($from) && !file_exists($to)) {
             rename($from, $to);
@@ -666,7 +665,7 @@ class File
      * @return boolean
      * @throws QUI\Exception
      */
-    public static function copy($from, $to)
+    public static function copy(string $from, string $to): bool
     {
         if (file_exists($to)) {
             throw new QUI\Exception(
@@ -697,7 +696,7 @@ class File
      * @return array
      * @throws QUI\Exception
      */
-    public static function getInfo($file, $params = [])
+    public static function getInfo(string $file, array $params = []): array
     {
         if (!file_exists($file)) {
             throw new QUI\Exception(
@@ -766,7 +765,7 @@ class File
 
             // Falls beides nicht vorhanden ist
             // BAD
-            if (!isset($info['mime_type']) || empty($info['mime_type'])) {
+            if (empty($info['mime_type'])) {
                 $file     = strtolower($file);
                 $mimtypes = self::getMimeTypes();
 
@@ -788,7 +787,7 @@ class File
      *
      * @return string
      */
-    public static function getEndingByMimeType($mime)
+    public static function getEndingByMimeType(string $mime): string
     {
         if ($mime === 'text/plain') {
             return '.txt';
@@ -806,7 +805,7 @@ class File
     }
 
     /**
-     * Bildgrösse ändern
+     * Change image sites
      *
      * @param string $original - Pfad zum original Bild
      * @param string $new_image - Pfad zum neuen Bild
@@ -819,11 +818,11 @@ class File
      *
      */
     public static function resize(
-        $original,
-        $new_image,
-        $new_width = 0,
-        $new_height = 0
-    ) {
+        string $original,
+        string $new_image,
+        int $new_width = 0,
+        int $new_height = 0
+    ): bool {
         return QUI\Utils\Image::resize(
             $original,
             $new_image,
@@ -846,11 +845,11 @@ class File
      *
      */
     public static function watermark(
-        $image,
-        $watermark,
+        string $image,
+        string $watermark,
         $newImage = false,
-        $top = 0,
-        $left = 0
+        int $top = 0,
+        int $left = 0
     ) {
         QUI\Utils\Image::watermark($image, $watermark, $newImage, $top, $left);
     }
@@ -862,7 +861,7 @@ class File
      *
      * @deprecated Use QUI\Utils\Image::convertToTrueColor
      */
-    public static function convertToTrueColor($image)
+    public static function convertToTrueColor(string $image)
     {
         QUI\Utils\Image::convertToTrueColor($image);
     }
@@ -875,7 +874,7 @@ class File
      *
      * @return array
      */
-    public static function find($path, $find)
+    public static function find(string $path, string $find): array
     {
         if (!is_dir($path)) {
             return [];
@@ -889,15 +888,15 @@ class File
                 continue;
             }
 
-            $rfile = "{$path}/{$file}";
+            $rFile = "$path/$file";
 
-            if (is_dir($rfile)) {
-                $result = array_merge($result, self::find($rfile, $find));
+            if (is_dir($rFile)) {
+                $result = array_merge($result, self::find($rFile, $find));
                 continue;
             }
 
             if (fnmatch($find, $file)) {
-                $result[] = $rfile;
+                $result[] = $rFile;
             }
         }
 
@@ -914,7 +913,7 @@ class File
      *
      * @return array
      */
-    public function readDirRecursiv($folder, $flatten = false)
+    public function readDirRecursiv(string $folder, bool $flatten = false): array
     {
         if (substr($folder, strlen($folder) - 1) != '/') {
             $folder .= '/';
@@ -948,7 +947,7 @@ class File
      *
      * @param string $folder
      */
-    private function readDirRecursiveHelper($folder)
+    private function readDirRecursiveHelper(string $folder)
     {
         $_f   = $this->readDir($folder);
         $_tmp = str_replace($this->start_folder, '', $folder);
@@ -982,10 +981,10 @@ class File
      * @return array
      */
     public static function readDir(
-        $folder,
-        $only_files = false,
-        $order_by_date = false
-    ) {
+        string $folder,
+        bool $only_files = false,
+        bool $order_by_date = false
+    ): array {
         if (!is_dir($folder)) {
             return [];
         }
@@ -1002,7 +1001,7 @@ class File
 
             if ($only_files == true) {
                 if (is_file($folder . $file) && $order_by_date == false) {
-                    array_push($files, $file);
+                    $files[] = $file;
                 }
 
                 if (is_file($folder . $file) && $order_by_date == true) {
@@ -1017,7 +1016,7 @@ class File
                 continue;
             }
 
-            array_push($files, $file);
+            $files[] = $file;
         }
 
         closedir($handle);
@@ -1034,7 +1033,7 @@ class File
      *
      * @todo use RecursiveDirectoryIterator
      */
-    public static function deleteDir($dir)
+    public static function deleteDir(string $dir): bool
     {
         if (!file_exists($dir)) {
             return true;
@@ -1069,7 +1068,7 @@ class File
      * @deprecated Use `QUI\Utils\System\Folder::getFolderSize($path)` instead.
      *
      */
-    public static function getDirectorySize($path)
+    public static function getDirectorySize($path): int
     {
         return Folder::getFolderSize($path, true);
     }
@@ -1080,12 +1079,17 @@ class File
      * @param string $host
      * @param string $path
      * @param string $local
+     * @param bool $https
      *
      * @return boolean
      * @throws QUI\Exception
      */
-    public static function download($host, $path, $local)
-    {
+    public static function download(
+        string $host,
+        string $path,
+        string $local,
+        bool $https = false
+    ): bool {
         if (file_exists($local)) {
             throw new QUI\Exception(
                 'Conflicting Request; Local File exist;',
@@ -1093,7 +1097,13 @@ class File
             );
         }
 
-        $content = file_get_contents('http://' . $host . '/' . $path);
+        $protocol = 'https://';
+
+        if ($https === false) {
+            $protocol = 'http://';
+        }
+
+        $content = file_get_contents($protocol . $host . '/' . $path);
         file_put_contents($local, $content);
 
         if (file_exists($local)) {
@@ -1108,7 +1118,7 @@ class File
      *
      * @param string $filePath
      * @param integer $rate speedlimit in KB/s
-     * @param string $downloadFileName (optional)
+     * @param string|null $downloadFileName (optional)
      *
      * @return void
      * @throws QUI\Exception
@@ -1116,7 +1126,7 @@ class File
      * found on:
      * http://www.phpgangsta.de/dateidownload-via-php-mit-speedlimit-und-resume
      */
-    public static function send($filePath, $rate = 0, $downloadFileName = null)
+    public static function send(string $filePath, int $rate = 0, string $downloadFileName = null)
     {
         // Check if file exists
         if (!is_file($filePath)) {
@@ -1131,10 +1141,10 @@ class File
         }
 
         $size     = filesize($filePath);
-        $finfo    = finfo_open(FILEINFO_MIME);
-        $mimetype = finfo_file($finfo, realpath($filePath));
+        $fInfo    = finfo_open(FILEINFO_MIME);
+        $mimetype = finfo_file($fInfo, realpath($filePath));
 
-        finfo_close($finfo);
+        finfo_close($fInfo);
 
         // Create file handle
         $fp = fopen($filePath, 'rb');
@@ -1212,34 +1222,34 @@ class File
     /**
      * Kopiert einen kompletten Ordner mit Unteordner
      *
-     * @param string $srcdir
-     * @param string $dstdir
+     * @param string $srcDir
+     * @param string $dstDir
      *
      * @return boolean|array
      */
-    public static function dircopy($srcdir, $dstdir)
+    public static function dircopy(string $srcDir, string $dstDir)
     {
-        QUI\Utils\System\File::mkdir($dstdir);
+        QUI\Utils\System\File::mkdir($dstDir);
 
-        if (substr($dstdir, -1) != '/') {
-            $dstdir = $dstdir . '/';
+        if (substr($dstDir, -1) != '/') {
+            $dstDir = $dstDir . '/';
         }
 
-        if (substr($srcdir, -1) != '/') {
-            $srcdir = $srcdir . '/';
+        if (substr($srcDir, -1) != '/') {
+            $srcDir = $srcDir . '/';
         }
 
         $File   = new QUI\Utils\System\File();
-        $Files  = $File->readDirRecursiv($srcdir);
+        $Files  = $File->readDirRecursiv($srcDir);
         $errors = [];
 
         foreach ($Files as $folder => $file) {
-            $File->mkdir($dstdir . $folder);
+            $File->mkdir($dstDir . $folder);
 
             // files kopieren
             for ($i = 0, $len = count($file); $i < $len; $i++) {
-                $from = $srcdir . $folder . $file[$i];
-                $to   = $dstdir . $folder . $file[$i];
+                $from = $srcDir . $folder . $file[$i];
+                $to   = $dstDir . $folder . $file[$i];
 
                 try {
                     self::copy($from, $to);
@@ -1265,7 +1275,7 @@ class File
      *
      * @return boolean
      */
-    public static function mkdir($path, $mode = false)
+    public static function mkdir(string $path, $mode = false): bool
     {
         if (is_dir($path)) {
             return true;
@@ -1292,7 +1302,7 @@ class File
      *
      * @return boolean
      */
-    public static function mkfile($file)
+    public static function mkfile(string $file): bool
     {
         if (file_exists($file)) {
             return true;
@@ -1310,7 +1320,7 @@ class File
      *
      * @return string
      */
-    public static function getFileContent($file)
+    public static function getFileContent(string $file): string
     {
         if (!file_exists($file)) {
             return '';
@@ -1325,7 +1335,7 @@ class File
      * @param string $file - Datei
      * @param string $line - String welcher geschrieben werden soll
      */
-    public static function putLineToFile($file, $line = '')
+    public static function putLineToFile(string $file, string $line = '')
     {
         $fp = fopen($file, 'a');
 
@@ -1340,7 +1350,7 @@ class File
      *
      * @return boolean
      */
-    public static function checkOpenBaseDir($path)
+    public static function checkOpenBaseDir(string $path): bool
     {
         $obd = ini_get('open_basedir');
 
@@ -1367,7 +1377,7 @@ class File
      *
      * @throws QUI\Exception
      */
-    public static function downloadHeader($file, $deleteFile = false)
+    public static function downloadHeader(string $file, bool $deleteFile = false)
     {
         if (!file_exists($file)) {
             throw new QUI\Exception('File not exist ' . $file, 404);
@@ -1401,9 +1411,9 @@ class File
      *
      * @throws QUI\Exception
      */
-    public static function fileHeader($file)
+    public static function fileHeader(string $file)
     {
-        if (!file_exists($file)) {
+        if (!file_exists($file) || !is_file($file)) {
             throw new QUI\Exception('File not exist ' . $file, 404);
         }
 
@@ -1437,7 +1447,7 @@ class File
      *
      * @return integer
      */
-    public static function getFileSize($url)
+    public static function getFileSize(string $url)
     {
         if (substr($url, 0, 4) == 'http') {
             $x = array_change_key_case(
