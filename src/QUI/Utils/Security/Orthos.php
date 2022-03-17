@@ -19,6 +19,7 @@ use function htmlspecialchars;
 use function htmlspecialchars_decode;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_string;
@@ -109,7 +110,7 @@ class Orthos
                 continue;
             }
 
-            if (is_numeric($str)) {
+            if (is_numeric($str) || is_bool($str)) {
                 $cleanData[$key] = $str;
                 continue;
             }

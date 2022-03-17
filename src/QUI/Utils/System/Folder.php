@@ -9,7 +9,6 @@ use FilesystemIterator;
 use QUI\Cache\Exception;
 use QUI\Cache\Manager;
 use QUI\System\Log;
-
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -38,7 +37,7 @@ class Folder
      *
      * @return int - The folder's size in bytes
      */
-    public static function getFolderSize($path, $force = false)
+    public static function getFolderSize(string $path, bool $force = false): ?int
     {
         // Don't return value from cache, calculate a fresh folder size
         if ($force) {
@@ -62,7 +61,7 @@ class Folder
      *
      * @return int|null
      */
-    public static function getFolderSizeTimestamp($path)
+    public static function getFolderSizeTimestamp(string $path): ?int
     {
         try {
             $timestamp = Manager::get(self::getFolderSizeTimestampCacheKey($path));
@@ -84,13 +83,13 @@ class Folder
      *
      * @return int
      */
-    protected static function calculateFolderSize($path, $doNotCache = false)
+    protected static function calculateFolderSize(string $path, bool $doNotCache = false): int
     {
         $path       = self::sanitizePath($path);
         $folderSize = 0;
 
         // Sum up all file sizes
-        if ($path !== false && $path != '' && file_exists($path)) {
+        if ($path !== '' && file_exists($path)) {
             $Iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator(
                     $path,
@@ -140,7 +139,7 @@ class Folder
      *
      * @return string
      */
-    protected static function sanitizePath($path)
+    protected static function sanitizePath(string $path): string
     {
         // Add slash to the end of the path if it's not present
         if (substr($path, strlen($path) - 1) != '/') {
@@ -148,9 +147,7 @@ class Folder
         }
 
         // Canonicalize the path
-        $path = realpath($path);
-
-        return $path;
+        return realpath($path);
     }
 
     /**
@@ -159,7 +156,7 @@ class Folder
      * @param string $path - The folder's path
      * @return string - The generated cache key
      */
-    protected static function getFolderSizeCacheKey($path)
+    protected static function getFolderSizeCacheKey(string $path): string
     {
         $path = self::sanitizePath($path);
 
@@ -172,7 +169,7 @@ class Folder
      * @param string $path - The folder's path
      * @return string - The generated cache key
      */
-    protected static function getFolderSizeTimestampCacheKey($path)
+    protected static function getFolderSizeTimestampCacheKey(string $path): string
     {
         $path = self::sanitizePath($path);
 

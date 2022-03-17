@@ -8,7 +8,6 @@ use function trim;
 
 class Console
 {
-
     const COLOR_GREEN = '1;32';
     const COLOR_CYAN = '1;36';
     const COLOR_RED = '1;31';
@@ -33,9 +32,7 @@ class Console
      */
     public static function read()
     {
-        $result = trim(fgets(STDIN));
-
-        return $result;
+        return trim(fgets(STDIN));
     }
 
     /**
@@ -43,7 +40,7 @@ class Console
      * Hides the input on the console.
      * @return string
      */
-    public static function readPassword()
+    public static function readPassword(): string
     {
         system('stty -echo');
         $result = trim(fgets(STDIN));
@@ -76,13 +73,13 @@ class Console
      *
      * @param $text - The base string
      * @param $color - The colorcode which should be applied
-     * @param $background - (optional) The colorcode for the background.
+     * @param bool $background - (optional) The colorcode for the background.
      * @return string The color encoded string
      * @see Console::COLOR_YELLOW
      * @see Console::BACKGROUND_BLACK
      * @see https://en.wikipedia.org/wiki/ANSI_escape_code
      */
-    public static function getColoredString($text, $color, $background = false)
+    public static function getColoredString($text, $color, bool $background = false): string
     {
         if ($background !== false) {
             return "\033[" . $color . ";" . $background . "m" . $text . "\033[0m";

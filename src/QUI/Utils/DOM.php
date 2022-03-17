@@ -777,7 +777,7 @@ class DOM
      *
      * @throws QUI\Exception
      */
-    public static function getConfigParamsFromDOM($Dom, $withCustomParams = false)
+    public static function getConfigParamsFromDOM($Dom, bool $withCustomParams = false): array
     {
         $Settings = $Dom;
 
