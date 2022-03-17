@@ -9,6 +9,15 @@ namespace QUI\Utils\Text;
 use QUI;
 use QUI\Utils\Security\Orthos;
 
+use function file_exists;
+use function file_get_contents;
+use function microtime;
+use function shell_exec;
+use function str_replace;
+use function strpos;
+use function system;
+use function unlink;
+
 /**
  * Converts a pdf to text
  *
@@ -26,9 +35,9 @@ class PDFToText extends QUI\QDOM
      * @return string
      * @throws QUI\Exception
      */
-    public static function convert($filename)
+    public static function convert(string $filename): string
     {
-        if (!\file_exists($filename)) {
+        if (!file_exists($filename)) {
             throw new QUI\Exception('File could not be read.', 404);
         }
 
@@ -41,24 +50,24 @@ class PDFToText extends QUI\QDOM
         }
 
 
-        $output = \shell_exec('pdftotext 2>&1');
+        $output = shell_exec('pdftotext 2>&1');
 
-        if (\strpos($output, 'pdftotext version') === false) {
+        if (strpos($output, 'pdftotext version') === false) {
             throw new QUI\Exception('Could not use pdftotext.', 500);
         }
 
-        $tmp_file = '/tmp/'.\str_replace(['.', ' '], '', \microtime()).'.txt';
-        $exec     = 'pdftotext '.$filename.' '.$tmp_file;
+        $tmp_file = '/tmp/' . str_replace(['.', ' '], '', microtime()) . '.txt';
+        $exec     = 'pdftotext ' . $filename . ' ' . $tmp_file;
 
-        \system(Orthos::clearShell($exec));
+        system(Orthos::clearShell($exec));
 
-        if (!\file_exists($tmp_file)) {
+        if (!file_exists($tmp_file)) {
             throw new QUI\Exception('Could not create text from PDF.', 404);
         }
 
-        $content = \file_get_contents($tmp_file);
+        $content = file_get_contents($tmp_file);
 
-        \unlink($tmp_file);
+        unlink($tmp_file);
 
         return $content;
     }

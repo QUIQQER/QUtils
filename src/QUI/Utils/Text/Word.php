@@ -6,6 +6,19 @@
 
 namespace QUI\Utils\Text;
 
+use function array_reverse;
+use function asort;
+use function explode;
+use function in_array;
+use function preg_match;
+use function str_replace;
+use function strip_tags;
+use function strlen;
+use function strpos;
+use function strtolower;
+use function strtoupper;
+use function utf8_encode;
+
 mb_internal_encoding('UTF-8');
 
 /**
@@ -22,13 +35,13 @@ class Word
      *
      * @return array
      */
-    public static function countImportantWords($text)
+    public static function countImportantWords(string $text): array
     {
         $str = $text;
 
         // html raus
-        $str = \strip_tags($str);
-        $str = \explode(' ', $str);
+        $str = strip_tags($str);
+        $str = explode(' ', $str);
 
         $result = [];
 
@@ -46,10 +59,8 @@ class Word
             $result[$entry] = 1;
         }
 
-        \asort($result);
-        $result = \array_reverse($result);
-
-        return $result;
+        asort($result);
+        return array_reverse($result);
     }
 
     /**
@@ -61,25 +72,25 @@ class Word
      *
      * @return boolean
      */
-    public static function isUseful($word)
+    public static function isUseful(string $word): bool
     {
-        if (\strlen($word) <= 1) {
+        if (strlen($word) <= 1) {
             return false;
         }
 
         // Kleingeschriebene Wörter raus
-        if (\strtolower($word{0}) == $word{0}) {
+        if (strtolower($word{0}) == $word{0}) {
             return false;
         }
 
-        if (\preg_match('/[^a-zA-Z]/i', $word)) {
+        if (preg_match('/[^a-zA-Z]/i', $word)) {
             return false;
         }
 
         // Wörter mit 2 Grossbuchstaben
-        $w0 = \utf8_encode(
-            \strtoupper(
-                \str_replace(
+        $w0 = utf8_encode(
+            strtoupper(
+                str_replace(
                     ['ä', 'ö', 'ü'],
                     ['Ä', 'Ö', 'Ü'],
                     $word{0}
@@ -88,8 +99,8 @@ class Word
         );
 
         $w1 = utf8_encode(
-            \strtoupper(
-                \str_replace(
+            strtoupper(
+                str_replace(
                     ['ä', 'ö', 'ü'],
                     ['Ä', 'Ö', 'Ü'],
                     $word{1}
@@ -98,7 +109,7 @@ class Word
         );
 
         // Wörter mit weniger als 3 Buchstaben
-        if (\strlen($word) <= 3) {
+        if (strlen($word) <= 3) {
             return false;
         }
 
@@ -330,14 +341,14 @@ class Word
             'davon'
         ];
 
-        $_word = \strtolower($word);
+        $_word = strtolower($word);
 
-        if (\in_array($_word, $not)) {
+        if (in_array($_word, $not)) {
             return false;
         }
 
         /*  *gegen*  */
-        if (\strpos($word, 'gegen') !== false) {
+        if (strpos($word, 'gegen') !== false) {
             return false;
         }
 
@@ -395,7 +406,7 @@ class Word
         ];
 
         foreach ($beginings as $search) {
-            $pos = \strpos($_word, $search);
+            $pos = strpos($_word, $search);
 
             if ($pos === false) {
                 continue;
@@ -423,7 +434,7 @@ class Word
         ];
 
         foreach ($endings as $search) {
-            if (\preg_match('/(.*?)'.$search.'$/i', $word)) {
+            if (preg_match('/(.*?)' . $search . '$/i', $word)) {
                 return false;
             }
         }
