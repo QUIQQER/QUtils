@@ -6,6 +6,11 @@
 
 namespace QUI\Utils;
 
+use function ceil;
+use function floatval;
+use function number_format;
+use function round;
+
 /**
  * Commonly used mathematical functions
  *
@@ -31,9 +36,9 @@ class Math
         if ($amount == 0 || $total == 0) {
             return 0;
         }
-
-        $result = \number_format(($amount * 100) / $total, $decimals);
-        $result = \floatval($result);
+        
+        $result = number_format(($amount * 100) / $total, $decimals);
+        $result = floatval($result);
 
         return $result;
     }
@@ -52,14 +57,14 @@ class Math
         if ($var1 > $max) {
             $resize_by_percent = ($max * 100) / $var1;
 
-            $var2 = (int)\round(($var2 * $resize_by_percent) / 100);
+            $var2 = (int)round(($var2 * $resize_by_percent) / 100);
             $var1 = $max;
         }
 
         if ($var2 > $max) {
             $resize_by_percent = ($max * 100) / $var2;
 
-            $var1 = (int)\round(($var1 * $resize_by_percent) / 100);
+            $var1 = (int)round(($var1 * $resize_by_percent) / 100);
             $var2 = $max;
         }
 
@@ -82,7 +87,7 @@ class Math
      */
     public static function roundUp($n, $x = 10)
     {
-        return (\round($n) % $x === 0) ? \round($n) : \round(($n + $x / 2) / $x) * $x;
+        return (round($n) % $x === 0) ? round($n) : round(($n + $x / 2) / $x) * $x;
     }
 
     /**
@@ -98,6 +103,6 @@ class Math
      */
     public static function ceilUp($n, $x = 10)
     {
-        return (\ceil($n) % $x === 0) ? \ceil($n) : \round(($n + $x / 2) / $x) * $x;
+        return (ceil($n) % $x === 0) ? ceil($n) : round(($n + $x / 2) / $x) * $x;
     }
 }

@@ -6,11 +6,20 @@
 
 namespace QUI\Utils\XML;
 
+use DOMElement;
+use DOMXPath;
+use DusanKasan\Knapsack\Collection;
 use QUI;
 use QUI\Utils\DOM;
 use QUI\Utils\Text\XML;
 
-use DusanKasan\Knapsack\Collection;
+use function array_merge;
+use function file_exists;
+use function htmlspecialchars;
+use function is_array;
+use function is_null;
+use function is_string;
+use function str_replace;
 
 /**
  * Class Settings
@@ -20,7 +29,7 @@ class Settings
     /**
      * @var string
      */
-    protected $xmlPath = '//settings/window';
+    protected string $xmlPath = '//settings/window';
 
     /**
      * @var null|Settings
@@ -32,7 +41,7 @@ class Settings
      */
     public static function getInstance(): Settings
     {
-        if (\is_null(self::$Instance)) {
+        if (is_null(self::$Instance)) {
             self::$Instance = new self();
         }
 
@@ -64,9 +73,7 @@ class Settings
      */
     public function setXMLPath(string $xmlPath)
     {
-        if (\is_string($xmlPath)) {
-            $this->xmlPath = $xmlPath;
-        }
+        $this->xmlPath = $xmlPath;
     }
 
     /**
@@ -82,21 +89,21 @@ class Settings
             'icon'  => ''
         ];
 
-        if (\is_string($xmlFiles)) {
+        if (is_string($xmlFiles)) {
             $xmlFiles = [$xmlFiles];
         }
 
         foreach ($xmlFiles as $xmlFile) {
             if (strpos($xmlFile, CMS_DIR) === false) {
-                $xmlFile = CMS_DIR.$xmlFile;
+                $xmlFile = CMS_DIR . $xmlFile;
             }
 
-            if (!\file_exists($xmlFile)) {
+            if (!file_exists($xmlFile)) {
                 continue;
             }
 
             $Dom     = XML::getDomFromXml($xmlFile);
-            $Path    = new \DOMXPath($Dom);
+            $Path    = new DOMXPath($Dom);
             $windows = $Path->query($this->xmlPath);
 
             if (!$windows->length) {
@@ -104,7 +111,7 @@ class Settings
             }
 
             foreach ($windows as $Window) {
-                /* @var $Window \DOMElement */
+                /* @var $Window DOMElement */
                 $Title = $Window->getElementsByTagName('title');
                 $Icon  = $Window->getElementsByTagName('icon');
 
@@ -113,11 +120,11 @@ class Settings
                 }
 
                 if ($Title->length && $Title->item(0)->parentNode === $Window) {
-                    $result['title'] = \htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
+                    $result['title'] = htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
                 }
 
                 if ($Icon->length && $Icon->item(0) !== '' && $Icon->item(0)->parentNode === $Window) {
-                    $result['icon'] = \htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
+                    $result['icon'] = htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
                 }
 
                 // if params exists
@@ -147,11 +154,11 @@ class Settings
      * Parse a list of xml files to collections
      *
      * @param array|string $xmlFiles
-     * @return \DusanKasan\Knapsack\Collection
+     * @return Collection
      */
     public function getCategories($xmlFiles): Collection
     {
-        if (\is_string($xmlFiles)) {
+        if (is_string($xmlFiles)) {
             $xmlFiles = [$xmlFiles];
         }
 
@@ -169,21 +176,21 @@ class Settings
 
         foreach ($xmlFiles as $xmlFile) {
             if (strpos($xmlFile, CMS_DIR) === false) {
-                $xmlFile = CMS_DIR.$xmlFile;
+                $xmlFile = CMS_DIR . $xmlFile;
             }
 
-            if (!\file_exists($xmlFile)) {
+            if (!file_exists($xmlFile)) {
                 continue;
             }
 
             $Dom  = XML::getDomFromXml($xmlFile);
-            $Path = new \DOMXPath($Dom);
+            $Path = new DOMXPath($Dom);
 
-            $categories = $Path->query($this->xmlPath."/categories/category");
+            $categories = $Path->query($this->xmlPath . "/categories/category");
 
             foreach ($categories as $Category) {
                 $data         = $this->parseCategory($Category);
-                $data['file'] = \str_replace(CMS_DIR, '', $xmlFile);
+                $data['file'] = str_replace(CMS_DIR, '', $xmlFile);
 
                 $entry = $Collection->find(function ($item) use ($data) {
                     return $data['name'] == $item['name'];
@@ -195,7 +202,7 @@ class Settings
                 }
 
                 $entry['items'] = new Collection(
-                    \array_merge(
+                    array_merge(
                         $entry['items']->toArray(),
                         $data['items']->toArray()
                     )
@@ -203,7 +210,7 @@ class Settings
 
                 $files = [];
 
-                if (\is_string($entry['file'])) {
+                if (is_string($entry['file'])) {
                     $files[] = $entry['file'];
                 } else {
                     $files = $entry['file'];
@@ -238,10 +245,10 @@ class Settings
     /**
      * Parse <category> DOMElement and return it as an array
      *
-     * @param \DOMElement $Category
+     * @param DOMElement $Category
      * @return array
      */
-    public function parseCategory(\DOMElement $Category): array
+    public function parseCategory(DOMElement $Category): array
     {
         $Collection = Collection::from([]);
 
@@ -249,8 +256,7 @@ class Settings
             'name'    => $Category->getAttribute('name'),
             'index'   => $Category->getAttribute('index'),
             'require' => $Category->getAttribute('require'),
-            'title'   => '',
-            'items'   => $Collection
+            'title'   => ''
         ];
 
         foreach ($Category->childNodes as $Child) {
@@ -288,10 +294,10 @@ class Settings
     /**
      * Parse a <setting> DOM node and return it as an array
      *
-     * @param \DOMElement $Setting
+     * @param DOMElement $Setting
      * @return array
      */
-    public function parseSettings(\DOMElement $Setting): array
+    public function parseSettings(DOMElement $Setting): array
     {
         $data = [
             'name'  => $Setting->getAttribute('name'),
@@ -304,7 +310,7 @@ class Settings
         $items = [];
 
         foreach ($Setting->childNodes as $Child) {
-            /* @var $Child \DOMElement */
+            /* @var $Child DOMElement */
             if ($Child->nodeName == '#text') {
                 continue;
             }
@@ -411,7 +417,7 @@ class Settings
                 $result .= '<table class="data-table data-table-flexbox">';
                 $result .= '<thead><tr><th>';
 
-                if (\is_array($setting['title'])) {
+                if (is_array($setting['title'])) {
                     $result .= QUI::getLocale()->get($setting['title'][0], $setting['title'][1]);
                 } else {
                     $result .= $setting['title'];
@@ -421,7 +427,7 @@ class Settings
                 $result .= '<tbody>';
 
                 foreach ($setting['items'] as $item) {
-                    if (\is_string($item)) {
+                    if (is_string($item)) {
                         $result .= '<tr><td>';
                         $result .= $item;
                         $result .= '</td></tr>';
@@ -435,7 +441,7 @@ class Settings
                         continue;
                     }
 
-                    $result .= '<tr style="'.$item['rowStyle'].'"><td>';
+                    $result .= '<tr style="' . $item['rowStyle'] . '"><td>';
                     $result .= $item['content'];
                     $result .= '</td></tr>';
                 }

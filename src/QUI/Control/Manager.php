@@ -6,6 +6,13 @@
 
 namespace QUI\Control;
 
+use function array_keys;
+use function file_exists;
+use function file_get_contents;
+use function strlen;
+use function strrpos;
+use function substr_replace;
+
 /**
  *
  * @author www.pcsg.de (Henning Leutz)
@@ -17,16 +24,16 @@ class Manager
      *
      * @var array
      */
-    protected static $cssFilesloaded = [];
+    protected static array $cssFilesLoaded = [];
 
     /**
      * Return the CSS Files from the loaded Controls
      *
      * @return array
      */
-    public static function getCSSFiles()
+    public static function getCSSFiles(): array
     {
-        return \array_keys(self::$cssFilesloaded);
+        return array_keys(self::$cssFilesLoaded);
     }
 
     /**
@@ -34,17 +41,17 @@ class Manager
      *
      * @return string
      */
-    public static function getCSS()
+    public static function getCSS(): string
     {
         $files  = self::getCSSFiles();
         $result = '';
 
         foreach ($files as $file) {
-            if (!\file_exists($file)) {
+            if (!file_exists($file)) {
                 continue;
             }
 
-            $css = \file_get_contents($file);
+            $css = file_get_contents($file);
 
             $result .= '<style>';
             $result .= $css;
@@ -59,9 +66,9 @@ class Manager
      *
      * @param string $file - Path to the CSS File, the system file path, no relativ path
      */
-    public static function addCSSFile($file)
+    public static function addCSSFile(string $file)
     {
-        self::$cssFilesloaded[$file] = true;
+        self::$cssFilesLoaded[$file] = true;
     }
 
     /**
@@ -71,18 +78,17 @@ class Manager
      *
      * @return string
      */
-    public static function setCSSToHead($html)
+    public static function setCSSToHead(string $html): string
     {
-        // letzte head ersetzen
         $string  = $html;
         $search  = '</head>';
         $replace = self::getCSS();
 
-        return \substr_replace(
+        return substr_replace(
             $html,
-            $replace.'</head>',
-            \strrpos($string, $search),
-            \strlen($search)
+            $replace . '</head>',
+            strrpos($string, $search),
+            strlen($search)
         );
     }
 }

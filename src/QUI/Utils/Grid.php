@@ -8,6 +8,9 @@ namespace QUI\Utils;
 
 use QUI;
 
+use function array_slice;
+use function count;
+
 /**
  * Helper for the javascript controls/grid/Grid
  *
@@ -53,7 +56,7 @@ class Grid extends QUI\QDOM
             $page  = ($this->getAttribute('page') - 1);
             $start = $page * $this->getAttribute('max');
 
-            $query['limit'] = $start.','.$this->getAttribute('max');
+            $query['limit'] = $start . ',' . $this->getAttribute('max');
         }
 
         if (isset($params['limit'])) {
@@ -72,7 +75,7 @@ class Grid extends QUI\QDOM
                 $sortBy = '';
             }
 
-            $query['order'] = $sortOn.' '.$sortBy;
+            $query['order'] = $sortOn . ' ' . $sortBy;
         }
 
         return $query;
@@ -89,7 +92,7 @@ class Grid extends QUI\QDOM
     public function parseResult($data, $count = false)
     {
         if ($count === false) {
-            $count = \count($data);
+            $count = count($data);
         }
 
         return [
@@ -110,12 +113,12 @@ class Grid extends QUI\QDOM
      */
     public static function getResult($data, $page, $limit)
     {
-        $count = \count($data);
+        $count = count($data);
         $end   = $page * $limit;
         $start = $end - $limit;
 
         return [
-            'data'  => \array_slice($data, $start, $limit),
+            'data'  => array_slice($data, $start, $limit),
             'page'  => $page,
             'total' => $count
         ];

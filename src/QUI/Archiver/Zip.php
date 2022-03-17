@@ -7,6 +7,15 @@
 namespace QUI\Archiver;
 
 use QUI;
+use QUI\Exception;
+use ZipArchive;
+
+use function basename;
+use function class_exists;
+use function count;
+use function file_exists;
+use function is_array;
+use function substr;
 
 /**
  * ZIP archiver
@@ -20,6 +29,7 @@ class Zip
     /**
      * constructor
      * Checks if ZipArchive exists as a php module
+     * @throws Exception
      */
     public function __construct()
     {
@@ -30,12 +40,12 @@ class Zip
      * Check, if ZipArchive is enabled
      *
      * @return boolean
-     * @throws \QUI\Exception
+     * @throws Exception
      */
-    public static function check()
+    public static function check(): bool
     {
-        if (!\class_exists('ZipArchive')) {
-            throw new QUI\Exception(
+        if (!class_exists('ZipArchive')) {
+            throw new Exception(
                 'Class ZipArchive not exist',
                 404
             );
@@ -48,26 +58,26 @@ class Zip
      * From a folder created a ZIP Archive
      *
      * @param string $folder - Folder which is to be packed
-     * @param string $zipfile - Name of new Zipfiles
+     * @param string $zipFile - Name of new Zipfiles
      * @param array $ignore - Folder to be ignored
      *
-     * @throws QUI\Exception
+     * @throws Exception
      */
-    public static function zip($folder, $zipfile, $ignore = [])
+    public static function zip(string $folder, string $zipFile, array $ignore = [])
     {
         self::check();
 
-        $Zip = new \ZipArchive();
+        $Zip = new ZipArchive();
 
-        if ($Zip->open($zipfile, \ZIPARCHIVE::CREATE) !== true) {
-            throw new QUI\Exception('cannot open '.$zipfile);
+        if ($Zip->open($zipFile, ZIPARCHIVE::CREATE) !== true) {
+            throw new Exception('cannot open ' . $zipFile);
         }
 
-        if (!\is_array($ignore)) {
+        if (!is_array($ignore)) {
             $ignore = [];
         }
 
-        if (\substr($folder, -1) != '/') {
+        if (substr($folder, -1) != '/') {
             $folder .= '/';
         }
 
@@ -79,13 +89,13 @@ class Zip
                 continue;
             }
 
-            $oldfolder = $folder.$_folder;
+            $oldFolder = $folder . $_folder;
 
-            for ($i = 0, $len = \count($_file); $i < $len; $i++) {
-                if (\file_exists($oldfolder.$_file[$i])) {
+            for ($i = 0, $len = count($_file); $i < $len; $i++) {
+                if (file_exists($oldFolder . $_file[$i])) {
                     $Zip->addFile(
-                        $oldfolder.$_file[$i],
-                        $_folder.$_file[$i]
+                        $oldFolder . $_file[$i],
+                        $_folder . $_file[$i]
                     );
                 }
             }
@@ -99,27 +109,27 @@ class Zip
      * Puts the given files in a zip file
      *
      * @param string[] $files - Paths of the files to zip
-     * @param string $zipfile - Path to the zip file (folders have to already exist)
+     * @param string $zipFile - Path to the zip file (folders have to already exist)
      *
-     * @throws QUI\Exception
+     * @throws Exception
      */
-    public static function zipFiles($files, $zipfile)
+    public static function zipFiles(array $files, string $zipFile)
     {
         self::check();
 
-        $Zip = new \ZipArchive();
+        $Zip = new ZipArchive();
 
-        if ($Zip->open($zipfile, \ZIPARCHIVE::CREATE) !== true) {
-            throw new QUI\Exception('cannot open '.$zipfile);
+        if ($Zip->open($zipFile, ZIPARCHIVE::CREATE) !== true) {
+            throw new Exception('cannot open ' . $zipFile);
         }
 
-        if (!is_array($files) || count($files) == 0) {
-            throw new QUI\Exception("You need to specify at least one file to zip in an array");
+        if (count($files) == 0) {
+            throw new Exception("You need to specify at least one file to zip in an array");
         }
 
         foreach ($files as $file) {
-            if (\file_exists($file)) {
-                $Zip->addFile($file, \basename($file));
+            if (file_exists($file)) {
+                $Zip->addFile($file, basename($file));
             }
         }
 
@@ -130,31 +140,31 @@ class Zip
     /**
      * Unzip the file
      *
-     * @param string $zipfile - path to zip file
+     * @param string $zipFile - path to zip file
      * @param string $to - path to the destination folder
      *
-     * @throws \QUI\Exception
+     * @throws Exception
      */
-    public static function unzip($zipfile, $to)
+    public static function unzip(string $zipFile, string $to)
     {
         self::check();
 
-        if (!\file_exists($zipfile)) {
-            throw new QUI\Exception(
-                'Zip Archive '.$zipfile.' doesn\'t exist',
+        if (!file_exists($zipFile)) {
+            throw new Exception(
+                'Zip Archive ' . $zipFile . ' doesn\'t exist',
                 404
             );
         }
 
-        $Zip = new \ZipArchive();
+        $Zip = new ZipArchive();
 
-        if ($Zip->open($zipfile) === true) {
+        if ($Zip->open($zipFile) === true) {
             $Zip->extractTo($to);
             $Zip->close();
 
             return;
         }
 
-        throw new QUI\Exception('Error on Extract Zip Archive');
+        throw new Exception('Error on Extract Zip Archive');
     }
 }

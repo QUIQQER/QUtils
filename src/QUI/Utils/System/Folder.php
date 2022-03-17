@@ -5,9 +5,21 @@
 
 namespace QUI\Utils\System;
 
+use FilesystemIterator;
 use QUI\Cache\Exception;
 use QUI\Cache\Manager;
 use QUI\System\Log;
+
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
+
+use function file_exists;
+use function ini_get;
+use function realpath;
+use function set_time_limit;
+use function strlen;
+use function substr;
 
 /**
  * Class Folder
@@ -78,23 +90,23 @@ class Folder
         $folderSize = 0;
 
         // Sum up all file sizes
-        if ($path !== false && $path != '' && \file_exists($path)) {
-            $Iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(
+        if ($path !== false && $path != '' && file_exists($path)) {
+            $Iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
                     $path,
-                    \FilesystemIterator::SKIP_DOTS
+                    FilesystemIterator::SKIP_DOTS
                 ),
-                \RecursiveIteratorIterator::SELF_FIRST,
-                \RecursiveIteratorIterator::CATCH_GET_CHILD
+                RecursiveIteratorIterator::SELF_FIRST,
+                RecursiveIteratorIterator::CATCH_GET_CHILD
             );
 
             foreach ($Iterator as $Object) {
-                /** @var \RecursiveDirectoryIterator $Object */
+                /** @var RecursiveDirectoryIterator $Object */
                 try {
                     // To prevent timeouts we always reset the time limit to two seconds
-                    \set_time_limit(2);
+                    set_time_limit(2);
                     $folderSize += $Object->getSize();
-                } catch (\RuntimeException $RuntimeException) {
+                } catch (RuntimeException $RuntimeException) {
                     // If getSize() fails (e.g. at broken symlinks) we get here
                     continue;
                 }
@@ -102,7 +114,7 @@ class Folder
 
             // Reset the time limit to it's default value.
             // This ensures that following code execution doesn't timeout after two seconds.
-            \set_time_limit(\ini_get('max_execution_time'));
+            set_time_limit(ini_get('max_execution_time'));
         }
 
         if ($doNotCache) {
@@ -131,12 +143,12 @@ class Folder
     protected static function sanitizePath($path)
     {
         // Add slash to the end of the path if it's not present
-        if (\substr($path, \strlen($path) - 1) != '/') {
+        if (substr($path, strlen($path) - 1) != '/') {
             $path .= '/';
         }
 
         // Canonicalize the path
-        $path = \realpath($path);
+        $path = realpath($path);
 
         return $path;
     }
@@ -151,7 +163,7 @@ class Folder
     {
         $path = self::sanitizePath($path);
 
-        return "folder_size_".sha1($path);
+        return "folder_size_" . sha1($path);
     }
 
     /**
@@ -164,6 +176,6 @@ class Folder
     {
         $path = self::sanitizePath($path);
 
-        return "folder_size_timestamp_".sha1($path);
+        return "folder_size_timestamp_" . sha1($path);
     }
 }

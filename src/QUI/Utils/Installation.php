@@ -6,10 +6,15 @@
 
 namespace QUI\Utils;
 
+use FilesystemIterator;
 use QUI\Cache\Manager;
 use QUI\Exception;
 use QUI\System\Log;
 use QUI\Utils\System\Folder;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
+use function iterator_count;
 
 /**
  * Class Installation
@@ -105,7 +110,7 @@ class Installation
         $fileCount = null;
 
         if (System::isSystemFunctionCallable('find') && System::isSystemFunctionCallable('wc')) {
-            exec('find '.CMS_DIR.' -type f | wc -l', $output);
+            exec('find ' . CMS_DIR . ' -type f | wc -l', $output);
 
             if (isset($output[0]) && is_numeric($output[0])) {
                 $fileCount = $output[0];
@@ -113,9 +118,9 @@ class Installation
         }
 
         if ($fileCount == null) {
-            $fileCount = \iterator_count(
-                new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator(CMS_DIR, \FilesystemIterator::SKIP_DOTS)
+            $fileCount = iterator_count(
+                new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator(CMS_DIR, FilesystemIterator::SKIP_DOTS)
                 )
             );
         }

@@ -6,15 +6,17 @@
 
 namespace QUI\Utils;
 
+use function get_called_class;
+
 /**
  * Class Singleton
  */
 abstract class Singleton
 {
     /**
-     * @var null
+     * @var array
      */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     /**
      * Return the instance
@@ -23,7 +25,7 @@ abstract class Singleton
      */
     public static function getInstance()
     {
-        $class = \get_called_class();
+        $class = get_called_class();
 
         if (!isset(self::$instances[$class])) {
             self::$instances[$class] = new $class();

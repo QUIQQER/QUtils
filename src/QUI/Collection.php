@@ -6,20 +6,37 @@
 
 namespace QUI;
 
+use ArrayAccess;
+use ArrayIterator;
+
+use IteratorAggregate;
+
+use function array_filter;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function count;
+use function get_called_class;
+use function get_class;
+use function in_array;
+use function is_array;
+use function is_null;
+use function usort;
+
 /**
  * Class Collection
  * Collects children from a specific class / classes
  * To specify allowed types you should extend this class.
  * Then set the $allowed variable there.
  */
-class Collection implements \IteratorAggregate, \ArrayAccess
+class Collection implements IteratorAggregate, ArrayAccess
 {
     /**
      * List of children
      *
      * @var array
      */
-    protected $children = [];
+    protected array $children = [];
 
     /**
      * List of allowed children classes.
@@ -27,14 +44,14 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @var array
      */
-    protected $allowed = [];
+    protected array $allowed = [];
 
     /**
      * Collection constructor.
      *
      * @param array $children - list of children
      */
-    public function __construct($children = [])
+    public function __construct(array $children = [])
     {
         foreach ($children as $Child) {
             $this->append($Child);
@@ -45,15 +62,15 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param array $params
      * @return Collection
      */
-    public static function getInstance($params = [])
+    public static function getInstance(array $params = []): Collection
     {
         $children = [];
 
-        if (isset($params['children']) && \is_array($params['children'])) {
+        if (isset($params['children']) && is_array($params['children'])) {
             $children = $params['children'];
         }
 
-        $class = \get_called_class();
+        $class = get_called_class();
 
         return new $class($children);
     }
@@ -65,19 +82,18 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * If $key is set, it's placed at the position specified in $key.
      *
      * @param mixed $Child
-     * @param int $key
+     * @param int|null $key
      */
-    public function append($Child, $key = null)
+    public function append($Child, int $key = null)
     {
         if ($this->isAllowed($Child)) {
-            if (\is_null($key)) {
+            if (is_null($key)) {
                 $this->children[] = $Child;
             } else {
                 $this->children[$key] = $Child;
             }
         }
     }
-
 
     /**
      * Merges one or more collections into this collection.
@@ -87,13 +103,12 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     public function merge(...$Collections)
     {
         foreach ($Collections as $Collection) {
-            /** @var Collection $Collection */
             // Check if the given collection is of the same type as our collection.
             // If it is, we can just merge it's content to our children.
             // instanceof can not be used here because it would allow more specific collections.
-            // More specific collections could allow other children then our collection allows.
-            if (\get_class($Collection) == \get_class($this)) {
-                $this->children = \array_merge($this->children, $Collection->toArray());
+            // More specific collections could allow other children than our collection allows.
+            if (get_class($Collection) == get_class($this)) {
+                $this->children = array_merge($this->children, $Collection->toArray());
                 continue;
             }
 
@@ -117,13 +132,13 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->length();
     }
 
     /**
-     * Execute $function(value, key) for each children
+     * Execute $function(value, key) for each child
      *
      * @param callable $function
      */
@@ -156,7 +171,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @return mixed
      * @throws Exception
      */
-    public function get($key)
+    public function get(int $key)
     {
         if (empty($this->children) || !isset($this->children[$key])) {
             throw new Exception('Item not found, Collection ist empty');
@@ -170,7 +185,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * no child would be overwritten
      *
      * @param mixed $Child
-     * @param bool $pos - starts at 0, if $pos is false = child appended to the end
+     * @param bool|int $pos - starts at 0, if $pos is false = child appended to the end
      */
     public function insert($Child, $pos = false)
     {
@@ -202,7 +217,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->children);
     }
@@ -212,7 +227,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return bool
      */
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return !empty($this->children);
     }
@@ -225,7 +240,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return boolean
      */
-    public function isSet($key)
+    public function isSet($key): bool
     {
         return isset($this->children[$key]);
     }
@@ -252,9 +267,9 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return int
      */
-    public function length()
+    public function length(): int
     {
-        return \count($this->children);
+        return count($this->children);
     }
 
     /**
@@ -263,9 +278,9 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param callable $function
      * @return array
      */
-    public function map(callable $function)
+    public function map(callable $function): array
     {
-        return \array_map($function, $this->children);
+        return array_map($function, $this->children);
     }
 
     /**
@@ -276,7 +291,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function sort(callable $function)
     {
-        \usort($this->children, $function);
+        usort($this->children, $function);
     }
 
     /**
@@ -285,9 +300,9 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param $Child
      * @return bool
      */
-    public function contains($Child)
+    public function contains($Child): bool
     {
-        return \in_array($Child, $this->children);
+        return in_array($Child, $this->children);
     }
 
     /**
@@ -295,7 +310,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->children;
     }
@@ -311,9 +326,9 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @return $this
      */
-    public function filter(callable $callback, int $flag = 0)
+    public function filter(callable $callback, int $flag = 0): Collection
     {
-        return new $this(\array_filter($this->children, $callback, $flag));
+        return new $this(array_filter($this->children, $callback, $flag));
     }
 
     //endregion
@@ -326,16 +341,16 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      * @param mixed $Child
      * @return bool
      */
-    protected function isAllowed($Child)
+    protected function isAllowed($Child): bool
     {
         $allowed = $this->allowed;
-        $key     = \array_keys($this->allowed);
+        $key     = array_keys($this->allowed);
 
         if (empty($allowed)) {
             return true;
         }
 
-        if (isset($key[\get_class($Child)])) {
+        if (isset($key[get_class($Child)])) {
             return true;
         }
 
@@ -353,11 +368,11 @@ class Collection implements \IteratorAggregate, \ArrayAccess
     //region interfaces API
 
     /**
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->children);
+        return new ArrayIterator($this->children);
     }
 
     /**
@@ -367,7 +382,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      *
      * @deprecated Use isSet($offset) instead.
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->isSet($offset);
     }
@@ -378,7 +393,7 @@ class Collection implements \IteratorAggregate, \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return isset($this->children[$offset]) ? $this->children[$offset] : null;
+        return $this->children[$offset] ?? null;
     }
 
     /**

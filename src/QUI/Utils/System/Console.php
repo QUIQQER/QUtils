@@ -2,6 +2,10 @@
 
 namespace QUI\Utils\System;
 
+use function fgets;
+use function system;
+use function trim;
+
 class Console
 {
 
@@ -29,7 +33,7 @@ class Console
      */
     public static function read()
     {
-        $result = \trim(\fgets(STDIN));
+        $result = trim(fgets(STDIN));
 
         return $result;
     }
@@ -41,9 +45,9 @@ class Console
      */
     public static function readPassword()
     {
-        \system('stty -echo');
-        $result = \trim(\fgets(STDIN));
-        \system('stty echo');
+        system('stty -echo');
+        $result = trim(fgets(STDIN));
+        system('stty echo');
 
         return $result;
     }
@@ -54,7 +58,7 @@ class Console
      */
     public static function writeLn($msg)
     {
-        echo $msg.PHP_EOL;
+        echo $msg . PHP_EOL;
     }
 
     /**
@@ -81,9 +85,9 @@ class Console
     public static function getColoredString($text, $color, $background = false)
     {
         if ($background !== false) {
-            return "\033[".$color.";".$background."m".$text."\033[0m";
+            return "\033[" . $color . ";" . $background . "m" . $text . "\033[0m";
         }
 
-        return "\033[".$color."m".$text."\033[0m";
+        return "\033[" . $color . "m" . $text . "\033[0m";
     }
 }

@@ -6,7 +6,15 @@
 
 namespace QUI\Utils;
 
-use QUI\System\Log;
+use function array_filter;
+use function array_unique;
+use function count;
+use function explode;
+use function get_object_vars;
+use function is_array;
+use function is_bool;
+use function is_int;
+use function is_object;
 
 /**
  * Helper for array handling
@@ -22,10 +30,10 @@ class ArrayHelper
      *
      * @return boolean
      */
-    public static function isAssoc(array $array)
+    public static function isAssoc(array $array): bool
     {
         foreach ($array as $key => $value) {
-            if (\is_int($key)) {
+            if (is_int($key)) {
                 return false;
             }
         }
@@ -40,11 +48,11 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function toAssoc(array $array)
+    public static function toAssoc(array $array): array
     {
         $result = [];
 
-        for ($i = 0, $len = \count($array); $i < $len; $i++) {
+        for ($i = 0, $len = count($array); $i < $len; $i++) {
             $result[$array[$i]] = true;
         }
 
@@ -58,17 +66,17 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function objectToArray($obj)
+    public static function objectToArray($obj): array
     {
-        $_arr = \is_object($obj) ? \get_object_vars($obj) : $obj;
+        $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
         $arr  = [];
 
-        if (!\is_array($_arr)) {
+        if (!is_array($_arr)) {
             return $arr;
         }
 
         foreach ($_arr as $key => $val) {
-            if (\is_array($val) || \is_object($val)) {
+            if (is_array($val) || is_object($val)) {
                 $val = self::objectToArray($val);
             }
 
@@ -85,9 +93,8 @@ class ArrayHelper
      *
      * @return Object
      */
-    public static function arrayToObject($array = [])
+    public static function arrayToObject(array $array = []): object
     {
-        // its the easiest way
         return (object)$array;
     }
 
@@ -98,16 +105,16 @@ class ArrayHelper
      * @param string $delimiter - default = ,
      * @return array
      */
-    public static function cleanup($array, $delimiter = ',')
+    public static function cleanup($array, string $delimiter = ','): array
     {
-        if (\is_bool($array)) {
+        if (is_bool($array)) {
             return [];
         }
 
-        if (!\is_array($array)) {
-            $array = \explode($delimiter, $array);
+        if (!is_array($array)) {
+            $array = explode($delimiter, $array);
         }
 
-        return \array_filter(\array_unique($array));
+        return array_filter(array_unique($array));
     }
 }
