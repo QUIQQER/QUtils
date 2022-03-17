@@ -98,12 +98,22 @@ class Orthos
         $cleanData = [];
 
         foreach ($data as $key => $str) {
-            if (is_array($data[$key])) {
-                $cleanData[$key] = self::clearArray($data[$key]);
+            if (is_array($str)) {
+                $cleanData[$key] = self::clearArray($str);
                 continue;
             }
 
-            $cleanData[$key] = self::clear($str);
+            if (is_string($str)) {
+                $cleanData[$key] = self::clear($str);
+                continue;
+            }
+
+            if ($str === null) {
+                $cleanData[$key] = null;
+                continue;
+            }
+
+            unset($cleanData[$key]);
         }
 
         return $cleanData;
