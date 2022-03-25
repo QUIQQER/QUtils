@@ -49,12 +49,16 @@ class Orthos
     /**
      * Cleans a string from all possible malicious code
      *
-     * @param string $str
+     * @param string|null $str
      *
      * @return string
      */
-    public static function clear(string $str): string
+    public static function clear(?string $str): string
     {
+        if ($str === null) {
+            return '';
+        }
+
         $str = self::removeHTML($str);
         $str = self::clearFormRequest($str);
         $str = self::clearPath($str);
@@ -129,11 +133,11 @@ class Orthos
     /**
      * Clears a path of possible changes to the path
      *
-     * @param string $path
+     * @param string|array $path
      *
-     * @return string|boolean
+     * @return array|string|string[]
      */
-    public static function clearPath(string $path)
+    public static function clearPath($path)
     {
         $path = str_replace('\\', '', $path);
 
@@ -316,9 +320,9 @@ class Orthos
     /**
      * Checks a date for correctness
      *
-     * @param integer $day
-     * @param integer $month
-     * @param integer $year
+     * @param mixed $day
+     * @param mixed $month
+     * @param mixed $year
      *
      * @return boolean
      */
@@ -342,9 +346,9 @@ class Orthos
     /**
      * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @param string $text
+     * @param string|array $text
      *
-     * @return string
+     * @return string|array
      * @see        \QUI\Utils\StringHelper::removeLineBreaks
      * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      *
@@ -537,11 +541,11 @@ class Orthos
     /**
      * Deletes all characters from a request that could be used for an XSS.
      *
-     * @param string $value
+     * @param string|array $value
      *
-     * @return string
+     * @return string|array
      */
-    public static function clearFormRequest($value): string
+    public static function clearFormRequest($value)
     {
         if (is_array($value)) {
             foreach ($value as $key => $entry) {
@@ -554,7 +558,7 @@ class Orthos
 
             $value = htmlspecialchars_decode($value);
         }
-        // alle zeichen undd HEX codes werden mit leer ersetzt
+        // alle zeichen und HEX codes werden mit leer ersetzt
         $value = str_replace(
             [
                 '<',
