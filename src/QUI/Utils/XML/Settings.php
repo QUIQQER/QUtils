@@ -34,7 +34,7 @@ class Settings
     /**
      * @var null|Settings
      */
-    protected static $Instance = null;
+    protected static ?Settings $Instance = null;
 
     /**
      * @return Settings

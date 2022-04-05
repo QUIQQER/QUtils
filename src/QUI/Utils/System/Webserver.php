@@ -29,7 +29,7 @@ class Webserver
      * @return int @see QUI\Utils\System\Webserver::WEBSERVER_APACHE; @see QUI\Utils\System\Webserver::WEBSERVER_NGINX
      * @throws Exception
      */
-    public static function detectInstalledWebserver()
+    public static function detectInstalledWebserver(): int
     {
         try {
             return self::detectInstalledWebserverHeader();
@@ -51,7 +51,7 @@ class Webserver
      * @return array
      * @throws Exception
      */
-    public static function detectApacheVersion()
+    public static function detectApacheVersion(): array
     {
         # Attempt detection by apache2 module
         if (function_exists('apache_get_version')) {
@@ -60,10 +60,8 @@ class Webserver
             $res     = preg_match($regex, $version, $matches);
 
             if ($res && isset($matches[1])) {
-                $version     = $matches[1];
-                $verionParts = explode(".", $version);
-
-                return $verionParts;
+                $version = $matches[1];
+                return explode(".", $version);
             }
         }
 
@@ -75,9 +73,7 @@ class Webserver
             if ($res && isset($matches[1])) {
                 $version = $matches[1];
 
-                $verionParts = explode(".", $version);
-
-                return $verionParts;
+                return explode(".", $version);
             }
         }
 
@@ -90,9 +86,9 @@ class Webserver
      * @return int - @see QUI\Utils\System\Webserver::WEBSERVER_APACHE; @see QUI\Utils\System\Webserver::WEBSERVER_NGINX
      * @throws Exception
      */
-    protected static function detectInstalledWebserverHeader()
+    protected static function detectInstalledWebserverHeader(): int
     {
-        if (!isset($_SERVER) || !isset($_SERVER['SERVER_SOFTWARE']) || empty($_SERVER['SERVER_SOFTWARE'])) {
+        if (!isset($_SERVER) || empty($_SERVER['SERVER_SOFTWARE'])) {
             throw new Exception("Could not retrieve Serverdata");
         }
 

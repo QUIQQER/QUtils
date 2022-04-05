@@ -6,6 +6,10 @@
 
 namespace QUI\Utils\Tracking;
 
+use function explode;
+use function microtime;
+use function round;
+
 /**
  * A timer
  * measures the length of time between measurement points
@@ -19,18 +23,18 @@ class Timer
      *
      * @var array
      */
-    protected $milestones;
+    protected array $milestones;
 
     /**
      * Time calc
      *
      * @return float
      */
-    protected function time()
+    protected function time(): float
     {
-        [$utime, $time] = \explode(" ", \microtime());
+        [$uTime, $time] = explode(" ", microtime());
 
-        return ((float)$utime + (float)$time);
+        return ((float)$uTime + (float)$time);
     }
 
     /**
@@ -38,7 +42,7 @@ class Timer
      *
      * @param string $name - name of the point
      */
-    public function milestone($name)
+    public function milestone(string $name)
     {
         $this->milestones[] = [$name, $this->time()];
     }
@@ -48,7 +52,7 @@ class Timer
      *
      * @return array
      */
-    public function result()
+    public function result(): array
     {
         $this->milestone('finish');
 
@@ -60,22 +64,22 @@ class Timer
      *
      * @return string
      */
-    public function resultStr()
+    public function resultStr(): string
     {
         $result = $this->result();
 
-        $output = '<table border="1">'."\n".
-                  '<tr>'.
-                  '<th>Messpunkt</th>'.
-                  '<th>Diff</th>'.
-                  '<th>Cumulative</th>'.
-                  '</tr>'."\n";
+        $output = '<table>' . "\n" .
+            '<tr>' .
+            '<th>Messpunkt</th>' .
+            '<th>Diff</th>' .
+            '<th>Cumulative</th>' .
+            '</tr>' . "\n";
 
         foreach ($result as $key => $data) {
-            $output .= '<tr><td>'.$data[0].'</td>'.
-                       '<td>'.\round(($key ? $data[1] - $result[$key - 1][1] : '0'), 5)
-                       .'</td>'.
-                       '<td>'.\round(($data[1] - $result[0][1]), 5).'</td></tr>'."\n";
+            $output .= '<tr><td>' . $data[0] . '</td>' .
+                '<td>' . round(($key ? $data[1] - $result[$key - 1][1] : '0'), 5)
+                . '</td>' .
+                '<td>' . round(($data[1] - $result[0][1]), 5) . '</td></tr>' . "\n";
         }
 
         $output .= '</table>';
@@ -88,16 +92,16 @@ class Timer
      *
      * @return array
      */
-    public function resultConsole()
+    public function resultConsole(): array
     {
         $result = $this->result();
 
         foreach ($result as $key => $data) {
-            $data[2] = \round(
+            $data[2] = round(
                 ($key ? $data[1] - $result[$key - 1][1] : '0'),
                 5
             ); // Diff
-            $data[3] = \round(($data[1] - $result[0][1]), 5); // Cumulative
+            $data[3] = round(($data[1] - $result[0][1]), 5); // Cumulative
 
             $result[$key] = $data;
         }
