@@ -3,7 +3,7 @@
   "type": "library",
   "description": "Helper libraries from and for QUIQQER.",
   "license": "LGPL-3.0+",
-  "version": "1.23.4",
+  "version": "1.23.5",
   "authors": [
     {
       "name": "Henning Leutz",
