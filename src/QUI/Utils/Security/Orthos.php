@@ -163,12 +163,16 @@ class Orthos
     /**
      * Removes HTML from the text
      *
-     * @param string $text
+     * @param string|null $text
      *
      * @return string
      */
-    public static function removeHTML(string $text): string
+    public static function removeHTML(?string $text): string
     {
+        if ($text === null) {
+            return '';
+        }
+
         return strip_tags($text);
     }
 

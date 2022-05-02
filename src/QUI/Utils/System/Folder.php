@@ -85,8 +85,9 @@ class Folder
      */
     protected static function calculateFolderSize(string $path, bool $doNotCache = false): int
     {
-        $path       = self::sanitizePath($path);
-        $folderSize = 0;
+        $path        = self::sanitizePath($path);
+        $folderSize  = 0;
+        $maxExecTime = ini_get('max_execution_time');
 
         // Sum up all file sizes
         if ($path !== '' && file_exists($path)) {
@@ -113,7 +114,7 @@ class Folder
 
             // Reset the time limit to it's default value.
             // This ensures that following code execution doesn't timeout after two seconds.
-            set_time_limit(ini_get('max_execution_time'));
+            set_time_limit($maxExecTime);
         }
 
         if ($doNotCache) {
