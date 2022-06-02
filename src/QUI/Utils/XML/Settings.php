@@ -256,6 +256,7 @@ class Settings
             'name'    => $Category->getAttribute('name'),
             'index'   => $Category->getAttribute('index'),
             'require' => $Category->getAttribute('require'),
+            'click'   => $Category->getAttribute('click'),
             'title'   => ''
         ];
 
