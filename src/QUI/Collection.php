@@ -8,7 +8,6 @@ namespace QUI;
 
 use ArrayAccess;
 use ArrayIterator;
-
 use IteratorAggregate;
 
 use function array_filter;

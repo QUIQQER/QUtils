@@ -111,6 +111,10 @@ class ArrayHelper
             return [];
         }
 
+        if ($array === null) {
+            return [];
+        }
+
         if (!is_array($array)) {
             $array = explode($delimiter, $array);
         }
