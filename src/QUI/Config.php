@@ -13,6 +13,8 @@ use function file_exists;
 use function fopen;
 use function fwrite;
 use function is_array;
+use function is_numeric;
+use function is_string;
 use function is_writeable;
 use function json_encode;
 use function parse_ini_file;
@@ -329,12 +331,20 @@ class Config
     /**
      * Delete line breaks
      *
-     * @param string $value
+     * @param mixed $value
      *
      * @return string
      */
-    protected function clean(string $value): string
+    protected function clean($value): string
     {
+        if (is_numeric($value)) {
+            return (string)$value;
+        }
+
+        if (!is_string($value)) {
+            return '';
+        }
+
         $value = str_replace(["\r\n", "\n", "\r"], '', $value);
         $value = str_replace('"', '\"', $value);
 

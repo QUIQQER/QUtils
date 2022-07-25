@@ -401,7 +401,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      *
      * @deprecated Use append($Child, $offset) instead
      */
-    public function offsetSet($offset, $Child)
+    public function offsetSet($offset, $Child): void
     {
         $this->append($Child, $offset);
     }
@@ -409,7 +409,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     /**
      * @param mixed $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->children[$offset]);
     }
