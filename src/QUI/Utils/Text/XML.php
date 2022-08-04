@@ -1231,7 +1231,7 @@ class XML
                     $default = $defaults[$section][$key];
                 }
 
-                if (empty($value) && $value !== 0 && $value !== '0') {
+                if (!isset($value)) {
                     $value = $default['default'];
                 }
 
