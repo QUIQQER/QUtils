@@ -13,6 +13,7 @@ use function file_exists;
 use function fopen;
 use function fwrite;
 use function is_array;
+use function is_bool;
 use function is_numeric;
 use function is_string;
 use function is_writeable;
@@ -337,6 +338,10 @@ class Config
      */
     protected function clean($value): string
     {
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+
         if (is_numeric($value)) {
             return (string)$value;
         }
