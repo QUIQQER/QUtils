@@ -6,6 +6,9 @@
 
 namespace QUI\Utils;
 
+use DateTimeInterface;
+use IntlDateFormatter;
+use InvalidArgumentException;
 use QUI;
 use QUI\Exception;
 
@@ -58,8 +61,6 @@ if (!function_exists('fnmatch')) {
  * Helper for string handling
  *
  * @author  www.pcsg.de (Henning Leutz
- *
- * @todo    doku translation
  */
 class StringHelper
 {
@@ -75,19 +76,19 @@ class StringHelper
      *
      * @param string $string
      */
-    public function __construct($string)
+    public function __construct(string $string)
     {
-        $this->string = (string)$string;
+        $this->string = $string;
     }
 
     /**
-     * Wandelt JavaScript Strings für PHP in richtige Strings um
+     * Converts JavaScript strings to real strings for PHP
      *
      * @param string|boolean $value
      *
      * @return string
      */
-    public static function JSString($value)
+    public static function JSString($value): string
     {
         if (is_string($value)) {
             return $value;
@@ -97,7 +98,7 @@ class StringHelper
     }
 
     /**
-     * Verinfachtes Pathinfo
+     * Simplified Pathinfo
      *
      * @param string $path - path to file
      * @param integer|bool $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
@@ -133,7 +134,7 @@ class StringHelper
     }
 
     /**
-     * Entfernt doppelte Slashes und macht einen draus
+     * Removes duplicate slashes and makes it one
      * // -> /
      * /// -> /
      *
@@ -141,20 +142,20 @@ class StringHelper
      *
      * @return string
      */
-    public static function replaceDblSlashes($path)
+    public static function replaceDblSlashes(string $path): string
     {
         return preg_replace('/[\/]{2,}/', "/", $path);
     }
 
     /**
-     * Entfernt Zeilenumbrüche
+     * Removes line breaks
      *
      * @param string $text
-     * @param string $replace - Mit was ersetzt werden soll
+     * @param string $replace - With what should be replaced
      *
      * @return string
      */
-    public static function removeLineBreaks($text, $replace = '')
+    public static function removeLineBreaks(string $text, string $replace = ''): string
     {
         return str_replace(
             ["\r\n", "\n\r", "\n", "\r"],
@@ -164,13 +165,13 @@ class StringHelper
     }
 
     /**
-     * Löscht doppelte hintereinander folgende Zeichen in einem String
+     * Deletes duplicate consecutive characters in a string
      *
      * @param string $str
      *
      * @return string
      */
-    public static function removeDblSigns($str)
+    public static function removeDblSigns(string $str): string
     {
         $_str = $str;
         $_str = utf8_decode($_str);
@@ -200,13 +201,13 @@ class StringHelper
     }
 
     /**
-     * Entfernt den letzten Slash am Ende, wenn das letzte Zeichen ein Slash ist
+     * Removes the last slash at the end if the last character is a slash
      *
      * @param string $str
      *
      * @return string
      */
-    public static function removeLastSlash($str)
+    public static function removeLastSlash(string $str): string
     {
         return preg_replace(
             '/\/($|\?|\#)/U',
@@ -216,49 +217,49 @@ class StringHelper
     }
 
     /**
-     * Erstes Zeichen eines Wortes gross schreiben alle anderen klein
+     * Capitalize first character of a word all others lowercase
      *
      * @param string $str
      *
      * @return string
      */
-    public static function firstToUpper($str)
+    public static function firstToUpper(string $str): string
     {
         return ucfirst(self::toLower($str));
     }
 
     /**
-     * Schreibt den String klein
+     * Writes the string small
      *
      * @param string $string
      *
      * @return string
      */
-    public static function toLower($string)
+    public static function toLower(string $string): string
     {
         return mb_strtolower($string);
     }
 
     /**
-     * Schreibt den String gross
+     * Writes the string in capital letters
      *
      * @param string $string
      *
      * @return string
      */
-    public static function toUpper($string)
+    public static function toUpper(string $string): string
     {
         return mb_strtoupper($string);
     }
 
     /**
-     * Prüft ob der String ein Echter UTF8 String ist
+     * Checks if the string is a real UTF8 string
      *
      * @param string $str
      *
      * @return boolean
      */
-    public static function isValidUTF8($str)
+    public static function isValidUTF8(string $str): bool
     {
         $test1 = false;
         $test2 = false;
@@ -296,13 +297,13 @@ class StringHelper
     }
 
     /**
-     * Gibt einen String als UTF8 String zurück
+     * Returns a string as UTF8 string
      *
      * @param string $str
      *
      * @return string
      */
-    public static function toUTF8($str)
+    public static function toUTF8(string $str): string
     {
         if (!self::isValidUTF8($str)) {
             return utf8_encode($str);
@@ -312,13 +313,13 @@ class StringHelper
     }
 
     /**
-     * Erster Satz bekommen
+     * Get first set
      *
      * @param string $text
      *
      * @return string
      */
-    public static function sentence($text)
+    public static function sentence(string $text): string
     {
         $d = strpos($text, '.');
         $a = strpos($text, '!');
@@ -348,10 +349,10 @@ class StringHelper
     }
 
     /**
-     * Parset einen String zu einem richtigen Float Wert
+     * Parse a string to a real float value
      * From php.net
      *
-     * @param string $str
+     * @param string|float|mixed $str
      *
      * @return float
      */
@@ -391,11 +392,11 @@ class StringHelper
     }
 
     /**
-     * Wandelt eine Zahl in das passende Format für eine Datenbank um
+     * Converts a number into the appropriate format for a database
      *
-     * @param string $value
+     * @param mixed $value
      *
-     * @return number
+     * @return array|string|string[]
      */
     public static function number2db($value)
     {
@@ -416,12 +417,13 @@ class StringHelper
 
     /**
      * Enter description here...
-     *
      * @param array $tags
      * @param integer $start
      * @param integer $min
      *
      * @return string
+     * @deprecated
+     *
      */
     public static function tagCloud($tags, $start = 26, $min = 10)
     {
@@ -451,13 +453,13 @@ class StringHelper
     }
 
     /**
-     * Einzelnen Attribute einer URL bekommen
+     * Get individual attributes of a URL
      *
      * @param string $url - ?id=1&project=demo
      *
      * @return array
      */
-    public static function getUrlAttributes($url)
+    public static function getUrlAttributes(string $url): array
     {
         $url = str_replace('&amp;', '&', $url);
         $url = explode('?', $url);
@@ -471,7 +473,7 @@ class StringHelper
 
         foreach ($att_ as $a) {
             $item          = explode('=', $a);
-            $att[$item[0]] = isset($item[1]) ? $item[1] : null;
+            $att[$item[0]] = $item[1] ?? null;
         }
 
         return $att;
@@ -487,15 +489,15 @@ class StringHelper
      *
      * @author "thomas at gielfeldt dot com" on php.net (https://www.php.net/manual/de/function.parse-url.php#106731)
      */
-    public static function unparseUrl($parsedUrl)
+    public static function unparseUrl($parsedUrl): string
     {
         $scheme   = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
-        $host     = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+        $host     = $parsedUrl['host'] ?? '';
         $port     = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-        $user     = isset($parsedUrl['user']) ? $parsedUrl['user'] : '';
+        $user     = $parsedUrl['user'] ?? '';
         $pass     = isset($parsedUrl['pass']) ? ':' . $parsedUrl['pass'] : '';
         $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+        $path     = $parsedUrl['path'] ?? '';
         $query    = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
         $fragment = isset($parsedUrl['fragment']) ? '#' . $parsedUrl['fragment'] : '';
 
@@ -504,13 +506,13 @@ class StringHelper
 
 
     /**
-     * Gibt die Attribute eines HTML Strings zurück
+     * Returns the attributes of an HTML string
      *
      * @param string $html - <img * />
      *
      * @return array
      */
-    public static function getHTMLAttributes($html)
+    public static function getHTMLAttributes(string $html): array
     {
         $cleaned = preg_replace('/\s+=\s+/', '=', $html);
 
@@ -529,13 +531,13 @@ class StringHelper
     }
 
     /**
-     * Gibt die Attribute eines HTML Styles zurück
+     * Returns the attributes of an HTML style
      *
      * @param string $style - "width:200px; height:200px"
      *
      * @return array
      */
-    public static function splitStyleAttributes($style)
+    public static function splitStyleAttributes(string $style): array
     {
         $attributes = [];
         $style      = trim($style);
@@ -566,7 +568,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function replaceLast($search, $replace, $string)
+    public static function replaceLast(string $search, string $replace, string $string): string
     {
         if (strpos($string, $search) === false) {
             return $string;
@@ -591,7 +593,7 @@ class StringHelper
      *
      * @return boolean
      */
-    public static function match($pattern, $string, $flags = 0)
+    public static function match(string $pattern, string $string, int $flags = 0): bool
     {
         if (function_exists('fnmatch')) {
             return fnmatch($pattern, $string, $flags);
@@ -648,7 +650,7 @@ class StringHelper
      * @param string $subject
      * @return string
      */
-    public static function strReplaceFromEnd($search, $replace, $subject)
+    public static function strReplaceFromEnd(string $search, string $replace, string $subject): string
     {
         $pos = strrpos($subject, $search);
 
@@ -657,5 +659,174 @@ class StringHelper
         }
 
         return $subject;
+    }
+
+    /**
+     * strftime() becomes deprecated with php8 and removed in php9
+     * this method is a workaround for it
+     *
+     * - IntlDateFormatter is used as a workaround
+     *
+     * thank you to: https://gist.github.com/bohwaz/42fc223031e2b2dd2585aab159a20f30
+     *
+     * @param string $format
+     * @param ?int|?string $timestamp
+     * @return string
+     */
+    public static function strftime(string $format, $timestamp = null): string
+    {
+        if (null === $timestamp) {
+            $timestamp = new \DateTime;
+        } elseif (is_numeric($timestamp)) {
+            $timestamp = date_create('@' . $timestamp);
+
+            if ($timestamp) {
+                $timestamp->setTimezone(new \DateTimezone(date_default_timezone_get()));
+            }
+        } elseif (is_string($timestamp)) {
+            $timestamp = date_create($timestamp);
+        }
+
+        if (!($timestamp instanceof DateTimeInterface)) {
+            throw new InvalidArgumentException(
+                '$timestamp argument is neither a valid UNIX timestamp, a valid date-time string or a DateTime object.'
+            );
+        }
+
+        $locale = QUI::getLocale()->getLocalesByLang(QUI::getLocale()->getCurrent());
+
+        $intlFormats = [
+            '%a' => 'EEE',
+            '%A' => 'EEEE',
+            '%b' => 'MMM',
+            '%B' => 'MMMM',
+            '%h' => 'MMM'
+        ];
+
+        $intlFormatter = function (DateTimeInterface $timestamp, string $format) use ($intlFormats, $locale) {
+            $tz        = $timestamp->getTimezone();
+            $date_type = IntlDateFormatter::FULL;
+            $time_type = IntlDateFormatter::FULL;
+            $pattern   = '';
+
+            // %c = Preferred date and time stamp based on locale
+            // Example: Tue Feb 5 00:45:10 2009 for February 5, 2009 at 12:45:10 AM
+            if ($format == '%c') {
+                $date_type = IntlDateFormatter::LONG;
+                $time_type = IntlDateFormatter::SHORT;
+            } elseif ($format == '%x') {
+                // %x = Preferred date representation based on locale, without the time
+                // Example: 02/05/09 for February 5, 2009
+                $date_type = IntlDateFormatter::SHORT;
+                $time_type = IntlDateFormatter::NONE;
+            } elseif ($format == '%X') {
+                // Localized time format
+                $date_type = IntlDateFormatter::NONE;
+                $time_type = IntlDateFormatter::MEDIUM;
+            } else {
+                $pattern = $intlFormats[$format];
+            }
+
+            return (new IntlDateFormatter($locale, $date_type, $time_type, $tz, null, $pattern))->format($timestamp);
+        };
+
+        // Same order as https://www.php.net/manual/en/function.strftime.php
+        $translationTable = [
+            // Day
+            '%a' => $intlFormatter,
+            '%A' => $intlFormatter,
+            '%d' => 'd',
+            '%e' => function ($timestamp) {
+                return sprintf('% 2u', $timestamp->format('j'));
+            },
+            '%j' => function ($timestamp) {
+                // Day number in year, 001 to 366
+                return sprintf('%03d', $timestamp->format('z') + 1);
+            },
+            '%u' => 'N',
+            '%w' => 'w',
+
+            // Week
+            '%U' => function ($timestamp) {
+                // Number of weeks between date and first Sunday of year
+                $day = new \DateTime(sprintf('%d-01 Sunday', $timestamp->format('Y')));
+                return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
+            },
+            '%V' => 'W',
+            '%W' => function ($timestamp) {
+                // Number of weeks between date and first Monday of year
+                $day = new \DateTime(sprintf('%d-01 Monday', $timestamp->format('Y')));
+                return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
+            },
+
+            // Month
+            '%b' => $intlFormatter,
+            '%B' => $intlFormatter,
+            '%h' => $intlFormatter,
+            '%m' => 'm',
+
+            // Year
+            '%C' => function ($timestamp) {
+                // Century (-1): 19 for 20th century
+                return floor($timestamp->format('Y') / 100);
+            },
+            '%g' => function ($timestamp) {
+                return substr($timestamp->format('o'), -2);
+            },
+            '%G' => 'o',
+            '%y' => 'y',
+            '%Y' => 'Y',
+
+            // Time
+            '%H' => 'H',
+            '%k' => function ($timestamp) {
+                return sprintf('% 2u', $timestamp->format('G'));
+            },
+            '%I' => 'h',
+            '%l' => function ($timestamp) {
+                return sprintf('% 2u', $timestamp->format('g'));
+            },
+            '%M' => 'i',
+            '%p' => 'A', // AM PM (this is reversed on purpose!)
+            '%P' => 'a', // am pm
+            '%r' => 'h:i:s A', // %I:%M:%S %p
+            '%R' => 'H:i', // %H:%M
+            '%S' => 's',
+            '%T' => 'H:i:s', // %H:%M:%S
+            '%X' => $intlFormatter, // Preferred time representation based on locale, without the date
+
+            // Timezone
+            '%z' => 'O',
+            '%Z' => 'T',
+
+            // Time and Date Stamps
+            '%c' => $intlFormatter,
+            '%D' => 'm/d/Y',
+            '%F' => 'Y-m-d',
+            '%s' => 'U',
+            '%x' => $intlFormatter,
+        ];
+
+        $out = preg_replace_callback('/(?<!%)(%[a-zA-Z])/', function ($match) use ($translationTable, $timestamp) {
+            if ($match[1] == '%n') {
+                return "\n";
+            } elseif ($match[1] == '%t') {
+                return "\t";
+            }
+
+            if (!isset($translationTable[$match[1]])) {
+                throw new InvalidArgumentException(sprintf('Format "%s" is unknown in time format', $match[1]));
+            }
+
+            $replace = $translationTable[$match[1]];
+
+            if (is_string($replace)) {
+                return $timestamp->format($replace);
+            } else {
+                return $replace($timestamp, $match[1]);
+            }
+        }, $format);
+
+        return str_replace('%%', '%', $out);
     }
 }
