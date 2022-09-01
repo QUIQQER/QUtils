@@ -695,15 +695,15 @@ class StringHelper
 
         $locale = QUI::getLocale()->getLocalesByLang(QUI::getLocale()->getCurrent());
 
-        $intl_formats = [
-            '%a' => 'EEE', // An abbreviated textual representation of the day	Sun through Sat
-            '%A' => 'EEEE', // A full textual representation of the day	Sunday through Saturday
-            '%b' => 'MMM', // Abbreviated month name, based on the locale	Jan through Dec
-            '%B' => 'MMMM', // Full month name, based on the locale	January through December
-            '%h' => 'MMM' // Abbreviated month name, based on the locale (an alias of %b)	Jan through Dec
+        $intlFormats = [
+            '%a' => 'EEE',
+            '%A' => 'EEEE',
+            '%b' => 'MMM',
+            '%B' => 'MMMM',
+            '%h' => 'MMM'
         ];
 
-        $intl_formatter = function (DateTimeInterface $timestamp, string $format) use ($intl_formats, $locale) {
+        $intlFormatter = function (DateTimeInterface $timestamp, string $format) use ($intlFormats, $locale) {
             $tz        = $timestamp->getTimezone();
             $date_type = IntlDateFormatter::FULL;
             $time_type = IntlDateFormatter::FULL;
@@ -724,17 +724,17 @@ class StringHelper
                 $date_type = IntlDateFormatter::NONE;
                 $time_type = IntlDateFormatter::MEDIUM;
             } else {
-                $pattern = $intl_formats[$format];
+                $pattern = $intlFormats[$format];
             }
 
             return (new IntlDateFormatter($locale, $date_type, $time_type, $tz, null, $pattern))->format($timestamp);
         };
 
         // Same order as https://www.php.net/manual/en/function.strftime.php
-        $translation_table = [
+        $translationTable = [
             // Day
-            '%a' => $intl_formatter,
-            '%A' => $intl_formatter,
+            '%a' => $intlFormatter,
+            '%A' => $intlFormatter,
             '%d' => 'd',
             '%e' => function ($timestamp) {
                 return sprintf('% 2u', $timestamp->format('j'));
@@ -760,9 +760,9 @@ class StringHelper
             },
 
             // Month
-            '%b' => $intl_formatter,
-            '%B' => $intl_formatter,
-            '%h' => $intl_formatter,
+            '%b' => $intlFormatter,
+            '%B' => $intlFormatter,
+            '%h' => $intlFormatter,
             '%m' => 'm',
 
             // Year
@@ -793,32 +793,32 @@ class StringHelper
             '%R' => 'H:i', // %H:%M
             '%S' => 's',
             '%T' => 'H:i:s', // %H:%M:%S
-            '%X' => $intl_formatter, // Preferred time representation based on locale, without the date
+            '%X' => $intlFormatter, // Preferred time representation based on locale, without the date
 
             // Timezone
             '%z' => 'O',
             '%Z' => 'T',
 
             // Time and Date Stamps
-            '%c' => $intl_formatter,
+            '%c' => $intlFormatter,
             '%D' => 'm/d/Y',
             '%F' => 'Y-m-d',
             '%s' => 'U',
-            '%x' => $intl_formatter,
+            '%x' => $intlFormatter,
         ];
 
-        $out = preg_replace_callback('/(?<!%)(%[a-zA-Z])/', function ($match) use ($translation_table, $timestamp) {
+        $out = preg_replace_callback('/(?<!%)(%[a-zA-Z])/', function ($match) use ($translationTable, $timestamp) {
             if ($match[1] == '%n') {
                 return "\n";
             } elseif ($match[1] == '%t') {
                 return "\t";
             }
 
-            if (!isset($translation_table[$match[1]])) {
+            if (!isset($translationTable[$match[1]])) {
                 throw new InvalidArgumentException(sprintf('Format "%s" is unknown in time format', $match[1]));
             }
 
-            $replace = $translation_table[$match[1]];
+            $replace = $translationTable[$match[1]];
 
             if (is_string($replace)) {
                 return $timestamp->format($replace);
