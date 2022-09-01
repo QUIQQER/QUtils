@@ -714,14 +714,13 @@ class StringHelper
             if ($format == '%c') {
                 $date_type = IntlDateFormatter::LONG;
                 $time_type = IntlDateFormatter::SHORT;
-            }
-            // %x = Preferred date representation based on locale, without the time
-            // Example: 02/05/09 for February 5, 2009
-            elseif ($format == '%x') {
+            } elseif ($format == '%x') {
+                // %x = Preferred date representation based on locale, without the time
+                // Example: 02/05/09 for February 5, 2009
                 $date_type = IntlDateFormatter::SHORT;
                 $time_type = IntlDateFormatter::NONE;
-            } // Localized time format
-            elseif ($format == '%X') {
+            } elseif ($format == '%X') {
+                // Localized time format
                 $date_type = IntlDateFormatter::NONE;
                 $time_type = IntlDateFormatter::MEDIUM;
             } else {
