@@ -1173,11 +1173,8 @@ class XML
      */
     public static function setConfigFromXml($file, $params)
     {
-        if (QUI::getUserBySession()->isSU() === false) {
-            throw new QUI\Exception(
-                'You have no rights to edit the configuration.'
-            );
-        }
+        QUI\Permissions\Permission::checkAdminUser();
+        QUI\Permissions\Permission::checkPermission('quiqqer.settings');
 
         // defaults prüfen
         $defaults = self::getConfigParamsFromXml($file);
