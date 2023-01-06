@@ -449,7 +449,7 @@ class Orthos
         $newPass = "";
         $string  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()[]{}?!$%&/=*+~,.;:<>-_";
 
-        mt_srand((double)microtime() * 1000000);
+        mt_srand((int)(microtime() * 1000000));
 
         for ($i = 1; $i <= $length; $i++) {
             $newPass .= substr($string, mt_rand(0, strlen($string) - 1), 1);
