@@ -946,7 +946,10 @@ class DB extends QUI\QDOM
                     $sql .= $key . ' IS NULL ';
                 } else {
                     if (!is_array($value)) {
-                        if (strpos($value, '`') !== false) {
+                        $last  = mb_substr($value, -1);
+                        $first = mb_substr($value, 0, 1);
+
+                        if ($first === '`' && $last === '`') {
                             $value = str_replace('.', '`.`', $value);
                         } else {
                             $prepare['wherev' . $prepareKey] = $value;
