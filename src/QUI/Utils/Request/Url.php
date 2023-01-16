@@ -81,7 +81,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new Exception('Fehler bei der Anfrage ' . $error);
+            throw new Exception('Fehler bei der Anfrage ' . $error . ' -> ' . $url);
         }
 
         curl_close($Curl);
@@ -134,7 +134,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new Exception('Fehler bei der Anfrage ' . $error);
+            throw new Exception('Fehler bei der Anfrage ' . $error . ' -> ' . $url);
         }
 
         curl_close($Curl);
