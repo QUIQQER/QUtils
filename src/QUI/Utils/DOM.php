@@ -476,7 +476,8 @@ class DOM
                     $Tab    = $Tabbar->getElementByName($name);
 
                     if ($Tab->getAttribute('template')) {
-                        $file = self::parseVar($Tab->getAttribute('template'));
+                        $file    = self::parseVar($Tab->getAttribute('template'));
+                        $current = QUI::getLocale()->getCurrent();
 
                         if (file_exists($file)) {
                             // site extra settings
@@ -497,10 +498,13 @@ class DOM
 
                             $Engine->assign($engineParams);
 
+                            $QUI = new QUI();
+                            $QUI::getLocale()->setCurrent($current);
+
                             $Engine->assign([
                                 'Site'    => $Object,
                                 'Project' => $Object->getProject(),
-                                'QUI'     => new QUI()
+                                'QUI'     => $QUI
                             ]);
 
                             return $Engine->fetch($file) . $extra;
