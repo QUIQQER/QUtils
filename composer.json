@@ -2,7 +2,7 @@
   "name": "quiqqer\/utils",
   "type": "library",
   "description": "Helper libraries from and for QUIQQER.",
-  "version": "1.25.1",
+  "version": "1.25.2",
   "license": "LGPL-3.0+",
   "authors": [
     {
