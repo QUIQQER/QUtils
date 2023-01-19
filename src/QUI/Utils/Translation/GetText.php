@@ -18,8 +18,6 @@ use function strlen;
 use function textdomain;
 use function trim;
 
-use const LC_ALL;
-
 /**
  * Bridge for gettext
  *
@@ -79,11 +77,7 @@ class GetText extends QUI\QDOM
             $lower = mb_strtolower($lang);
             $upper = mb_strtoupper($lang);
 
-            if ($lang === 'en') {
-                $this->setAttribute('locale', 'en_US');
-            } else {
-                $this->setAttribute('locale', $lower . '_' . $upper);
-            }
+            $this->setAttribute('locale', $lower . '_' . $upper);
 
             return;
         }
@@ -112,22 +106,16 @@ class GetText extends QUI\QDOM
     {
         //@todo Ganzes System auf die Aktuelle Sprache inkl. Dezimal etc..
 
-        $locale = $this->getAttribute('locale');
-
-        putenv("LANG=$locale.utf8");
-        putenv("LC_ALL=$locale.utf8");
-
         /*
         setlocale(
-            LC_ALL,
-            $locale . ".utf8",
-            $locale . ".UTF-8",
-            $locale . ".UTF8",
-            $locale . ".utf-8",
-            $locale
+            6,
+            $this->getAttribute('locale') .".UTF-8",
+            $this->getAttribute('locale') .".utf8",
+            $this->getAttribute('locale') .".UTF8",
+            $this->getAttribute('locale') .".utf-8",
+            $this->getAttribute('locale')
         );
-*/
-        $r = setlocale(LC_ALL, $locale . ".utf8");
+        */
 
         if (empty($this->getAttribute('domain'))) {
             QUI\System\Log::addWarning('Missing locale domain', [
