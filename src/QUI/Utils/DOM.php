@@ -50,7 +50,7 @@ class DOM
      *
      * @return QUI\QDOM
      */
-    public static function arrayToQDOM(array $array)
+    public static function arrayToQDOM(array $array): QUI\QDOM
     {
         $DOM = new QUI\QDOM();
         $DOM->setAttributes($array);
@@ -62,10 +62,10 @@ class DOM
      * Fügt DOM XML Tabs in eine Toolbar ein
      *
      * @param array|DOMNodeList $tabs
-     * @param QUI\Controls\Toolbar\Bar $Tabbar
-     * @param $plugin - optional
+     * @param QUI\Controls\Toolbar\Bar $TabBar
+     * @param string $plugin - optional
      */
-    public static function addTabsToToolbar($tabs, Toolbar\Bar $Tabbar, $plugin = '')
+    public static function addTabsToToolbar($tabs, Toolbar\Bar $TabBar, string $plugin = '')
     {
         foreach ($tabs as $Tab) {
             /* @var $Tab DOMElement */
@@ -152,7 +152,7 @@ class DOM
                 );
             }
 
-            $Tabbar->appendChild($ToolbarTab);
+            $TabBar->appendChild($ToolbarTab);
         }
     }
 
@@ -163,7 +163,7 @@ class DOM
      *
      * @return string
      */
-    public static function buttonDomToString(DOMNode $Button)
+    public static function buttonDomToString(DOMNode $Button): string
     {
         if ($Button->nodeName != 'button') {
             return '';
@@ -197,7 +197,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbTableDomToArray(DOMNode $Table)
+    public static function dbTableDomToArray(DOMNode $Table): array
     {
         $result = [
             'suffix'            => $Table->getAttribute('name'),
@@ -310,7 +310,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbFieldDomToArray(DOMNode $Field)
+    public static function dbFieldDomToArray(DOMNode $Field): array
     {
         $str = '';
         $str .= $Field->getAttribute('type');
@@ -364,7 +364,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbUniqueDomToArray(DOMNode $Unique)
+    public static function dbUniqueDomToArray(DOMNode $Unique): array
     {
         return [
             'unique' => explode(',', $Unique->nodeValue)
@@ -378,7 +378,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbIndexDomToArray(DOMNode $Index)
+    public static function dbIndexDomToArray(DOMNode $Index): array
     {
         return [
             'index' => [trim($Index->nodeValue)]
@@ -392,7 +392,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbAutoIncrementDomToArray(DOMNode $AI)
+    public static function dbAutoIncrementDomToArray(DOMNode $AI): array
     {
         return [
             'auto_increment' => trim($AI->nodeValue)
@@ -406,7 +406,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbAutoFullextDomToArray(DOMNode $Fulltext)
+    public static function dbAutoFullextDomToArray(DOMNode $Fulltext): array
     {
         return [
             'fulltext' => trim($Fulltext->nodeValue)
@@ -419,18 +419,18 @@ class DOM
      * @param DOMElement|DOMNode $DOMNode
      * @return array
      */
-    public static function getTabs(DOMElement $DOMNode)
+    public static function getTabs(DOMElement $DOMNode): array
     {
-        $tablist = $DOMNode->getElementsByTagName('tab');
+        $tabList = $DOMNode->getElementsByTagName('tab');
 
-        if (!$tablist->length) {
+        if (!$tabList->length) {
             return [];
         }
 
         $tabs = [];
 
-        for ($c = 0; $c < $tablist->length; $c++) {
-            $Tab = $tablist->item($c);
+        for ($c = 0; $c < $tabList->length; $c++) {
+            $Tab = $tabList->item($c);
 
             if ($Tab->nodeName == '#text') {
                 continue;
@@ -446,14 +446,14 @@ class DOM
      * HTML eines DOM Tabs
      *
      * @param string $name
-     * @param QUI\Projects\Project|string|QUI\Projects\Site|QUI\Projects\Site\Edit
-     *        $Object - string = path to user.xml File
+     * @param QUI\Projects\Project|string|QUI\Projects\Site|QUI\Projects\Site\Edit $Object - string = path to user.xml File
      *
      * @return string
      */
-    public static function getTabHTML($name, $Object, $engineParams = [])
+    public static function getTabHTML(string $name, $Object, $engineParams = []): string
     {
-        $tabs = [];
+        $tabs    = [];
+        $current = QUI::getLocale()->getCurrent();
 
         if (is_string($Object)) {
             if (file_exists($Object)) {
@@ -476,15 +476,14 @@ class DOM
                     $Tab    = $Tabbar->getElementByName($name);
 
                     if ($Tab->getAttribute('template')) {
-                        $file    = self::parseVar($Tab->getAttribute('template'));
-                        $current = QUI::getLocale()->getCurrent();
+                        $file = self::parseVar($Tab->getAttribute('template'));
 
                         if (file_exists($file)) {
                             // site extra settings
                             $extra = '';
 
                             if ($file == SYS_DIR . 'template/site/settings.html') {
-                                $extra = Utils::getExtraSettingsForSite($Object);
+                                $extra = Utils::getExtraSettingsForSite($Object, $current);
                             }
 
                             // generate html
@@ -539,16 +538,16 @@ class DOM
      *
      * @throws QUI\Exception
      */
-    public static function getButtonsFromWindow($Dom)
+    public static function getButtonsFromWindow($Dom): array
     {
-        $btnlist = $Dom->getElementsByTagName('categories');
+        $btnList = $Dom->getElementsByTagName('categories');
 
-        if (!$btnlist->length) {
+        if (!$btnList->length) {
             return [];
         }
 
         $result   = [];
-        $children = $btnlist->item(0)->childNodes;
+        $children = $btnList->item(0)->childNodes;
 
         for ($i = 0; $i < $children->length; $i++) {
             /* @var $Param DOMElement */
@@ -639,7 +638,7 @@ class DOM
      *
      * @return string|array
      */
-    public static function getTextFromNode(DOMNode $Node, $translate = true)
+    public static function getTextFromNode(DOMNode $Node, bool $translate = true)
     {
         $loc = $Node->getElementsByTagName('locale');
 
@@ -671,7 +670,7 @@ class DOM
      *
      * @return array
      */
-    public static function getWysiwygStyles(DOMDocument $Dom, $translate = true)
+    public static function getWysiwygStyles(DOMDocument $Dom, bool $translate = true): array
     {
         $Path   = new DOMXPath($Dom);
         $Styles = $Path->query("//wysiwyg/styles/style");
@@ -710,7 +709,7 @@ class DOM
      * @return string
      * @todo rewrite to flexbox table
      */
-    public static function groupDomToString(DOMNode $Group)
+    public static function groupDomToString(DOMNode $Group): string
     {
         if ($Group->nodeName != 'group') {
             return '';
@@ -747,7 +746,7 @@ class DOM
      *
      * @return string
      */
-    public static function getInnerBodyFromHTML($html)
+    public static function getInnerBodyFromHTML(string $html): string
     {
         return preg_replace('/(.*)<body>(.*)<\/body>(.*)/si', '$2', $html);
     }
@@ -760,7 +759,7 @@ class DOM
      *
      * @return string
      */
-    public static function getInnerHTML(DOMNode $Node)
+    public static function getInnerHTML(DOMNode $Node): string
     {
         $Dom      = new DOMDocument();
         $Children = $Node->childNodes;
@@ -921,7 +920,7 @@ class DOM
      *
      * @return array
      */
-    public static function parsePanelToArray(DOMNode $Node)
+    public static function parsePanelToArray(DOMNode $Node): array
     {
         if ($Node->nodeName != 'panel') {
             return [];
@@ -963,7 +962,7 @@ class DOM
      *
      * @return array
      */
-    public static function parsePermissionToArray(DOMNode $Node)
+    public static function parsePermissionToArray(DOMNode $Node): array
     {
         if ($Node->nodeName != 'permission') {
             return [];
@@ -1010,13 +1009,18 @@ class DOM
      * Wandelt ein Kategorie DomNode in entsprechendes HTML um
      *
      * @param DOMNode|DOMElement $Category
+     * @param string $current - current language
      *
      * @return string
      */
-    public static function parseCategoryToHTML($Category)
+    public static function parseCategoryToHTML($Category, string $current = ''): string
     {
         if (is_bool($Category)) {
             return '';
+        }
+
+        if (empty($current)) {
+            $current = QUI::getLocale()->getCurrent();
         }
 
         $children = $Category->childNodes;
@@ -1024,6 +1028,8 @@ class DOM
         if (!$children->length) {
             return '';
         }
+
+        $QUI = new QUI();
 
         try {
             $Engine = QUI::getTemplateManager()->getEngine(true);
@@ -1034,6 +1040,8 @@ class DOM
         $result = '';
 
         for ($c = 0; $c < $children->length; $c++) {
+            QUI::getLocale()->setCurrent($current);
+
             /* @var $Entry DOMElement */
             $Entry = $children->item($c);
 
@@ -1048,8 +1056,10 @@ class DOM
                 $file = self::parseVar($Entry->nodeValue);
 
                 if (file_exists($file)) {
+                    $QUI::getLocale()->setCurrent($current);
+
                     $Engine->assign([
-                        'QUI' => new QUI()
+                        'QUI' => $QUI
                     ]);
 
                     $result .= $Engine->fetch($file);
@@ -1135,8 +1145,10 @@ class DOM
                             $file = self::parseVar($Set->nodeValue);
 
                             if (file_exists($file)) {
+                                $QUI::getLocale()->setCurrent($current);
+
                                 $Engine->assign([
-                                    'QUI' => new QUI()
+                                    'QUI' => $QUI
                                 ]);
 
                                 $result .= $Engine->fetch($file);
@@ -1192,7 +1204,7 @@ class DOM
      *
      * @return string
      */
-    public static function inputDomToString(DOMNode $Input)
+    public static function inputDomToString(DOMNode $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -1314,7 +1326,7 @@ class DOM
      *
      * @return string
      */
-    public static function textareaDomToString(DOMNode $TextArea)
+    public static function textareaDomToString(DOMNode $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -1352,15 +1364,15 @@ class DOM
     /**
      * Parse config entries to an array
      *
-     * @param DOMNode|DOMNodeList $confs
+     * @param DOMNode|DOMNodeList $configurations
      *
      * @return array
      */
-    public static function parseConfs($confs)
+    public static function parseConfs($configurations): array
     {
         $result = [];
 
-        foreach ($confs as $Conf) {
+        foreach ($configurations as $Conf) {
             /* @var $Conf DOMElement */
             $type    = 'string';
             $default = '';
@@ -1396,7 +1408,7 @@ class DOM
      *
      * @return string
      */
-    public static function parseVar($value)
+    public static function parseVar(string $value): string
     {
         $replaces = [
             URL_BIN_DIR,
@@ -1461,7 +1473,7 @@ class DOM
      *
      * @return string
      */
-    public static function selectDomToString(DOMNode $Select)
+    public static function selectDomToString(DOMNode $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';
