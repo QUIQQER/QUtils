@@ -27,7 +27,9 @@ use function is_bool;
 use function is_string;
 use function mb_strpos;
 use function preg_replace;
+use function str_contains;
 use function str_replace;
+use function strlen;
 use function strpos;
 use function substr;
 use function time;
@@ -350,7 +352,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbPrimaryDomToArray(DOMNode $Primary)
+    public static function dbPrimaryDomToArray(DOMNode $Primary): array
     {
         return [
             'primary' => explode(',', $Primary->nodeValue)
@@ -1410,6 +1412,10 @@ class DOM
      */
     public static function parseVar(string $value): string
     {
+        if (strlen($value) === 1 && str_contains($value, ' ')) {
+            return ' ';
+        }
+
         $replaces = [
             URL_BIN_DIR,
             URL_OPT_DIR,
