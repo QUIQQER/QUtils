@@ -595,6 +595,10 @@ class XML
                     }
 
                     $params[$Translation->nodeName] = DOM::parseVar($Translation->nodeValue);
+
+                    if (empty($params[$Translation->nodeName])) {
+                        $params[$Translation->nodeName] = ' ';
+                    }
                 }
 
                 $locales['locales'][] = $params;
