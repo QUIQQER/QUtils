@@ -15,6 +15,7 @@ use function class_exists;
 use function escapeshellarg;
 use function escapeshellcmd;
 use function explode;
+use function floatval;
 use function htmlspecialchars;
 use function htmlspecialchars_decode;
 use function implode;
@@ -440,7 +441,7 @@ class Orthos
      *
      * @return string
      */
-    public static function getPassword($length = 10): string
+    public static function getPassword(int $length = 10): string
     {
         if (!is_int($length)) {
             $length = 10;
@@ -449,7 +450,10 @@ class Orthos
         $newPass = "";
         $string  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()[]{}?!$%&/=*+~,.;:<>-_";
 
-        mt_srand((int)(microtime() * 1000000));
+        $mt = microtime();
+        $mt = floatval($mt);
+        $mt = (int)($mt * 1000000);
+        mt_srand($mt);
 
         for ($i = 1; $i <= $length; $i++) {
             $newPass .= substr($string, mt_rand(0, strlen($string) - 1), 1);
@@ -461,11 +465,11 @@ class Orthos
     /**
      * Checks whether the mail address is a disposable spam mail address.
      *
-     * @param string $mail - E-Mail Adresse
+     * @param string $mail - E-Mail Address
      *
      * @return boolean
      */
-    public static function isSpamMail($mail): bool
+    public static function isSpamMail(string $mail): bool
     {
         $split = explode('@', $mail);
 
