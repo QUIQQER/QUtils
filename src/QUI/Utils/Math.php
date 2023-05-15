@@ -36,7 +36,7 @@ class Math
         if ($amount == 0 || $total == 0) {
             return 0;
         }
-        
+
         $result = number_format(($amount * 100) / $total, $decimals);
         $result = floatval($result);
 
@@ -52,7 +52,7 @@ class Math
      *
      * @return array
      */
-    public static function resize($var1, $var2, $max)
+    public static function resize(int $var1, int $var2, int $max): array
     {
         if ($var1 > $max) {
             $resize_by_percent = ($max * 100) / $var1;
