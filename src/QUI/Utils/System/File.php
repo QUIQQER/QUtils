@@ -999,24 +999,28 @@ class File
                 continue;
             }
 
-            if ($only_files == true) {
-                if (is_file($folder . $file) && $order_by_date == false) {
+            if ($only_files) {
+                if (is_file($folder . $file) && !$order_by_date) {
                     $files[] = $file;
                 }
 
-                if (is_file($folder . $file) && $order_by_date == true) {
+                if (is_file($folder . $file) && $order_by_date) {
                     $files[filemtime($folder . $file)] = $file;
                 }
 
                 continue;
             }
 
-            if ($order_by_date == true) {
+            if ($order_by_date) {
                 $files[filemtime($folder . $file)] = $file;
                 continue;
             }
 
             $files[] = $file;
+        }
+
+        if ($order_by_date) {
+            ksort($files);
         }
 
         closedir($handle);
