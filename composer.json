@@ -1,6 +1,6 @@
 {
   "name": "quiqqer\/utils",
-  "type": "library",
+  "type": "quiqqer-plugin",
   "description": "Helper libraries from and for QUIQQER.",
   "license": "LGPL-3.0+",
   "authors": [

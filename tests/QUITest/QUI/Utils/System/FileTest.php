@@ -2,8 +2,8 @@
 
 namespace QUITest\QUI\Control;
 
-use QUI\Utils\System\File as File;
 use QUI\Utils\StringHelper as StringHelper;
+use QUI\Utils\System\File as File;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -51,7 +51,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testGetEndingByMimeType()
     {
-        $file  = dirname(__FILE__) . '/FileTest.txt';
+        $file = dirname(__FILE__) . '/FileTest.txt';
         $infos = File::getInfo($file);
 
         $this->assertEquals(
@@ -65,9 +65,12 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $content = file_get_contents(dirname(__FILE__) . '/FileTest.txt');
 
         $this->assertEquals(false, File::getFileContent('lalalala.la'));
-        $this->assertEquals($content, File::getFileContent(
-            dirname(__FILE__) . '/FileTest.txt'
-        ));
+        $this->assertEquals(
+            $content,
+            File::getFileContent(
+                dirname(__FILE__) . '/FileTest.txt'
+            )
+        );
     }
 
     public function testGetFileSize()

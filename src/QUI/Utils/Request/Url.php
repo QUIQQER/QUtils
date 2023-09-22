@@ -49,7 +49,7 @@ class Url
      */
     public static function curl(string $url, array $curlparams = [])
     {
-        $url  = str_replace(' ', '+', $url); // URL Fix
+        $url = str_replace(' ', '+', $url); // URL Fix
         $Curl = curl_init();
         curl_setopt($Curl, CURLOPT_URL, $url);
         curl_setopt($Curl, CURLOPT_RETURNTRANSFER, true);
@@ -155,7 +155,7 @@ class Url
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);
 
             $newUrl = curl_getinfo($Curl, CURLINFO_EFFECTIVE_URL);
-            $rch    = curl_copy_handle($Curl);
+            $rch = curl_copy_handle($Curl);
 
             curl_setopt($rch, CURLOPT_HEADER, true);
             curl_setopt($rch, CURLOPT_NOBODY, true);
@@ -198,8 +198,8 @@ class Url
     public static function isReachable($url): bool
     {
         $curlParams = [
-            CURLOPT_HEADER         => true,
-            CURLOPT_NOBODY         => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_NOBODY => true,
             CURLOPT_FOLLOWLOCATION => true
         ];
 

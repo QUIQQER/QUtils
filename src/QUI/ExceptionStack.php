@@ -32,11 +32,11 @@ class ExceptionStack extends Exception
 
         /* @var $Exc Exception */
         foreach ($this->list as $Exc) {
-            $message .= $Exc->getMessage()."\n";
+            $message .= $Exc->getMessage() . "\n";
         }
 
         $this->message = $message;
-        $this->code    = $Exception->getCode();
+        $this->code = $Exception->getCode();
     }
 
     /**
@@ -70,9 +70,9 @@ class ExceptionStack extends Exception
 
         /* @var $Exc Exception */
         foreach ($this->list as $Exc) {
-            $_context              = $Exc->getContext();
+            $_context = $Exc->getContext();
             $_context['Exception'] = $Exc->getMessage();
-            $_context['Trace']     = $Exc->getTrace();
+            $_context['Trace'] = $Exc->getTrace();
 
             $context[] = $_context;
         }

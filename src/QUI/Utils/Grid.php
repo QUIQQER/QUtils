@@ -53,7 +53,7 @@ class Grid extends QUI\QDOM
         }
 
         if ($this->getAttribute('page')) {
-            $page  = ($this->getAttribute('page') - 1);
+            $page = ($this->getAttribute('page') - 1);
             $start = $page * $this->getAttribute('max');
 
             $query['limit'] = $start . ',' . $this->getAttribute('max');
@@ -96,8 +96,8 @@ class Grid extends QUI\QDOM
         }
 
         return [
-            'data'  => $data,
-            'page'  => $this->getAttribute('page'),
+            'data' => $data,
+            'page' => $this->getAttribute('page'),
             'total' => $count
         ];
     }
@@ -114,12 +114,12 @@ class Grid extends QUI\QDOM
     public static function getResult($data, $page, $limit)
     {
         $count = count($data);
-        $end   = $page * $limit;
+        $end = $page * $limit;
         $start = $end - $limit;
 
         return [
-            'data'  => array_slice($data, $start, $limit),
-            'page'  => $page,
+            'data' => array_slice($data, $start, $limit),
+            'page' => $page,
             'total' => $count
         ];
     }

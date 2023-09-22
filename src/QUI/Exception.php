@@ -101,9 +101,9 @@ class Exception extends \Exception
     {
         $attributes = $this->attributes;
 
-        $attributes['code']    = $this->getCode();
+        $attributes['code'] = $this->getCode();
         $attributes['message'] = $this->getMessage();
-        $attributes['type']    = $this->getType();
+        $attributes['type'] = $this->getType();
         $attributes['context'] = $this->getContext();
 
         return $attributes;

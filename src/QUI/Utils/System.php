@@ -6,7 +6,6 @@
 
 namespace QUI\Utils;
 
-use QUI;
 use QUI\Utils\System\File;
 
 use function explode;
@@ -112,8 +111,8 @@ class System
 
         // 80% abfragen
         $usage = (int)(memory_get_usage() / 1024 / 1000); // in MB
-        $max   = (int)self::$memory_limit;
-        $_max  = $max / 100 * 80; // 80%
+        $max = (int)self::$memory_limit;
+        $_max = $max / 100 * 80; // 80%
 
         if ($_max < $usage) {
             return true;
@@ -131,13 +130,13 @@ class System
     {
         // CloudFlare network
         if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-            $_SERVER['REMOTE_ADDR']    = $_SERVER["HTTP_CF_CONNECTING_IP"];
+            $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
             $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
         }
 
-        $client  = null;
+        $client = null;
         $forward = null;
-        $remote  = null;
+        $remote = null;
 
         if (isset($_SERVER['HTTP_CLIENT_IP'])) {
             $client = $_SERVER['HTTP_CLIENT_IP'];
@@ -179,7 +178,7 @@ class System
 
         return !in_array($function, $disabledFunctions);
     }
-    
+
     /**
      * Returns if a given system function (e.g. 'ls') is callable (via exec).
      * Requires exec to be enabled. If it's not, false will always be returned.

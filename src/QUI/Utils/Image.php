@@ -66,7 +66,7 @@ class Image
             return false;
         }
 
-        $new_width  = (int)$new_width;
+        $new_width = (int)$new_width;
         $new_height = (int)$new_height;
 
         // Bild Informationen bekommen
@@ -79,10 +79,10 @@ class Image
 
         if ($new_height <= 0) {
             $resize_by_percent = ($new_width * 100) / $info['width'];
-            $new_height        = (int)\round(($info['height'] * $resize_by_percent) / 100);
+            $new_height = (int)\round(($info['height'] * $resize_by_percent) / 100);
         } elseif ($new_width <= 0) {
             $resize_by_percent = ($new_height * 100) / $info['height'];
-            $new_width         = (int)\round(($info['width'] * $resize_by_percent) / 100);
+            $new_width = (int)\round(($info['width'] * $resize_by_percent) / 100);
         }
 
         // no resize to make the image larger
@@ -101,7 +101,7 @@ class Image
 
             if (!\copy($original, $new_image)) {
                 throw new \QUI\Exception(
-                    'Copy failed '.$original.'-->'.$new_image
+                    'Copy failed ' . $original . '-->' . $new_image
                 );
             }
 
@@ -119,7 +119,8 @@ class Image
                     1
                 );
 
-                if (strpos($new_image, 'jpg') !== false
+                if (
+                    strpos($new_image, 'jpg') !== false
                     || strpos($new_image, 'JPG') !== false
                     || strpos($new_image, 'jpeg') !== false
                     || strpos($new_image, 'JPEG') !== false
@@ -134,19 +135,19 @@ class Image
                 return true;
             } catch (\Exception $e) {
                 throw new \QUI\Exception(
-                    'Resized width '.IMAGE_LIBRARY.' failed. '.$original.'-->'
-                    .$new_image.' ## WIDTH: '.$new_width.' HEIGHT:'.$new_height
-                    ."\n".$e->getMessage()
+                    'Resized width ' . IMAGE_LIBRARY . ' failed. ' . $original . '-->'
+                    . $new_image . ' ## WIDTH: ' . $new_width . ' HEIGHT:' . $new_height
+                    . "\n" . $e->getMessage()
                 );
             }
         } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') { // Image Magick - Console
-            $size        = \getimagesize($original);
-            $orig_width  = $size[0];
+            $size = \getimagesize($original);
+            $orig_width = $size[0];
             $orig_height = $size[1];
 
-            $exec = 'convert -size '.$orig_width.'x'.$orig_height.' \''.$original
-                    .'\' -thumbnail '.$new_width.'x'.$new_height.' \''.$new_image
-                    .'\'';
+            $exec = 'convert -size ' . $orig_width . 'x' . $orig_height . ' \'' . $original
+                . '\' -thumbnail ' . $new_width . 'x' . $new_height . ' \'' . $new_image
+                . '\'';
 
             \exec(\escapeshellcmd($exec), $return);
 
@@ -155,13 +156,13 @@ class Image
             }
 
             throw new \QUI\Exception(
-                'Resized width '.IMAGE_LIBRARY.' failed. '.$original.'-->'
-                .$new_image."\n\n ERROR:".print_r($return, true)."\n\nEXEC: "
-                .$exec
+                'Resized width ' . IMAGE_LIBRARY . ' failed. ' . $original . '-->'
+                . $new_image . "\n\n ERROR:" . print_r($return, true) . "\n\nEXEC: "
+                . $exec
             );
         } elseif (IMAGE_LIBRARY == 'GDLIB') { // GD Lib - sehr schlechte Quali
-            $size        = getimagesize($original);
-            $orig_width  = $size[0];
+            $size = getimagesize($original);
+            $orig_width = $size[0];
             $orig_height = $size[1];
 
             switch ($size[2]) {
@@ -193,8 +194,8 @@ class Image
                         return true;
                     } catch (\Exception $e) {
                         throw new \QUI\Exception(
-                            'Resized width '.IMAGE_LIBRARY.' failed. '.$original
-                            .'-->'.$new_image
+                            'Resized width ' . IMAGE_LIBRARY . ' failed. ' . $original
+                            . '-->' . $new_image
                         );
                     }
                     break;
@@ -227,8 +228,8 @@ class Image
                         return true;
                     } catch (\Exception $e) {
                         throw new \QUI\Exception(
-                            'Resized width '.IMAGE_LIBRARY.' failed. '.$original
-                            .'-->'.$new_image
+                            'Resized width ' . IMAGE_LIBRARY . ' failed. ' . $original
+                            . '-->' . $new_image
                         );
                     }
                     break;
@@ -261,14 +262,14 @@ class Image
                         return true;
                     } catch (\Exception $e) {
                         throw new \QUI\Exception(
-                            'Resized width '.IMAGE_LIBRARY.' failed. '.$original
-                            .'-->'.$new_image
+                            'Resized width ' . IMAGE_LIBRARY . ' failed. ' . $original
+                            . '-->' . $new_image
                         );
                     }
                     break;
 
                 default:
-                    throw new \QUI\Exception('Image not supported '.$original);
+                    throw new \QUI\Exception('Image not supported ' . $original);
             }
         } else {
             throw new \QUI\Exception('No Image Library');
@@ -294,16 +295,16 @@ class Image
         $left = 0
     ) {
         if (!file_exists($image)) {
-            throw new \QUI\Exception('Original Image not exist. '.$image);
+            throw new \QUI\Exception('Original Image not exist. ' . $image);
         }
 
         if (!file_exists($watermark)) {
-            throw new \QUI\Exception('Watersign Image not exist. '.$watermark);
+            throw new \QUI\Exception('Watersign Image not exist. ' . $watermark);
         }
 
         if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
             try {
-                $_image     = new \Imagick($image);
+                $_image = new \Imagick($image);
                 $_watermark = new \Imagick($watermark);
 
                 $_image->compositeImage(
@@ -326,7 +327,7 @@ class Image
             }
         } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') { // Image Magick - Console
             $exec
-                = 'composite -gravity center '.$watermark.' '.$image.' '.$image;
+                = 'composite -gravity center ' . $watermark . ' ' . $image . ' ' . $image;
             exec(escapeshellcmd($exec), $return);
 
             if (is_array($return) && count($return)) {
@@ -335,7 +336,7 @@ class Image
 
             throw new \QUI\Exception('PT_File::watermark(); Could not create');
         } elseif (IMAGE_LIBRARY == 'GDLIB') { // GD Lib - sehr schlechte Quali
-            $size   = getimagesize($image);
+            $size = getimagesize($image);
             $w_size = getimagesize($watermark);
 
             // TrueColor Fix
@@ -378,10 +379,10 @@ class Image
             }
 
             // Breite und Höhe des Bilds ermitteln
-            $width  = imagesx($old_image);
+            $width = imagesx($old_image);
             $height = imagesy($old_image);
 
-            $w_width  = imagesx($wasserzeichen);
+            $w_width = imagesx($wasserzeichen);
             $w_height = imagesy($wasserzeichen);
 
             // Neues Bild erstellen
@@ -432,7 +433,7 @@ class Image
      */
     public static function convertToTrueColor($image)
     {
-        $size   = getimagesize($image);
+        $size = getimagesize($image);
         $w_size = getimagesize($image);
 
         switch ($size[2]) {
@@ -463,7 +464,7 @@ class Image
                 //get the actual transparent color
                 $rgb = imagecolorsforindex($img, $original_transparency);
                 $original_transparency
-                     = ($rgb['red'] << 16) | ($rgb['green'] << 8) | $rgb['blue'];
+                    = ($rgb['red'] << 16) | ($rgb['green'] << 8) | $rgb['blue'];
                 //change the transparent color to black, since transparent goes to black anyways (no way to remove transparency in GIF)
                 imagecolortransparent($img, imagecolorallocate($img, 0, 0, 0));
             }
@@ -484,7 +485,8 @@ class Image
 
                 for ($x = 0; $x < $w; $x++) {
                     for ($y = 0; $y < $h; $y++) {
-                        if (imagecolorat($img, $x, $y)
+                        if (
+                            imagecolorat($img, $x, $y)
                             == $original_transparency
                         ) {
                             imagesetpixel($img, $x, $y, 127 << 24);
@@ -508,7 +510,7 @@ class Image
      */
     public static function roundCorner($original, $new, $params)
     {
-        $radius  = 10;
+        $radius = 10;
         $bgcolor = '#000000';
 
         if (isset($params['background'])) {
@@ -522,14 +524,14 @@ class Image
         $info = \QUI\Utils\System\File::getInfo($original);
 
         // bottomright
-        $width  = $info['width'];
+        $width = $info['width'];
         $height = $info['height'];
 
         // PHP ImageMagick
-        $_tmp   = explode('.', $original);
+        $_tmp = explode('.', $original);
         $_micro = str_replace([' ', '.'], '', microtime());
 
-        $tmp_image = str_replace('.'.end($_tmp), $_micro.'.png', $original);
+        $tmp_image = str_replace('.' . end($_tmp), $_micro . '.png', $original);
 
         if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
             try {
@@ -554,13 +556,13 @@ class Image
                 );
             }
         } elseif (IMAGE_LIBRARY == 'IMAGICK_SYSTEM') { // Image Magick - Console
-            $exec = 'convert '.$original.'
+            $exec = 'convert ' . $original . '
                 \( +clone  -threshold -1   -draw
-                    \'fill black polygon 0,0 0,'.$radius.' '.$radius
-                    .',0 fill white circle '.$radius.','.$radius.' '.$radius.',0\'
+                    \'fill black polygon 0,0 0,' . $radius . ' ' . $radius
+                . ',0 fill white circle ' . $radius . ',' . $radius . ' ' . $radius . ',0\'
                     \( +clone -flip \) -compose Multiply -composite
                     \( +clone -flop \) -compose Multiply -composite
-                \) +matte -compose CopyOpacity -composite '.$tmp_image;
+                \) +matte -compose CopyOpacity -composite ' . $tmp_image;
 
             $exec = str_replace(
                 ["\n", "\r", "\t"],
@@ -569,8 +571,8 @@ class Image
             );
             exec($exec, $return);
 
-            $exec = 'convert -fill "'.$bgcolor.'" -opaque none '.$tmp_image.' '
-                    .$new;
+            $exec = 'convert -fill "' . $bgcolor . '" -opaque none ' . $tmp_image . ' '
+                . $new;
             exec($exec, $return);
 
             unlink($tmp_image);
@@ -591,7 +593,7 @@ class Image
     public static function reflection($from, $to, $params = [])
     {
         if (!file_exists($from)) {
-            throw new \QUI\Exception('Originalbild existiert nicht: '.$from);
+            throw new \QUI\Exception('Originalbild existiert nicht: ' . $from);
         }
 
         // default
@@ -601,11 +603,11 @@ class Image
 
         if (IMAGE_LIBRARY == 'IMAGICK_PHP') { // Image Magick
             // PNG draus machen
-            $Im     = new \Imagick($from);
-            $width  = $Im->getImageWidth();
+            $Im = new \Imagick($from);
+            $width = $Im->getImageWidth();
             $height = $Im->getImageHeight();
 
-            $Trans = new \Imagick(PT_PATH.'types/trans.png');
+            $Trans = new \Imagick(PT_PATH . 'types/trans.png');
             $Trans->newImage($width, $height, new \ImagickPixel('none'), "png");
             $Trans->compositeImage($Im, \Imagick::COMPOSITE_SRCOVER, 0, 0);
             $Trans->writeImage($to);
@@ -652,7 +654,7 @@ class Image
 
             $Canvas = new Imagick();
 
-            $width  = $Im->getImageWidth() * 1.5;
+            $width = $Im->getImageWidth() * 1.5;
             $height = $Im->getImageHeight() * 1.5;
 
             $Canvas->newImage($width, $height, new ImagickPixel('none'), "png");

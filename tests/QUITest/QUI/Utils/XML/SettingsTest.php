@@ -30,10 +30,10 @@ class SettingsTest extends \PHPUnit_Framework_TestCase
 
         // combine test
         $html = $Settings->getCategoriesHtml(
-            array(
+            [
                 dirname(__FILE__) . '/settings.xml',
                 dirname(__FILE__) . '/settings1.xml'
-            ),
+            ],
             'first_settings'
         );
 

@@ -43,7 +43,7 @@ class Manager
      */
     public static function getCSS(): string
     {
-        $files  = self::getCSSFiles();
+        $files = self::getCSSFiles();
         $result = '';
 
         foreach ($files as $file) {
@@ -80,8 +80,8 @@ class Manager
      */
     public static function setCSSToHead(string $html): string
     {
-        $string  = $html;
-        $search  = '</head>';
+        $string = $html;
+        $search = '</head>';
         $replace = self::getCSS();
 
         return substr_replace(

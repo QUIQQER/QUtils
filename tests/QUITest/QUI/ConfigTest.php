@@ -19,7 +19,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testToArray()
     {
         $Config = $this->getConfig();
-        $array  = $Config->toArray();
+        $array = $Config->toArray();
 
         $this->assertEquals(1, $array['section1']['var1']);
         $this->assertEquals(1, $array['section1']['var2']);
@@ -30,8 +30,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testToJSON()
     {
         $Config = $this->getConfig();
-        $json   = $Config->toJSON();
-        $array  = json_decode($json, true);
+        $json = $Config->toJSON();
+        $array = json_decode($json, true);
 
         $this->assertEquals(1, $array['section1']['var1']);
         $this->assertEquals(1, $array['section1']['var2']);
@@ -41,7 +41,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSection()
     {
-        $Config  = $this->getConfig();
+        $Config = $this->getConfig();
         $section = $Config->getSection('section2');
 
         $this->assertEquals(3, $section['var3']);
@@ -110,9 +110,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(false, $Config->setSection('section3', 'string'));
 
-        $this->assertEquals(true, $Config->setSection(false, array(
-            'val1' => 'test'
-        )));
+        $this->assertEquals(
+            true,
+            $Config->setSection(false, [
+                'val1' => 'test'
+            ])
+        );
 
         $this->assertEquals('test', $Config->getValue(0, 'val1'));
     }
