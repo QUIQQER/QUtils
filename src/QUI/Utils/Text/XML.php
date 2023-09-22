@@ -80,8 +80,10 @@ class XML
                 return true;
             }
 
-            if (!class_exists('\QUI\Permissions\Permission') ||
-                !class_exists('\QUI')) {
+            if (
+                !class_exists('\QUI\Permissions\Permission') ||
+                !class_exists('\QUI')
+            ) {
                 return true;
             }
 
@@ -110,12 +112,12 @@ class XML
             }
 
             $params = [
-                'text'    => DOM::getTextFromNode($Item),
-                'locale'  => DOM::getTextFromNode($Item, false),
-                'name'    => $Item->getAttribute('name'),
-                'icon'    => DOM::parseVar($Item->getAttribute('icon')),
+                'text' => DOM::getTextFromNode($Item),
+                'locale' => DOM::getTextFromNode($Item, false),
+                'name' => $Item->getAttribute('name'),
+                'icon' => DOM::parseVar($Item->getAttribute('icon')),
                 'require' => $Item->getAttribute('require'),
-                'exec'    => $Item->getAttribute('exec'),
+                'exec' => $Item->getAttribute('exec'),
                 'onClick' => 'QUI.Menu.menuClick'
             ];
 
@@ -135,7 +137,8 @@ class XML
             }
 
             // check, if item already exist
-            if (!$Item->getAttribute('name')
+            if (
+                !$Item->getAttribute('name')
                 || !$Parent
                 || $Parent->getElementByName($Item->getAttribute('name'))
             ) {
@@ -171,7 +174,7 @@ class XML
      */
     public static function getConfigFromXml(string $file, bool $withCustomParams = false)
     {
-        $Dom      = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $settings = $Dom->getElementsByTagName('settings');
 
         if (!$settings->length) {
@@ -180,7 +183,7 @@ class XML
 
         /* @var $Settings DOMElement */
         $Settings = $settings->item(0);
-        $configs  = $Settings->getElementsByTagName('config');
+        $configs = $Settings->getElementsByTagName('config');
 
         if (!$configs->length) {
             return false;
@@ -270,11 +273,11 @@ class XML
      */
     public static function getConsoleToolsFromXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $tools = $Path->query("//console/tool");
-        $list  = [];
+        $list = [];
 
         if (!$tools->length) {
             return [];
@@ -312,11 +315,11 @@ class XML
      */
     public static function getWysiwygCSSFromXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $CSSList = $Path->query("//wysiwyg/css");
-        $files   = [];
+        $files = [];
 
         for ($i = 0; $i < $CSSList->length; $i++) {
             $files[] = $CSSList->item($i)->getAttribute('src');
@@ -334,7 +337,7 @@ class XML
      */
     public static function getDataBaseFromXml(string $file): array
     {
-        $Dom      = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $database = $Dom->getElementsByTagName('database');
 
         if (!$database->length) {
@@ -345,13 +348,13 @@ class XML
         $Database = $database->item(0);
 
         /* @var $Database DOMElement */
-        $global  = $Database->getElementsByTagName('global');
+        $global = $Database->getElementsByTagName('global');
         $project = $Database->getElementsByTagName('projects');
 
         // global
         if ($global && $global->length) {
             /* @var $Table DOMElement */
-            $Table  = $global->item(0);
+            $Table = $global->item(0);
             $tables = $Table->getElementsByTagName('table');
 
             for ($i = 0; $i < $tables->length; $i++) {
@@ -367,7 +370,7 @@ class XML
 
         // projects lang tables
         if ($project && $project->length) {
-            $Table  = $project->item(0);
+            $Table = $project->item(0);
             $tables = $Table->getElementsByTagName('table');
 
             for ($i = 0; $i < $tables->length; $i++) {
@@ -420,7 +423,7 @@ class XML
      */
     public static function getEventsFromXml(string $file): array
     {
-        $Dom    = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $events = $Dom->getElementsByTagName('events');
 
         if (!$events->length) {
@@ -429,7 +432,7 @@ class XML
 
         /* @var $Event DOMElement */
         $Event = $events->item(0);
-        $list  = $Event->getElementsByTagName('event');
+        $list = $Event->getElementsByTagName('event');
 
         $result = [];
 
@@ -449,10 +452,10 @@ class XML
      */
     public static function getSiteEventsFromXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
-        $types  = $Path->query("//site/types/type");
+        $types = $Path->query("//site/types/type");
         $result = [];
 
         $package = str_replace(OPT_DIR, '', dirname($file));
@@ -464,7 +467,7 @@ class XML
             foreach ($events as $Event) {
                 /* @var $Event DOMElement */
                 $result[] = [
-                    'on'   => $Event->getAttribute('on'),
+                    'on' => $Event->getAttribute('on'),
                     'fire' => $Event->getAttribute('fire'),
                     'type' => $package . ':' . $Type->getAttribute('type')
                 ];
@@ -484,9 +487,9 @@ class XML
      */
     public static function getLayoutsFromXml(string $file): array
     {
-        $Path    = new DOMXPath(self::getDomFromXml($file));
+        $Path = new DOMXPath(self::getDomFromXml($file));
         $layouts = $Path->query("//site/layouts/layout");
-        $result  = [];
+        $result = [];
 
         /* @var $Layout DOMElement */
         foreach ($layouts as $Layout) {
@@ -546,7 +549,7 @@ class XML
 
         /* @var $Locales DOMElement */
         $Locales = $locales->item(0);
-        $groups  = $Locales->getElementsByTagName('groups');
+        $groups = $Locales->getElementsByTagName('groups');
 
         if (!$groups->length) {
             return [];
@@ -556,12 +559,12 @@ class XML
 
         for ($g = 0, $glen = $groups->length; $g < $glen; $g++) {
             /* @var $Group DOMElement */
-            $Group      = $groups->item($g);
+            $Group = $groups->item($g);
             $localeList = $Group->getElementsByTagName('locale');
 
             $locales = [
-                'group'    => $Group->getAttribute('name'),
-                'locales'  => [],
+                'group' => $Group->getAttribute('name'),
+                'locales' => [],
                 'datatype' => $Group->getAttribute('datatype')
             ];
 
@@ -580,8 +583,8 @@ class XML
 
                 /* @var $Locale DOMElement */
                 $params = [
-                    'name'     => $Locale->getAttribute('name'),
-                    'html'     => (bool)$Locale->getAttribute('html'),
+                    'name' => $Locale->getAttribute('name'),
+                    'html' => (bool)$Locale->getAttribute('html'),
                     'priority' => $priority
                 ];
 
@@ -619,7 +622,7 @@ class XML
      */
     public static function getMenuItemsXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $menu = $Dom->getElementsByTagName('menu');
 
         if (!$menu->length) {
@@ -627,7 +630,7 @@ class XML
         }
 
         /* @var $Menu DOMElement */
-        $Menu  = $menu->item(0);
+        $Menu = $menu->item(0);
         $items = $Menu->getElementsByTagName('item');
 
         if (!$items->length) {
@@ -659,7 +662,7 @@ class XML
      */
     public static function getPackageFromXMLFile(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $package = $Path->query("//quiqqer/package");
@@ -668,8 +671,8 @@ class XML
             return [];
         }
 
-        $result     = [];
-        $Package    = $package->item(0);
+        $result = [];
+        $Package = $package->item(0);
         $childNodes = $Package->childNodes;
 
         foreach ($childNodes as $Node) {
@@ -696,7 +699,7 @@ class XML
         }
 
         // preview images
-        $previews          = $Path->query("//quiqqer/package/preview/image");
+        $previews = $Path->query("//quiqqer/package/preview/image");
         $result['preview'] = [];
 
         foreach ($previews as $Image) {
@@ -705,7 +708,7 @@ class XML
         }
 
         // provider
-        $provider           = $Path->query("//quiqqer/package/provider");
+        $provider = $Path->query("//quiqqer/package/provider");
         $result['provider'] = [];
 
         foreach ($provider as $Provider) {
@@ -715,7 +718,8 @@ class XML
                     continue;
                 }
 
-                if ($Node->nodeType === XML_TEXT_NODE
+                if (
+                    $Node->nodeType === XML_TEXT_NODE
                     || $Node->nodeName == '#text'
                     || !$Node->getAttribute('src')
                 ) {
@@ -742,7 +746,7 @@ class XML
      */
     public static function getPanelsFromXMLFile(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $panels = $Path->query("//quiqqer/panels/panel");
@@ -769,7 +773,7 @@ class XML
      */
     public static function getPermissionsFromXml(string $file): array
     {
-        $Dom         = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $permissions = $Dom->getElementsByTagName('permissions');
 
         if (!$permissions || !$permissions->length) {
@@ -786,7 +790,7 @@ class XML
 
         /* @var $Permissions DOMElement */
         $Permissions = $permissions->item(0);
-        $permission  = $Permissions->getElementsByTagName('permission');
+        $permission = $Permissions->getElementsByTagName('permission');
 
         if (!$permission || !$permission->length) {
             return [];
@@ -798,7 +802,7 @@ class XML
             $data = DOM::parsePermissionToArray($permission->item($i));
 
             $data['title'] = $package . ' permission.' . $data['name'];
-            $data['desc']  = $package . ' permission.' . $data['name'] . '._desc';
+            $data['desc'] = $package . ' permission.' . $data['name'] . '._desc';
 
             $result[] = $data;
         }
@@ -815,7 +819,7 @@ class XML
      */
     public static function getSettingCategoriesFromXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
         $list = [];
 
@@ -843,7 +847,7 @@ class XML
      */
     public static function getSettingCategoryFromXml(string $file, string $name)
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $categories = $Path->query("//settings/window/categories/category");
@@ -871,7 +875,7 @@ class XML
      */
     public static function getSettingWindowsFromXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $windows = $Path->query("//quiqqer/settings/window");
@@ -898,7 +902,7 @@ class XML
      */
     public static function getProjectSettingWindowsFromXml(string $file): array
     {
-        $Dom  = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
 
         $windows = $Path->query("//quiqqer/project/settings/window");
@@ -926,7 +930,7 @@ class XML
      */
     public static function getTypesFromXml(string $file): array
     {
-        $Dom   = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $sites = $Dom->getElementsByTagName('site');
 
         if (!$sites->length) {
@@ -942,7 +946,7 @@ class XML
         }
 
         /* @var $Types DOMElement */
-        $Types    = $types->item(0);
+        $Types = $types->item(0);
         $typeList = $Types->getElementsByTagName('type');
 
         $result = [];
@@ -998,7 +1002,7 @@ class XML
      */
     public static function getSiteTabsFromDom(DOMDocument $Dom): array
     {
-        $Path   = new DOMXPath($Dom);
+        $Path = new DOMXPath($Dom);
         $window = $Path->query("//site/window");
 
         if (!$window->length) {
@@ -1017,7 +1021,7 @@ class XML
      */
     public static function getTemplateEnginesFromXml(string $file): array
     {
-        $Dom      = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $template = $Dom->getElementsByTagName('template_engines');
 
         if (!$template->length) {
@@ -1026,7 +1030,7 @@ class XML
 
         /* @var $Template DOMElement */
         $Template = $template->item(0);
-        $engines  = $Template->getElementsByTagName('engine');
+        $engines = $Template->getElementsByTagName('engine');
 
         if (!$engines->length) {
             return [];
@@ -1056,7 +1060,7 @@ class XML
      */
     public static function getWysiwygEditorsFromXml(string $file): array
     {
-        $Dom     = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $editors = $Dom->getElementsByTagName('editors');
 
         if (!$editors->length) {
@@ -1065,7 +1069,7 @@ class XML
 
         /* @var $Editors DOMElement */
         $Editors = $editors->item(0);
-        $list    = $Editors->getElementsByTagName('editor');
+        $list = $Editors->getElementsByTagName('editor');
 
         if (!$list->length) {
             return [];
@@ -1095,7 +1099,7 @@ class XML
      */
     public static function getWidgetsFromXml(string $file): array
     {
-        $Dom     = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $widgets = $Dom->getElementsByTagName('widgets');
 
         if (!$widgets->length) {
@@ -1124,8 +1128,8 @@ class XML
                 /* @var $Widget DOMElement */
                 // widget on another location
                 if ($Widget->getAttribute('src')) {
-                    $file   = $Widget->getAttribute('src');
-                    $file   = DOM::parseVar($file);
+                    $file = $Widget->getAttribute('src');
+                    $file = DOM::parseVar($file);
                     $Widget = self::getWidgetFromXml($file);
 
                     if ($Widget) {
@@ -1153,7 +1157,7 @@ class XML
      */
     public static function getWidgetFromXml(string $file)
     {
-        $Dom    = self::getDomFromXml($file);
+        $Dom = self::getDomFromXml($file);
         $widget = $Dom->getElementsByTagName('widget');
 
         if (!$widget->length) {
@@ -1182,7 +1186,7 @@ class XML
 
         // defaults prüfen
         $defaults = self::getConfigParamsFromXml($file);
-        $Config   = self::getConfigFromXml($file);
+        $Config = self::getConfigFromXml($file);
 
         if (!$Config) {
             return;
@@ -1219,7 +1223,7 @@ class XML
                 }
 
                 // default key for fn match
-                $defaultkeys  = array_keys($defaults[$section]);
+                $defaultkeys = array_keys($defaults[$section]);
                 $fnMatchFound = $checkFnMatch($key, $defaultkeys);
 
                 if (!$fnMatchFound && !isset($defaults[$section][$key])) {
@@ -1302,6 +1306,7 @@ class XML
 
         // clear cache
         QUI\Cache\Manager::clearCompleteQuiqqerCache();
+        QUI\Cache\Manager::clearTemplateCache();
     }
 
     /**
@@ -1315,7 +1320,7 @@ class XML
      */
     public static function importDataBase(array $dbFields)
     {
-        $Table    = QUI::getDataBase()->table();
+        $Table = QUI::getDataBase()->table();
         $projects = QUI\Projects\Manager::getConfig()->toArray();
 
         // globale tabellen erweitern / anlegen
