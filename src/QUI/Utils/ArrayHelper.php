@@ -69,7 +69,7 @@ class ArrayHelper
     public static function objectToArray($obj): array
     {
         $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
-        $arr  = [];
+        $arr = [];
 
         if (!is_array($_arr)) {
             return $arr;

@@ -292,7 +292,7 @@ class Convert
         $hash = '';
 
         if (stristr($hex, '#')) {
-            $hex  = str_replace('#', '', $hex);
+            $hex = str_replace('#', '', $hex);
             $hash = '#';
         }
 
@@ -310,7 +310,7 @@ class Convert
             } else {
                 // Darker
                 $positivePercent = $percent - ($percent * 2);
-                $rgb[$i]         = round($rgb[$i] * $positivePercent) + round(0 * (1 - $positivePercent));
+                $rgb[$i] = round($rgb[$i] * $positivePercent) + round(0 * (1 - $positivePercent));
             }
 
             if ($rgb[$i] > 255) {

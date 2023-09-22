@@ -39,11 +39,11 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
 
 
         $Exception->setAttribute('test', 123);
-        $Exception->setAttributes(array(
+        $Exception->setAttributes([
             'attr1' => 1,
             'attr2' => 2,
             'att31' => 3
-        ));
+        ]);
 
         $Exception->setAttributes('lalalalala');
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author PCSG (Jan Wennrich)
  */
@@ -85,8 +86,8 @@ class Folder
      */
     protected static function calculateFolderSize(string $path, bool $doNotCache = false): int
     {
-        $path        = self::sanitizePath($path);
-        $folderSize  = 0;
+        $path = self::sanitizePath($path);
+        $folderSize = 0;
         $maxExecTime = ini_get('max_execution_time');
 
         // Sum up all file sizes

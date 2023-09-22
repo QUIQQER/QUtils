@@ -81,7 +81,7 @@ class Zip
             $folder .= '/';
         }
 
-        $File  = new QUI\Utils\System\File();
+        $File = new QUI\Utils\System\File();
         $files = $File->readDirRecursiv($folder);
 
         foreach ($files as $_folder => $_file) {
