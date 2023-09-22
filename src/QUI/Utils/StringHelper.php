@@ -6,7 +6,9 @@
 
 namespace QUI\Utils;
 
+use DateTime;
 use DateTimeInterface;
+use DateTimezone;
 use IntlDateFormatter;
 use InvalidArgumentException;
 use QUI;
@@ -641,7 +643,7 @@ class StringHelper
             . '$#'
             . $modifiers;
 
-        return (boolean)preg_match($pattern, $string);
+        return (bool)preg_match($pattern, $string);
     }
 
     /**
@@ -678,12 +680,12 @@ class StringHelper
     public static function strftime(string $format, $timestamp = null): string
     {
         if (null === $timestamp) {
-            $timestamp = new \DateTime;
+            $timestamp = new DateTime();
         } elseif (is_numeric($timestamp)) {
             $timestamp = date_create('@' . $timestamp);
 
             if ($timestamp) {
-                $timestamp->setTimezone(new \DateTimezone(date_default_timezone_get()));
+                $timestamp->setTimezone(new DateTimezone(date_default_timezone_get()));
             }
         } elseif (is_string($timestamp)) {
             $timestamp = date_create($timestamp);
@@ -751,13 +753,13 @@ class StringHelper
             // Week
             '%U' => function ($timestamp) {
                 // Number of weeks between date and first Sunday of year
-                $day = new \DateTime(sprintf('%d-01 Sunday', $timestamp->format('Y')));
+                $day = new DateTime(sprintf('%d-01 Sunday', $timestamp->format('Y')));
                 return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
             },
             '%V' => 'W',
             '%W' => function ($timestamp) {
                 // Number of weeks between date and first Monday of year
-                $day = new \DateTime(sprintf('%d-01 Monday', $timestamp->format('Y')));
+                $day = new DateTime(sprintf('%d-01 Monday', $timestamp->format('Y')));
                 return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
             },
 
