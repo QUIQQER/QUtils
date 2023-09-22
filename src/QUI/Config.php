@@ -60,7 +60,7 @@ class Config
             return;
         }
 
-        $this->iniFilename    = $filename;
+        $this->iniFilename = $filename;
         $this->iniParsedArray = @parse_ini_file($filename, true);
 
         if ($this->iniParsedArray === false) {
@@ -123,7 +123,8 @@ class Config
      */
     public function getValue($section, $key)
     {
-        if (!isset($this->iniParsedArray[$section])
+        if (
+            !isset($this->iniParsedArray[$section])
             || !isset($this->iniParsedArray[$section][$key])
         ) {
             return false;

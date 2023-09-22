@@ -17,7 +17,7 @@ class SystemTest extends \PHPUnit_Framework_TestCase
         }
 
         $_SERVER['HTTPS'] = 'on';
-        $protocol         = \QUI\Utils\System::getProtocol();
+        $protocol = \QUI\Utils\System::getProtocol();
 
         if ($protocol !== 'https://') {
             $this->fail('no https');
@@ -43,7 +43,6 @@ class SystemTest extends \PHPUnit_Framework_TestCase
     public function testGetClientIP()
     {
         $cl_ip = \QUI\Utils\System::getClientIP();
-
         // @todo how can i test the ip?
     }
 }

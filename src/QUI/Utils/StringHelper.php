@@ -264,8 +264,9 @@ class StringHelper
         $test1 = false;
         $test2 = false;
 
-        if (preg_match(
-            '%^(?:
+        if (
+            preg_match(
+                '%^(?:
                   [\x09\x0A\x0D\x20-\x7E]            # ASCII
                    | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
                 | \xE0[\xA0-\xBF][\x80-\xBF]         # excluding overlongs
@@ -275,16 +276,17 @@ class StringHelper
                 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
                 | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
                 )*$%xs',
-            $str
-        )
+                $str
+            )
         ) {
             $test1 = true;
         }
 
-        if (!((bool)preg_match(
-            '~[\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\xC0\xC1]~ms',
-            $str
-        ))
+        if (
+            !((bool)preg_match(
+                '~[\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\xC0\xC1]~ms',
+                $str
+            ))
         ) {
             $test2 = true;
         }
@@ -400,7 +402,7 @@ class StringHelper
      */
     public static function number2db($value)
     {
-        $larr   = localeconv();
+        $larr = localeconv();
         $search = [
             $larr['decimal_point'],
             $larr['mon_decimal_point'],
@@ -472,7 +474,7 @@ class StringHelper
         $att_ = explode('&', $url[1]);
 
         foreach ($att_ as $a) {
-            $item          = explode('=', $a);
+            $item = explode('=', $a);
             $att[$item[0]] = $item[1] ?? null;
         }
 
@@ -491,14 +493,14 @@ class StringHelper
      */
     public static function unparseUrl($parsedUrl): string
     {
-        $scheme   = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
-        $host     = $parsedUrl['host'] ?? '';
-        $port     = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-        $user     = $parsedUrl['user'] ?? '';
-        $pass     = isset($parsedUrl['pass']) ? ':' . $parsedUrl['pass'] : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = $parsedUrl['path'] ?? '';
-        $query    = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
+        $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
+        $host = $parsedUrl['host'] ?? '';
+        $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
+        $user = $parsedUrl['user'] ?? '';
+        $pass = isset($parsedUrl['pass']) ? ':' . $parsedUrl['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = $parsedUrl['path'] ?? '';
+        $query = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
         $fragment = isset($parsedUrl['fragment']) ? '#' . $parsedUrl['fragment'] : '';
 
         return "$scheme$user$pass$host$port$path$query$fragment";
@@ -540,8 +542,8 @@ class StringHelper
     public static function splitStyleAttributes(string $style): array
     {
         $attributes = [];
-        $style      = trim($style);
-        $style      = explode(';', $style);
+        $style = trim($style);
+        $style = explode(';', $style);
 
         foreach ($style as $att) {
             $att_ = explode(':', $att);
@@ -601,15 +603,15 @@ class StringHelper
 
         // solution if fnmatch doesn't exist
         // found on http://php.net/manual/de/function.fnmatch.php
-        $modifiers  = null;
+        $modifiers = null;
         $transforms = [
-            '\*'   => '.*',
-            '\?'   => '.',
+            '\*' => '.*',
+            '\?' => '.',
             '\[\!' => '[^',
-            '\['   => '[',
-            '\]'   => ']',
-            '\.'   => '\.',
-            '\\'   => '\\\\'
+            '\[' => '[',
+            '\]' => ']',
+            '\.' => '\.',
+            '\\' => '\\\\'
         ];
 
         // Forward slash in string must be in pattern:
@@ -704,10 +706,10 @@ class StringHelper
         ];
 
         $intlFormatter = function (DateTimeInterface $timestamp, string $format) use ($intlFormats, $locale) {
-            $tz        = $timestamp->getTimezone();
+            $tz = $timestamp->getTimezone();
             $date_type = IntlDateFormatter::FULL;
             $time_type = IntlDateFormatter::FULL;
-            $pattern   = '';
+            $pattern = '';
 
             // %c = Preferred date and time stamp based on locale
             // Example: Tue Feb 5 00:45:10 2009 for February 5, 2009 at 12:45:10 AM

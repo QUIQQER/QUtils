@@ -12,11 +12,11 @@ class ArrayHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function testIsAssoc()
     {
-        $assoc = array(
+        $assoc = [
             'test' => 'test'
-        );
+        ];
 
-        $array = array('test');
+        $array = ['test'];
 
         if (ArrayHelper::isAssoc($array)) {
             $this->fail('Error: Standard array is no assoc array');
@@ -29,7 +29,7 @@ class ArrayHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testToAssoc()
     {
-        $array = array('test', 'test2');
+        $array = ['test', 'test2'];
         $assoc = ArrayHelper::toAssoc($array);
 
         if (!ArrayHelper::isAssoc($assoc)) {
@@ -39,14 +39,14 @@ class ArrayHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testObjectToArray()
     {
-        $obj = ArrayHelper::arrayToObject(array(
+        $obj = ArrayHelper::arrayToObject([
             'a' => 'A',
             'b' => 'B',
-            'c' => array(
+            'c' => [
                 'a' => 'A2',
                 'c' => 'B2'
-            )
-        ));
+            ]
+        ]);
 
         $array = ArrayHelper::objectToArray($obj);
 

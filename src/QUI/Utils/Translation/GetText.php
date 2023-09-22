@@ -60,7 +60,7 @@ class GetText extends QUI\QDOM
     public function getFile()
     {
         $locale = trim($this->getAttribute('locale'));
-        $dir    = trim($this->getAttribute('dir'));
+        $dir = trim($this->getAttribute('dir'));
         $domain = trim($this->getAttribute('domain'));
 
         return $dir . $locale . '/LC_MESSAGES/' . $domain . '.mo';
@@ -120,7 +120,7 @@ class GetText extends QUI\QDOM
         if (empty($this->getAttribute('domain'))) {
             QUI\System\Log::addWarning('Missing locale domain', [
                 'domain' => $this->getAttribute('domain'),
-                'dir'    => $this->getAttribute('dir'),
+                'dir' => $this->getAttribute('dir'),
             ]);
 
             return;

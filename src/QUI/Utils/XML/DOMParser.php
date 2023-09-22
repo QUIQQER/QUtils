@@ -37,7 +37,7 @@ class DOMParser
 
         $attributes = self::getAttributes($Input);
 
-        $type    = 'text';
+        $type = 'text';
         $classes = $attributes['class'];
         $dataQui = '';
 
@@ -45,8 +45,10 @@ class DOMParser
             $type = $Input->getAttribute('type');
         }
 
-        if ($Input->getAttribute('data-qui')
-            && strpos($attributes['attributes'], 'data-qui') === false) {
+        if (
+            $Input->getAttribute('data-qui')
+            && strpos($attributes['attributes'], 'data-qui') === false
+        ) {
             $dataQui = 'data-qui="' . $Input->getAttribute('data-qui') . '"';
         }
 
@@ -56,7 +58,7 @@ class DOMParser
             case 'user':
             case 'users':
                 $classes[] = $type;
-                $type      = 'text';
+                $type = 'text';
                 break;
 
             case 'button':
@@ -101,10 +103,12 @@ class DOMParser
         }
 
         $attributes = self::getAttributes($TextArea);
-        $dataQui    = '';
+        $dataQui = '';
 
-        if ($TextArea->getAttribute('data-qui')
-            && strpos($attributes['attributes'], 'data-qui') === false) {
+        if (
+            $TextArea->getAttribute('data-qui')
+            && strpos($attributes['attributes'], 'data-qui') === false
+        ) {
             $dataQui = 'data-qui="' . $TextArea->getAttribute('data-qui') . '"';
         }
 
@@ -130,10 +134,12 @@ class DOMParser
         }
 
         $attributes = self::getAttributes($Select);
-        $dataQui    = '';
+        $dataQui = '';
 
-        if ($Select->getAttribute('data-qui')
-            && strpos($attributes['attributes'], 'data-qui') === false) {
+        if (
+            $Select->getAttribute('data-qui')
+            && strpos($attributes['attributes'], 'data-qui') === false
+        ) {
             $dataQui = 'data-qui="' . $Select->getAttribute('data-qui') . '"';
         }
 
@@ -151,7 +157,7 @@ class DOMParser
         foreach ($options as $Option) {
             /* @var $Option DOMElement */
             $value = $Option->getAttribute('value');
-            $html  = DOM::getTextFromNode($Option);
+            $html = DOM::getTextFromNode($Option);
 
             $select .= '<option value="' . $value . '">' . $html . '</option>';
         }
@@ -193,7 +199,8 @@ class DOMParser
      */
     public static function buttonDomToString(DOMNode $Button): string
     {
-        if ($Button->nodeName != 'button'
+        if (
+            $Button->nodeName != 'button'
             && $Button->getAttribute('type') != 'button'
             && $Button->getAttribute('type') != 'submit'
         ) {
@@ -221,16 +228,16 @@ class DOMParser
      */
     public static function getAttributes(DOMNode $Node): array
     {
-        $id   = $Node->getAttribute('conf') . '-' . time();
+        $id = $Node->getAttribute('conf') . '-' . time();
         $conf = $Node->getAttribute('conf');
 
         // Attributes
         $label = true;
-        $data  = '';
+        $data = '';
 
         foreach ($Node->attributes as $Attribute) {
             /* @var $Attribute DOMAttr */
-            $name  = htmlspecialchars($Attribute->name);
+            $name = htmlspecialchars($Attribute->name);
             $value = htmlspecialchars($Attribute->value);
 
             if ($name === 'conf') {
@@ -282,13 +289,13 @@ class DOMParser
 
 
         return [
-            'id'          => $id,
-            'text'        => $text,
-            'conf'        => $conf,
-            'desc'        => $desc,
-            'attributes'  => $data,
-            'class'       => $class,
-            'label'       => $label,
+            'id' => $id,
+            'text' => $text,
+            'conf' => $conf,
+            'desc' => $desc,
+            'attributes' => $data,
+            'class' => $class,
+            'label' => $label,
             'label-style' => $labelStyles
         ];
     }

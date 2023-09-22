@@ -56,8 +56,8 @@ class Webserver
         # Attempt detection by apache2 module
         if (function_exists('apache_get_version')) {
             $version = apache_get_version();
-            $regex   = "/Apache\\/([0-9\\.]*)/i";
-            $res     = preg_match($regex, $version, $matches);
+            $regex = "/Apache\\/([0-9\\.]*)/i";
+            $res = preg_match($regex, $version, $matches);
 
             if ($res && isset($matches[1])) {
                 $version = $matches[1];
@@ -68,8 +68,8 @@ class Webserver
         # Attempt detection by system shell
         if (System::isShellFunctionEnabled("shell_exec") && !empty(shell_exec("which apache2"))) {
             $version = shell_exec('apache2 -v');
-            $regex   = "/Apache\\/([0-9\\.]*)/i";
-            $res     = preg_match($regex, $version, $matches);
+            $regex = "/Apache\\/([0-9\\.]*)/i";
+            $res = preg_match($regex, $version, $matches);
             if ($res && isset($matches[1])) {
                 $version = $matches[1];
 

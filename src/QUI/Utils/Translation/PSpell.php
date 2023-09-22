@@ -7,7 +7,6 @@
 namespace QUI\Utils\Translation;
 
 use QUI;
-
 use QUI\Exception;
 
 use function function_exists;

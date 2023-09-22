@@ -86,7 +86,7 @@ class Settings
     {
         $result = [
             'title' => '',
-            'icon'  => ''
+            'icon' => ''
         ];
 
         if (is_string($xmlFiles)) {
@@ -102,8 +102,8 @@ class Settings
                 continue;
             }
 
-            $Dom     = XML::getDomFromXml($xmlFile);
-            $Path    = new DOMXPath($Dom);
+            $Dom = XML::getDomFromXml($xmlFile);
+            $Path = new DOMXPath($Dom);
             $windows = $Path->query($this->xmlPath);
 
             if (!$windows->length) {
@@ -113,7 +113,7 @@ class Settings
             foreach ($windows as $Window) {
                 /* @var $Window DOMElement */
                 $Title = $Window->getElementsByTagName('title');
-                $Icon  = $Window->getElementsByTagName('icon');
+                $Icon = $Window->getElementsByTagName('icon');
 
                 if ($windowName && $windowName !== $Window->getAttribute('name')) {
                     continue;
@@ -145,7 +145,7 @@ class Settings
         };
 
         $result['categories'] = $this->getCategories($xmlFiles)->sort($sortByIndex);
-        $result['name']       = $windowName;
+        $result['name'] = $windowName;
 
         return $result;
     }
@@ -183,13 +183,13 @@ class Settings
                 continue;
             }
 
-            $Dom  = XML::getDomFromXml($xmlFile);
+            $Dom = XML::getDomFromXml($xmlFile);
             $Path = new DOMXPath($Dom);
 
             $categories = $Path->query($this->xmlPath . "/categories/category");
 
             foreach ($categories as $Category) {
-                $data         = $this->parseCategory($Category);
+                $data = $this->parseCategory($Category);
                 $data['file'] = str_replace(CMS_DIR, '', $xmlFile);
 
                 $entry = $Collection->find(function ($item) use ($data) {
@@ -216,7 +216,7 @@ class Settings
                     $files = $entry['file'];
                 }
 
-                $files[]       = $data['file'];
+                $files[] = $data['file'];
                 $entry['file'] = $files;
 
                 // find index
@@ -253,11 +253,11 @@ class Settings
         $Collection = Collection::from([]);
 
         $data = [
-            'name'    => $Category->getAttribute('name'),
-            'index'   => $Category->getAttribute('index'),
+            'name' => $Category->getAttribute('name'),
+            'index' => $Category->getAttribute('index'),
             'require' => $Category->getAttribute('require'),
-            'click'   => $Category->getAttribute('click'),
-            'title'   => ''
+            'click' => $Category->getAttribute('click'),
+            'title' => ''
         ];
 
         foreach ($Category->childNodes as $Child) {
@@ -301,10 +301,10 @@ class Settings
     public function parseSettings(DOMElement $Setting): array
     {
         $data = [
-            'name'  => $Setting->getAttribute('name'),
+            'name' => $Setting->getAttribute('name'),
             'title' => '',
             'index' => $Setting->getAttribute('index'),
-            'icon'  => $Setting->getAttribute('icon'),
+            'icon' => $Setting->getAttribute('icon'),
             'items' => []
         ];
 
@@ -361,7 +361,7 @@ class Settings
             if ($Child->getAttribute('row-style')) {
                 $items[] = [
                     'rowStyle' => $Child->getAttribute('row-style'),
-                    'content'  => $item
+                    'content' => $item
                 ];
 
                 continue;
@@ -397,7 +397,7 @@ class Settings
     public function getCategoriesHtml($files, $categoryName = false): string
     {
         $Collection = $this->getCategories($files);
-        $result     = '';
+        $result = '';
 
         $sortByIndex = function ($a, $b) {
             return $a['index'] > $b['index'];
@@ -411,7 +411,7 @@ class Settings
             }
 
             /* @var $Items Collection */
-            $Items    = $category['items'];
+            $Items = $category['items'];
             $settings = $Items->sort($sortByIndex)->toArray();
 
             foreach ($settings as $setting) {

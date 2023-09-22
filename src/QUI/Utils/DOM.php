@@ -71,16 +71,16 @@ class DOM
     {
         foreach ($tabs as $Tab) {
             /* @var $Tab DOMElement */
-            $text  = '';
+            $text = '';
             $image = '';
-            $type  = '';
+            $type = '';
 
-            $Images     = $Tab->getElementsByTagName('image');
+            $Images = $Tab->getElementsByTagName('image');
             $Categories = $Tab->getElementsByTagName('category');
-            $Texts      = $Tab->getElementsByTagName('text');
-            $Onload     = $Tab->getElementsByTagName('onload');
-            $OnUnload   = $Tab->getElementsByTagName('onunload');
-            $Template   = $Tab->getElementsByTagName('template');
+            $Texts = $Tab->getElementsByTagName('text');
+            $Onload = $Tab->getElementsByTagName('onload');
+            $OnUnload = $Tab->getElementsByTagName('onunload');
+            $Template = $Tab->getElementsByTagName('template');
 
             if ($Images && $Images->item(0)) {
                 $image = self::parseVar($Images->item(0)->nodeValue);
@@ -99,18 +99,19 @@ class DOM
             }
 
             $ToolbarTab = new Toolbar\Tab([
-                'name'    => $Tab->getAttribute('name'),
-                'text'    => $text,
-                'image'   => $image,
-                'plugin'  => $plugin,
+                'name' => $Tab->getAttribute('name'),
+                'text' => $text,
+                'image' => $image,
+                'plugin' => $plugin,
                 'wysiwyg' => $type == 'wysiwyg' ? true : false,
-                'type'    => $type
+                'type' => $type
             ]);
 
             foreach ($Tab->attributes as $attr) {
                 $name = $attr->nodeName;
 
-                if ($name !== 'name' && $name !== 'text'
+                if (
+                    $name !== 'name' && $name !== 'text'
                     || $name !== 'image' && $name !== 'plugin'
                 ) {
                     $ToolbarTab->setAttribute($name, $attr->nodeValue);
@@ -202,12 +203,12 @@ class DOM
     public static function dbTableDomToArray(DOMNode $Table): array
     {
         $result = [
-            'suffix'            => $Table->getAttribute('name'),
-            'engine'            => $Table->getAttribute('engine'),
+            'suffix' => $Table->getAttribute('name'),
+            'engine' => $Table->getAttribute('engine'),
             'no-site-reference' => false,
-            'no-project-lang'   => false,
-            'no-auto-update'    => false,
-            'site-types'        => false
+            'no-project-lang' => false,
+            'no-auto-update' => false,
+            'site-types' => false
         ];
 
         if ((int)$Table->getAttribute('no-site-reference') === 1) {
@@ -454,7 +455,7 @@ class DOM
      */
     public static function getTabHTML(string $name, $Object, $engineParams = []): string
     {
-        $tabs    = [];
+        $tabs = [];
         $current = QUI::getLocale()->getCurrent();
 
         if (is_string($Object)) {
@@ -469,13 +470,14 @@ class DOM
                     USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
                 );
             } else {
-                if (get_class($Object) === 'QUI\\Projects\\Site'
+                if (
+                    get_class($Object) === 'QUI\\Projects\\Site'
                     || get_class($Object) === 'QUI\\Projects\\Site\\Edit'
                 ) {
                     /* @var $Object QUI\Projects\Site */
                     /* @var $Tab DOMElement */
                     $Tabbar = QUI\Projects\Sites::getTabs($Object);
-                    $Tab    = $Tabbar->getElementByName($name);
+                    $Tab = $Tabbar->getElementByName($name);
 
                     if ($Tab->getAttribute('template')) {
                         $file = self::parseVar($Tab->getAttribute('template'));
@@ -503,9 +505,9 @@ class DOM
                             $QUI::getLocale()->setCurrent($current);
 
                             $Engine->assign([
-                                'Site'    => $Object,
+                                'Site' => $Object,
                                 'Project' => $Object->getProject(),
-                                'QUI'     => $QUI
+                                'QUI' => $QUI
                             ]);
 
                             return $Engine->fetch($file) . $extra;
@@ -548,7 +550,7 @@ class DOM
             return [];
         }
 
-        $result   = [];
+        $result = [];
         $children = $btnList->item(0)->childNodes;
 
         for ($i = 0; $i < $children->length; $i++) {
@@ -674,7 +676,7 @@ class DOM
      */
     public static function getWysiwygStyles(DOMDocument $Dom, bool $translate = true): array
     {
-        $Path   = new DOMXPath($Dom);
+        $Path = new DOMXPath($Dom);
         $Styles = $Path->query("//wysiwyg/styles/style");
 
         if (!$Styles->length) {
@@ -686,7 +688,7 @@ class DOM
         /* @var $Style DOMElement */
         foreach ($Styles as $Style) {
             $attributeList = [];
-            $attributes    = $Style->getElementsByTagName('attribute');
+            $attributes = $Style->getElementsByTagName('attribute');
 
             /* @var $Attribute DOMElement */
             foreach ($attributes as $Attribute) {
@@ -694,8 +696,8 @@ class DOM
             }
 
             $result[] = [
-                'text'       => self::getTextFromNode($Style, $translate),
-                'element'    => $Style->getAttribute('element'),
+                'text' => self::getTextFromNode($Style, $translate),
+                'element' => $Style->getAttribute('element'),
                 'attributes' => $attributeList
             ];
         }
@@ -763,7 +765,7 @@ class DOM
      */
     public static function getInnerHTML(DOMNode $Node): string
     {
-        $Dom      = new DOMDocument();
+        $Dom = new DOMDocument();
         $Children = $Node->childNodes;
 
         foreach ($Children as $Child) {
@@ -803,7 +805,7 @@ class DOM
 
         $projects = QUI\Projects\Manager::getProjects();
         $children = $configs->item(0)->childNodes;
-        $result   = [];
+        $result = [];
 
         for ($i = 0; $i < $children->length; $i++) {
             /* @var $Param DOMElement */
@@ -814,7 +816,7 @@ class DOM
             }
 
             if ($Param->nodeName == 'section') {
-                $name  = $Param->getAttribute('name');
+                $name = $Param->getAttribute('name');
                 $confs = $Param->getElementsByTagName('conf');
 
                 if ($Param->getAttribute('type') == 'project') {
@@ -834,7 +836,7 @@ class DOM
                         $customParam = trim($Custom->nodeValue);
 
                         $result[$name][$customParam] = [
-                            'type'    => 'string',
+                            'type' => 'string',
                             'default' => ''
                         ];
                     }
@@ -865,7 +867,7 @@ class DOM
 
         /* @var $Settings DOMElement */
         $Settings = $settings->item(0);
-        $winlist  = $Settings->getElementsByTagName('window');
+        $winlist = $Settings->getElementsByTagName('window');
 
         if (!$winlist->length) {
             return false;
@@ -873,7 +875,7 @@ class DOM
 
         /* @var $Window DOMElement */
         $Window = $winlist->item(0);
-        $Win    = new QUI\Controls\Windows\Window();
+        $Win = new QUI\Controls\Windows\Window();
 
         // name
         if ($Window->getAttribute('name')) {
@@ -896,7 +898,7 @@ class DOM
         if ($params->item(0)) {
             /* @var $Element DOMElement */
             $Element = $params->item(0);
-            $icon    = $Element->getElementsByTagName('icon');
+            $icon = $Element->getElementsByTagName('icon');
 
             if ($Element) {
                 $Win->setAttribute(
@@ -929,13 +931,13 @@ class DOM
         }
 
         $require = $Node->getAttribute('require');
-        $Titles  = $Node->getElementsByTagName('title');
-        $Texts   = $Node->getElementsByTagName('text');
-        $Images  = $Node->getElementsByTagName('image');
+        $Titles = $Node->getElementsByTagName('title');
+        $Texts = $Node->getElementsByTagName('text');
+        $Images = $Node->getElementsByTagName('image');
 
         $image = '';
         $title = '';
-        $text  = '';
+        $text = '';
 
         if ($Titles && $Titles->length) {
             $title = self::getTextFromNode($Titles->item(0));
@@ -950,9 +952,9 @@ class DOM
         }
 
         return [
-            'image'   => $image,
-            'title'   => $title,
-            'text'    => $text,
+            'image' => $image,
+            'title' => $title,
+            'text' => $text,
             'require' => $require
         ];
     }
@@ -970,11 +972,11 @@ class DOM
             return [];
         }
 
-        $perm    = $Node->getAttribute('name');
+        $perm = $Node->getAttribute('name');
         $default = false;
 
-        $Default            = $Node->getElementsByTagName('defaultvalue');
-        $RootPermission     = $Node->getElementsByTagName('rootPermission');
+        $Default = $Node->getElementsByTagName('defaultvalue');
+        $RootPermission = $Node->getElementsByTagName('rootPermission');
         $EveryonePermission = $Node->getElementsByTagName('everyonePermission');
 
         if ($Default && $Default->length) {
@@ -1001,8 +1003,8 @@ class DOM
             'area' => $area,
             'type' => $type,
 
-            'defaultvalue'       => $default,
-            'rootPermission'     => $rootPermission,
+            'defaultvalue' => $default,
+            'rootPermission' => $rootPermission,
             'everyonePermission' => $everyonePermission
         ];
     }
@@ -1047,7 +1049,8 @@ class DOM
             /* @var $Entry DOMElement */
             $Entry = $children->item($c);
 
-            if ($Entry->nodeName == '#text'
+            if (
+                $Entry->nodeName == '#text'
                 || $Entry->nodeName == 'text'
                 || $Entry->nodeName == 'image'
             ) {
@@ -1084,8 +1087,8 @@ class DOM
             }
 
             if ($Entry->nodeName == 'settings') {
-                $name     = '';
-                $row      = 0;
+                $name = '';
+                $row = 0;
                 $settings = $Entry->childNodes;
 
                 if ($Entry->getAttribute('name')) {
@@ -1109,7 +1112,8 @@ class DOM
                 for ($s = 0; $s < $settings->length; $s++) {
                     $Set = $settings->item($s);
 
-                    if ($Set->nodeName == '#text'
+                    if (
+                        $Set->nodeName == '#text'
                         || $Set->nodeName == '#comment'
                         || $Set->nodeName == 'title'
                     ) {
@@ -1212,10 +1216,10 @@ class DOM
             return '';
         }
 
-        $type    = 'text';
+        $type = 'text';
         $classes = [];
         $dataQui = '';
-        $data    = '';
+        $data = '';
 
         if ($Input->getAttribute('type')) {
             $type = $Input->getAttribute('type');
@@ -1229,7 +1233,7 @@ class DOM
 
         foreach ($attributes as $Attribute) {
             /* @var $Attribute DOMAttr */
-            $name  = htmlspecialchars($Attribute->name);
+            $name = htmlspecialchars($Attribute->name);
             $value = htmlspecialchars($Attribute->value);
 
             if (strpos($name, 'data-') !== false) {
@@ -1255,12 +1259,12 @@ class DOM
             case 'user':
             case 'users':
                 $classes[] = $type;
-                $type      = 'text';
+                $type = 'text';
                 break;
         }
 
 
-        $id   = $Input->getAttribute('conf') . '-' . time();
+        $id = $Input->getAttribute('conf') . '-' . time();
         $Text = $Input->getElementsByTagName('text');
         $Desc = $Input->getElementsByTagName('description');
 
@@ -1276,7 +1280,7 @@ class DOM
 
         // input html
         if ($type != 'checkbox' && $type != 'radio') {
-            $nodeClasses   = $classes;
+            $nodeClasses = $classes;
             $nodeClasses[] = 'field-container-field';
 
             $result .= '<input type="' . $type . '" 
@@ -1334,7 +1338,7 @@ class DOM
             return '';
         }
 
-        $Text    = $TextArea->getElementsByTagName('text');
+        $Text = $TextArea->getElementsByTagName('text');
         $dataQui = '';
 
         if ($TextArea->getAttribute('data-qui')) {
@@ -1376,10 +1380,10 @@ class DOM
 
         foreach ($configurations as $Conf) {
             /* @var $Conf DOMElement */
-            $type    = 'string';
+            $type = 'string';
             $default = '';
 
-            $types    = $Conf->getElementsByTagName('type');
+            $types = $Conf->getElementsByTagName('type');
             $defaults = $Conf->getElementsByTagName('defaultvalue');
 
             // type
@@ -1395,7 +1399,7 @@ class DOM
             }
 
             $result[$Conf->getAttribute('name')] = [
-                'type'    => $type,
+                'type' => $type,
                 'default' => $default
             ];
         }
@@ -1503,7 +1507,7 @@ class DOM
         foreach ($options as $Option) {
             /* @var $Option DOMElement */
             $value = $Option->getAttribute('value');
-            $html  = self::getTextFromNode($Option);
+            $html = self::getTextFromNode($Option);
 
             $select .= '<option value="' . $value . '">' . $html . '</option>';
         }
@@ -1511,7 +1515,7 @@ class DOM
         $select .= '</select>';
 
 
-        $text   = $Select->getElementsByTagName('text');
+        $text = $Select->getElementsByTagName('text');
         $result = '<label class="field-container">';
 
         if ($text->length) {

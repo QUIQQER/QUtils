@@ -31,7 +31,8 @@ class StringTest extends \PHPUnit_Framework_TestCase
             $this->fail('no dir name');
         }
 
-        if (!isset($path['basename'])
+        if (
+            !isset($path['basename'])
             || $path['basename'] != 'StringTest.php'
         ) {
             $this->fail('basename is wrong');

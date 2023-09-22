@@ -21,10 +21,10 @@ class OrthosTest extends \PHPUnit_Framework_TestCase
 
     public function testClearArray()
     {
-        $result = Orthos::clearArray(array(
+        $result = Orthos::clearArray([
             'a test string \' %%% **',
             'support@pcsg.de',
-        ));
+        ]);
 
         if ($result[0] != 'a test string  %%% **') {
             $this->fail('\QUI\Utils\Security\Orthos::testClearArray fail');
@@ -41,13 +41,13 @@ class OrthosTest extends \PHPUnit_Framework_TestCase
         }
 
         // multi array test
-        $result = Orthos::clearArray(array(
+        $result = Orthos::clearArray([
             'a test string \' %%% **',
-            array(
+            [
                 'a test string \' %%% **',
                 'support@pcsg.de'
-            )
-        ));
+            ]
+        ]);
 
         if ($result[1][0] != 'a test string  %%% **') {
             $this->fail('\QUI\Utils\Security\Orthos::testClearArray fail @ multi array test');
@@ -56,10 +56,10 @@ class OrthosTest extends \PHPUnit_Framework_TestCase
 
     public function testClearFormRequest()
     {
-        $_TEST_REQUEST = array(
+        $_TEST_REQUEST = [
             'name' => 'val',
             'test' => '<script>alert(1)</script>'
-        );
+        ];
 
         $result = Orthos::clearFormRequest($_TEST_REQUEST);
 
@@ -215,7 +215,7 @@ class OrthosTest extends \PHPUnit_Framework_TestCase
 
     public function testClearPath()
     {
-        $path  = '/var/www/vhost/domain/../lala/';
+        $path = '/var/www/vhost/domain/../lala/';
         $clear = Orthos::clearPath($path);
 
         if ($clear != '/var/www/vhost/domain/lala/') {

@@ -2,8 +2,6 @@
 
 namespace QUITest\QUI\Database;
 
-use QUI\Database\DB as DB;
-
 /**
  * Class DBMySQLTest
  * @todo test muss geschrieben werden
