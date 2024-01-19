@@ -643,16 +643,29 @@ class File
      */
     public static function move(string $from, string $to): bool
     {
-        if (file_exists($from) && !file_exists($to)) {
+        if (!file_exists($from) || file_exists($to)) {
+            throw new QUI\Exception(
+                "Can't move File: " . $from . ' -> ' . $to,
+                500
+            );
+        }
+
+        if (is_file($from)) {
             rename($from, $to);
 
             return true;
         }
 
-        throw new QUI\Exception(
-            "Can't move File: " . $from . ' -> ' . $to,
-            500
-        );
+        // Using rename on directories across filesystems fails with an error
+        if (@rename($from, $to)) {
+            return true;
+        }
+
+        // Fallback if renaming directory fails, this works across filesystems
+        self::dircopy($from, $to);
+        self::deleteDir($from);
+
+        return true;
     }
 
     /**
