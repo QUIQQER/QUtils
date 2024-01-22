@@ -651,9 +651,7 @@ class File
         }
 
         if (is_file($from)) {
-            rename($from, $to);
-
-            return true;
+            return rename($from, $to);
         }
 
         // Using rename on directories across filesystems fails with an error
@@ -661,11 +659,16 @@ class File
             return true;
         }
 
-        // Fallback if renaming directory fails, this works across filesystems
-        self::dircopy($from, $to);
-        self::deleteDir($from);
+        // Fallback: Copy and delete directory - works across filesystems
+        $dirCopyErrors = self::dircopy($from, $to);
 
-        return true;
+        if (is_array($dirCopyErrors)) {
+            throw new QUI\Exception("Could not copy directory: $from -> $to", 500, $dirCopyErrors);
+        }
+
+        $isDeleteDirSuccessful = self::deleteDir($from);
+
+        return $isDeleteDirSuccessful;
     }
 
     /**
