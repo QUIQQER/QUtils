@@ -78,7 +78,7 @@ class Orthos
      *
      * @return string
      */
-    public static function clearNoneCharacters($str = '', $allowedList = [])
+    public static function clearNoneCharacters(string $str = '', array $allowedList = []): string
     {
         $chars = 'a-zA-Z0-9';
 
@@ -96,7 +96,7 @@ class Orthos
      *
      * @return array
      */
-    public static function clearArray($data): array
+    public static function clearArray(mixed $data): array
     {
         if (!is_array($data)) {
             return [];
@@ -134,11 +134,11 @@ class Orthos
     /**
      * Clears a path of possible changes to the path
      *
-     * @param string|array $path
+     * @param array|string $path
      *
      * @return array|string|string[]
      */
-    public static function clearPath($path)
+    public static function clearPath(array|string $path): array|string
     {
         $path = str_replace('\\', '', $path);
 
@@ -152,7 +152,7 @@ class Orthos
      * @param $filename
      * @return array|string|string[]
      */
-    public static function clearFilename($filename)
+    public static function clearFilename($filename): array|string
     {
         return str_replace(
             [" ", '"', "'", "&", "/", "\\", "?", "#"],
@@ -208,10 +208,10 @@ class Orthos
      * Remove signs which can cause sql injections
      * This method should only be used for table names in order, group, from, select
      *
-     * @param $str
-     * @return mixed|string
+     * @param string $str
+     * @return string
      */
-    public static function cleanupDatabaseFieldName($str)
+    public static function cleanupDatabaseFieldName(string $str): string
     {
         if (empty($str)) {
             return '';
@@ -257,7 +257,7 @@ class Orthos
     /**
      * Parse a string, bool, float to an integer value
      *
-     * @param string|bool|float $str
+     * @param string|bool|float|mixed $str
      *
      * @return integer
      */
