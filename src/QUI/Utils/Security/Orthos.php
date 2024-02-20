@@ -32,7 +32,6 @@ use function preg_replace;
 use function str_replace;
 use function strip_tags;
 use function strlen;
-use function strpos;
 use function substr;
 use function trim;
 
@@ -468,6 +467,8 @@ class Orthos
      * @param string $mail - E-Mail Address
      *
      * @return boolean
+     *
+     * @deprecated
      */
     public static function isSpamMail(string $mail): bool
     {
@@ -538,7 +539,7 @@ class Orthos
         }
 
         foreach ($adresses as $entry) {
-            if (strpos($split[1], $entry) !== false) {
+            if (str_contains($split[1], $entry)) {
                 return true;
             }
         }
@@ -553,19 +554,22 @@ class Orthos
      *
      * @return string|array
      */
-    public static function clearFormRequest($value)
+    public static function clearFormRequest(string|array $value): array|string
     {
         if (is_array($value)) {
             foreach ($value as $key => $entry) {
-                $value[$key] = self::clearFormRequest($entry); // htmlspecialchars_decode($entry);
-            }
-        } else {
-            if (!is_string($value)) {
-                return '';
+                $value[$key] = self::clearFormRequest($entry);
             }
 
-            $value = htmlspecialchars_decode($value);
+            return $value;
         }
+
+        if (!is_string($value)) {
+            return '';
+        }
+
+        $value = htmlspecialchars_decode($value);
+
         // alle zeichen und HEX codes werden mit leer ersetzt
         $value = str_replace(
             [
