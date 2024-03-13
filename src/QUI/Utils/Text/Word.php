@@ -24,7 +24,8 @@ mb_internal_encoding('UTF-8');
 /**
  * Helper for word handling
  *
- * @author  www.pcsg.de (Henning Leutz
+ * @author  www.pcsg.de (Henning Leutz)
+ * @deprecated
  */
 class Word
 {
@@ -38,19 +39,16 @@ class Word
     public static function countImportantWords(string $text): array
     {
         $str = $text;
-
-        // html raus
         $str = strip_tags($str);
         $str = explode(' ', $str);
 
         $result = [];
 
         foreach ($str as $entry) {
-            if (self::isUseful($entry) == false) {
+            if (!self::isUseful($entry)) {
                 continue;
             }
 
-            // sammeln
             if (isset($result[$entry])) {
                 $result[$entry]++;
                 continue;
@@ -79,7 +77,7 @@ class Word
         }
 
         // Kleingeschriebene Wörter raus
-        if (strtolower($word{0}) == $word{0}) {
+        if (strtolower(mb_substr($word, 0, 1)) == mb_substr($word, 0, 1)) {
             return false;
         }
 
@@ -93,7 +91,7 @@ class Word
                 str_replace(
                     ['ä', 'ö', 'ü'],
                     ['Ä', 'Ö', 'Ü'],
-                    $word{0}
+                    mb_substr($word, 0, 1)
                 )
             )
         );
@@ -103,7 +101,7 @@ class Word
                 str_replace(
                     ['ä', 'ö', 'ü'],
                     ['Ä', 'Ö', 'Ü'],
-                    $word{1}
+                    mb_substr($word, 1, 1)
                 )
             )
         );
@@ -348,7 +346,7 @@ class Word
         }
 
         /*  *gegen*  */
-        if (strpos($word, 'gegen') !== false) {
+        if (str_contains($word, 'gegen')) {
             return false;
         }
 

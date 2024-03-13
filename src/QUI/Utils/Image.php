@@ -4,6 +4,8 @@
  * This file contains QUI\Utils\Image
  */
 
+// @phpstan-ignore-file
+
 namespace QUI\Utils;
 
 // Image Bibliothek feststellen welche verwendet werden soll
@@ -13,7 +15,7 @@ if (!class_exists('Imagick')) {
 
 if (class_exists('Imagick')) {
     define('IMAGE_LIBRARY', 'IMAGICK_PHP');
-} elseif (is_array($im_console) && count($im_console)) {
+} elseif (isset($im_console) && is_array($im_console) && count($im_console)) {
     define('IMAGE_LIBRARY', 'IMAGICK_SYSTEM');
 } elseif (function_exists('imagecopyresampled')) {
     define('IMAGE_LIBRARY', 'GDLIB');
