@@ -10,7 +10,6 @@ use function explode;
 use function function_exists;
 use function preg_match;
 use function shell_exec;
-use function strpos;
 
 /**
  * Class Webserver
@@ -33,12 +32,12 @@ class Webserver
     {
         try {
             return self::detectInstalledWebserverHeader();
-        } catch (Exception $Exception) {
+        } catch (Exception) {
         }
 
         try {
             return self::detectInstalledWebserverCLI();
-        } catch (Exception $Exception) {
+        } catch (Exception) {
         }
 
         throw new Exception("Could not detect the installed Webserver");
@@ -46,7 +45,7 @@ class Webserver
 
     /**
      * Attempts to detect the Apache webservers version
-     * Returnformat: array("major","minor","point")
+     * Return format: array("major","minor","point")
      *
      * @return array
      * @throws Exception
@@ -88,20 +87,21 @@ class Webserver
      */
     protected static function detectInstalledWebserverHeader(): int
     {
-        if (!isset($_SERVER) || empty($_SERVER['SERVER_SOFTWARE'])) {
-            throw new Exception("Could not retrieve Serverdata");
+        if (!empty($_SERVER['SERVER_SOFTWARE'])) {
+            throw new Exception("Could not retrieve server data");
         }
 
         $server = $_SERVER['SERVER_SOFTWARE'];
-        if (strpos($server, "apache") !== false) {
+
+        if (str_contains($server, "apache")) {
             return self::WEBSERVER_APACHE;
         }
 
-        if (strpos($server, "nginx") !== false) {
+        if (str_contains($server, "nginx")) {
             return self::WEBSERVER_NGINX;
         }
 
-        throw new Exception("Could not retrieve Serverdata");
+        throw new Exception("Could not retrieve server data");
     }
 
     /**
@@ -110,10 +110,10 @@ class Webserver
      * @return int - @see QUI\Utils\System\Webserver::WEBSERVER_APACHE; @see QUI\Utils\System\Webserver::WEBSERVER_NGINX
      * @throws Exception
      */
-    protected static function detectInstalledWebserverCLI()
+    protected static function detectInstalledWebserverCLI(): int
     {
         if (!System::isShellFunctionEnabled("shell_exec")) {
-            throw new Exception("Could not retrieve Serverdata");
+            throw new Exception("Could not retrieve server data");
         }
 
         if (!empty(shell_exec("which apache2"))) {
@@ -124,6 +124,6 @@ class Webserver
             return self::WEBSERVER_NGINX;
         }
 
-        throw new Exception("Could not retrieve Serverdata");
+        throw new Exception("Could not retrieve server data");
     }
 }

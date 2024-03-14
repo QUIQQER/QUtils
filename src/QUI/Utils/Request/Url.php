@@ -6,6 +6,7 @@
 
 namespace QUI\Utils\Request;
 
+use CurlHandle;
 use QUI;
 use QUI\Exception;
 
@@ -21,7 +22,6 @@ use function curl_setopt;
 use function ini_get;
 use function preg_match;
 use function str_replace;
-use function strpos;
 use function trim;
 
 /**
@@ -39,15 +39,15 @@ class Url
     public static array $Curls = [];
 
     /**
-     * Get the Curl Objekt
+     * Get the Curl Object
      *
      * @param string $url - Url
-     * @param array $curlparams - Curl parameter
+     * @param array $curlParams - Curl parameter
      *
-     * @return resource
+     * @return CurlHandle|false
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
-    public static function curl(string $url, array $curlparams = [])
+    public static function curl(string $url, array $curlParams = []): CurlHandle|bool
     {
         $url = str_replace(' ', '+', $url); // URL Fix
         $Curl = curl_init();
@@ -57,7 +57,7 @@ class Url
         curl_setopt($Curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($Curl, CURLOPT_TIMEOUT, 10);
 
-        foreach ($curlparams as $k => $v) {
+        foreach ($curlParams as $k => $v) {
             curl_setopt($Curl, $k, $v);
         }
 
@@ -65,15 +65,15 @@ class Url
     }
 
     /**
-     * Get the content from a url
+     * Get the content from an url
      *
      * @param string $url
      * @param array $curlParams - see Utils_Request_Url::Curl (optional)
      *
-     * @return mixed
+     * @return string|bool
      * @throws Exception
      */
-    public static function get(string $url, array $curlParams = [])
+    public static function get(string $url, array $curlParams = []): string|bool
     {
         $Curl = self::curl($url, $curlParams);
         $data = self::exec($Curl);
@@ -81,7 +81,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new Exception('Fehler bei der Anfrage ' . $error . ' -> ' . $url);
+            throw new Exception('Error at request: ' . $error . ' -> ' . $url);
         }
 
         curl_close($Curl);
@@ -94,7 +94,7 @@ class Url
      *
      * @param string $url
      * @param string $search
-     * @param array $curlParams - siehe Utils_Request_Url::Curl (optional)
+     * @param array $curlParams - see Utils_Request_Url::Curl (optional)
      *
      * @return boolean
      */
@@ -102,11 +102,11 @@ class Url
     {
         try {
             $content = self::get($url, $curlParams);
-        } catch (Exception $Exception) {
+        } catch (Exception) {
             return false;
         }
 
-        return !(strpos($content, $search) === false);
+        return !(!str_contains($content, $search));
     }
 
     /**
@@ -119,7 +119,7 @@ class Url
      * @return mixed
      * @throws Exception
      */
-    public static function getInfo(string $url, bool $info = false, array $curlParams = [])
+    public static function getInfo(string $url, bool $info = false, array $curlParams = []): mixed
     {
         $Curl = self::curl($url, $curlParams);
 
@@ -134,7 +134,7 @@ class Url
         $error = curl_error($Curl);
 
         if ($error) {
-            throw new Exception('Fehler bei der Anfrage ' . $error . ' -> ' . $url);
+            throw new Exception('Error at request: ' . $error . ' -> ' . $url);
         }
 
         curl_close($Curl);
@@ -145,17 +145,18 @@ class Url
     /**
      * exec the curl object
      *
-     * @param resource $Curl
+     * @param CurlHandle $Curl
      *
      * @return bool|string
      */
-    public static function exec($Curl)
+    public static function exec(CurlHandle $Curl): bool|string
     {
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);
 
             $newUrl = curl_getinfo($Curl, CURLINFO_EFFECTIVE_URL);
             $rch = curl_copy_handle($Curl);
+            $mr = 10;
 
             curl_setopt($rch, CURLOPT_HEADER, true);
             curl_setopt($rch, CURLOPT_NOBODY, true);
@@ -205,7 +206,7 @@ class Url
 
         try {
             $returnCode = QUI\Utils\Request\Url::getInfo($url, CURLINFO_HTTP_CODE, $curlParams);
-        } catch (Exception $exception) {
+        } catch (Exception) {
             return false;
         }
 
