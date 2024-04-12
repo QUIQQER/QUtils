@@ -904,7 +904,7 @@ class Tables
     {
         $i = $this->getIndex($table);
 
-        if (!$i || empty($i)) {
+        if (empty($i)) {
             return false;
         }
 

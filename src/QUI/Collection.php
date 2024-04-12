@@ -83,7 +83,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @param mixed $Child
      * @param int|null $key
      */
-    public function append($Child, int $key = null)
+    public function append(mixed $Child, int $key = null): void
     {
         if ($this->isAllowed($Child)) {
             if (is_null($key)) {
@@ -99,7 +99,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      *
      * @param Collection ...$Collections
      */
-    public function merge(...$Collections)
+    public function merge(...$Collections): void
     {
         foreach ($Collections as $Collection) {
             // Check if the given collection is of the same type as our collection.
@@ -121,7 +121,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     /**
      * Clears the complete collection
      */
-    public function clear()
+    public function clear(): void
     {
         $this->children = [];
     }
@@ -141,7 +141,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      *
      * @param callable $function
      */
-    public function each(callable $function)
+    public function each(callable $function): void
     {
         foreach ($this->children as $key => $value) {
             $function($value, $key);
@@ -154,7 +154,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @return mixed
      * @throws Exception
      */
-    public function first()
+    public function first(): mixed
     {
         if (empty($this->children)) {
             throw new Exception('Item not found, Collection ist empty');
@@ -170,7 +170,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @return mixed
      * @throws Exception
      */
-    public function get(int $key)
+    public function get(int $key): mixed
     {
         if (empty($this->children) || !isset($this->children[$key])) {
             throw new Exception('Item not found, Collection ist empty');
@@ -186,7 +186,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @param mixed $Child
      * @param bool|int $pos - starts at 0, if $pos is false = child appended to the end
      */
-    public function insert($Child, $pos = false)
+    public function insert(mixed $Child, bool|int $pos = false): void
     {
         if (!$this->isAllowed($Child)) {
             return;
@@ -250,7 +250,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @return mixed
      * @throws Exception
      */
-    public function last()
+    public function last(): mixed
     {
         if (empty($this->children)) {
             throw new Exception('Item not found, Collection ist empty');
@@ -272,7 +272,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     }
 
     /**
-     * Applies the callback to each children of the collection
+     * Applies the callback to each child of the collection
      *
      * @param callable $function
      * @return array
@@ -288,7 +288,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      *
      * @param callable $function
      */
-    public function sort(callable $function)
+    public function sort(callable $function): void
     {
         usort($this->children, $function);
     }
@@ -340,7 +340,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @param mixed $Child
      * @return bool
      */
-    protected function isAllowed($Child): bool
+    protected function isAllowed(mixed $Child): bool
     {
         $allowed = $this->allowed;
         $key = array_keys($this->allowed);
@@ -381,35 +381,35 @@ class Collection implements IteratorAggregate, ArrayAccess
      *
      * @deprecated Use isSet($offset) instead.
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->isSet($offset);
     }
 
     /**
      * @param mixed $offset
-     * @return mixed|null
+     * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->children[$offset] ?? null;
     }
 
     /**
      * @param mixed $offset
-     * @param mixed $Child
+     * @param mixed $value
      *
      * @deprecated Use append($Child, $offset) instead
      */
-    public function offsetSet($offset, $Child): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->append($Child, $offset);
+        $this->append($value, $offset);
     }
 
     /**
      * @param mixed $offset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->children[$offset]);
     }
