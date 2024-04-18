@@ -33,10 +33,10 @@ class GetText extends QUI\QDOM
      * Constructor
      *
      * @param string $lang - Sprache
-     * @param string $domain - Domain, Gruppe
+     * @param string $domain - Domain, Groups
      * @param string $dir - Folder
      */
-    public function __construct($lang, $domain, $dir)
+    public function __construct(string $lang, string $domain, string $dir)
     {
         $this->setLanguage($lang);
         $this->setAttribute('domain', str_replace('/', '_', $domain));
@@ -48,7 +48,7 @@ class GetText extends QUI\QDOM
      *
      * @return boolean
      */
-    public function fileExist()
+    public function fileExist(): bool
     {
         return file_exists($this->getFile());
     }
@@ -57,7 +57,7 @@ class GetText extends QUI\QDOM
      * Return the .mo file path
      * @return string
      */
-    public function getFile()
+    public function getFile(): string
     {
         $locale = trim($this->getAttribute('locale'));
         $dir = trim($this->getAttribute('dir'));
@@ -71,7 +71,7 @@ class GetText extends QUI\QDOM
      *
      * @param string $lang
      */
-    public function setLanguage($lang)
+    public function setLanguage(string $lang): void
     {
         if (strlen($lang) == 2) {
             $lower = mb_strtolower($lang);
@@ -92,7 +92,7 @@ class GetText extends QUI\QDOM
      *
      * @return string
      */
-    public function get($key)
+    public function get(string $key): string
     {
         $this->set();
 
@@ -102,7 +102,7 @@ class GetText extends QUI\QDOM
     /**
      * Set all the bindings for gettext
      */
-    protected function set()
+    protected function set(): void
     {
         //@todo Ganzes System auf die Aktuelle Sprache inkl. Dezimal etc..
 

@@ -8,7 +8,6 @@ namespace QUI\Utils\XML;
 
 use DOMAttr;
 use DOMElement;
-use DOMNode;
 use QUI\Utils\DOM;
 
 use function htmlspecialchars;
@@ -25,11 +24,10 @@ class DOMParser
     /**
      * Parse a <input> XML DOMNode
      *
-     * @param DOMNode|DOMElement $Input
-     *
+     * @param DOMElement $Input
      * @return string
      */
-    public static function inputDomToString(DOMNode $Input): string
+    public static function inputDomToString(DOMElement $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -47,7 +45,7 @@ class DOMParser
 
         if (
             $Input->getAttribute('data-qui')
-            && strpos($attributes['attributes'], 'data-qui') === false
+            && !str_contains($attributes['attributes'], 'data-qui')
         ) {
             $dataQui = 'data-qui="' . $Input->getAttribute('data-qui') . '"';
         }
@@ -92,11 +90,11 @@ class DOMParser
     /**
      * Parse a <textarea> XML DOMNode
      *
-     * @param DOMNode|DOMElement $TextArea
+     * @param DOMElement $TextArea
      *
      * @return string
      */
-    public static function textareaDomToString(DOMNode $TextArea): string
+    public static function textareaDomToString(DOMElement $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -107,7 +105,7 @@ class DOMParser
 
         if (
             $TextArea->getAttribute('data-qui')
-            && strpos($attributes['attributes'], 'data-qui') === false
+            && !str_contains($attributes['attributes'], 'data-qui')
         ) {
             $dataQui = 'data-qui="' . $TextArea->getAttribute('data-qui') . '"';
         }
@@ -124,10 +122,10 @@ class DOMParser
     }
 
     /**
-     * @param DOMNode|DOMElement $Select
+     * @param DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(DOMNode $Select): string
+    public static function selectDomToString(DOMElement $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';
@@ -138,7 +136,7 @@ class DOMParser
 
         if (
             $Select->getAttribute('data-qui')
-            && strpos($attributes['attributes'], 'data-qui') === false
+            && !str_contains($attributes['attributes'], 'data-qui')
         ) {
             $dataQui = 'data-qui="' . $Select->getAttribute('data-qui') . '"';
         }
@@ -168,10 +166,10 @@ class DOMParser
     }
 
     /**
-     * @param DOMNode|DOMElement $Group
+     * @param DOMElement $Group
      * @return string
      */
-    public static function groupDomToString(DOMNode $Group): string
+    public static function groupDomToString(DOMElement $Group): string
     {
         if ($Group->nodeName != 'group') {
             return '';
@@ -193,11 +191,11 @@ class DOMParser
     /**
      * Button Element
      *
-     * @param DOMNode|DOMElement $Button
+     * @param DOMElement $Button
      *
      * @return string
      */
-    public static function buttonDomToString(DOMNode $Button): string
+    public static function buttonDomToString(DOMElement $Button): string
     {
         if (
             $Button->nodeName != 'button'
@@ -223,10 +221,10 @@ class DOMParser
     /**
      * Return needle DOMNode Attributes
      *
-     * @param DOMNode|DOMElement $Node
+     * @param DOMElement $Node
      * @return array
      */
-    public static function getAttributes(DOMNode $Node): array
+    public static function getAttributes(DOMElement $Node): array
     {
         $id = $Node->getAttribute('conf') . '-' . time();
         $conf = $Node->getAttribute('conf');
@@ -251,7 +249,7 @@ class DOMParser
             $data .= " $name=\"$value\"";
         }
 
-        if ($Node->getAttribute('label') === 0 || $Node->getAttribute('label') === 'false') {
+        if (!$Node->getAttribute('label') || $Node->getAttribute('label') === 'false') {
             $label = false;
         }
 
@@ -314,7 +312,7 @@ class DOMParser
             $labelStyle = ' style="' . $attributes['label-style'] . '"';
         }
 
-        if (!isset($attributes['label']) || $attributes['label'] != false) {
+        if (!isset($attributes['label']) || $attributes['label']) {
             $string = '<label class="field-container"' . $labelStyle . '>';
             $string .= '<div class="field-container-item" title="' . $attributes['text'] . '">';
             $string .= $attributes['text'];

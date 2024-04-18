@@ -71,7 +71,7 @@ class Settings
      *
      * @param string $xmlPath
      */
-    public function setXMLPath(string $xmlPath)
+    public function setXMLPath(string $xmlPath): void
     {
         $this->xmlPath = $xmlPath;
     }
@@ -82,7 +82,7 @@ class Settings
      * @param bool|string $windowName
      * @return array
      */
-    public function getPanel($xmlFiles, $windowName = false): array
+    public function getPanel($xmlFiles, bool|string $windowName = false): array
     {
         $result = [
             'title' => '',
@@ -94,7 +94,7 @@ class Settings
         }
 
         foreach ($xmlFiles as $xmlFile) {
-            if (strpos($xmlFile, CMS_DIR) === false) {
+            if (!str_contains($xmlFile, CMS_DIR)) {
                 $xmlFile = CMS_DIR . $xmlFile;
             }
 
@@ -156,7 +156,7 @@ class Settings
      * @param array|string $xmlFiles
      * @return Collection
      */
-    public function getCategories($xmlFiles): Collection
+    public function getCategories(array|string $xmlFiles): Collection
     {
         if (is_string($xmlFiles)) {
             $xmlFiles = [$xmlFiles];
@@ -175,7 +175,7 @@ class Settings
         };
 
         foreach ($xmlFiles as $xmlFile) {
-            if (strpos($xmlFile, CMS_DIR) === false) {
+            if (!str_contains($xmlFile, CMS_DIR)) {
                 $xmlFile = CMS_DIR . $xmlFile;
             }
 
@@ -390,11 +390,11 @@ class Settings
     /**
      * Return the HTML from a category or from multiple categories
      *
-     * @param string|array $files
+     * @param array|string $files
      * @param bool|string $categoryName
      * @return string
      */
-    public function getCategoriesHtml($files, $categoryName = false): string
+    public function getCategoriesHtml(array|string $files, bool|string $categoryName = false): string
     {
         $Collection = $this->getCategories($files);
         $result = '';

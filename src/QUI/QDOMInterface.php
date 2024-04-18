@@ -10,7 +10,7 @@ namespace QUI;
  * QUIQQER-DOM Class Interface
  *
  * The QDOM class emulate similar methods
- * like a DOMNode, its the main parent factory class
+ * like a DOMNode, it's the main parent factory class
  *
  * @author www.pcsg.de (Henning Leutz)
  */
@@ -23,50 +23,44 @@ interface QDOMInterface
      *
      * @return boolean
      */
-    public function existsAttribute($name);
+    public function existsAttribute(string $name): bool;
 
     /**
-     * returns a attribute
+     * returns an attribute
      * if the attribute is not set, it returns false
      *
      * @param string $name
-     *
      * @return mixed
      */
-    public function getAttribute($name);
+    public function getAttribute(string $name): mixed;
 
     /**
      * set an attribute
      *
      * @param string $name - name of the attribute
-     * @param string|boolean|array|object $val - value of the attribute
-     *
-     * @return QDOM this
+     * @param mixed $value
      */
-    public function setAttribute($name, $val);
+    public function setAttribute(string $name, mixed $value): void;
 
     /**
      * If you want to set more than one attribute
      *
      * @param array $attributes
-     *
-     * @return QDOM this
      */
-    public function setAttributes($attributes);
+    public function setAttributes(array $attributes): void;
 
     /**
      * Remove a attribute
      *
      * @param string $name
-     *
      * @return boolean
      */
-    public function removeAttribute($name);
+    public function removeAttribute(string $name): bool;
 
     /**
      * Return all attributes
      *
      * @return array
      */
-    public function getAttributes();
+    public function getAttributes(): array;
 }

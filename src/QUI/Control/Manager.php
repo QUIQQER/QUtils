@@ -64,9 +64,9 @@ class Manager
     /**
      * Add a css file
      *
-     * @param string $file - Path to the CSS File, the system file path, no relativ path
+     * @param string $file - Path to the CSS File, the system file path, no relative path
      */
-    public static function addCSSFile(string $file)
+    public static function addCSSFile(string $file): void
     {
         self::$cssFilesLoaded[$file] = true;
     }

@@ -6,6 +6,7 @@
 
 namespace QUI\Utils\Translation;
 
+use PSpell\Dictionary;
 use QUI;
 use QUI\Exception;
 
@@ -36,9 +37,9 @@ class PSpell extends QUI\QDOM
     /**
      * internal pspell object
      *
-     * @var $_Spell
+     * @var Dictionary|false $Spell
      */
-    protected $Spell;
+    protected Dictionary|false $Spell;
 
     /**
      * Constructor
@@ -79,7 +80,7 @@ class PSpell extends QUI\QDOM
      * @return boolean
      * @throws Exception
      */
-    public static function check()
+    public static function check(): bool
     {
         if (!function_exists('pspell_new')) {
             throw new Exception('PSpell is not installed');
@@ -95,7 +96,7 @@ class PSpell extends QUI\QDOM
      *
      * @return array
      */
-    public function translate($word)
+    public function translate(string $word): array
     {
         return pspell_suggest($this->Spell, $word);
     }
