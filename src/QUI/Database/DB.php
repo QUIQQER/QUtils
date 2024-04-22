@@ -7,6 +7,7 @@
 namespace QUI\Database;
 
 use DateTime;
+use Doctrine\DBAL\Connection;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -50,6 +51,8 @@ class DB extends QUI\QDOM
      * @var PDO|null
      */
     protected ?PDO $PDO = null;
+
+    protected ?\Doctrine\DBAL\Connection $Doctrine = null;
 
     /**
      * DBTable Object
@@ -99,21 +102,34 @@ class DB extends QUI\QDOM
      */
     public function __construct(array $attributes = [])
     {
-        // defaults
-        $this->setAttribute('host', 'localhost');
-        $this->setAttribute('driver', 'mysql');
-        $this->setAttribute('options', [
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
-        ]);
+        if (class_exists('\Doctrine\DBAL\Connection') && isset($attributes['doctrine'])) {
+            $Doctrine = $attributes['doctrine'];
 
-        if (isset($attributes['driver']) && empty($attributes['driver'])) {
-            unset($attributes['driver']);
+            if ($Doctrine instanceof \Doctrine\DBAL\Connection) {
+                $this->Doctrine = $Doctrine;
+                $Native = $this->Doctrine->getNativeConnection();
+
+                if ($Native instanceof PDO) {
+                    $this->PDO = $Native;
+                }
+            }
         }
 
-        // Attributes
-        $this->setAttributes($attributes);
+        if ($this->PDO === null) {
+            $this->setAttribute('host', 'localhost');
+            $this->setAttribute('driver', 'mysql');
+            $this->setAttribute('options', [
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            ]);
 
-        $this->PDO = $this->getNewPDO();
+            if (isset($attributes['driver']) && empty($attributes['driver'])) {
+                unset($attributes['driver']);
+            }
+
+            $this->setAttributes($attributes);
+            $this->PDO = $this->getNewPDO();
+        }
+
         $this->Tables = new Tables($this);
     }
 
@@ -128,6 +144,10 @@ class DB extends QUI\QDOM
      */
     public function getNewPDO(): PDO
     {
+        if ($this->Doctrine) {
+            return $this->PDO;
+        }
+
         $this->lastConnectTime = time();
 
         if ($this->getAttribute('dsn') === false) {
@@ -206,6 +226,10 @@ class DB extends QUI\QDOM
      */
     public function reconnect(): void
     {
+        if ($this->Doctrine) {
+            return;
+        }
+
         if ($this->PDO) {
             $this->PDO = null;
         }
