@@ -107,6 +107,7 @@ class DB extends QUI\QDOM
 
             if ($Doctrine instanceof \Doctrine\DBAL\Connection) {
                 $this->Doctrine = $Doctrine;
+                $this->setAttribute('dbname', $this->Doctrine->getDatabase());
                 $Native = $this->Doctrine->getNativeConnection();
 
                 if ($Native instanceof PDO) {
