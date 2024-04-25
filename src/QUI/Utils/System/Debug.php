@@ -44,11 +44,11 @@ class Debug
     /**
      * Set a Debug Marker
      *
-     * @param string|boolean $step - (optional)
+     * @param boolean|string $step - (optional)
      */
-    public static function marker($step = false)
+    public static function marker(bool|string $step = false): void
     {
-        if (self::$run == false) {
+        if (!self::$run) {
             return;
         }
 
@@ -73,7 +73,7 @@ class Debug
      */
     public static function output(): string
     {
-        if (self::$run == false) {
+        if (!self::$run) {
             return '';
         }
 
@@ -85,11 +85,11 @@ class Debug
         $start = false;
 
         foreach (self::$times as $key => $params) {
-            if ($before_time == false) {
+            if (!$before_time) {
                 $before_time = $params['time'];
                 $before_key = $key;
 
-                if (isset($params['step']) && !empty($params['step'])) {
+                if (!empty($params['step'])) {
                     $before_key = $params['step'];
                 }
 
@@ -97,7 +97,7 @@ class Debug
                 continue;
             }
 
-            if (isset($params['step']) && !empty($params['step'])) {
+            if (!empty($params['step'])) {
                 $key = $params['step'];
             }
 
@@ -108,8 +108,7 @@ class Debug
             $before_key = $key;
         }
 
-        $str .= "\nOverall: " . sprintf('%.3f', ($before_time - $start))
-            . " Sekunden\n\n";
+        $str .= "\nOverall: " . sprintf('%.3f', ($before_time - $start)) . " seconds\n\n";
 
         return $str;
     }

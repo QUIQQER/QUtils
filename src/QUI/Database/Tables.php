@@ -50,9 +50,11 @@ class Tables
      * Is the DB a sqlite db?
      *
      * @return boolean
+     * @deprecated
      */
     protected function isSQLite(): bool
     {
+        return false;
         return $this->DB->isSQLite();
     }
 

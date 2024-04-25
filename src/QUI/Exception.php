@@ -25,23 +25,23 @@ class Exception extends \Exception
      *
      * @var array
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * context data
      *
      * @var array
      */
-    protected $context = [];
+    protected array $context = [];
 
     /**
      * Constructor
      *
      * @param string|array $message - Text der Exception
-     * @param integer $code - Errorcode der Exception
+     * @param integer $code - Error code der Exception
      * @param array $context - [optional] Context data, which data
      */
-    public function __construct($message = null, $code = 0, $context = [])
+    public function __construct($message = null, int $code = 0, $context = [])
     {
         if (is_array($message)) {
             if (!isset($message[0]) || !isset($message[1])) {
@@ -65,7 +65,7 @@ class Exception extends \Exception
             }
         }
 
-        parent::__construct((string)$message, (int)$code);
+        parent::__construct((string)$message, $code);
 
         if (!empty($context)) {
             $this->context = $context;
@@ -77,7 +77,7 @@ class Exception extends \Exception
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return get_class($this);
     }
@@ -87,7 +87,7 @@ class Exception extends \Exception
      *
      * @return array
      */
-    public function getContext()
+    public function getContext(): array
     {
         return $this->context;
     }
@@ -97,7 +97,7 @@ class Exception extends \Exception
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $attributes = $this->attributes;
 
@@ -110,14 +110,14 @@ class Exception extends \Exception
     }
 
     /**
-     * returns a attribute
+     * returns an attribute
      * if the attribute is not set, it returns false
      *
      * @param string $name
      *
      * @return mixed
      */
-    public function getAttribute($name)
+    public function getAttribute(string $name): mixed
     {
         if (isset($this->attributes[$name])) {
             return $this->attributes[$name];
@@ -130,34 +130,23 @@ class Exception extends \Exception
      * set an attribute
      *
      * @param string $name - name of the attribute
-     * @param mixed $val - value of the attribute
-     *
-     * @return Exception this
+     * @param mixed $value - value of the attribute
      */
-    public function setAttribute($name, $val)
+    public function setAttribute(string $name, mixed $value): void
     {
-        $this->attributes[$name] = $val;
-
-        return $this;
+        $this->attributes[$name] = $value;
     }
 
     /**
      * If you want to set more than one attribute
      *
      * @param array $attributes
-     *
-     * @return Exception
+     * @return void
      */
-    public function setAttributes($attributes)
+    public function setAttributes(array $attributes): void
     {
-        if (!is_array($attributes)) {
-            return $this;
-        }
-
         foreach ($attributes as $key => $value) {
             $this->setAttribute($key, $value);
         }
-
-        return $this;
     }
 }

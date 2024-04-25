@@ -44,21 +44,11 @@ class Convert
      */
     public static function formPrice(int $price, int $type = 1): string
     {
-        switch ($type) {
-            case 2:
-                $price = number_format(round($price, 2), '2', ',', '.');
-                break;
-
-            case 3:
-                $price = number_format(round($price, 2), '2', '.', ',');
-                break;
-
-            default:
-                $price = round($price, 2);
-                break;
-        }
-
-        return $price;
+        return match ($type) {
+            2 => number_format(round($price, 2), '2', ',', '.'),
+            3 => number_format(round($price, 2), '2', '.', ','),
+            default => round($price, 2),
+        };
     }
 
     /**
@@ -99,9 +89,8 @@ class Convert
         $conv = str_replace("ß", chr(223), $conv);
         $conv = str_replace("'", chr(39), $conv);
         $conv = str_replace("´", chr(180), $conv);
-        $conv = str_replace("`", chr(96), $conv);
 
-        return $conv;
+        return str_replace("`", chr(96), $conv);
     }
 
     /**
@@ -117,9 +106,7 @@ class Convert
         [$year, $month, $day] = explode('-', $date);
         [$hour, $minute, $second] = explode(':', $time);
 
-        $timestamp = mktime($hour, $minute, $second, $month, $day, $year);
-
-        return $timestamp;
+        return mktime($hour, $minute, $second, $month, $day, $year);
     }
 
 
@@ -153,9 +140,8 @@ class Convert
             $conv = str_replace("ö", "oe", $conv);
             $conv = str_replace("Ü", "Ue", $conv);
             $conv = str_replace("ü", "ue", $conv);
-            $conv = str_replace("ß", "sz", $conv);
 
-            return $conv;
+            return str_replace("ß", "sz", $conv);
         }
 
         $conv = str_replace("Ae", "Ä", $conv);
@@ -164,13 +150,12 @@ class Convert
         $conv = str_replace("oe", "ö", $conv);
         $conv = str_replace("Ue", "Ü", $conv);
         $conv = str_replace("ue", "ü", $conv);
-        $conv = str_replace("sz", "ß", $conv);
 
-        return $conv;
+        return str_replace("sz", "ß", $conv);
     }
 
     /**
-     * Convert romanic signs to their latin counterpart
+     * Convert roman signs to their latin counterpart
      *
      * @param string $str
      *
@@ -283,10 +268,10 @@ class Convert
      * Possible values are from -1 to 1;
      *
      * @param string $hex - hex code
-     * @param int|float $percent - eq: 0.2 or -0.9
+     * @param float|int $percent - eq: 0.2 or -0.9
      * @return string
      */
-    public static function colorBrightness(string $hex, $percent): string
+    public static function colorBrightness(string $hex, float|int $percent): string
     {
         // Work out if hash given
         $hash = '';

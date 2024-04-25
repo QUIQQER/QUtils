@@ -63,14 +63,12 @@ class Orthos
         $str = self::clearFormRequest($str);
         $str = self::clearPath($str);
 
-        $str = htmlspecialchars($str);
-
-        return $str;
+        return htmlspecialchars($str);
     }
 
     /**
      * Remove all none characters in the string.
-     * none characters are no a-z A-z or 0-9
+     * none characters are no a-z A-Z or 0-9
      *
      * @param string $str
      * @param array $allowedList - list of allowed signs
@@ -85,7 +83,7 @@ class Orthos
             $chars .= implode($allowedList);
         }
 
-        return preg_replace("/[^{$chars}]/", "", $str);
+        return preg_replace("/[^$chars]/", "", $str);
     }
 
     /**
@@ -188,7 +186,7 @@ class Orthos
      * as both the server and client side can cache a compiled form of the query.
      *
      * @param string $str - Command
-     * @param boolean $escape - Escape the String (true or false}
+     * @param boolean $escape - Escape the String (true or false)
      *
      * @return string
      *
@@ -216,7 +214,7 @@ class Orthos
             return '';
         }
 
-        $str = preg_replace('/[^0-9,a-z,A-Z$_.]/i', '', $str);
+        $str = preg_replace('/[^0-9,a-zA-Z$_.]/i', '', $str);
         $str = str_replace('..', '', $str);
         $str = trim($str);
         $str = trim($str, '`');
@@ -260,7 +258,7 @@ class Orthos
      *
      * @return integer
      */
-    public static function parseInt($str): int
+    public static function parseInt(mixed $str): int
     {
         return (int)$str;
     }
@@ -292,7 +290,7 @@ class Orthos
      *
      * @return integer
      */
-    public static function date($val, string $type = 'DAY'): int
+    public static function date(int|string $val, string $type = 'DAY'): int
     {
         if ($type == 'MONTH') {
             $val = self::parseInt($val);
@@ -330,7 +328,7 @@ class Orthos
      *
      * @return boolean
      */
-    public static function checkdate($day, $month, $year): bool
+    public static function checkdate(mixed $day, mixed $month, mixed $year): bool
     {
         if (!is_int($day)) {
             return false;
@@ -350,26 +348,25 @@ class Orthos
     /**
      * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @param string|array $text
+     * @param array|string $text
      *
-     * @return string|array
-     * @see        \QUI\Utils\StringHelper::removeLineBreaks
+     * @return string
+     * @see        StringHelper::removeLineBreaks
      * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
-     *
      */
-    public static function removeLineBreaks($text): string
+    public static function removeLineBreaks(array|string $text): string
     {
-        return StringHelper::removeLineBreaks($text, '');
+        return StringHelper::removeLineBreaks($text);
     }
 
     /**
      * Checks a mail address for syntax
      *
-     * @param string $email - Mail Adresse
+     * @param string $email - Mail Address
      *
      * @return boolean
      */
-    public static function checkMailSyntax($email): bool
+    public static function checkMailSyntax(string $email): bool
     {
         return preg_match(
             '/^([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,64}\@{1}([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,248}\.{1}([a-z]){2,6}$/i',
@@ -381,10 +378,9 @@ class Orthos
      * Checks a MySQL datetime for syntax
      *
      * @param string $date - 0000-00-00 00:00:00
-     *
      * @return boolean
      */
-    public static function checkMySqlDatetimeSyntax($date): bool
+    public static function checkMySqlDatetimeSyntax(string $date): bool
     {
         // Nur Zahlen erlaubt
         if (preg_match('/[^0-9- :]/i', $date)) {
@@ -403,10 +399,9 @@ class Orthos
      * Checks a MySQL timestamp for syntax
      *
      * @param string $date - 0000-00-00 00:00:00
-     *
      * @return boolean
      */
-    public static function checkMySqlTimestampSyntax($date): bool
+    public static function checkMySqlTimestampSyntax(string $date): bool
     {
         return self::checkMySqlDatetimeSyntax($date);
     }
@@ -418,14 +413,12 @@ class Orthos
      *
      * @return boolean
      */
-    public static function checkMySqlDateSyntax($date): bool
+    public static function checkMySqlDateSyntax(string $date): bool
     {
-        // Nur Zahlen erlaubt
         if (preg_match('/[^0-9- :]/i', $date)) {
             return false;
         }
 
-        // Syntaxprüfung
         if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $date)) {
             return false;
         }
@@ -598,7 +591,7 @@ class Orthos
      * @param string $replace - replacement character for unsafe / ambiguous characters
      * @return string - filtered string
      */
-    public static function urlEncodeString($str, $replace = "-"): string
+    public static function urlEncodeString(string $str, string $replace = "-"): string
     {
         if (!is_string($replace)) {
             $replace = "-";

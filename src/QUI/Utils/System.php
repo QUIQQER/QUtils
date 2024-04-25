@@ -99,7 +99,7 @@ class System
      * Checks the memory consumption
      *
      * If 80% of consumption was given returns true
-     * If self::$memory_limit is not set | false | null, than always return false
+     * If self::$memory_limit is not set | false | null, then always return false
      *
      * @return boolean
      */
@@ -111,7 +111,7 @@ class System
 
         // 80% abfragen
         $usage = (int)(memory_get_usage() / 1024 / 1000); // in MB
-        $max = (int)self::$memory_limit;
+        $max = self::$memory_limit;
         $_max = $max / 100 * 80; // 80%
 
         if ($_max < $usage) {
@@ -124,7 +124,7 @@ class System
     /**
      * IP des Clients bekommen, auch durch Proxys
      *
-     * @return string
+     * @return string|null
      */
     public static function getClientIP(): ?string
     {
@@ -165,10 +165,9 @@ class System
      * Check if a shell function is callable
      *
      * @param string $function - Name of the shell function (e.g. exec, shell_exec, etc.)
-     *
      * @return boolean
      */
-    public static function isShellFunctionEnabled($function): bool
+    public static function isShellFunctionEnabled(string $function): bool
     {
         if (!is_callable($function)) {
             return false;
@@ -187,13 +186,13 @@ class System
      *
      * @return bool
      */
-    public static function isSystemFunctionCallable($function): bool
+    public static function isSystemFunctionCallable(string $function): bool
     {
         if (!static::isShellFunctionEnabled('exec')) {
             return false;
         }
 
-        exec("command -v {$function}", $output, $returnCode);
+        exec("command -v $function", $output, $returnCode);
 
         return $returnCode == 0;
     }

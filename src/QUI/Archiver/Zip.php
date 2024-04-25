@@ -15,7 +15,6 @@ use function class_exists;
 use function count;
 use function file_exists;
 use function is_array;
-use function substr;
 
 /**
  * ZIP archiver
@@ -63,7 +62,7 @@ class Zip
      *
      * @throws Exception
      */
-    public static function zip(string $folder, string $zipFile, array $ignore = [])
+    public static function zip(string $folder, string $zipFile, array $ignore = []): void
     {
         self::check();
 
@@ -77,7 +76,7 @@ class Zip
             $ignore = [];
         }
 
-        if (substr($folder, -1) != '/') {
+        if (!str_ends_with($folder, '/')) {
             $folder .= '/';
         }
 
@@ -113,7 +112,7 @@ class Zip
      *
      * @throws Exception
      */
-    public static function zipFiles(array $files, string $zipFile)
+    public static function zipFiles(array $files, string $zipFile): void
     {
         self::check();
 
@@ -145,7 +144,7 @@ class Zip
      *
      * @throws Exception
      */
-    public static function unzip(string $zipFile, string $to)
+    public static function unzip(string $zipFile, string $to): void
     {
         self::check();
 

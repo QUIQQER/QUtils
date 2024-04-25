@@ -18,8 +18,6 @@ use function file_exists;
 use function ini_get;
 use function realpath;
 use function set_time_limit;
-use function strlen;
-use function substr;
 
 /**
  * Class Folder
@@ -28,7 +26,7 @@ class Folder
 {
     /**
      * Returns the size of the given folder in bytes.
-     * By default the value is returned from cache.
+     * By default, the value is returned from cache.
      * If there is no value in cache, null is returned, unless you set the force parameter to true.
      * Only if you really need to get a freshly calculated result, you may set the force parameter to true.
      * When using the force parameter expect timeouts since the calculation could take a lot of time.
@@ -36,7 +34,7 @@ class Folder
      * @param string $path - The folder's path
      * @param boolean $force - Force a calculation of the folder's size. Values aren't returned from cache. Expect timeouts.
      *
-     * @return int - The folder's size in bytes
+     * @return int|null - The folder's size in bytes
      */
     public static function getFolderSize(string $path, bool $force = false): ?int
     {
@@ -48,7 +46,7 @@ class Folder
         // Return the value from cache
         try {
             return Manager::get(self::getFolderSizeCacheKey($path));
-        } catch (Exception $Exception) {
+        } catch (Exception) {
             // If there is no value in cache, return null, since 0 could be an empty folder.
             return null;
         }
@@ -66,7 +64,7 @@ class Folder
     {
         try {
             $timestamp = Manager::get(self::getFolderSizeTimestampCacheKey($path));
-        } catch (Exception $Exception) {
+        } catch (Exception) {
             $timestamp = null;
         }
 
@@ -113,8 +111,8 @@ class Folder
                 }
             }
 
-            // Reset the time limit to it's default value.
-            // This ensures that following code execution doesn't timeout after two seconds.
+            // Reset the time limit to its default value.
+            // This ensures that following code execution doesn't time out after two seconds.
             set_time_limit($maxExecTime);
         }
 
@@ -144,7 +142,7 @@ class Folder
     protected static function sanitizePath(string $path): string
     {
         // Add slash to the end of the path if it's not present
-        if (substr($path, strlen($path) - 1) != '/') {
+        if (!str_ends_with($path, '/')) {
             $path .= '/';
         }
 

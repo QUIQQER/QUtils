@@ -29,7 +29,7 @@ class Installation
 
     /**
      * Returns the size of the whole QUIQQER installation in bytes.
-     * By default the value is returned from cache.
+     * By default, the value is returned from cache.
      * If there is no value in cache, null is returned, unless you set the force parameter to true.
      * Only if you really need to get a freshly calculated result, you may set the force parameter to true.
      * When using the force parameter expect timeouts since the calculation could take a lot of time.
@@ -38,7 +38,7 @@ class Installation
      *
      * @return int
      */
-    public static function getWholeFolderSize($force = false)
+    public static function getWholeFolderSize(bool $force = false): int
     {
         return Folder::getFolderSize(CMS_DIR, $force);
     }
@@ -49,7 +49,7 @@ class Installation
      *
      * @return int|null
      */
-    public static function getWholeFolderSizeTimestamp()
+    public static function getWholeFolderSizeTimestamp(): ?int
     {
         return Folder::getFolderSizeTimestamp(CMS_DIR);
     }
@@ -57,16 +57,16 @@ class Installation
 
     /**
      * Returns how many files are inside the QUIQQER installation.
-     * By default the value is returned from cache.
+     * By default, the value is returned from cache.
      * If there is no value in cache, null is returned, unless you set the force parameter to true.
      * Only if you really need to get a freshly calculated result, you may set the force parameter to true.
      * When using the force parameter expect timeouts since the calculation could take a lot of time.
      *
      * @param boolean $force - Force a calculation of the folder's size. Values aren't returned from cache. Expect timeouts.
      *
-     * @return int|null - The amount of files or null if no cached value is present
+     * @return float|int|string|null - The amount of files or null if no cached value is present
      */
-    public static function getAllFileCount($force = false)
+    public static function getAllFileCount(bool $force = false): float|int|string|null
     {
         if ($force) {
             return self::countAllFiles();
@@ -74,7 +74,7 @@ class Installation
 
         try {
             $fileCount = Manager::get(self::CACHE_KEY_FILE_COUNT);
-        } catch (Exception $Exception) {
+        } catch (Exception) {
             $fileCount = null;
         }
 
@@ -87,11 +87,11 @@ class Installation
      *
      * @return int|null
      */
-    public static function getAllFileCountTimestamp()
+    public static function getAllFileCountTimestamp(): ?int
     {
         try {
             $timestamp = Manager::get(self::CACHE_KEY_FILE_COUNT_TIMESTAMP);
-        } catch (Exception $Exception) {
+        } catch (Exception) {
             $timestamp = null;
         }
 
@@ -103,9 +103,9 @@ class Installation
      *
      * @param boolean $doNotCache - Should the result be stored in cache?
      *
-     * @return int
+     * @return float|int|string|null
      */
-    protected static function countAllFiles($doNotCache = false)
+    protected static function countAllFiles(bool $doNotCache = false): float|int|string|null
     {
         $fileCount = null;
 
@@ -144,7 +144,7 @@ class Installation
      * Returns the size of the installation's var/ folder in bytes.
      * If the first parameter is set to true the var/cache/ folder is excluded.
      *
-     * By default the value is returned from cache.
+     * By default, the value is returned from cache.
      * If there is no value in cache, null is returned, unless you set the force parameter to true.
      * Only if you really need to get a freshly calculated result, you may set the force parameter to true.
      * When using the force parameter expect timeouts since the calculation could take a lot of time.
@@ -154,7 +154,7 @@ class Installation
      *
      * @return int|null - The amount of files or null if no cached value is present
      */
-    public static function getVarFolderSize($excludeCacheFolder = false, $force = false)
+    public static function getVarFolderSize(bool $excludeCacheFolder = false, bool $force = false): ?int
     {
         $size = Folder::getFolderSize(VAR_DIR, $force);
 
@@ -171,7 +171,7 @@ class Installation
      *
      * @return int|null
      */
-    public static function getVarFolderSizeTimestamp()
+    public static function getVarFolderSizeTimestamp(): ?int
     {
         return Folder::getFolderSizeTimestamp(VAR_DIR);
     }

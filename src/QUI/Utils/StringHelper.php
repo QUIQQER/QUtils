@@ -86,11 +86,11 @@ class StringHelper
     /**
      * Converts JavaScript strings to real strings for PHP
      *
-     * @param string|boolean $value
+     * @param boolean|string $value
      *
      * @return string
      */
-    public static function JSString($value): string
+    public static function JSString(bool|string $value): string
     {
         if (is_string($value)) {
             return $value;
@@ -103,12 +103,12 @@ class StringHelper
      * Simplified Pathinfo
      *
      * @param string $path - path to file
-     * @param integer|bool $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
+     * @param bool|integer $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      *
      * @return array|string
      * @throws Exception
      */
-    public static function pathinfo($path, $options = false)
+    public static function pathinfo(string $path, bool|int $options = false): array|string
     {
         if (!file_exists($path)) {
             throw new Exception('File ' . $path . ' not exists');
@@ -197,9 +197,7 @@ class StringHelper
             $_str = preg_replace($regex, "$1", $_str);
         }
 
-        $_str = utf8_encode($_str);
-
-        return $_str;
+        return utf8_encode($_str);
     }
 
     /**
@@ -285,7 +283,7 @@ class StringHelper
         }
 
         if (
-            !((bool)preg_match(
+            !(preg_match(
                 '~[\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF\xC0\xC1]~ms',
                 $str
             ))
@@ -357,10 +355,9 @@ class StringHelper
      * From php.net
      *
      * @param string|float|mixed $str
-     *
-     * @return float
+     * @return float|int
      */
-    public static function parseFloat($str)
+    public static function parseFloat(mixed $str): float|int
     {
         if (is_float($str)) {
             return $str;
@@ -370,7 +367,7 @@ class StringHelper
             return 0;
         }
         // @todo lokaliesierung richtig prüfen localeconv()
-        if (strstr((string)$str, ",")) {
+        if (str_contains((string)$str, ",")) {
             $str = str_replace(".", "", (string)$str);
             $str = str_replace(",", ".", (string)$str);
         }
@@ -402,7 +399,7 @@ class StringHelper
      *
      * @return array|string|string[]
      */
-    public static function number2db($value)
+    public static function number2db(mixed $value): array|string
     {
         $larr = localeconv();
         $search = [
@@ -429,12 +426,8 @@ class StringHelper
      * @deprecated
      *
      */
-    public static function tagCloud($tags, $start = 26, $min = 10)
+    public static function tagCloud(array $tags, int $start = 26, int $min = 10): string
     {
-        if (!is_array($tags)) {
-            $tags = [];
-        }
-
         for ($i = 0, $len = count($tags); $i < $len; $i++) {
             $tags[$i]['count'] = $i;
         }
@@ -574,7 +567,7 @@ class StringHelper
      */
     public static function replaceLast(string $search, string $replace, string $string): string
     {
-        if (strpos($string, $search) === false) {
+        if (!str_contains($string, $search)) {
             return $string;
         }
 
@@ -633,7 +626,7 @@ class StringHelper
 
         // Period at start must be the same as pattern:
         if ($flags & FNM_PERIOD) {
-            if (strpos($string, '.') === 0 && strpos($pattern, '.') !== 0) {
+            if (str_starts_with($string, '.') && !str_starts_with($pattern, '.')) {
                 return false;
             }
         }
@@ -676,8 +669,9 @@ class StringHelper
      * @param string $format
      * @param ?int|?string $timestamp
      * @return string
+     * @throws \Exception
      */
-    public static function strftime(string $format, $timestamp = null): string
+    public static function strftime(string $format, int|string $timestamp = null): string
     {
         if (null === $timestamp) {
             $timestamp = new DateTime();
