@@ -7,13 +7,12 @@
 namespace QUI;
 
 use function get_class;
-use function is_array;
 
 /**
  * QUIQQER-DOM Class
  *
  * The QDOM class emulate similar methods
- * like a DOMNode, its the main parent factory class
+ * like a DOMNode, it's the main parent factory class
  *
  * @author  www.pcsg.de (Henning Leutz)
  */
@@ -24,29 +23,27 @@ class QDOM
      *
      * @var array
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * Exist the attribute in the object?
      *
      * @param string $name
-     *
      * @return boolean
      */
-    public function existsAttribute($name)
+    public function existsAttribute(string $name): bool
     {
         return isset($this->attributes[$name]);
     }
 
     /**
-     * returns a attribute
+     * returns an attribute
      * if the attribute is not set, it returns false
      *
      * @param string $name
-     *
      * @return mixed
      */
-    public function getAttribute($name)
+    public function getAttribute(string $name): mixed
     {
         if (isset($this->attributes[$name])) {
             return $this->attributes[$name];
@@ -59,45 +56,32 @@ class QDOM
      * set an attribute
      *
      * @param string $name - name of the attribute
-     * @param string|boolean|array|object $val - value of the attribute
-     *
-     * @return QDOM this
+     * @param mixed $value
      */
-    public function setAttribute($name, $val)
+    public function setAttribute(string $name, mixed $value): void
     {
-        $this->attributes[$name] = $val;
-
-        return $this;
+        $this->attributes[$name] = $value;
     }
 
     /**
      * If you want to set more than one attribute
      *
      * @param array $attributes
-     *
-     * @return QDOM this
      */
-    public function setAttributes($attributes)
+    public function setAttributes(array $attributes): void
     {
-        if (!is_array($attributes)) {
-            return $this;
-        }
-
         foreach ($attributes as $key => $value) {
             $this->setAttribute($key, $value);
         }
-
-        return $this;
     }
 
     /**
      * Remove a attribute
      *
      * @param string $name
-     *
      * @return boolean
      */
-    public function removeAttribute($name)
+    public function removeAttribute(string $name): bool
     {
         if (isset($this->attributes[$name])) {
             unset($this->attributes[$name]);
@@ -110,19 +94,8 @@ class QDOM
      * Return all attributes
      *
      * @return array
-     * @deprecated getAllAttributes is depricated use getAttributes()
      */
-    public function getAllAttributes()
-    {
-        return $this->getAttributes();
-    }
-
-    /**
-     * Return all attributes
-     *
-     * @return array
-     */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -132,7 +105,7 @@ class QDOM
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return get_class($this);
     }
@@ -143,22 +116,8 @@ class QDOM
      * @param string $className
      * @return bool
      */
-    public function isInstanceOf($className)
+    public function isInstanceOf(string $className): bool
     {
         return $this instanceof $className;
-    }
-
-    /**
-     * Return the object as string
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        if ($this->getAttribute('name')) {
-            return 'Object ' . get_class($this) . '(' . $this->getAttribute('name') . ');';
-        }
-
-        return 'Object ' . get_class($this) . '();';
     }
 }

@@ -24,7 +24,7 @@ class Grid extends QUI\QDOM
      *
      * @param array $params - optional
      */
-    public function __construct($params = [])
+    public function __construct(array $params = [])
     {
         // defaults
         $this->setAttribute('max', 50);
@@ -40,7 +40,7 @@ class Grid extends QUI\QDOM
      *
      * @return array
      */
-    public function parseDBParams($params = [])
+    public function parseDBParams(array $params = []): array
     {
         $query = [];
 
@@ -63,7 +63,7 @@ class Grid extends QUI\QDOM
             $query['limit'] = $params['limit'];
         }
 
-        if (isset($params['sortOn']) && !empty($params['sortOn'])) {
+        if (!empty($params['sortOn'])) {
             $sortBy = '';
             $sortOn = $params['sortOn'];
 
@@ -85,11 +85,11 @@ class Grid extends QUI\QDOM
      * Prepares the result for the Grid
      *
      * @param array $data
-     * @param integer|boolean $count
+     * @param boolean|integer $count
      *
      * @return array
      */
-    public function parseResult($data, $count = false)
+    public function parseResult(array $data, bool|int $count = false): array
     {
         if ($count === false) {
             $count = count($data);
@@ -111,7 +111,7 @@ class Grid extends QUI\QDOM
      *
      * @return array
      */
-    public static function getResult($data, $page, $limit)
+    public static function getResult(array $data, int $page, int $limit): array
     {
         $count = count($data);
         $end = $page * $limit;

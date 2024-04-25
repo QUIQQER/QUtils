@@ -22,7 +22,7 @@
     "url": "http:\/\/www.pcsg.de"
   },
   "require": {
-    "php": "^8",
+    "php": "^8.1",
     "dusank\/knapsack": "^10",
     "symfony/polyfill-php81": "*",
     "symfony/polyfill-php82": "*",

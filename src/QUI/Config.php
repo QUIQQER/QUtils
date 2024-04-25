@@ -50,9 +50,9 @@ class Config
      * @param string $filename - (optional) Path to the config
      * @throws QUI\Exception
      */
-    public function __construct($filename = '')
+    public function __construct(string $filename = '')
     {
-        if (!file_exists($filename) && substr($filename, -4) !== '.php') {
+        if (!file_exists($filename) && !str_ends_with($filename, '.php')) {
             $filename .= '.php';
         }
 

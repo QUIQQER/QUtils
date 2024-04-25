@@ -13,4 +13,8 @@ namespace QUI\Database;
  */
 class Exception extends \QUI\Exception
 {
+    public function __construct($message = null, int|string $code = 0, $context = [])
+    {
+        parent::__construct($message, (int)$code, $context);
+    }
 }

@@ -62,8 +62,6 @@ use function set_time_limit;
 use function sprintf;
 use function str_replace;
 use function strcasecmp;
-use function strlen;
-use function strpos;
 use function strrchr;
 use function strrpos;
 use function strtolower;
@@ -569,11 +567,11 @@ class File
     /**
      * Returns the Bytes of a php ini value
      *
-     * @param string|int $val - 129M
+     * @param int|string $val - 129M
      *
      * @return integer
      */
-    public static function getBytes($val): int
+    public static function getBytes(int|string $val): int
     {
         $last = '';
 
@@ -595,7 +593,7 @@ class File
                 $val *= 1024;
         }
 
-        return (int)$val;
+        return $val;
     }
 
     /**
@@ -666,9 +664,7 @@ class File
             throw new QUI\Exception("Could not copy directory: $from -> $to", 500, $dirCopyErrors);
         }
 
-        $isDeleteDirSuccessful = self::deleteDir($from);
-
-        return $isDeleteDirSuccessful;
+        return self::deleteDir($from);
     }
 
     /**
@@ -724,7 +720,7 @@ class File
 
         $info = [];
 
-        if (isset($params['pathinfo']) || $params == false) {
+        if (isset($params['pathinfo']) || !$params) {
             $p = pathinfo($file);
 
             $info = [
@@ -751,11 +747,11 @@ class File
             }
         }
 
-        if (isset($params['filesize']) || $params == false) {
+        if (isset($params['filesize']) || !$params) {
             $info['filesize'] = filesize($file);
         }
 
-        if (isset($params['imagesize']) || $params == false) {
+        if (isset($params['imagesize']) || !$params) {
             try {
                 $r = getimagesize($file);
 
@@ -763,12 +759,12 @@ class File
                     $info['width'] = $r[0];
                     $info['height'] = $r[1];
                 }
-            } catch (Exception $Exception) {
+            } catch (Exception) {
                 // ignore if not an image
             }
         }
 
-        if (isset($params['mime_type']) || $params == false) {
+        if (isset($params['mime_type']) || !$params) {
             if (function_exists('mime_content_type')) { // PHP interne Funktionen
                 $info['mime_type'] = mime_content_type($file);
             } elseif (
@@ -822,68 +818,6 @@ class File
     }
 
     /**
-     * Change image sites
-     *
-     * @param string $original - Pfad zum original Bild
-     * @param string $new_image - Pfad zum neuen Bild
-     * @param integer $new_width
-     * @param integer $new_height
-     *
-     * @return boolean
-     * @throws QUI\Exception
-     * @deprecated Use QUI\Utils\Image::resize
-     *
-     */
-    public static function resize(
-        string $original,
-        string $new_image,
-        int $new_width = 0,
-        int $new_height = 0
-    ): bool {
-        return QUI\Utils\Image::resize(
-            $original,
-            $new_image,
-            $new_width,
-            $new_height
-        );
-    }
-
-    /**
-     * Legt ein Wasserzeichen auf ein Bild
-     *
-     * @param string $image - Bild welches verändert werden soll
-     * @param string $watermark - Wasserzeichen
-     * @param string|boolean $newImage
-     * @param integer $top
-     * @param integer $left
-     *
-     * @throws QUI\Exception
-     * @deprecated Use QUI\Utils\Image::watermark
-     *
-     */
-    public static function watermark(
-        string $image,
-        string $watermark,
-        $newImage = false,
-        int $top = 0,
-        int $left = 0
-    ) {
-        QUI\Utils\Image::watermark($image, $watermark, $newImage, $top, $left);
-    }
-
-    /**
-     * Wandelt ein Bild in TrueColor um
-     *
-     * @param string $image - Path zum Bild
-     *
-     * @deprecated Use QUI\Utils\Image::convertToTrueColor
-     */
-    public static function convertToTrueColor(string $image)
-    {
-        QUI\Utils\Image::convertToTrueColor($image);
-    }
-
-    /**
      * Find files via fnmatch
      *
      * @param string $path
@@ -901,7 +835,7 @@ class File
         $result = [];
 
         while (($file = readdir($dh)) !== false) {
-            if (substr($file, 0, 1) == '.') {
+            if (str_starts_with($file, '.')) {
                 continue;
             }
 
@@ -932,7 +866,7 @@ class File
      */
     public function readDirRecursiv(string $folder, bool $flatten = false): array
     {
-        if (substr($folder, strlen($folder) - 1) != '/') {
+        if (!str_ends_with($folder, '/')) {
             $folder .= '/';
         }
 
@@ -960,17 +894,17 @@ class File
     }
 
     /**
-     * Helper Methode für readDirRecursiv
+     * Helper Methode für readDirRecursive
      *
      * @param string $folder
      */
-    private function readDirRecursiveHelper(string $folder)
+    private function readDirRecursiveHelper(string $folder): void
     {
         $_f = $this->readDir($folder);
         $_tmp = str_replace($this->start_folder, '', $folder);
 
         foreach ($_f as $f) {
-            if (substr($folder, strlen($folder) - 1) != '/') {
+            if (!str_ends_with($folder, '/')) {
                 $folder .= '/';
             }
 
@@ -1082,7 +1016,7 @@ class File
     }
 
     /**
-     * Return the size of an folder
+     * Return the size of a folder
      *
      * @param $path
      * @return int
@@ -1147,7 +1081,7 @@ class File
      * found on:
      * http://www.phpgangsta.de/dateidownload-via-php-mit-speedlimit-und-resume
      */
-    public static function send(string $filePath, int $rate = 0, string $downloadFileName = null)
+    public static function send(string $filePath, int $rate = 0, string $downloadFileName = null): void
     {
         // Check if file exists
         if (!is_file($filePath)) {
@@ -1248,15 +1182,15 @@ class File
      *
      * @return boolean|array
      */
-    public static function dircopy(string $srcDir, string $dstDir)
+    public static function dircopy(string $srcDir, string $dstDir): bool|array
     {
         QUI\Utils\System\File::mkdir($dstDir);
 
-        if (substr($dstDir, -1) != '/') {
+        if (!str_ends_with($dstDir, '/')) {
             $dstDir = $dstDir . '/';
         }
 
-        if (substr($srcDir, -1) != '/') {
+        if (!str_ends_with($srcDir, '/')) {
             $srcDir = $srcDir . '/';
         }
 
@@ -1292,11 +1226,11 @@ class File
      * It can be given a complete path
      *
      * @param string $path - Path which is to be created
-     * @param int $mode - Permissions for the folder
+     * @param bool|int $mode - Permissions for the folder
      *
      * @return boolean
      */
-    public static function mkdir(string $path, $mode = false): bool
+    public static function mkdir(string $path, bool|int $mode = false): bool
     {
         if (is_dir($path)) {
             return true;
@@ -1356,7 +1290,7 @@ class File
      * @param string $file - Datei
      * @param string $line - String welcher geschrieben werden soll
      */
-    public static function putLineToFile(string $file, string $line = '')
+    public static function putLineToFile(string $file, string $line = ''): void
     {
         $fp = fopen($file, 'a');
 
@@ -1382,7 +1316,7 @@ class File
         $obd = explode(':', $obd);
 
         foreach ($obd as $dir) {
-            if (strpos($path, $dir) === 0) {
+            if (str_starts_with($path, $dir)) {
                 return true;
             }
         }
@@ -1398,7 +1332,7 @@ class File
      *
      * @throws QUI\Exception
      */
-    public static function downloadHeader(string $file, bool $deleteFile = false)
+    public static function downloadHeader(string $file, bool $deleteFile = false): void
     {
         if (!file_exists($file)) {
             throw new QUI\Exception('File not exist ' . $file, 404);
@@ -1432,7 +1366,7 @@ class File
      *
      * @throws QUI\Exception
      */
-    public static function fileHeader(string $file)
+    public static function fileHeader(string $file): void
     {
         if (!file_exists($file) || !is_file($file)) {
             throw new QUI\Exception('File not exist ' . $file, 404);
@@ -1465,12 +1399,11 @@ class File
      * FileSize einer Datei bekommen (auch über eine URL)
      *
      * @param string $url
-     *
-     * @return integer
+     * @return int|string
      */
-    public static function getFileSize(string $url)
+    public static function getFileSize(string $url): int|string
     {
-        if (substr($url, 0, 4) == 'http') {
+        if (str_starts_with($url, 'http')) {
             $x = array_change_key_case(
                 get_headers($url, 1),
                 CASE_LOWER
