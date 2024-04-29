@@ -7,6 +7,7 @@
 namespace QUI;
 
 use function get_class;
+use function is_array;
 
 /**
  * QUIQQER-DOM Class
@@ -66,10 +67,14 @@ class QDOM
     /**
      * If you want to set more than one attribute
      *
-     * @param array $attributes
+     * @param array|null $attributes
      */
-    public function setAttributes(array $attributes): void
+    public function setAttributes(?array $attributes): void
     {
+        if (!is_array($attributes)) {
+            return;
+        }
+
         foreach ($attributes as $key => $value) {
             $this->setAttribute($key, $value);
         }
