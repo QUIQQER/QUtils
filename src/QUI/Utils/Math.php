@@ -22,8 +22,8 @@ class Math
      * Percent calculation
      * Return the percentage integer value
      *
-     * @param integer|float $amount
-     * @param integer|float $total
+     * @param float|integer $amount
+     * @param float|integer $total
      * @param integer $decimals
      *
      * @return integer|float
@@ -31,16 +31,15 @@ class Math
      * @example $percent = QUI\Utils\Math::percent(20, 60); $percent=>33
      * @example echo QUI\Utils\Math::percent(50, 100) .'%';
      */
-    public static function percent($amount, $total, int $decimals = 0)
+    public static function percent(float|int $amount, float|int $total, int $decimals = 0): float|int
     {
         if ($amount == 0 || $total == 0) {
             return 0;
         }
 
         $result = number_format(($amount * 100) / $total, $decimals);
-        $result = floatval($result);
 
-        return $result;
+        return floatval($result);
     }
 
     /**
@@ -80,12 +79,11 @@ class Math
      *
      * found via http://stackoverflow.com/a/4133893
      *
-     * @param integer|float $n - value to round
-     * @param integer $x - Rount step -> default=10
-     *
-     * @return integer
+     * @param float|integer $n - value to round
+     * @param integer $x - Round step -> default=10
+     * @return float|int
      */
-    public static function roundUp($n, $x = 10)
+    public static function roundUp(float|int $n, int $x = 10): float|int
     {
         return (round($n) % $x === 0) ? round($n) : round(($n + $x / 2) / $x) * $x;
     }
@@ -96,12 +94,11 @@ class Math
      *
      * found via http://stackoverflow.com/a/4133893
      *
-     * @param integer|float $n - value to round
-     * @param integer $x - Rount step -> default=10
-     *
-     * @return integer
+     * @param float|integer $n - value to round
+     * @param integer $x - Round step -> default=10
+     * @return float|int
      */
-    public static function ceilUp($n, $x = 10)
+    public static function ceilUp(float|int $n, int $x = 10): float|int
     {
         return (ceil($n) % $x === 0) ? ceil($n) : round(($n + $x / 2) / $x) * $x;
     }

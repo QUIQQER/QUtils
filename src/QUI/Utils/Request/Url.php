@@ -32,13 +32,6 @@ use function trim;
 class Url
 {
     /**
-     * List of curl Objects
-     *
-     * @var array
-     */
-    public static array $Curls = [];
-
-    /**
      * Get the Curl Object
      *
      * @param string $url - Url

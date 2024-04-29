@@ -17,14 +17,14 @@ class ExceptionStack extends Exception
      *
      * @var array
      */
-    protected $list = [];
+    protected array $list = [];
 
     /**
      * Adds an exception to the stack
      *
      * @param Exception|\Exception $Exception
      */
-    public function addException($Exception)
+    public function addException(\Exception|Exception $Exception): void
     {
         $this->list[] = $Exception;
 
@@ -44,7 +44,7 @@ class ExceptionStack extends Exception
      *
      * @return array
      */
-    public function getExceptionList()
+    public function getExceptionList(): array
     {
         return $this->list;
     }
@@ -54,7 +54,7 @@ class ExceptionStack extends Exception
      *
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->list);
     }
@@ -64,7 +64,7 @@ class ExceptionStack extends Exception
      *
      * @return array
      */
-    public function getContext()
+    public function getContext(): array
     {
         $context = [];
 

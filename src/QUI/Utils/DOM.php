@@ -14,6 +14,9 @@ use DOMNodeList;
 use DOMXPath;
 use QUI;
 use QUI\Controls\Toolbar;
+use QUI\Projects\Project;
+use QUI\Projects\Site;
+use QUI\Projects\Site\Edit;
 use QUI\Projects\Site\Utils;
 
 use function array_merge;
@@ -23,14 +26,12 @@ use function file_exists;
 use function get_class;
 use function htmlspecialchars;
 use function implode;
-use function is_bool;
 use function is_string;
 use function mb_strpos;
 use function preg_replace;
 use function str_contains;
 use function str_replace;
 use function strlen;
-use function strpos;
 use function substr;
 use function time;
 use function trim;
@@ -63,11 +64,11 @@ class DOM
     /**
      * Fügt DOM XML Tabs in eine Toolbar ein
      *
-     * @param array|DOMNodeList $tabs
+     * @param DOMNodeList|array $tabs
      * @param QUI\Controls\Toolbar\Bar $TabBar
      * @param string $plugin - optional
      */
-    public static function addTabsToToolbar($tabs, Toolbar\Bar $TabBar, string $plugin = '')
+    public static function addTabsToToolbar(DOMNodeList|array $tabs, Toolbar\Bar $TabBar, string $plugin = ''): void
     {
         foreach ($tabs as $Tab) {
             /* @var $Tab DOMElement */
@@ -103,7 +104,7 @@ class DOM
                 'text' => $text,
                 'image' => $image,
                 'plugin' => $plugin,
-                'wysiwyg' => $type == 'wysiwyg' ? true : false,
+                'wysiwyg' => $type == 'wysiwyg',
                 'type' => $type
             ]);
 
@@ -162,11 +163,10 @@ class DOM
     /**
      * Button Element
      *
-     * @param DOMNode|DOMElement $Button
-     *
+     * @param DOMElement $Button
      * @return string
      */
-    public static function buttonDomToString(DOMNode $Button): string
+    public static function buttonDomToString(DOMElement $Button): string
     {
         if ($Button->nodeName != 'button') {
             return '';
@@ -196,11 +196,10 @@ class DOM
     /**
      * Table Datenbank DOmNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode|DOMElement $Table
-     *
+     * @param DOMElement $Table
      * @return array
      */
-    public static function dbTableDomToArray(DOMNode $Table): array
+    public static function dbTableDomToArray(DOMElement $Table): array
     {
         $result = [
             'suffix' => $Table->getAttribute('name'),
@@ -309,14 +308,12 @@ class DOM
     /**
      * Field Datenbank DOmNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode|DOMElement $Field
-     *
+     * @param DOMElement $Field
      * @return array
      */
-    public static function dbFieldDomToArray(DOMNode $Field): array
+    public static function dbFieldDomToArray(DOMElement $Field): array
     {
-        $str = '';
-        $str .= $Field->getAttribute('type');
+        $str = $Field->getAttribute('type');
 
         if (empty($str)) {
             $str .= 'text';
@@ -419,7 +416,7 @@ class DOM
     /**
      * Return the tabs
      *
-     * @param DOMElement|DOMNode $DOMNode
+     * @param DOMElement $DOMNode $DOMNode
      * @return array
      */
     public static function getTabs(DOMElement $DOMNode): array
@@ -449,11 +446,11 @@ class DOM
      * HTML eines DOM Tabs
      *
      * @param string $name
-     * @param QUI\Projects\Project|string|QUI\Projects\Site|QUI\Projects\Site\Edit $Object - string = path to user.xml File
-     *
+     * @param string|Edit|Project|Site $Object - string = path to user.xml File
+     * @param array $engineParams
      * @return string
      */
-    public static function getTabHTML(string $name, $Object, $engineParams = []): string
+    public static function getTabHTML(string $name, Project|Edit|string|Site $Object, array $engineParams = []): string
     {
         $tabs = [];
         $current = QUI::getLocale()->getCurrent();
@@ -491,14 +488,7 @@ class DOM
                             }
 
                             // generate html
-                            try {
-                                $Engine = QUI::getTemplateManager()->getEngine(true);
-                            } catch (QUI\Exception $Exception) {
-                                QUI\System\Log::writeDebugException($Exception);
-
-                                return '';
-                            }
-
+                            $Engine = QUI::getTemplateManager()->getEngine(true);
                             $Engine->assign($engineParams);
 
                             $QUI = new QUI();
@@ -537,12 +527,9 @@ class DOM
      * Return the buttons from <categories>
      *
      * @param DomDocument|DomElement $Dom
-     *
      * @return array
-     *
-     * @throws QUI\Exception
      */
-    public static function getButtonsFromWindow($Dom): array
+    public static function getButtonsFromWindow(DomDocument|DOMElement $Dom): array
     {
         $btnList = $Dom->getElementsByTagName('categories');
 
@@ -571,9 +558,6 @@ class DOM
             $Button->setAttribute('name', $Param->getAttribute('name'));
             $Button->setAttribute('require', $Param->getAttribute('require'));
             $Button->setAttribute('index', $index);
-
-            //            $onload   = $Param->getElementsByTagName( 'onload' );
-            //            $onunload = $Param->getElementsByTagName( 'onunload' );
 
             $btnParams = $Param->childNodes;
 
@@ -637,12 +621,12 @@ class DOM
      * Search a <locale> node into the DOMNode and parse it
      * if no <locale exist, it return the nodeValue
      *
-     * @param DOMNode|DOMElement $Node
+     * @param DOMElement $Node
      * @param boolean $translate - direct translation? default = true
      *
      * @return string|array
      */
-    public static function getTextFromNode(DOMNode $Node, bool $translate = true)
+    public static function getTextFromNode(DOMElement $Node, bool $translate = true): array|string
     {
         $loc = $Node->getElementsByTagName('locale');
 
@@ -778,13 +762,11 @@ class DOM
     /**
      * Return the config parameter from an DOMNode Element
      *
-     * @param DOMDocument|DOMNode $Dom
+     * @param DOMNode|DOMDocument $Dom
      * @param bool $withCustomParams - Should custom parameters be considered?
      * @return array
-     *
-     * @throws QUI\Exception
      */
-    public static function getConfigParamsFromDOM($Dom, bool $withCustomParams = false): array
+    public static function getConfigParamsFromDOM(DOMNode|DomDocument $Dom, bool $withCustomParams = false): array
     {
         $Settings = $Dom;
 
@@ -852,12 +834,9 @@ class DOM
      * if a settings window exist in it
      *
      * @param DomDocument|DOMElement $Dom
-     *
      * @return QUI\Controls\Windows\Window|bool
-     *
-     * @throws QUI\Exception
      */
-    public static function parseDomToWindow($Dom)
+    public static function parseDomToWindow(DomDocument|DOMElement $Dom): QUI\Controls\Windows\Window|bool
     {
         $settings = $Dom->getElementsByTagName('settings');
 
@@ -867,14 +846,14 @@ class DOM
 
         /* @var $Settings DOMElement */
         $Settings = $settings->item(0);
-        $winlist = $Settings->getElementsByTagName('window');
+        $winList = $Settings->getElementsByTagName('window');
 
-        if (!$winlist->length) {
+        if (!$winList->length) {
             return false;
         }
 
         /* @var $Window DOMElement */
-        $Window = $winlist->item(0);
+        $Window = $winList->item(0);
         $Win = new QUI\Controls\Windows\Window();
 
         // name
@@ -900,12 +879,10 @@ class DOM
             $Element = $params->item(0);
             $icon = $Element->getElementsByTagName('icon');
 
-            if ($Element) {
-                $Win->setAttribute(
-                    'icon',
-                    self::parseVar($icon->item(0)->nodeValue)
-                );
-            }
+            $Win->setAttribute(
+                'icon',
+                self::parseVar($icon->item(0)->nodeValue)
+            );
         }
 
         // Window buttons
@@ -939,15 +916,15 @@ class DOM
         $title = '';
         $text = '';
 
-        if ($Titles && $Titles->length) {
+        if ($Titles->length) {
             $title = self::getTextFromNode($Titles->item(0));
         }
 
-        if ($Texts && $Texts->length) {
+        if ($Texts->length) {
             $text = self::getTextFromNode($Texts->item(0));
         }
 
-        if ($Images && $Images->item(0)) {
+        if ($Images->item(0)) {
             $image = self::parseVar($Images->item(0)->nodeValue);
         }
 
@@ -962,11 +939,10 @@ class DOM
     /**
      * Parse a DOMNode permission to an array
      *
-     * @param DOMNode|DOMElement $Node
-     *
+     * @param DOMElement $Node
      * @return array
      */
-    public static function parsePermissionToArray(DOMNode $Node): array
+    public static function parsePermissionToArray(DOMElement $Node): array
     {
         if ($Node->nodeName != 'permission') {
             return [];
@@ -979,17 +955,17 @@ class DOM
         $RootPermission = $Node->getElementsByTagName('rootPermission');
         $EveryonePermission = $Node->getElementsByTagName('everyonePermission');
 
-        if ($Default && $Default->length) {
+        if ($Default->length) {
             $default = $Default->item(0)->nodeValue;
         }
 
-        if ($RootPermission && $RootPermission->length) {
+        if ($RootPermission->length) {
             $rootPermission = $RootPermission->item(0)->nodeValue;
         } else {
             $rootPermission = null;
         }
 
-        if ($EveryonePermission && $EveryonePermission->length) {
+        if ($EveryonePermission->length) {
             $everyonePermission = $EveryonePermission->item(0)->nodeValue;
         } else {
             $everyonePermission = null;
@@ -1012,17 +988,13 @@ class DOM
     /**
      * Wandelt ein Kategorie DomNode in entsprechendes HTML um
      *
-     * @param DOMNode|DOMElement $Category
+     * @param DOMElement $Category
      * @param string $current - current language
      *
      * @return string
      */
-    public static function parseCategoryToHTML($Category, string $current = ''): string
+    public static function parseCategoryToHTML(DOMElement $Category, string $current = ''): string
     {
-        if (is_bool($Category)) {
-            return '';
-        }
-
         if (empty($current)) {
             $current = QUI::getLocale()->getCurrent();
         }
@@ -1034,12 +1006,7 @@ class DOM
         }
 
         $QUI = new QUI();
-
-        try {
-            $Engine = QUI::getTemplateManager()->getEngine(true);
-        } catch (QUI\Exception $Exception) {
-            return '';
-        }
+        $Engine = QUI::getTemplateManager()->getEngine(true);
 
         $result = '';
 
@@ -1192,7 +1159,6 @@ class DOM
 
             if ($Entry->nodeName == 'button') {
                 $result .= self::buttonDomToString($Entry);
-                continue;
             }
         }
 
@@ -1206,11 +1172,10 @@ class DOM
     /**
      * Eingabe Element Input in einen string für die Einstellung umwandeln
      *
-     * @param DOMNode|DOMElement $Input
-     *
+     * @param DOMElement $Input
      * @return string
      */
-    public static function inputDomToString(DOMNode $Input): string
+    public static function inputDomToString(DOMElement $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -1236,15 +1201,15 @@ class DOM
             $name = htmlspecialchars($Attribute->name);
             $value = htmlspecialchars($Attribute->value);
 
-            if (strpos($name, 'data-') !== false) {
-                $data .= " {$name}=\"{$value}\"";
+            if (str_contains($name, 'data-')) {
+                $data .= " $name=\"$value\"";
                 continue;
             }
 
             switch ($name) {
                 case 'title':
                 case 'placeholder':
-                    $data .= " {$name}=\"{$value}\"";
+                    $data .= " $name=\"$value\"";
                     break;
             }
         }
@@ -1328,11 +1293,10 @@ class DOM
     /**
      * Eingabe Element Textarea in einen string für die Einstellung umwandeln
      *
-     * @param DOMNode|DOMElement $TextArea
-     *
+     * @param DOMElement $TextArea
      * @return string
      */
-    public static function textareaDomToString(DOMNode $TextArea): string
+    public static function textareaDomToString(DOMElement $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -1370,11 +1334,11 @@ class DOM
     /**
      * Parse config entries to an array
      *
-     * @param DOMNode|DOMNodeList $configurations
+     * @param DOMNodeList $configurations
      *
      * @return array
      */
-    public static function parseConfs($configurations): array
+    public static function parseConfs(DOMNodeList $configurations): array
     {
         $result = [];
 
@@ -1479,11 +1443,10 @@ class DOM
     /**
      * Eingabe Element Select in einen string für die Einstellung umwandeln
      *
-     * @param DOMNode|DOMElement $Select
-     *
+     * @param DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(DOMNode $Select): string
+    public static function selectDomToString(DOMElement $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';

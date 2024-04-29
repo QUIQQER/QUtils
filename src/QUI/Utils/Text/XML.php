@@ -60,7 +60,7 @@ class XML
         QUI\Controls\Contextmenu\Bar $Menu,
         string $file,
         ?QUI\Interfaces\Users\User $User = null
-    ) {
+    ): void {
         if (!file_exists($file)) {
             return;
         }
@@ -69,7 +69,7 @@ class XML
          * @param DOMElement|mixed $Item
          * @return bool
          */
-        $hasPermission = function ($Item) use ($User) {
+        $hasPermission = function (mixed $Item) use ($User) {
             $permissions = $Item->getAttribute('permission');
 
             if (empty($permissions)) {
@@ -146,11 +146,11 @@ class XML
             }
 
             if ($Item->getAttribute('parent') == '/') {
-                $MenuItem = new QUI\Controls\Contextmenu\Baritem($params);
+                $MenuItem = new QUI\Controls\Contextmenu\BarItem($params);
             } elseif ($Item->getAttribute('type') == 'separator') {
                 $MenuItem = new QUI\Controls\Contextmenu\Separator($params);
             } else {
-                $MenuItem = new QUI\Controls\Contextmenu\Menuitem($params);
+                $MenuItem = new QUI\Controls\Contextmenu\MenuItem($params);
             }
 
             if ($Item->getAttribute('disabled') == 1) {
@@ -172,7 +172,7 @@ class XML
      *
      * @throws QUi\Exception
      */
-    public static function getConfigFromXml(string $file, bool $withCustomParams = false)
+    public static function getConfigFromXml(string $file, bool $withCustomParams = false): QUI\Config|bool
     {
         $Dom = self::getDomFromXml($file);
         $settings = $Dom->getElementsByTagName('settings');
@@ -206,7 +206,7 @@ class XML
                 QUI::getPackageManager()->getInstalledPackage($package);
 
                 $name = 'plugins/' . $package;
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
                 return false;
             }
         }
@@ -254,7 +254,6 @@ class XML
      * @param bool $withCustomParams - Should custom parameters be considered?
      *
      * @return array - DOMElement | false
-     * @throws QUI\Exception
      */
     public static function getConfigParamsFromXml(string $file, bool $withCustomParams = false): array
     {
@@ -393,7 +392,7 @@ class XML
      */
     public static function getDomFromXml(string $filename): DOMDocument
     {
-        if (strpos($filename, '.xml') === false) {
+        if (!str_contains($filename, '.xml')) {
             return new DOMDocument();
         }
 

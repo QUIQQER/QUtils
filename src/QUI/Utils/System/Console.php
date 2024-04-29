@@ -30,7 +30,7 @@ class Console
      * Prompts the user for Input
      * @return string
      */
-    public static function read()
+    public static function read(): string
     {
         return trim(fgets(STDIN));
     }
@@ -53,7 +53,7 @@ class Console
      * Prints a line on the console.
      * @param $msg
      */
-    public static function writeLn($msg)
+    public static function writeLn($msg): void
     {
         echo $msg . PHP_EOL;
     }
@@ -62,18 +62,18 @@ class Console
      * Prints the message on the console.
      * @param $msg
      */
-    public static function write($msg)
+    public static function write($msg): void
     {
         echo $msg;
     }
 
     /**
      * Gets the colored version of the given String
-     * Colorcodes are available as Contants
+     * Color codes are available as Constants
      *
      * @param $text - The base string
-     * @param $color - The colorcode which should be applied
-     * @param bool $background - (optional) The colorcode for the background.
+     * @param $color - The color code which should be applied
+     * @param bool $background - (optional) The color code for the background.
      * @return string The color encoded string
      * @see Console::COLOR_YELLOW
      * @see Console::BACKGROUND_BLACK

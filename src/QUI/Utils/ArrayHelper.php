@@ -12,7 +12,6 @@ use function count;
 use function explode;
 use function get_object_vars;
 use function is_array;
-use function is_bool;
 use function is_int;
 use function is_object;
 
@@ -66,7 +65,7 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function objectToArray($obj): array
+    public static function objectToArray(object|array $obj): array
     {
         $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
         $arr = [];
@@ -105,16 +104,8 @@ class ArrayHelper
      * @param string $delimiter - default = ,
      * @return array
      */
-    public static function cleanup($array, string $delimiter = ','): array
+    public static function cleanup(array|string $array, string $delimiter = ','): array
     {
-        if (is_bool($array)) {
-            return [];
-        }
-
-        if ($array === null) {
-            return [];
-        }
-
         if (!is_array($array)) {
             $array = explode($delimiter, $array);
         }
