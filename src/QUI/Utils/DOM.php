@@ -23,7 +23,6 @@ use function array_merge;
 use function array_merge_recursive;
 use function explode;
 use function file_exists;
-use function get_class;
 use function htmlspecialchars;
 use function implode;
 use function is_string;
@@ -163,10 +162,10 @@ class DOM
     /**
      * Button Element
      *
-     * @param DOMElement $Button
+     * @param DOMNode|DOMElement $Button
      * @return string
      */
-    public static function buttonDomToString(DOMElement $Button): string
+    public static function buttonDomToString(DOMNode|DOMElement $Button): string
     {
         if ($Button->nodeName != 'button') {
             return '';
@@ -196,10 +195,10 @@ class DOM
     /**
      * Table Datenbank DOmNode Objekt in ein Array umwandeln
      *
-     * @param DOMElement $Table
+     * @param DOMNode|DOMElement $Table
      * @return array
      */
-    public static function dbTableDomToArray(DOMElement $Table): array
+    public static function dbTableDomToArray(DOMNode|DOMElement $Table): array
     {
         $result = [
             'suffix' => $Table->getAttribute('name'),
@@ -308,10 +307,10 @@ class DOM
     /**
      * Field Datenbank DOmNode Objekt in ein Array umwandeln
      *
-     * @param DOMElement $Field
+     * @param DOMNode|DOMElement $Field
      * @return array
      */
-    public static function dbFieldDomToArray(DOMElement $Field): array
+    public static function dbFieldDomToArray(DOMNode|DOMElement $Field): array
     {
         $str = $Field->getAttribute('type');
 
@@ -346,11 +345,11 @@ class DOM
     /**
      * Primary Datenbank DOmNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode $Primary
+     * @param DOMNode|DOMElement $Primary
      *
      * @return array
      */
-    public static function dbPrimaryDomToArray(DOMNode $Primary): array
+    public static function dbPrimaryDomToArray(DOMNode|DOMElement $Primary): array
     {
         return [
             'primary' => explode(',', $Primary->nodeValue)
@@ -360,11 +359,11 @@ class DOM
     /**
      * Unique Datenbank DOmNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode $Unique
+     * @param DOMNode|DOMElement $Unique
      *
      * @return array
      */
-    public static function dbUniqueDomToArray(DOMNode $Unique): array
+    public static function dbUniqueDomToArray(DOMNode|DOMElement $Unique): array
     {
         return [
             'unique' => explode(',', $Unique->nodeValue)
@@ -374,11 +373,11 @@ class DOM
     /**
      * Index Datenbank DOMNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode $Index
+     * @param DOMNode|DOMElement $Index
      *
      * @return array
      */
-    public static function dbIndexDomToArray(DOMNode $Index): array
+    public static function dbIndexDomToArray(DOMNode|DOMElement $Index): array
     {
         return [
             'index' => [trim($Index->nodeValue)]
@@ -388,11 +387,11 @@ class DOM
     /**
      * AUTO_INCREMENT Datenbank DOMNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode $AI
+     * @param DOMNode|DOMElement $AI
      *
      * @return array
      */
-    public static function dbAutoIncrementDomToArray(DOMNode $AI): array
+    public static function dbAutoIncrementDomToArray(DOMNode|DOMElement $AI): array
     {
         return [
             'auto_increment' => trim($AI->nodeValue)
@@ -402,11 +401,11 @@ class DOM
     /**
      * FULLTEXT Datenbank DOMNode Objekt in ein Array umwandeln
      *
-     * @param DOMNode $Fulltext
+     * @param DOMNode|DOMElement $Fulltext
      *
      * @return array
      */
-    public static function dbAutoFullextDomToArray(DOMNode $Fulltext): array
+    public static function dbAutoFullextDomToArray(DOMNode|DOMElement $Fulltext): array
     {
         return [
             'fulltext' => trim($Fulltext->nodeValue)
@@ -416,10 +415,10 @@ class DOM
     /**
      * Return the tabs
      *
-     * @param DOMElement $DOMNode $DOMNode
+     * @param DOMNode|DOMElement $DOMNode $DOMNode
      * @return array
      */
-    public static function getTabs(DOMElement $DOMNode): array
+    public static function getTabs(DOMNode|DOMElement $DOMNode): array
     {
         $tabList = $DOMNode->getElementsByTagName('tab');
 
@@ -460,21 +459,16 @@ class DOM
                 $tabs = Text\XML::getTabsFromXml($Object);
             }
         } else {
-            if (get_class($Object) === 'QUI\\Projects\\Project') {
-                /* @var $Object QUI\Projects\Project */
-                // tabs welche ein projekt zur Verfügung stellt
+            if ($Object instanceof Project) {
                 $tabs = Text\XML::getTabsFromXml(
                     USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
                 );
             } else {
-                if (
-                    get_class($Object) === 'QUI\\Projects\\Site'
-                    || get_class($Object) === 'QUI\\Projects\\Site\\Edit'
-                ) {
+                if ($Object instanceof QUI\Interfaces\Projects\Site) {
                     /* @var $Object QUI\Projects\Site */
                     /* @var $Tab DOMElement */
-                    $Tabbar = QUI\Projects\Sites::getTabs($Object);
-                    $Tab = $Tabbar->getElementByName($name);
+                    $TabBar = QUI\Projects\Sites::getTabs($Object);
+                    $Tab = $TabBar->getElementByName($name);
 
                     if ($Tab->getAttribute('template')) {
                         $file = self::parseVar($Tab->getAttribute('template'));
@@ -621,12 +615,12 @@ class DOM
      * Search a <locale> node into the DOMNode and parse it
      * if no <locale exist, it return the nodeValue
      *
-     * @param DOMElement $Node
+     * @param DOMNode|DOMElement $Node
      * @param boolean $translate - direct translation? default = true
      *
      * @return string|array
      */
-    public static function getTextFromNode(DOMElement $Node, bool $translate = true): array|string
+    public static function getTextFromNode(DOMNode|DOMElement $Node, bool $translate = true): array|string
     {
         $loc = $Node->getElementsByTagName('locale');
 
@@ -693,11 +687,9 @@ class DOM
      * Wandelt <group> in einen string für die Einstellung um
      *
      * @param DOMNode|DOMElement $Group
-     *
      * @return string
-     * @todo rewrite to flexbox table
      */
-    public static function groupDomToString(DOMNode $Group): string
+    public static function groupDomToString(DOMNode|DOMElement $Group): string
     {
         if ($Group->nodeName != 'group') {
             return '';
@@ -901,7 +893,7 @@ class DOM
      *
      * @return array
      */
-    public static function parsePanelToArray(DOMNode $Node): array
+    public static function parsePanelToArray(DOMNode|DOMElement $Node): array
     {
         if ($Node->nodeName != 'panel') {
             return [];
@@ -939,10 +931,10 @@ class DOM
     /**
      * Parse a DOMNode permission to an array
      *
-     * @param DOMElement $Node
+     * @param DOMNode|DOMElement $Node
      * @return array
      */
-    public static function parsePermissionToArray(DOMElement $Node): array
+    public static function parsePermissionToArray(DOMNode|DOMElement $Node): array
     {
         if ($Node->nodeName != 'permission') {
             return [];
@@ -988,12 +980,12 @@ class DOM
     /**
      * Wandelt ein Kategorie DomNode in entsprechendes HTML um
      *
-     * @param DOMElement $Category
+     * @param DOMNode|DOMElement $Category
      * @param string $current - current language
      *
      * @return string
      */
-    public static function parseCategoryToHTML(DOMElement $Category, string $current = ''): string
+    public static function parseCategoryToHTML(DOMNode|DOMElement $Category, string $current = ''): string
     {
         if (empty($current)) {
             $current = QUI::getLocale()->getCurrent();
@@ -1172,10 +1164,10 @@ class DOM
     /**
      * Eingabe Element Input in einen string für die Einstellung umwandeln
      *
-     * @param DOMElement $Input
+     * @param DOMNode|DOMElement $Input
      * @return string
      */
-    public static function inputDomToString(DOMElement $Input): string
+    public static function inputDomToString(DOMNode|DOMElement $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -1293,10 +1285,10 @@ class DOM
     /**
      * Eingabe Element Textarea in einen string für die Einstellung umwandeln
      *
-     * @param DOMElement $TextArea
+     * @param DOMNode|DOMElement $TextArea
      * @return string
      */
-    public static function textareaDomToString(DOMElement $TextArea): string
+    public static function textareaDomToString(DOMNode|DOMElement $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -1443,10 +1435,10 @@ class DOM
     /**
      * Eingabe Element Select in einen string für die Einstellung umwandeln
      *
-     * @param DOMElement $Select
+     * @param DOMNode|DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(DOMElement $Select): string
+    public static function selectDomToString(DOMNode|DOMElement $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';
