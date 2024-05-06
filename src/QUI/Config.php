@@ -20,7 +20,6 @@ use function is_writeable;
 use function json_encode;
 use function parse_ini_file;
 use function str_replace;
-use function substr;
 
 /**
  * Class for handling ini files
@@ -35,14 +34,14 @@ class Config
      *
      * @var string
      */
-    private $iniFilename = '';
+    private string $iniFilename = '';
 
     /**
      * ini entries
      *
      * @var array
      */
-    private $iniParsedArray = [];
+    private array $iniParsedArray = [];
 
     /**
      * constructor
@@ -72,7 +71,7 @@ class Config
      * Reload the ini data
      * Read the ini file
      */
-    public function reload()
+    public function reload(): void
     {
         $this->iniParsedArray = @parse_ini_file($this->iniFilename, true);
     }
@@ -101,10 +100,9 @@ class Config
      * Returns a complete section
      *
      * @param string $key
-     *
-     * @return string|array
+     * @return mixed
      */
-    public function getSection($key)
+    public function getSection(string $key): mixed
     {
         if (!isset($this->iniParsedArray[$key])) {
             return false;
@@ -121,7 +119,7 @@ class Config
      *
      * @return string|array|boolean
      */
-    public function getValue($section, $key)
+    public function getValue(string $section, string $key): mixed
     {
         if (
             !isset($this->iniParsedArray[$section])
@@ -137,11 +135,11 @@ class Config
      * Returns the value of a section or the entire section
      *
      * @param string $section
-     * @param string || NULL $key (optional)
+     * @param string|null $key (optional)
      *
-     * @return string|array
+     * @return mixed
      */
-    public function get($section, $key = null)
+    public function get(string $section, string $key = null): mixed
     {
         if ($key === null) {
             return $this->getSection($section);
@@ -163,12 +161,12 @@ class Config
     /**
      * Sets a complete section
      *
-     * @param string|boolean $section
+     * @param boolean|string $section
      * @param array $array
      *
      * @return boolean
      */
-    public function setSection($section = false, $array = [])
+    public function setSection(bool|string $section = false, array $array = []): bool
     {
         if (!is_array($array)) {
             return false;
@@ -190,14 +188,14 @@ class Config
      *
      * @param string $section
      * @param string|null $key
-     * @param string $value
+     * @param string|int|float $value
      *
      * @return boolean
      *
      * @example QConfig->setValue('section', null, 'something');
      * @example QConfig->setValue('section', 'entry', 'something');
      */
-    public function setValue($section, $key = null, $value = '')
+    public function setValue(string $section, string $key = null, string|int|float $value = ''): bool
     {
         if ($key === null) {
             if ($this->iniParsedArray[$section] = $value) {
@@ -216,11 +214,11 @@ class Config
      * exist the section or value?
      *
      * @param string $section
-     * @param string $key - (optional)
+     * @param string|null $key - (optional)
      *
      * @return boolean
      */
-    public function existValue($section, $key = null): bool
+    public function existValue(string $section, string $key = null): bool
     {
         if ($key === null) {
             return isset($this->iniParsedArray[$section]);
@@ -236,15 +234,18 @@ class Config
     /**
      * Sets a new value in a section or a whole new section
      *
-     * @param string|bool $section - (optional)
-     * @param string $key - (optional)
-     * @param string $value - (optional)
+     * @param bool|string $section - (optional)
+     * @param string|array|null $key - (optional)
+     * @param string|int|float|null $value - (optional)
      *
-     * @return mixed
+     * @return bool
      */
-    public function set($section = false, $key = null, $value = null)
-    {
-        if (is_array($key) && $key === null) {
+    public function set(
+        bool|string $section = false,
+        string|array $key = null,
+        string|int|float $value = null
+    ): bool {
+        if (is_array($key) && $value === null) {
             return $this->setSection($section, $key);
         }
 
@@ -255,11 +256,11 @@ class Config
      * Deletes a section or key in the section
      *
      * @param string $section
-     * @param string $key - optional, If indicated Key deleted otherwise complete section
+     * @param string|null $key - optional, If indicated Key deleted otherwise complete section
      *
      * @return boolean
      */
-    public function del($section, $key = null): bool
+    public function del(string $section, string $key = null): bool
     {
         if (!isset($this->iniParsedArray[$section])) {
             return true;
@@ -285,11 +286,11 @@ class Config
     /**
      * Saves the entries to the INI file
      *
-     * @param string $filename - optional, Path to the file
+     * @param string|null $filename - optional, Path to the file
      *
      * @throws Exception
      */
-    public function save($filename = null)
+    public function save(string $filename = null): void
     {
         if ($filename === null) {
             $filename = $this->iniFilename;
@@ -334,10 +335,9 @@ class Config
      * Delete line breaks
      *
      * @param mixed $value
-     *
      * @return string
      */
-    protected function clean($value): string
+    protected function clean(mixed $value): string
     {
         if (is_bool($value)) {
             return $value ? 1 : 0;
@@ -352,8 +352,7 @@ class Config
         }
 
         $value = str_replace(["\r\n", "\n", "\r"], '', $value);
-        $value = str_replace('"', '\"', $value);
 
-        return $value;
+        return str_replace('"', '\"', $value);
     }
 }
