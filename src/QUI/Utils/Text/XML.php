@@ -478,7 +478,7 @@ class XML
 
     /**
      * Return the layout types from a xml file
-     * https://dev.quiqqer.com/quiqqer/quiqqer/wikis/Site-Xml
+     * https://dev.quiqqer.com/quiqqer/core/wikis/Site-Xml
      *
      * @param string $file
      *
@@ -921,7 +921,7 @@ class XML
 
     /**
      * Return the site types from a xml file
-     * https://dev.quiqqer.com/quiqqer/quiqqer/wikis/Site-Xml
+     * https://dev.quiqqer.com/quiqqer/core/wikis/Site-Xml
      *
      * @param string $file
      *
@@ -1272,13 +1272,13 @@ class XML
 
         $Config->save();
 
-        if (strpos($file, 'quiqqer/quiqqer/admin/settings/cache.xml') !== false) {
+        if (strpos($file, 'quiqqer/core/admin/settings/cache.xml') !== false) {
             // if cache settings are set, this must be in the global conf
-            // workaround for quiqqer/quiqqer#726
+            // workaround for quiqqer/core#726
             $noCache = $Config->get('general', 'nocache');
 
             self::setConfigFromXml(
-                OPT_DIR . 'quiqqer/quiqqer/admin/settings/conf.xml',
+                OPT_DIR . 'quiqqer/core/admin/settings/conf.xml',
                 ['globals' => ['cache' => $noCache ? 0 : 1]]
             );
         }
