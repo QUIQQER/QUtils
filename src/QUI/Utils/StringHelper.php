@@ -670,6 +670,7 @@ class StringHelper
      * @param ?int|?string $timestamp
      * @return string
      * @throws \Exception
+     * @deprecated use "php81_bc/strftime": "^0.7",
      */
     public static function strftime(string $format, int|string $timestamp = null): string
     {

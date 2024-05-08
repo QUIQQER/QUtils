@@ -1,5 +1,5 @@
 {
-  "name": "quiqqer\/utils",
+  "name": "quiqqer/utils",
   "type": "quiqqer-plugin",
   "description": "Helper libraries from and for QUIQQER.",
   "license": "LGPL-3.0+",
@@ -7,30 +7,31 @@
     {
       "name": "Henning Leutz",
       "email": "leutz@pcsg.de",
-      "homepage": "http:\/\/www.pcsg.de",
+      "homepage": "http://www.pcsg.de",
       "role": "Developer"
     },
     {
       "name": "Jan Wennrich",
       "email": "support@pcsg.de",
-      "homepage": "https:\/\/www.pcsg.de",
+      "homepage": "https://www.pcsg.de",
       "role": "Developer"
     }
   ],
   "support": {
     "email": "support@pcsg.de",
-    "url": "http:\/\/www.pcsg.de"
+    "url": "http://www.pcsg.de"
   },
   "require": {
     "php": "^8.1",
-    "dusank\/knapsack": "^10",
+    "martinvenus/knapsack": "^10",
     "symfony/polyfill-php81": "*",
     "symfony/polyfill-php82": "*",
     "symfony/polyfill-php83": "*"
   },
   "autoload": {
     "psr-4": {
-      "QUI\\": "src\/QUI"
+      "QUI\\": "src/QUI"
     }
-  }
+  },
+  "version": "2.0.2"
 }
