@@ -36,9 +36,9 @@ class Installation
      *
      * @param boolean $force - Force a calculation of the QUIQQER installation folder's size. Values aren't returned from cache. Expect timeouts.
      *
-     * @return int
+     * @return int|null
      */
-    public static function getWholeFolderSize(bool $force = false): int
+    public static function getWholeFolderSize(bool $force = false): ?int
     {
         return Folder::getFolderSize(CMS_DIR, $force);
     }
