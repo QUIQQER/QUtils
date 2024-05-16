@@ -22,6 +22,7 @@ use function substr;
  *
  * @todo    check the class, the class is realy old, maybe this can be done better
  * @todo    docu translation
+ * @deprecated
  */
 class BBCode extends QUI\QDOM
 {
@@ -422,10 +423,9 @@ class BBCode extends QUI\QDOM
      * Enter description here...
      *
      * @param array $attributes
-     *
-     * @return string
+     * @return array|string
      */
-    protected function size($attributes)
+    protected function size(array $attributes): array|string
     {
         $size = [];
 
