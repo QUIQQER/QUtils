@@ -8,6 +8,7 @@ namespace QUI\Utils\Text;
 
 use DOMDocument;
 use DOMElement;
+use DOMNode;
 use DOMXPath;
 use Exception;
 use QUI;
@@ -813,8 +814,7 @@ class XML
      * Reads the settings window from an *.xml and search all categories
      *
      * @param string $file - path to xml file
-     *
-     * @return DOMElement[] - List of DOMElements
+     * @return array - List of DOMElements
      */
     public static function getSettingCategoriesFromXml(string $file): array
     {
@@ -842,9 +842,9 @@ class XML
      * @param string $file - path to xml file
      * @param string $name - optional, Category name
      *
-     * @return DOMElement|false - List of DOMElements
+     * @return bool|DOMElement|DOMNode - List of DOMElements
      */
-    public static function getSettingCategoryFromXml(string $file, string $name)
+    public static function getSettingCategoryFromXml(string $file, string $name): bool|DOMElement|DOMNode
     {
         $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
