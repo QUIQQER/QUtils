@@ -335,9 +335,9 @@ class Config
      * Delete line breaks
      *
      * @param mixed $value
-     * @return string
+     * @return string|int
      */
-    protected function clean(mixed $value): string
+    protected function clean(mixed $value): string|int
     {
         if (is_bool($value)) {
             return $value ? 1 : 0;
