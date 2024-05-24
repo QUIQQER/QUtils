@@ -4,3 +4,7 @@ phpdoc/
 tools/
 
 phpstan.neon
+
+.phpunit.result.cache
+
+phpunit.xml
