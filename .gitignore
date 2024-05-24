@@ -2,3 +2,5 @@ tests/report/
 phpdoc/
 
 tools/
+
+phpstan.neon
