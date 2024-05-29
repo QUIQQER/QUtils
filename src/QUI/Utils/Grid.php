@@ -10,6 +10,7 @@ use QUI;
 
 use function array_slice;
 use function count;
+use function is_array;
 
 /**
  * Helper for the javascript controls/grid/Grid
@@ -36,12 +37,16 @@ class Grid extends QUI\QDOM
     /**
      * Prepares DB parameters with limits
      *
-     * @param array $params
+     * @param mixed $params
      *
      * @return array
      */
-    public function parseDBParams(array $params = []): array
+    public function parseDBParams(mixed $params = []): array
     {
+        if (!is_array($params)) {
+            return [];
+        }
+
         $query = [];
 
         if (isset($params['perPage'])) {
