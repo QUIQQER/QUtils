@@ -14,6 +14,7 @@ use function get_object_vars;
 use function is_array;
 use function is_int;
 use function is_object;
+use function is_string;
 
 /**
  * Helper for array handling
@@ -104,10 +105,14 @@ class ArrayHelper
      * @param string $delimiter - default = ,
      * @return array
      */
-    public static function cleanup(array|string $array, string $delimiter = ','): array
+    public static function cleanup(mixed $array, string $delimiter = ','): array
     {
-        if (!is_array($array)) {
+        if (is_string($array)) {
             $array = explode($delimiter, $array);
+        }
+
+        if (!is_array($array)) {
+            return [];
         }
 
         return array_filter(array_unique($array));

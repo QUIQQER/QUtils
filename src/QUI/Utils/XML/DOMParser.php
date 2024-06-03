@@ -249,7 +249,7 @@ class DOMParser
             $data .= " $name=\"$value\"";
         }
 
-        if (!$Node->getAttribute('label') || $Node->getAttribute('label') === 'false') {
+        if ($Node->getAttribute('label') == 0 || $Node->getAttribute('label') === 'false') {
             $label = false;
         }
 
