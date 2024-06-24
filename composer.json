@@ -23,7 +23,7 @@
   },
   "require": {
     "php": "^8",
-    "dusank\/knapsack": "^10",
+    "martinvenus/knapsack": "^10",
     "symfony/polyfill-php81": "*",
     "symfony/polyfill-php82": "*",
     "symfony/polyfill-php83": "*"
