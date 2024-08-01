@@ -1,0 +1,181 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^PHPDoc tag @throws has invalid value \\(\\)\\: Unexpected token \"\\\\n     \", expected type at offset 200$#"
+			count: 1
+			path: src/QUI/Database/DB.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, float given\\.$#"
+			count: 2
+			path: src/QUI/Database/DB.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/QUI/Database/Tables.php
+
+		-
+			message: "#^Parameter \\#1 \\$hour of function mktime expects int, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Parameter \\#2 \\$decimals of function number_format expects int, string given\\.$#"
+			count: 2
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Parameter \\#2 \\$minute of function mktime expects int\\|null, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Parameter \\#3 \\$second of function mktime expects int\\|null, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Parameter \\#4 \\$month of function mktime expects int\\|null, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Parameter \\#5 \\$day of function mktime expects int\\|null, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Parameter \\#6 \\$year of function mktime expects int\\|null, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Convert.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getAttribute\\(\\)\\.$#"
+			count: 44
+			path: src/QUI/Utils/DOM.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getElementsByTagName\\(\\)\\.$#"
+			count: 28
+			path: src/QUI/Utils/DOM.php
+
+		-
+			message: "#^Result of && is always true\\.$#"
+			count: 1
+			path: src/QUI/Utils/DOM.php
+
+		-
+			message: "#^Result of \\|\\| is always true\\.$#"
+			count: 1
+			path: src/QUI/Utils/DOM.php
+
+		-
+			message: "#^Parameter \\#2 \\$info of static method QUI\\\\Utils\\\\Request\\\\Url\\:\\:getInfo\\(\\) expects bool, int given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Request/Url.php
+
+		-
+			message: "#^Parameter \\#2 \\$option of function curl_getinfo expects int\\|null, true given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Request/Url.php
+
+		-
+			message: "#^PHPDoc tag @param has invalid value \\(\\?int\\|\\?string \\$timestamp\\)\\: Unexpected token \"\\|\", expected variable at offset 317$#"
+			count: 1
+			path: src/QUI/Utils/StringHelper.php
+
+		-
+			message: "#^Parameter \\#1 \\$locale of class IntlDateFormatter constructor expects string\\|null, array given\\.$#"
+			count: 1
+			path: src/QUI/Utils/StringHelper.php
+
+		-
+			message: "#^Parameter \\#1 \\$microseconds of function usleep expects int, float given\\.$#"
+			count: 1
+			path: src/QUI/Utils/System/File.php
+
+		-
+			message: "#^Parameter \\#2 \\$associative of function get_headers expects bool, int given\\.$#"
+			count: 1
+			path: src/QUI/Utils/System/File.php
+
+		-
+			message: "#^Parameter \\#1 \\$seconds of function set_time_limit expects int, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/System/Folder.php
+
+		-
+			message: "#^Property QUI\\\\Utils\\\\Text\\\\BBCode\\:\\:\\$projects \\(string\\) does not accept default value of type array\\.$#"
+			count: 1
+			path: src/QUI/Utils/Text/BBCode.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getAttribute\\(\\)\\.$#"
+			count: 9
+			path: src/QUI/Utils/Text/XML.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getElementsByTagName\\(\\)\\.$#"
+			count: 1
+			path: src/QUI/Utils/Text/XML.php
+
+		-
+			message: "#^Parameter \\#1 \\$language of function pspell_new expects string, PSpell\\\\Config given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Translation/PSpell.php
+
+		-
+			message: "#^Parameter \\#2 \\$mode of function pspell_config_mode expects int, string given\\.$#"
+			count: 1
+			path: src/QUI/Utils/Translation/PSpell.php
+
+		-
+			message: "#^Right side of \\|\\| is always true\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/DOMParser.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getAttribute\\(\\)\\.$#"
+			count: 3
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getElementsByTagName\\(\\)\\.$#"
+			count: 3
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$Button of static method QUI\\\\Utils\\\\XML\\\\DOMParser\\:\\:buttonDomToString\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$Category of method QUI\\\\Utils\\\\XML\\\\Settings\\:\\:parseCategory\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$Group of static method QUI\\\\Utils\\\\XML\\\\DOMParser\\:\\:groupDomToString\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$Input of static method QUI\\\\Utils\\\\XML\\\\DOMParser\\:\\:inputDomToString\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$Select of static method QUI\\\\Utils\\\\XML\\\\DOMParser\\:\\:selectDomToString\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$Setting of method QUI\\\\Utils\\\\XML\\\\Settings\\:\\:parseSettings\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
+
+		-
+			message: "#^Parameter \\#1 \\$TextArea of static method QUI\\\\Utils\\\\XML\\\\DOMParser\\:\\:textareaDomToString\\(\\) expects DOMElement, DOMNode given\\.$#"
+			count: 1
+			path: src/QUI/Utils/XML/Settings.php
