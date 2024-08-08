@@ -33,7 +33,6 @@
             "QUI\\": "src/QUI"
         }
     },
-    "version": "2.0.2",
     "scripts": {
         "test": [
             "@dev:lint",
