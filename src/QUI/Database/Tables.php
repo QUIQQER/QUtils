@@ -343,7 +343,7 @@ class Tables
      * @deprecated ->addColumn
      *
      */
-    public function appendFields($table, $fields, $engine = 'MYISAM')
+    public function appendFields($table, $fields, $engine = 'InnoDB')
     {
         $this->addColumn($table, $fields, $engine);
     }
@@ -400,7 +400,7 @@ class Tables
      * @throws Exception
      * @throws \Exception
      */
-    public function addColumn($table, $fields, $engine = 'MYISAM')
+    public function addColumn($table, $fields, $engine = 'InnoDB')
     {
         if ($this->exist($table) == false) {
             $this->create($table, $fields, $engine);
