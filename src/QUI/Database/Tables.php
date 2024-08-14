@@ -202,7 +202,7 @@ class Tables
      * @throws QUI\Database\Exception
      * @todo check mysql injection
      */
-    public function create(string $table, array $fields, string $engine = 'MYISAM'): bool
+    public function create(string $table, array $fields, string $engine = 'InnoDB'): bool
     {
         $_table = $this->clear($table);
 
@@ -220,7 +220,7 @@ class Tables
                 break;
 
             default:
-                $engine = 'MYISAM';
+                $engine = 'InnoDB';
                 break;
         }
 
