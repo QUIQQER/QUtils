@@ -946,6 +946,7 @@ class DOM
         $Default = $Node->getElementsByTagName('defaultvalue');
         $RootPermission = $Node->getElementsByTagName('rootPermission');
         $EveryonePermission = $Node->getElementsByTagName('everyonePermission');
+        $GuestPermission = $Node->getElementsByTagName('guestPermission');
 
         if ($Default->length) {
             $default = $Default->item(0)->nodeValue;
@@ -963,6 +964,12 @@ class DOM
             $everyonePermission = null;
         }
 
+        if ($GuestPermission->length) {
+            $guestPermission = $GuestPermission->item(0)->nodeValue;
+        } else {
+            $guestPermission = null;
+        }
+
         $type = QUI\Permissions\Manager::parseType($Node->getAttribute('type'));
         $area = QUI\Permissions\Manager::parseArea($Node->getAttribute('area'));
 
@@ -973,7 +980,8 @@ class DOM
 
             'defaultvalue' => $default,
             'rootPermission' => $rootPermission,
-            'everyonePermission' => $everyonePermission
+            'everyonePermission' => $everyonePermission,
+            'guestPermission' => $guestPermission,
         ];
     }
 
