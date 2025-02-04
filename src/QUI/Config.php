@@ -139,7 +139,7 @@ class Config
      *
      * @return mixed
      */
-    public function get(string $section, string $key = null): mixed
+    public function get(string $section, null|string $key = null): mixed
     {
         if ($key === null) {
             return $this->getSection($section);
@@ -195,7 +195,7 @@ class Config
      * @example QConfig->setValue('section', null, 'something');
      * @example QConfig->setValue('section', 'entry', 'something');
      */
-    public function setValue(string $section, string $key = null, string|int|float $value = ''): bool
+    public function setValue(string $section, null|string $key = null, string|int|float $value = ''): bool
     {
         if ($key === null) {
             if ($this->iniParsedArray[$section] = $value) {
@@ -218,7 +218,7 @@ class Config
      *
      * @return boolean
      */
-    public function existValue(string $section, string $key = null): bool
+    public function existValue(string $section, null|string $key = null): bool
     {
         if ($key === null) {
             return isset($this->iniParsedArray[$section]);
@@ -242,8 +242,8 @@ class Config
      */
     public function set(
         bool|string $section = false,
-        string|array $key = null,
-        string|int|float $value = null
+        null|string|array $key = null,
+        null|string|int|float $value = null
     ): bool {
         if (is_array($key) && $value === null) {
             return $this->setSection($section, $key);
@@ -260,7 +260,7 @@ class Config
      *
      * @return boolean
      */
-    public function del(string $section, string $key = null): bool
+    public function del(string $section, null|string $key = null): bool
     {
         if (!isset($this->iniParsedArray[$section])) {
             return true;
@@ -290,7 +290,7 @@ class Config
      *
      * @throws Exception
      */
-    public function save(string $filename = null): void
+    public function save(null|string $filename = null): void
     {
         if ($filename === null) {
             $filename = $this->iniFilename;
