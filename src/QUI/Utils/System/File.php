@@ -1081,7 +1081,7 @@ class File
      * found on:
      * http://www.phpgangsta.de/dateidownload-via-php-mit-speedlimit-und-resume
      */
-    public static function send(string $filePath, int $rate = 0, string $downloadFileName = null): void
+    public static function send(string $filePath, int $rate = 0, null|string $downloadFileName = null): void
     {
         // Check if file exists
         if (!is_file($filePath)) {
