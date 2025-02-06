@@ -257,11 +257,15 @@ class Settings
     /**
      * Parse <category> DOMElement and return it as an array
      *
-     * @param DOMElement $Category
+     * @param DOMNode|DOMElement $Category
      * @return array
      */
-    public function parseCategory(DOMElement $Category): array
+    public function parseCategory(DOMNode | DOMElement $Category): array
     {
+        if (!method_exists($Category, 'getAttribute')) {
+            return [];
+        }
+
         $Collection = Collection::from([]);
 
         $data = [
@@ -327,7 +331,6 @@ class Settings
         $items = [];
 
         foreach ($Setting->childNodes as $Child) {
-            /* @var $Child DOMElement */
             if ($Child->nodeName == '#text') {
                 continue;
             }
@@ -374,7 +377,7 @@ class Settings
                 continue;
             }
 
-            if ($Child->getAttribute('row-style')) {
+            if (method_exists($Child, 'getAttribute') && $Child->getAttribute('row-style')) {
                 $items[] = [
                     'rowStyle' => $Child->getAttribute('row-style'),
                     'content' => $item
