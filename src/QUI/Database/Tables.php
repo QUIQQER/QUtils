@@ -472,7 +472,7 @@ class Tables
             if (class_exists('QUI\System\Log')) {
                 QUI\System\Log::addError($query);
             }
-            
+
             throw $Exception;
         }
     }
