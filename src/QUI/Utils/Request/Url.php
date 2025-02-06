@@ -40,7 +40,7 @@ class Url
      * @return CurlHandle|false
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
-    public static function curl(string $url, array $curlParams = []): CurlHandle|bool
+    public static function curl(string $url, array $curlParams = []): CurlHandle | bool
     {
         $url = str_replace(' ', '+', $url); // URL Fix
         $Curl = curl_init();
@@ -66,7 +66,7 @@ class Url
      * @return string|bool
      * @throws Exception
      */
-    public static function get(string $url, array $curlParams = []): string|bool
+    public static function get(string $url, array $curlParams = []): string | bool
     {
         $Curl = self::curl($url, $curlParams);
         $data = self::exec($Curl);
@@ -112,13 +112,13 @@ class Url
      * @return mixed
      * @throws Exception
      */
-    public static function getInfo(string $url, bool $info = false, array $curlParams = []): mixed
+    public static function getInfo(string $url, int | bool $info = false, array $curlParams = []): mixed
     {
         $Curl = self::curl($url, $curlParams);
 
         curl_exec($Curl);
 
-        if ($info) {
+        if (is_int($info)) {
             $result = curl_getinfo($Curl, $info);
         } else {
             $result = curl_getinfo($Curl);
@@ -142,7 +142,7 @@ class Url
      *
      * @return bool|string
      */
-    public static function exec(CurlHandle $Curl): bool|string
+    public static function exec(CurlHandle $Curl): bool | string
     {
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);

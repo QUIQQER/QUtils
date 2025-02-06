@@ -63,7 +63,7 @@ class DOMParser
                 return self::buttonDomToString($Input);
         }
 
-        if ($type != 'checkbox' || $type != 'radio') {
+        if ($type != 'checkbox' && $type != 'radio') {
             $classes[] = 'field-container-field';
         }
 

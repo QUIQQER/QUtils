@@ -270,15 +270,11 @@ class Orthos
      * @param string $str
      *
      * @return string
+     * @deprecated use strip_tags
      */
     public static function cleanHTML(string $str): string
     {
-        $BBCode = new BBCode();
-
-        $str = $BBCode->parseToBBCode($str);
-        $str = $BBCode->parseToHTML($str);
-
-        return $str;
+        return strip_tags($str);
     }
 
     /**
