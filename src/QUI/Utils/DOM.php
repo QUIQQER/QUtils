@@ -111,8 +111,10 @@ class DOM
                 $name = $attr->nodeName;
 
                 if (
-                    $name !== 'name' && $name !== 'text'
-                    || $name !== 'image' && $name !== 'plugin'
+                    $name !== 'name'
+                    && $name !== 'text'
+                    && $name !== 'image'
+                    && $name !== 'plugin'
                 ) {
                     $ToolbarTab->setAttribute($name, $attr->nodeValue);
                 }

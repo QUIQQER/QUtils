@@ -173,7 +173,7 @@ class XML
      *
      * @throws QUi\Exception
      */
-    public static function getConfigFromXml(string $file, bool $withCustomParams = false): QUI\Config|bool
+    public static function getConfigFromXml(string $file, bool $withCustomParams = false): QUI\Config | bool
     {
         $Dom = self::getDomFromXml($file);
         $settings = $Dom->getElementsByTagName('settings');
@@ -284,10 +284,15 @@ class XML
         }
 
         for ($i = 0; $i < $tools->length; $i++) {
-            /* @var $Tool DOMElement */
             $Tool = $tools->item($i);
-            $exec = $Tool->getAttribute('exec');
-            $file = $Tool->getAttribute('file');
+
+            $exec = '';
+            $file = '';
+
+            if (method_exists($Tool, 'getAttribute')) {
+                $exec = $Tool->getAttribute('exec');
+                $file = $Tool->getAttribute('file');
+            }
 
             if (!empty($file)) {
                 $file = DOM::parseVar($file);
@@ -322,7 +327,9 @@ class XML
         $files = [];
 
         for ($i = 0; $i < $CSSList->length; $i++) {
-            $files[] = $CSSList->item($i)->getAttribute('src');
+            if (method_exists($CSSList->item($i), 'getAttribute')) {
+                $files[] = $CSSList->item($i)->getAttribute('src');
+            }
         }
 
         return $files;
@@ -461,16 +468,20 @@ class XML
         $package = str_replace(OPT_DIR, '', dirname($file));
 
         foreach ($types as $Type) {
-            /* @var $Type DOMElement */
+            if (!method_exists($Type, 'getElementsByTagName')) {
+                continue;
+            }
+
             $events = $Type->getElementsByTagName('event');
 
             foreach ($events as $Event) {
-                /* @var $Event DOMElement */
-                $result[] = [
-                    'on' => $Event->getAttribute('on'),
-                    'fire' => $Event->getAttribute('fire'),
-                    'type' => $package . ':' . $Type->getAttribute('type')
-                ];
+                if (method_exists($Event, 'getAttribute') && method_exists($Type, 'getAttribute')) {
+                    $result[] = [
+                        'on' => $Event->getAttribute('on'),
+                        'fire' => $Event->getAttribute('fire'),
+                        'type' => $package . ':' . $Type->getAttribute('type')
+                    ];
+                }
             }
         }
 
@@ -687,7 +698,7 @@ class XML
                 continue;
             }
 
-            if ($Node->nodeName === 'image') {
+            if ($Node->nodeName === 'image' && method_exists($Node, 'getAttribute')) {
                 $result['image'] = DOM::parseVar($Node->getAttribute('src'));
                 continue;
             }
@@ -703,8 +714,9 @@ class XML
         $result['preview'] = [];
 
         foreach ($previews as $Image) {
-            /* @var $Image DOMElement */
-            $result['preview'][] = DOM::parseVar($Image->getAttribute('src'));
+            if (method_exists($Image, 'getAttribute')) {
+                $result['preview'][] = DOM::parseVar($Image->getAttribute('src'));
+            }
         }
 
         // provider
@@ -715,6 +727,10 @@ class XML
             /* @var $Provider DOMElement */
             foreach ($Provider->childNodes as $Node) {
                 if ($Node->nodeType === XML_COMMENT_NODE) {
+                    continue;
+                }
+
+                if (!method_exists($Node, 'getAttribute')) {
                     continue;
                 }
 
@@ -844,7 +860,7 @@ class XML
      *
      * @return bool|DOMElement|DOMNode - List of DOMElements
      */
-    public static function getSettingCategoryFromXml(string $file, string $name): bool|DOMElement|DOMNode
+    public static function getSettingCategoryFromXml(string $file, string $name): bool | DOMElement | DOMNode
     {
         $Dom = self::getDomFromXml($file);
         $Path = new DOMXPath($Dom);
@@ -856,8 +872,7 @@ class XML
         }
 
         foreach ($categories as $Category) {
-            /* @var $Category DOMElement */
-            if ($Category->getAttribute('name') == $name) {
+            if (method_exists($Category, 'getAttribute') && (string)$Category->getAttribute('name') == $name) {
                 return $Category;
             }
         }

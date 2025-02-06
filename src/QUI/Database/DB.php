@@ -53,7 +53,6 @@ class DB extends QUI\QDOM
      */
     protected ?PDO $PDO = null;
 
-    // @phpstan-ignore-next-line
     protected ?\Doctrine\DBAL\Connection $Doctrine = null;
 
     /**
