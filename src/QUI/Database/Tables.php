@@ -55,7 +55,7 @@ class Tables
     protected function isSQLite(): bool
     {
         return false;
-        return $this->DB->isSQLite();
+        //return $this->DB->isSQLite();
     }
 
     /**
@@ -287,7 +287,9 @@ class Tables
         try {
             $Stmnt->execute();
         } catch (\Exception $Exception) {
-            QUI\System\Log::addInfo($query . ' :: ' . $Exception->getMessage());
+            if (class_exists('QUI\System\Log')) {
+                QUI\System\Log::addInfo($query . ' :: ' . $Exception->getMessage());
+            }
         }
     }
 
@@ -432,7 +434,10 @@ class Tables
                 try {
                     $Stmnt->execute();
                 } catch (\Exception $Exception) {
-                    QUI\System\Log::addError($query);
+                    if (class_exists('QUI\System\Log')) {
+                        QUI\System\Log::addError($query);
+                    }
+
                     throw $Exception;
                 }
 
@@ -464,7 +469,10 @@ class Tables
         try {
             $Stmnt->execute();
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError($query);
+            if (class_exists('QUI\System\Log')) {
+                QUI\System\Log::addError($query);
+            }
+
             throw $Exception;
         }
     }

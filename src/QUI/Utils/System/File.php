@@ -571,7 +571,7 @@ class File
      *
      * @return integer
      */
-    public static function getBytes(int|string $val): int
+    public static function getBytes(int | string $val): int
     {
         $last = '';
 
@@ -617,6 +617,10 @@ class File
 
         if (!is_dir($file)) {
             return unlink($file);
+        }
+
+        if (!defined('VAR_DIR')) {
+            return false;
         }
 
         // create a var_dir temp folder
@@ -1081,7 +1085,7 @@ class File
      * found on:
      * http://www.phpgangsta.de/dateidownload-via-php-mit-speedlimit-und-resume
      */
-    public static function send(string $filePath, int $rate = 0, string $downloadFileName = null): void
+    public static function send(string $filePath, int $rate = 0, null | string $downloadFileName = null): void
     {
         // Check if file exists
         if (!is_file($filePath)) {
@@ -1166,7 +1170,7 @@ class File
 
             // if speedlimit is defined, make sure to only send specified bytes per second
             if ($rate > 0) {
-                usleep(1000000 - $wait);
+                usleep((int)(1000000 - $wait));
             }
         }
 
@@ -1182,7 +1186,7 @@ class File
      *
      * @return boolean|array
      */
-    public static function dircopy(string $srcDir, string $dstDir): bool|array
+    public static function dircopy(string $srcDir, string $dstDir): bool | array
     {
         QUI\Utils\System\File::mkdir($dstDir);
 
@@ -1230,7 +1234,7 @@ class File
      *
      * @return boolean
      */
-    public static function mkdir(string $path, bool|int $mode = false): bool
+    public static function mkdir(string $path, bool | int $mode = false): bool
     {
         if (is_dir($path)) {
             return true;
@@ -1401,11 +1405,11 @@ class File
      * @param string $url
      * @return int|string
      */
-    public static function getFileSize(string $url): int|string
+    public static function getFileSize(string $url): int | string
     {
         if (str_starts_with($url, 'http')) {
             $x = array_change_key_case(
-                get_headers($url, 1),
+                get_headers($url, true),
                 CASE_LOWER
             );
 

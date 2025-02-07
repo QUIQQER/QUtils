@@ -90,7 +90,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function JSString(bool|string $value): string
+    public static function JSString(bool | string $value): string
     {
         if (is_string($value)) {
             return $value;
@@ -108,7 +108,7 @@ class StringHelper
      * @return array|string
      * @throws Exception
      */
-    public static function pathinfo(string $path, bool|int $options = false): array|string
+    public static function pathinfo(string $path, bool | int $options = false): array | string
     {
         if (!file_exists($path)) {
             throw new Exception('File ' . $path . ' not exists');
@@ -357,7 +357,7 @@ class StringHelper
      * @param string|float|mixed $str
      * @return float|int
      */
-    public static function parseFloat(mixed $str): float|int
+    public static function parseFloat(mixed $str): float | int
     {
         if (is_float($str)) {
             return $str;
@@ -399,7 +399,7 @@ class StringHelper
      *
      * @return array|string|string[]
      */
-    public static function number2db(mixed $value): array|string
+    public static function number2db(mixed $value): array | string
     {
         $larr = localeconv();
         $search = [
@@ -667,12 +667,12 @@ class StringHelper
      * thank you to: https://gist.github.com/bohwaz/42fc223031e2b2dd2585aab159a20f30
      *
      * @param string $format
-     * @param ?int|?string $timestamp
+     * @param null | int | string $timestamp
      * @return string
      * @throws \Exception
      * @deprecated use "php81_bc/strftime": "^0.7",
      */
-    public static function strftime(string $format, int|string $timestamp = null): string
+    public static function strftime(string $format, null | int | string $timestamp = null): string
     {
         if (null === $timestamp) {
             $timestamp = new DateTime();
@@ -692,7 +692,12 @@ class StringHelper
             );
         }
 
-        $locale = QUI::getLocale()->getLocalesByLang(QUI::getLocale()->getCurrent());
+        if (class_exists('QUI')) {
+            $locale = QUI::getLocale()->getLocalesByLang(QUI::getLocale()->getCurrent());
+        } else {
+            $locale = 'en_EN';
+        }
+
 
         $intlFormats = [
             '%a' => 'EEE',

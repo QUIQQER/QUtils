@@ -113,7 +113,7 @@ class Folder
 
             // Reset the time limit to its default value.
             // This ensures that following code execution doesn't time out after two seconds.
-            set_time_limit($maxExecTime);
+            set_time_limit((int)$maxExecTime);
         }
 
         if ($doNotCache) {

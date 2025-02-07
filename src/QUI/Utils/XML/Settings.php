@@ -7,6 +7,7 @@
 namespace QUI\Utils\XML;
 
 use DOMElement;
+use DOMNode;
 use DOMXPath;
 use DusanKasan\Knapsack\Collection;
 use QUI;
@@ -82,7 +83,7 @@ class Settings
      * @param bool|string $windowName
      * @return array
      */
-    public function getPanel($xmlFiles, bool|string $windowName = false): array
+    public function getPanel($xmlFiles, bool | string $windowName = false): array
     {
         $result = [
             'title' => '',
@@ -94,7 +95,7 @@ class Settings
         }
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!str_contains($xmlFile, CMS_DIR)) {
+            if (defined('CMS_DIR') && !str_contains($xmlFile, CMS_DIR)) {
                 $xmlFile = CMS_DIR . $xmlFile;
             }
 
@@ -111,7 +112,13 @@ class Settings
             }
 
             foreach ($windows as $Window) {
-                /* @var $Window DOMElement */
+                if (
+                    !method_exists($Window, 'getElementsByTagName')
+                    || !method_exists($Window, 'getAttribute')
+                ) {
+                    continue;
+                }
+
                 $Title = $Window->getElementsByTagName('title');
                 $Icon = $Window->getElementsByTagName('icon');
 
@@ -156,7 +163,7 @@ class Settings
      * @param array|string $xmlFiles
      * @return Collection
      */
-    public function getCategories(array|string $xmlFiles): Collection
+    public function getCategories(array | string $xmlFiles): Collection
     {
         if (is_string($xmlFiles)) {
             $xmlFiles = [$xmlFiles];
@@ -175,7 +182,7 @@ class Settings
         };
 
         foreach ($xmlFiles as $xmlFile) {
-            if (!str_contains($xmlFile, CMS_DIR)) {
+            if (defined('CMS_DIR') && !str_contains($xmlFile, CMS_DIR)) {
                 $xmlFile = CMS_DIR . $xmlFile;
             }
 
@@ -190,7 +197,12 @@ class Settings
 
             foreach ($categories as $Category) {
                 $data = $this->parseCategory($Category);
-                $data['file'] = str_replace(CMS_DIR, '', $xmlFile);
+
+                if (defined('CMS_DIR')) {
+                    $data['file'] = str_replace(CMS_DIR, '', $xmlFile);
+                } else {
+                    $data['file'] = $xmlFile;
+                }
 
                 $entry = $Collection->find(function ($item) use ($data) {
                     return $data['name'] == $item['name'];
@@ -245,11 +257,15 @@ class Settings
     /**
      * Parse <category> DOMElement and return it as an array
      *
-     * @param DOMElement $Category
+     * @param DOMNode|DOMElement $Category
      * @return array
      */
-    public function parseCategory(DOMElement $Category): array
+    public function parseCategory(DOMNode | DOMElement $Category): array
     {
+        if (!method_exists($Category, 'getAttribute')) {
+            return [];
+        }
+
         $Collection = Collection::from([]);
 
         $data = [
@@ -295,11 +311,15 @@ class Settings
     /**
      * Parse a <setting> DOM node and return it as an array
      *
-     * @param DOMElement $Setting
+     * @param DOMNode|DOMElement $Setting
      * @return array
      */
-    public function parseSettings(DOMElement $Setting): array
+    public function parseSettings(DOMNode | DOMElement $Setting): array
     {
+        if (!method_exists($Setting, 'getAttribute')) {
+            return [];
+        }
+
         $data = [
             'name' => $Setting->getAttribute('name'),
             'title' => '',
@@ -311,7 +331,6 @@ class Settings
         $items = [];
 
         foreach ($Setting->childNodes as $Child) {
-            /* @var $Child DOMElement */
             if ($Child->nodeName == '#text') {
                 continue;
             }
@@ -358,7 +377,7 @@ class Settings
                 continue;
             }
 
-            if ($Child->getAttribute('row-style')) {
+            if (method_exists($Child, 'getAttribute') && $Child->getAttribute('row-style')) {
                 $items[] = [
                     'rowStyle' => $Child->getAttribute('row-style'),
                     'content' => $item
@@ -394,7 +413,7 @@ class Settings
      * @param bool|string $categoryName
      * @return string
      */
-    public function getCategoriesHtml(array|string $files, bool|string $categoryName = false): string
+    public function getCategoriesHtml(array | string $files, bool | string $categoryName = false): string
     {
         $Collection = $this->getCategories($files);
         $result = '';
@@ -418,7 +437,7 @@ class Settings
                 $result .= '<table class="data-table data-table-flexbox">';
                 $result .= '<thead><tr><th>';
 
-                if (is_array($setting['title'])) {
+                if (class_exists('QUI') && is_array($setting['title'])) {
                     $result .= QUI::getLocale()->get($setting['title'][0], $setting['title'][1]);
                 } else {
                     $result .= $setting['title'];

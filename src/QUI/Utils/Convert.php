@@ -45,8 +45,8 @@ class Convert
     public static function formPrice(int $price, int $type = 1): string
     {
         return match ($type) {
-            2 => number_format(round($price, 2), '2', ',', '.'),
-            3 => number_format(round($price, 2), '2', '.', ','),
+            2 => number_format(round($price, 2), 2, ',', '.'),
+            3 => number_format(round($price, 2), 2, '.', ','),
             default => round($price, 2),
         };
     }
@@ -106,9 +106,8 @@ class Convert
         [$year, $month, $day] = explode('-', $date);
         [$hour, $minute, $second] = explode(':', $time);
 
-        return mktime($hour, $minute, $second, $month, $day, $year);
+        return mktime((int)$hour, (int)$minute, (int)$second, (int)$month, (int)$day, (int)$year);
     }
-
 
     /**
      * Converts a given DateTime object to a string that can be used with MySQL's Datetime-datatype.
