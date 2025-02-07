@@ -55,7 +55,7 @@ class Tables
     protected function isSQLite(): bool
     {
         return false;
-        return $this->DB->isSQLite();
+        //return $this->DB->isSQLite();
     }
 
     /**
@@ -202,7 +202,7 @@ class Tables
      * @throws QUI\Database\Exception
      * @todo check mysql injection
      */
-    public function create(string $table, array $fields, string $engine = 'MYISAM'): bool
+    public function create(string $table, array $fields, string $engine = 'InnoDB'): bool
     {
         $_table = $this->clear($table);
 
@@ -220,7 +220,7 @@ class Tables
                 break;
 
             default:
-                $engine = 'MYISAM';
+                $engine = 'InnoDB';
                 break;
         }
 
@@ -287,7 +287,9 @@ class Tables
         try {
             $Stmnt->execute();
         } catch (\Exception $Exception) {
-            QUI\System\Log::addInfo($query . ' :: ' . $Exception->getMessage());
+            if (class_exists('QUI\System\Log')) {
+                QUI\System\Log::addInfo($query . ' :: ' . $Exception->getMessage());
+            }
         }
     }
 
@@ -343,7 +345,7 @@ class Tables
      * @deprecated ->addColumn
      *
      */
-    public function appendFields($table, $fields, $engine = 'MYISAM')
+    public function appendFields($table, $fields, $engine = 'InnoDB')
     {
         $this->addColumn($table, $fields, $engine);
     }
@@ -400,7 +402,7 @@ class Tables
      * @throws Exception
      * @throws \Exception
      */
-    public function addColumn($table, $fields, $engine = 'MYISAM')
+    public function addColumn($table, $fields, $engine = 'InnoDB')
     {
         if ($this->exist($table) == false) {
             $this->create($table, $fields, $engine);
@@ -432,7 +434,10 @@ class Tables
                 try {
                     $Stmnt->execute();
                 } catch (\Exception $Exception) {
-                    QUI\System\Log::addError($query);
+                    if (class_exists('QUI\System\Log')) {
+                        QUI\System\Log::addError($query);
+                    }
+
                     throw $Exception;
                 }
 
@@ -464,7 +469,10 @@ class Tables
         try {
             $Stmnt->execute();
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError($query);
+            if (class_exists('QUI\System\Log')) {
+                QUI\System\Log::addError($query);
+            }
+
             throw $Exception;
         }
     }

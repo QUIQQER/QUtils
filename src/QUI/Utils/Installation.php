@@ -40,6 +40,10 @@ class Installation
      */
     public static function getWholeFolderSize(bool $force = false): ?int
     {
+        if (!defined('CMS_DIR')) {
+            return null;
+        }
+
         return Folder::getFolderSize(CMS_DIR, $force);
     }
 
@@ -51,6 +55,10 @@ class Installation
      */
     public static function getWholeFolderSizeTimestamp(): ?int
     {
+        if (!defined('CMS_DIR')) {
+            return null;
+        }
+
         return Folder::getFolderSizeTimestamp(CMS_DIR);
     }
 
@@ -66,10 +74,14 @@ class Installation
      *
      * @return float|int|string|null - The amount of files or null if no cached value is present
      */
-    public static function getAllFileCount(bool $force = false): float|int|string|null
+    public static function getAllFileCount(bool $force = false): float | int | string | null
     {
         if ($force) {
             return self::countAllFiles();
+        }
+
+        if (!class_exists('QUI\Cache\Manager')) {
+            return null;
         }
 
         try {
@@ -89,6 +101,10 @@ class Installation
      */
     public static function getAllFileCountTimestamp(): ?int
     {
+        if (!class_exists('QUI\Cache\Manager')) {
+            return null;
+        }
+
         try {
             $timestamp = Manager::get(self::CACHE_KEY_FILE_COUNT_TIMESTAMP);
         } catch (Exception) {
@@ -105,8 +121,12 @@ class Installation
      *
      * @return float|int|string|null
      */
-    protected static function countAllFiles(bool $doNotCache = false): float|int|string|null
+    protected static function countAllFiles(bool $doNotCache = false): float | int | string | null
     {
+        if (!defined('CMS_DIR')) {
+            return null;
+        }
+
         $fileCount = null;
 
         if (System::isSystemFunctionCallable('find') && System::isSystemFunctionCallable('wc')) {
@@ -131,10 +151,14 @@ class Installation
 
         // Store the folder size and the current time as timestamp in cache
         try {
-            Manager::set(self::CACHE_KEY_FILE_COUNT, $fileCount);
-            Manager::set(self::CACHE_KEY_FILE_COUNT_TIMESTAMP, time());
+            if (class_exists('QUI\Cache\Manager')) {
+                Manager::set(self::CACHE_KEY_FILE_COUNT, $fileCount);
+                Manager::set(self::CACHE_KEY_FILE_COUNT_TIMESTAMP, time());
+            }
         } catch (\Exception $Exception) {
-            Log::writeException($Exception);
+            if (class_exists('QUI\System\Log')) {
+                Log::writeException($Exception);
+            }
         }
 
         return $fileCount;
@@ -156,6 +180,14 @@ class Installation
      */
     public static function getVarFolderSize(bool $excludeCacheFolder = false, bool $force = false): ?int
     {
+        if (!defined('VAR_DIR')) {
+            return null;
+        }
+
+        if (!class_exists('QUI\Cache\Manager')) {
+            return null;
+        }
+
         $size = Folder::getFolderSize(VAR_DIR, $force);
 
         if ($size && $excludeCacheFolder) {
@@ -173,6 +205,10 @@ class Installation
      */
     public static function getVarFolderSizeTimestamp(): ?int
     {
+        if (!defined('VAR_DIR')) {
+            return null;
+        }
+
         return Folder::getFolderSizeTimestamp(VAR_DIR);
     }
 }

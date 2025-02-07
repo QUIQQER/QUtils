@@ -67,7 +67,7 @@ class DOM
      * @param QUI\Controls\Toolbar\Bar $TabBar
      * @param string $plugin - optional
      */
-    public static function addTabsToToolbar(DOMNodeList|array $tabs, Toolbar\Bar $TabBar, string $plugin = ''): void
+    public static function addTabsToToolbar(DOMNodeList | array $tabs, Toolbar\Bar $TabBar, string $plugin = ''): void
     {
         foreach ($tabs as $Tab) {
             /* @var $Tab DOMElement */
@@ -111,8 +111,10 @@ class DOM
                 $name = $attr->nodeName;
 
                 if (
-                    $name !== 'name' && $name !== 'text'
-                    || $name !== 'image' && $name !== 'plugin'
+                    $name !== 'name'
+                    && $name !== 'text'
+                    && $name !== 'image'
+                    && $name !== 'plugin'
                 ) {
                     $ToolbarTab->setAttribute($name, $attr->nodeValue);
                 }
@@ -165,19 +167,26 @@ class DOM
      * @param DOMNode|DOMElement $Button
      * @return string
      */
-    public static function buttonDomToString(DOMNode|DOMElement $Button): string
+    public static function buttonDomToString(DOMNode | DOMElement $Button): string
     {
         if ($Button->nodeName != 'button') {
             return '';
         }
 
-        $text = '';
-        $Text = $Button->getElementsByTagName('text');
-
-        if ($Text->length) {
-            $text = self::getTextFromNode($Text->item(0));
+        if (!method_exists($Button, 'getAttribute')) {
+            return '';
         }
 
+        $text = '';
+        $Text = null;
+
+        if (method_exists($Button, 'getElementsByTagName')) {
+            $Text = $Button->getElementsByTagName('text');
+        }
+
+        if ($Text?->length) {
+            $text = self::getTextFromNode($Text->item(0));
+        }
 
         $string = '<p>';
         $string .= '<div class="btn-button" ';
@@ -198,8 +207,15 @@ class DOM
      * @param DOMNode|DOMElement $Table
      * @return array
      */
-    public static function dbTableDomToArray(DOMNode|DOMElement $Table): array
+    public static function dbTableDomToArray(DOMNode | DOMElement $Table): array
     {
+        if (
+            !method_exists($Table, 'getAttribute')
+            || !method_exists($Table, 'getElementsByTagName')
+        ) {
+            return [];
+        }
+
         $result = [
             'suffix' => $Table->getAttribute('name'),
             'engine' => $Table->getAttribute('engine'),
@@ -310,8 +326,12 @@ class DOM
      * @param DOMNode|DOMElement $Field
      * @return array
      */
-    public static function dbFieldDomToArray(DOMNode|DOMElement $Field): array
+    public static function dbFieldDomToArray(DOMNode | DOMElement $Field): array
     {
+        if (!method_exists($Field, 'getAttribute')) {
+            return [];
+        }
+
         $str = $Field->getAttribute('type');
 
         if (empty($str)) {
@@ -349,7 +369,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbPrimaryDomToArray(DOMNode|DOMElement $Primary): array
+    public static function dbPrimaryDomToArray(DOMNode | DOMElement $Primary): array
     {
         return [
             'primary' => explode(',', $Primary->nodeValue)
@@ -363,7 +383,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbUniqueDomToArray(DOMNode|DOMElement $Unique): array
+    public static function dbUniqueDomToArray(DOMNode | DOMElement $Unique): array
     {
         return [
             'unique' => explode(',', $Unique->nodeValue)
@@ -377,7 +397,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbIndexDomToArray(DOMNode|DOMElement $Index): array
+    public static function dbIndexDomToArray(DOMNode | DOMElement $Index): array
     {
         return [
             'index' => [trim($Index->nodeValue)]
@@ -391,7 +411,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbAutoIncrementDomToArray(DOMNode|DOMElement $AI): array
+    public static function dbAutoIncrementDomToArray(DOMNode | DOMElement $AI): array
     {
         return [
             'auto_increment' => trim($AI->nodeValue)
@@ -405,7 +425,7 @@ class DOM
      *
      * @return array
      */
-    public static function dbAutoFullextDomToArray(DOMNode|DOMElement $Fulltext): array
+    public static function dbAutoFullextDomToArray(DOMNode | DOMElement $Fulltext): array
     {
         return [
             'fulltext' => trim($Fulltext->nodeValue)
@@ -418,8 +438,12 @@ class DOM
      * @param DOMNode|DOMElement $DOMNode $DOMNode
      * @return array
      */
-    public static function getTabs(DOMNode|DOMElement $DOMNode): array
+    public static function getTabs(DOMNode | DOMElement $DOMNode): array
     {
+        if (!method_exists($DOMNode, 'getElementsByTagName')) {
+            return [];
+        }
+
         $tabList = $DOMNode->getElementsByTagName('tab');
 
         if (!$tabList->length) {
@@ -449,8 +473,11 @@ class DOM
      * @param array $engineParams
      * @return string
      */
-    public static function getTabHTML(string $name, Project|Edit|string|Site $Object, array $engineParams = []): string
-    {
+    public static function getTabHTML(
+        string $name,
+        Project | Edit | string | Site $Object,
+        array $engineParams = []
+    ): string {
         $tabs = [];
         $current = QUI::getLocale()->getCurrent();
 
@@ -523,7 +550,7 @@ class DOM
      * @param DomDocument|DomElement $Dom
      * @return array
      */
-    public static function getButtonsFromWindow(DomDocument|DOMElement $Dom): array
+    public static function getButtonsFromWindow(DomDocument | DOMElement $Dom): array
     {
         $btnList = $Dom->getElementsByTagName('categories');
 
@@ -535,10 +562,13 @@ class DOM
         $children = $btnList->item(0)->childNodes;
 
         for ($i = 0; $i < $children->length; $i++) {
-            /* @var $Param DOMElement */
             $Param = $children->item($i);
 
             if ($Param->nodeName != 'category') {
+                continue;
+            }
+
+            if (!method_exists($Param, 'getAttribute')) {
                 continue;
             }
 
@@ -620,15 +650,18 @@ class DOM
      *
      * @return string|array
      */
-    public static function getTextFromNode(DOMNode|DOMElement $Node, bool $translate = true): array|string
+    public static function getTextFromNode(DOMNode | DOMElement $Node, bool $translate = true): array | string
     {
+        if (!method_exists($Node, 'getElementsByTagName')) {
+            return '';
+        }
+
         $loc = $Node->getElementsByTagName('locale');
 
         if (!$loc->length) {
             return self::parseVar(trim($Node->nodeValue));
         }
 
-        /* @var $Element DOMElement */
         $Element = $loc->item(0);
 
         if ($translate === false) {
@@ -663,12 +696,17 @@ class DOM
 
         $result = [];
 
-        /* @var $Style DOMElement */
         foreach ($Styles as $Style) {
+            if (
+                !method_exists($Style, 'getAttribute')
+                || !method_exists($Style, 'getElementsByTagName')
+            ) {
+                continue;
+            }
+
             $attributeList = [];
             $attributes = $Style->getElementsByTagName('attribute');
 
-            /* @var $Attribute DOMElement */
             foreach ($attributes as $Attribute) {
                 $attributeList[$Attribute->getAttribute('name')] = trim($Attribute->nodeValue);
             }
@@ -689,9 +727,16 @@ class DOM
      * @param DOMNode|DOMElement $Group
      * @return string
      */
-    public static function groupDomToString(DOMNode|DOMElement $Group): string
+    public static function groupDomToString(DOMNode | DOMElement $Group): string
     {
         if ($Group->nodeName != 'group') {
+            return '';
+        }
+
+        if (
+            !method_exists($Group, 'getAttribute')
+            || !method_exists($Group, 'getElementsByTagName')
+        ) {
             return '';
         }
 
@@ -758,17 +803,21 @@ class DOM
      * @param bool $withCustomParams - Should custom parameters be considered?
      * @return array
      */
-    public static function getConfigParamsFromDOM(DOMNode|DomDocument $Dom, bool $withCustomParams = false): array
+    public static function getConfigParamsFromDOM(DOMNode | DomDocument $Dom, bool $withCustomParams = false): array
     {
         $Settings = $Dom;
 
-        if ($Dom->nodeName != 'settings') {
+        if ($Dom->nodeName != 'settings' && method_exists($Dom, 'getElementsByTagName')) {
             $settings = $Dom->getElementsByTagName('settings');
             $Settings = $settings->item(0);
 
             if (!$settings->length) {
                 return [];
             }
+        }
+
+        if (!method_exists($Settings, 'getElementsByTagName')) {
+            return [];
         }
 
         $configs = $Settings->getElementsByTagName('config');
@@ -828,7 +877,7 @@ class DOM
      * @param DomDocument|DOMElement $Dom
      * @return QUI\Controls\Windows\Window|bool
      */
-    public static function parseDomToWindow(DomDocument|DOMElement $Dom): QUI\Controls\Windows\Window|bool
+    public static function parseDomToWindow(DomDocument | DOMElement $Dom): QUI\Controls\Windows\Window | bool
     {
         $settings = $Dom->getElementsByTagName('settings');
 
@@ -893,9 +942,16 @@ class DOM
      *
      * @return array
      */
-    public static function parsePanelToArray(DOMNode|DOMElement $Node): array
+    public static function parsePanelToArray(DOMNode | DOMElement $Node): array
     {
         if ($Node->nodeName != 'panel') {
+            return [];
+        }
+
+        if (
+            !method_exists($Node, 'getAttribute')
+            || !method_exists($Node, 'getElementsByTagName')
+        ) {
             return [];
         }
 
@@ -934,9 +990,16 @@ class DOM
      * @param DOMNode|DOMElement $Node
      * @return array
      */
-    public static function parsePermissionToArray(DOMNode|DOMElement $Node): array
+    public static function parsePermissionToArray(DOMNode | DOMElement $Node): array
     {
         if ($Node->nodeName != 'permission') {
+            return [];
+        }
+
+        if (
+            !method_exists($Node, 'getAttribute')
+            || !method_exists($Node, 'getElementsByTagName')
+        ) {
             return [];
         }
 
@@ -946,6 +1009,7 @@ class DOM
         $Default = $Node->getElementsByTagName('defaultvalue');
         $RootPermission = $Node->getElementsByTagName('rootPermission');
         $EveryonePermission = $Node->getElementsByTagName('everyonePermission');
+        $GuestPermission = $Node->getElementsByTagName('guestPermission');
 
         if ($Default->length) {
             $default = $Default->item(0)->nodeValue;
@@ -963,6 +1027,12 @@ class DOM
             $everyonePermission = null;
         }
 
+        if ($GuestPermission->length) {
+            $guestPermission = $GuestPermission->item(0)->nodeValue;
+        } else {
+            $guestPermission = null;
+        }
+
         $type = QUI\Permissions\Manager::parseType($Node->getAttribute('type'));
         $area = QUI\Permissions\Manager::parseArea($Node->getAttribute('area'));
 
@@ -973,7 +1043,8 @@ class DOM
 
             'defaultvalue' => $default,
             'rootPermission' => $rootPermission,
-            'everyonePermission' => $everyonePermission
+            'everyonePermission' => $everyonePermission,
+            'guestPermission' => $guestPermission,
         ];
     }
 
@@ -985,7 +1056,7 @@ class DOM
      *
      * @return string
      */
-    public static function parseCategoryToHTML(DOMNode|DOMElement $Category, string $current = ''): string
+    public static function parseCategoryToHTML(DOMNode | DOMElement $Category, string $current = ''): string
     {
         if (empty($current)) {
             $current = QUI::getLocale()->getCurrent();
@@ -1035,7 +1106,7 @@ class DOM
             if ($Entry->nodeName == 'title') {
                 $name = '';
 
-                if ($Category->getAttribute('name')) {
+                if (method_exists($Category, 'getAttribute') && $Category->getAttribute('name')) {
                     $name = ' data-name="' . $Category->getAttribute('name') . '"';
                 }
 
@@ -1050,19 +1121,21 @@ class DOM
                 $row = 0;
                 $settings = $Entry->childNodes;
 
-                if ($Entry->getAttribute('name')) {
+                if (method_exists($Entry, 'getAttribute') && $Entry->getAttribute('name')) {
                     $name = ' data-name="' . $Entry->getAttribute('name') . '"';
                 }
 
                 $result .= '<table class="data-table data-table-flexbox" ' . $name . '>';
 
                 // title
-                $titles = $Entry->getElementsByTagName('title');
+                if (method_exists($Entry, 'getElementsByTagName')) {
+                    $titles = $Entry->getElementsByTagName('title');
 
-                if ($titles->length) {
-                    $result .= '<thead><tr><th>';
-                    $result .= self::getTextFromNode($titles->item(0));
-                    $result .= '</th></tr></thead>';
+                    if ($titles->length) {
+                        $result .= '<thead><tr><th>';
+                        $result .= self::getTextFromNode($titles->item(0));
+                        $result .= '</th></tr></thead>';
+                    }
                 }
 
                 $result .= '<tbody>';
@@ -1167,9 +1240,16 @@ class DOM
      * @param DOMNode|DOMElement $Input
      * @return string
      */
-    public static function inputDomToString(DOMNode|DOMElement $Input): string
+    public static function inputDomToString(DOMNode | DOMElement $Input): string
     {
         if ($Input->nodeName != 'input') {
+            return '';
+        }
+
+        if (
+            !method_exists($Input, 'getAttribute')
+            || !method_exists($Input, 'getElementsByTagName')
+        ) {
             return '';
         }
 
@@ -1288,9 +1368,16 @@ class DOM
      * @param DOMNode|DOMElement $TextArea
      * @return string
      */
-    public static function textareaDomToString(DOMNode|DOMElement $TextArea): string
+    public static function textareaDomToString(DOMNode | DOMElement $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
+            return '';
+        }
+
+        if (
+            !method_exists($TextArea, 'getAttribute')
+            || !method_exists($TextArea, 'getElementsByTagName')
+        ) {
             return '';
         }
 
@@ -1335,7 +1422,13 @@ class DOM
         $result = [];
 
         foreach ($configurations as $Conf) {
-            /* @var $Conf DOMElement */
+            if (
+                !method_exists($Conf, 'getElementsByTagName')
+                || !method_exists($Conf, 'getAttribute')
+            ) {
+                continue;
+            }
+
             $type = 'string';
             $default = '';
 
@@ -1438,9 +1531,16 @@ class DOM
      * @param DOMNode|DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(DOMNode|DOMElement $Select): string
+    public static function selectDomToString(DOMNode | DOMElement $Select): string
     {
         if ($Select->nodeName != 'select') {
+            return '';
+        }
+
+        if (
+            !method_exists($Select, 'getAttribute')
+            || !method_exists($Select, 'getElementsByTagName')
+        ) {
             return '';
         }
 

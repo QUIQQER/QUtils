@@ -65,13 +65,15 @@ class PSpell extends QUI\QDOM
             $this->getAttribute('dialect')
         );
 
-        pspell_config_mode($Config, "PSPELL_FAST");
+        if (defined('PSPELL_FAST')) {
+            pspell_config_mode($Config, PSPELL_FAST);
+        }
 
         if ($this->getAttribute('personal')) {
             pspell_config_personal($Config, $this->getAttribute('personal'));
         }
 
-        $this->Spell = pspell_new($Config);
+        $this->Spell = pspell_new_config($Config);
     }
 
     /**

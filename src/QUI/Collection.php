@@ -83,7 +83,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @param mixed $Child
      * @param int|null $key
      */
-    public function append(mixed $Child, int $key = null): void
+    public function append(mixed $Child, null | int $key = null): void
     {
         if ($this->isAllowed($Child)) {
             if (is_null($key)) {
@@ -186,7 +186,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * @param mixed $Child
      * @param bool|int $pos - starts at 0, if $pos is false = child appended to the end
      */
-    public function insert(mixed $Child, bool|int $pos = false): void
+    public function insert(mixed $Child, bool | int $pos = false): void
     {
         if (!$this->isAllowed($Child)) {
             return;

@@ -270,15 +270,11 @@ class Orthos
      * @param string $str
      *
      * @return string
+     * @deprecated use strip_tags
      */
     public static function cleanHTML(string $str): string
     {
-        $BBCode = new BBCode();
-
-        $str = $BBCode->parseToBBCode($str);
-        $str = $BBCode->parseToHTML($str);
-
-        return $str;
+        return strip_tags($str);
     }
 
     /**
@@ -368,10 +364,11 @@ class Orthos
      */
     public static function checkMailSyntax(string $email): bool
     {
-        return preg_match(
-            '/^([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,64}\@{1}([A-Za-z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~]){1,248}\.{1}([a-z]){2,6}$/i',
-            $email
-        );
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

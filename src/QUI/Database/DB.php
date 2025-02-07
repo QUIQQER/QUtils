@@ -8,6 +8,7 @@ namespace QUI\Database;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -98,7 +99,7 @@ class DB extends QUI\QDOM
      * - options (optional)
      * - driver (optional)
      *
-     * @throws
+     * @throws Exception
      */
     public function __construct(array $attributes = [])
     {
@@ -141,7 +142,9 @@ class DB extends QUI\QDOM
      * attention: please use getPDO() if you want not a new database connection
      *
      * @return PDO
-     * @throws Exception
+     *
+     * @throws \Exception
+     * @throws QUI\Database\Exception
      */
     public function getNewPDO(): PDO
     {
@@ -190,13 +193,15 @@ class DB extends QUI\QDOM
                 $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
 
                 $offsetString = ($offset < 0 ? '-' : '+');
-                $offsetString .= (strlen($offsetHours) < 2 ? '0' : '') . $offsetHours;
+                $offsetString .= (strlen((string)$offsetHours) < 2 ? '0' : '') . $offsetHours;
                 $offsetString .= ':';
-                $offsetString .= (strlen($offsetMinutes) < 2 ? '0' : '') . $offsetMinutes;
+                $offsetString .= (strlen((string)$offsetMinutes) < 2 ? '0' : '') . $offsetMinutes;
 
                 $Pdo->exec("SET time_zone = '$offsetString'");
             } catch (PDOException $Exception) {
-                QUI\System\Log::addError($Exception->getMessage());
+                if (class_exists('QUI\System\Log')) {
+                    QUI\System\Log::addError($Exception->getMessage());
+                }
             }
 
             return $Pdo;
@@ -442,7 +447,7 @@ class DB extends QUI\QDOM
         }
 
         // debugging
-        if (isset($params['debug'])) {
+        if (isset($params['debug']) && class_exists('QUI\System\Log')) {
             QUI\System\Log::writeRecursive([
                 'query' => $query,
                 'prepare' => $prepare
@@ -493,7 +498,7 @@ class DB extends QUI\QDOM
             }
         }
 
-        if (isset($params['debug'])) {
+        if (isset($params['debug']) && class_exists('QUI\System\Log')) {
             QUI\System\Log::writeRecursive($query);
         }
 
