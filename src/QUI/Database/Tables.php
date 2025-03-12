@@ -9,7 +9,6 @@ namespace QUI\Database;
 use PDO;
 use PDOException;
 use QUI;
-
 use QUI\Exception;
 
 use function count;
