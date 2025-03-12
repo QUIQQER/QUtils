@@ -14,7 +14,6 @@ use function function_exists;
 use function pspell_config_create;
 use function pspell_config_mode;
 use function pspell_config_personal;
-use function pspell_new;
 use function pspell_suggest;
 
 /**
