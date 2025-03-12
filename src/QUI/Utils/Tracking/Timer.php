@@ -42,7 +42,7 @@ class Timer
      *
      * @param string $name - name of the point
      */
-    public function milestone(string $name)
+    public function milestone(string $name): void
     {
         $this->milestones[] = [$name, $this->time()];
     }

@@ -14,7 +14,6 @@ use function file_get_contents;
 use function microtime;
 use function shell_exec;
 use function str_replace;
-use function strpos;
 use function system;
 use function unlink;
 
@@ -52,7 +51,7 @@ class PDFToText extends QUI\QDOM
 
         $output = shell_exec('pdftotext 2>&1');
 
-        if (strpos($output, 'pdftotext version') === false) {
+        if (!str_contains($output, 'pdftotext version')) {
             throw new QUI\Exception('Could not use pdftotext.', 500);
         }
 

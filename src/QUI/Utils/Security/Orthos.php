@@ -7,8 +7,8 @@
 namespace QUI\Utils\Security;
 
 use QUI;
+use QUI\Exception;
 use QUI\Utils\StringHelper;
-use QUI\Utils\Text\BBCode;
 
 use function checkdate;
 use function class_exists;
@@ -190,6 +190,7 @@ class Orthos
      *
      * @return string
      *
+     * @throws Exception
      * @deprecated use PDO::quote (QUI::getPDO()->quote())
      */
     public static function clearMySQL(string $str, bool $escape = true): string

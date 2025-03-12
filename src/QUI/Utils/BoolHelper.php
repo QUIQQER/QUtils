@@ -21,26 +21,26 @@ class BoolHelper
      *
      * @var string|boolean
      */
-    public string|bool $bool;
+    public string | bool $bool;
 
     /**
      * constructor
      *
      * @param boolean|string $bool
      */
-    public function __construct(bool|string $bool)
+    public function __construct(bool | string $bool)
     {
         $this->bool = (bool)$bool;
     }
 
     /**
-     * Converts JavaScript Boolean values ​​for PHP
+     * Converts JavaScript Boolean values for PHP
      *
      * @param boolean|string|int $value
      *
-     * @return boolean
+     * @return bool|string
      */
-    public static function JSBool(bool|string|int $value): bool|string
+    public static function JSBool(bool | string | int $value): bool | string
     {
         if (is_bool($value)) {
             return $value;
