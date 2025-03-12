@@ -22,7 +22,6 @@ use function file_exists;
 use function floatval;
 use function fnmatch;
 use function function_exists;
-use function is_array;
 use function is_float;
 use function is_string;
 use function localeconv;
@@ -41,7 +40,6 @@ use function str_replace;
 use function strlen;
 use function strpos;
 use function strrpos;
-use function strstr;
 use function strtr;
 use function substr;
 use function substr_replace;
@@ -614,12 +612,12 @@ class StringHelper
             $transforms['\*'] = '[^/]*';
         }
 
-        // Back slash should not be escaped:
+        // Backslash should not be escaped:
         if ($flags & FNM_NOESCAPE) {
             unset($transforms['\\']);
         }
 
-        // Perform case insensitive match:
+        // Perform case-insensitive match:
         if ($flags & FNM_CASEFOLD) {
             $modifiers .= 'i';
         }

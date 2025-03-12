@@ -105,7 +105,7 @@ class Folder
                     // To prevent timeouts we always reset the time limit to two seconds
                     set_time_limit(2);
                     $folderSize += $Object->getSize();
-                } catch (RuntimeException $RuntimeException) {
+                } catch (RuntimeException) {
                     // If getSize() fails (e.g. at broken symlinks) we get here
                     continue;
                 }

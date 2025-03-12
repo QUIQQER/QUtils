@@ -34,7 +34,6 @@ use function method_exists;
 use function preg_match;
 use function realpath;
 use function str_replace;
-use function strpos;
 use function trim;
 
 use const XML_COMMENT_NODE;
@@ -103,7 +102,6 @@ class XML
         $items = self::getMenuItemsXml($file);
 
         foreach ($items as $Item) {
-            /* @var $Item DOMElement */
             if (!$Item->getAttribute('parent')) {
                 continue;
             }
@@ -182,7 +180,6 @@ class XML
             return false;
         }
 
-        /* @var $Settings DOMElement */
         $Settings = $settings->item(0);
         $configs = $Settings->getElementsByTagName('config');
 
@@ -190,7 +187,6 @@ class XML
             return false;
         }
 
-        /* @var $Conf DOMElement */
         $Conf = $configs->item(0);
         $name = $Conf->getAttribute('name');
 
@@ -354,13 +350,11 @@ class XML
         $dbFields = [];
         $Database = $database->item(0);
 
-        /* @var $Database DOMElement */
         $global = $Database->getElementsByTagName('global');
         $project = $Database->getElementsByTagName('projects');
 
         // global
-        if ($global && $global->length) {
-            /* @var $Table DOMElement */
+        if ($global->length) {
             $Table = $global->item(0);
             $tables = $Table->getElementsByTagName('table');
 
@@ -437,7 +431,6 @@ class XML
             return [];
         }
 
-        /* @var $Event DOMElement */
         $Event = $events->item(0);
         $list = $Event->getElementsByTagName('event');
 
@@ -502,7 +495,6 @@ class XML
         $layouts = $Path->query("//site/layouts/layout");
         $result = [];
 
-        /* @var $Layout DOMElement */
         foreach ($layouts as $Layout) {
             $result[] = $Layout;
         }
@@ -518,12 +510,11 @@ class XML
      *
      * @return bool|DOMElement
      */
-    public static function getLayoutFromXml(string $file, string $layoutName)
+    public static function getLayoutFromXml(string $file, string $layoutName): bool | DOMElement
     {
         $layouts = self::getLayoutsFromXml($file);
 
         foreach ($layouts as $Layout) {
-            /* @var $Layout DOMElement */
             if ($Layout->getAttribute('type') == $layoutName) {
                 return $Layout;
             }
@@ -558,7 +549,6 @@ class XML
             return [];
         }
 
-        /* @var $Locales DOMElement */
         $Locales = $locales->item(0);
         $groups = $Locales->getElementsByTagName('groups');
 
@@ -569,7 +559,6 @@ class XML
         $result = [];
 
         for ($g = 0, $glen = $groups->length; $g < $glen; $g++) {
-            /* @var $Group DOMElement */
             $Group = $groups->item($g);
             $localeList = $Group->getElementsByTagName('locale');
 
@@ -592,7 +581,6 @@ class XML
                     $priority = (int)$Locale->getAttribute('priority');
                 }
 
-                /* @var $Locale DOMElement */
                 $params = [
                     'name' => $Locale->getAttribute('name'),
                     'html' => (bool)$Locale->getAttribute('html'),
@@ -640,7 +628,6 @@ class XML
             return [];
         }
 
-        /* @var $Menu DOMElement */
         $Menu = $menu->item(0);
         $items = $Menu->getElementsByTagName('item');
 
@@ -687,7 +674,6 @@ class XML
         $childNodes = $Package->childNodes;
 
         foreach ($childNodes as $Node) {
-            /* @var $Node DOMElement */
             if ($Node->nodeName === 'title') {
                 $result['title'] = DOM::getTextFromNode($Node);
                 continue;
@@ -705,7 +691,6 @@ class XML
 
             if ($Node->nodeName === 'template_parent') {
                 $result['template_parent'] = trim($Node->nodeValue);
-                continue;
             }
         }
 
@@ -724,7 +709,6 @@ class XML
         $result['provider'] = [];
 
         foreach ($provider as $Provider) {
-            /* @var $Provider DOMElement */
             foreach ($Provider->childNodes as $Node) {
                 if ($Node->nodeType === XML_COMMENT_NODE) {
                     continue;
@@ -804,7 +788,6 @@ class XML
 
         $package = trim($package, '/');
 
-        /* @var $Permissions DOMElement */
         $Permissions = $permissions->item(0);
         $permission = $Permissions->getElementsByTagName('permission');
 
@@ -844,7 +827,6 @@ class XML
             return $list;
         }
 
-        /* @var $Category DOMElement */
         foreach ($categories as $Category) {
             $list[] = $Category;
         }
@@ -951,7 +933,6 @@ class XML
             return [];
         }
 
-        /* @var $Sites DOMElement */
         $Sites = $sites->item(0);
         $types = $Sites->getElementsByTagName('types');
 
@@ -959,7 +940,6 @@ class XML
             return [];
         }
 
-        /* @var $Types DOMElement */
         $Types = $types->item(0);
         $typeList = $Types->getElementsByTagName('type');
 
@@ -1042,7 +1022,6 @@ class XML
             return [];
         }
 
-        /* @var $Template DOMElement */
         $Template = $template->item(0);
         $engines = $Template->getElementsByTagName('engine');
 
@@ -1081,7 +1060,6 @@ class XML
             return [];
         }
 
-        /* @var $Editors DOMElement */
         $Editors = $editors->item(0);
         $list = $Editors->getElementsByTagName('editor');
 
@@ -1129,7 +1107,6 @@ class XML
                 continue;
             }
 
-            /* @var $Widgets DOMElement */
             $list = $Widgets->getElementsByTagName('widget');
 
             for ($c = 0; $c < $list->length; $c++) {
@@ -1139,7 +1116,6 @@ class XML
                     continue;
                 }
 
-                /* @var $Widget DOMElement */
                 // widget on another location
                 if ($Widget->getAttribute('src')) {
                     $file = $Widget->getAttribute('src');
@@ -1169,7 +1145,7 @@ class XML
      *
      * @return boolean|DOMElement
      */
-    public static function getWidgetFromXml(string $file)
+    public static function getWidgetFromXml(string $file): bool | DOMElement
     {
         $Dom = self::getDomFromXml($file);
         $widget = $Dom->getElementsByTagName('widget');
@@ -1178,7 +1154,6 @@ class XML
             return false;
         }
 
-        /* @var $Widget DOMElement */
         $Widget = $widget->item(0);
         $Widget->setAttribute('name', md5($file));
 
@@ -1193,7 +1168,7 @@ class XML
      *
      * @throws QUI\Exception
      */
-    public static function setConfigFromXml($file, $params)
+    public static function setConfigFromXml(string $file, array $params): void
     {
         QUI\Permissions\Permission::checkAdminUser();
         QUI\Permissions\Permission::checkPermission('quiqqer.settings');
@@ -1277,7 +1252,7 @@ class XML
                             $value = json_encode($value);
                         }
 
-                        $value = QUI\Utils\Security\Orthos::cleanHTML($value);
+                        $value = strip_tags($value);
                         break;
                 }
 
@@ -1287,7 +1262,7 @@ class XML
 
         $Config->save();
 
-        if (strpos($file, 'quiqqer/core/admin/settings/cache.xml') !== false) {
+        if (str_contains($file, 'quiqqer/core/admin/settings/cache.xml')) {
             // if cache settings are set, this must be in the global conf
             // workaround for quiqqer/core#726
             $noCache = $Config->get('general', 'nocache');
@@ -1300,7 +1275,7 @@ class XML
 
         // @todo muss in paket klasse ausgelagert werden
         // package config?
-        if (strpos(URL_DIR . $file, URL_OPT_DIR) !== false) {
+        if (str_contains(URL_DIR . $file, URL_OPT_DIR)) {
             // Determine if file path is absolute (1st case) or relative
             if (mb_strpos($file, OPT_DIR) === 0) {
                 $_file = str_replace(OPT_DIR, '', $file);
@@ -1314,7 +1289,7 @@ class XML
                 $Package = QUI::getPackage($_file[0] . '/' . $_file[1]);
 
                 QUI::getEvents()->fireEvent('packageConfigSave', [$Package, $params]);
-            } catch (QUI\Exception $Exception) {
+            } catch (QUI\Exception) {
             }
         }
 
@@ -1332,7 +1307,7 @@ class XML
      * @throws QUI\Exception
      * @throws Exception
      */
-    public static function importDataBase(array $dbFields)
+    public static function importDataBase(array $dbFields): void
     {
         $Table = QUI::getDataBase()->table();
         $projects = QUI\Projects\Manager::getConfig()->toArray();
@@ -1365,7 +1340,7 @@ class XML
                 }
 
                 foreach ($index as $ind) {
-                    if (strpos($ind, ',') !== false) {
+                    if (str_contains($ind, ',')) {
                         $Table->setIndex($tbl, explode(',', $ind));
                     } else {
                         $Table->setIndex($tbl, $ind);
@@ -1435,7 +1410,7 @@ class XML
                             }
 
                             foreach ($index as $ind) {
-                                if (strpos($ind, ',') !== false) {
+                                if (str_contains($ind, ',')) {
                                     $Table->setIndex($tbl, explode(',', $ind));
                                 } else {
                                     $Table->setIndex($tbl, $ind);
@@ -1478,7 +1453,7 @@ class XML
      * @throws QUI\Exception
      * @throws Exception
      */
-    public static function importDataBaseFromXml(string $xmlFile)
+    public static function importDataBaseFromXml(string $xmlFile): void
     {
         $dbFields = self::getDataBaseFromXml($xmlFile);
 
@@ -1501,12 +1476,12 @@ class XML
     /**
      * Import a permissions.xml
      *
-     * @param string $xmlfile - Path to the file
+     * @param string $xmlFile - Path to the file
      * @param string $src - [optional] the source for the permissions
      */
-    public static function importPermissionsFromXml(string $xmlfile, string $src = '')
+    public static function importPermissionsFromXml(string $xmlFile, string $src = ''): void
     {
         $Manager = QUI::getPermissionManager();
-        $Manager->importPermissionsFromXml($xmlfile, $src);
+        $Manager->importPermissionsFromXml($xmlFile, $src);
     }
 }

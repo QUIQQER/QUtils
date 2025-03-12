@@ -34,7 +34,7 @@ use const LIBXML_XINCLUDE;
 class DocToText
 {
     /**
-     * Returns the content from a odx / docx file
+     * Returns the content from an odx / docx file
      *
      * @param string $file - path to file
      *
@@ -85,7 +85,7 @@ class DocToText
 
             // $text = strip_tags($Doc->saveXML());
             $text = preg_replace('#<[^>]+>#', ' ', $Doc->saveXML());
-            $text = preg_replace('/([ ]){2,}/', "$1", $text);
+            $text = preg_replace('/( ){2,}/', "$1", $text);
             $text = trim($text);
 
             $Zip->close();
