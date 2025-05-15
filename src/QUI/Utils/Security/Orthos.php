@@ -433,23 +433,19 @@ class Orthos
      */
     public static function getPassword(int $length = 10): string
     {
-        if (!is_int($length)) {
+        if ($length < 0) {
             $length = 10;
         }
 
-        $newPass = "";
-        $string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()[]{}?!$%&/=*+~,.;:<>-_";
-
-        $mt = microtime();
-        $mt = floatval($mt);
-        $mt = (int)($mt * 1000000);
-        mt_srand($mt);
-
-        for ($i = 1; $i <= $length; $i++) {
-            $newPass .= substr($string, mt_rand(0, strlen($string) - 1), 1);
+        $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()[]{}?!$%&/=*+~,.;:<>-_";
+        $charactersLength = strlen($characters);
+        $generatedPassword = "";
+        
+        for ($i = 0; $i < $length; $i++) {
+            $generatedPassword .= $characters[random_int(0, $charactersLength - 1)];
         }
-
-        return $newPass;
+    
+        return $generatedPassword;
     }
 
     /**
