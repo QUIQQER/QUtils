@@ -440,11 +440,11 @@ class Orthos
         $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()[]{}?!$%&/=*+~,.;:<>-_";
         $charactersLength = strlen($characters);
         $generatedPassword = "";
-        
+
         for ($i = 0; $i < $length; $i++) {
             $generatedPassword .= $characters[random_int(0, $charactersLength - 1)];
         }
-    
+
         return $generatedPassword;
     }
 
