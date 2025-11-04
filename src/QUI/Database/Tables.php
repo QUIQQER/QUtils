@@ -354,6 +354,11 @@ class Tables
 
         foreach ($fields as $field => $type) {
             $field = $this->clear($field);
+
+            if (empty($field)) {
+                continue;
+            }
+
             $type = $this->parseFieldType($type);
 
             if (!in_array($field, $tblFields)) {
