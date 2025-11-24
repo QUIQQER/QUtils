@@ -306,7 +306,8 @@ class StringHelper
     public static function toUTF8(string $str): string
     {
         if (!self::isValidUTF8($str)) {
-            return utf8_encode($str);
+            return mb_convert_encoding($str, 'UTF-8', 'auto');
+            //return utf8_encode($str);
         }
 
         return $str;
