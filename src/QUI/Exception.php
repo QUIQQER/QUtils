@@ -41,8 +41,12 @@ class Exception extends \Exception
      * @param integer $code - Error code der Exception
      * @param array $context - [optional] Context data, which data
      */
-    public function __construct($message = null, int $code = 0, $context = [])
-    {
+    public function __construct(
+        $message = null,
+        int $code = 0,
+        $context = [],
+        ?\Throwable $previous = null
+    ) {
         if (is_array($message)) {
             if (!isset($message[0]) || !isset($message[1])) {
                 $message = implode(',', $message);
@@ -65,7 +69,7 @@ class Exception extends \Exception
             }
         }
 
-        parent::__construct((string)$message, $code);
+        parent::__construct((string)$message, $code, $previous);
 
         if (!empty($context)) {
             $this->context = $context;
