@@ -60,8 +60,6 @@ if (!function_exists('fnmatch')) {
 /**
  * Helper for string handling
  */
-
-
 class StringHelper
 {
     /**
@@ -423,6 +421,7 @@ class StringHelper
      *
      * @return string
      * @deprecated
+     */
 
     public static function tagCloud(array $tags, int $start = 26, int $min = 10): string
     {
@@ -481,7 +480,7 @@ class StringHelper
      * @param $parsedUrl
      *
      * @return string
-
+     */
     public static function unparseUrl($parsedUrl): string
     {
         $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
@@ -496,7 +495,6 @@ class StringHelper
 
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
-
 
     /**
      * Returns the attributes of an HTML string

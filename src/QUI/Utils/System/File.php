@@ -757,7 +757,7 @@ class File
             try {
                 $r = getimagesize($file);
 
-                if ($r && is_array($r)) {
+                if ($r) {
                     $info['width'] = $r[0];
                     $info['height'] = $r[1];
                 }
