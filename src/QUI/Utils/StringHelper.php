@@ -25,6 +25,7 @@ use function function_exists;
 use function is_float;
 use function is_string;
 use function localeconv;
+use function mb_detect_encoding;
 use function mb_strlen;
 use function mb_strtolower;
 use function mb_strtoupper;
@@ -304,8 +305,17 @@ class StringHelper
     public static function toUTF8(string $str): string
     {
         if (!self::isValidUTF8($str)) {
-            return mb_convert_encoding($str, 'UTF-8', 'auto');
-            //return utf8_encode($str);
+            $sourceEncoding = mb_detect_encoding(
+                $str,
+                ['UTF-8', 'ISO-8859-1', 'Windows-1252', 'ASCII'],
+                true
+            );
+
+            if ($sourceEncoding === false) {
+                $sourceEncoding = 'ISO-8859-1';
+            }
+
+            return mb_convert_encoding($str, 'UTF-8', $sourceEncoding);
         }
 
         return $str;

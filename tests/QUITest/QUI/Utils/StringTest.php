@@ -167,7 +167,7 @@ class StringTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(StringHelper::isValidUTF8(utf8_encode('müll')));
 
         $this->assertEquals(
-            mb_convert_encoding($no_utf8, 'UTF-8', 'auto'),
+            'müll',
             StringHelper::toUTF8($no_utf8)
         );
 
