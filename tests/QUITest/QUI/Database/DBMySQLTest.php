@@ -12,6 +12,11 @@ require_once __DIR__ . '/DBHelper.php';
 
 class DBMySQLTest extends DBHelper
 {
+    public function testPlaceholder(): void
+    {
+        $this->markTestSkipped('Legacy DBMySQL tests are not implemented yet.');
+    }
+
 //    public function getDBConection()
 //    {
 //        return new DB(array(

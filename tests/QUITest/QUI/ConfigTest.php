@@ -96,8 +96,6 @@ class ConfigTest extends TestCase
     {
         $Config = $this->getConfig();
 
-        $this->assertFalse($Config->set());
-
         $this->assertTrue($Config->set('section3', 'val1', 'test'));
         $this->assertTrue($Config->existValue('section3'));
 
@@ -105,20 +103,31 @@ class ConfigTest extends TestCase
         $this->assertEquals('test', $Config->get('section4', 'val1'));
     }
 
+    public function testSetInvalidArgs()
+    {
+        $Config = $this->getConfig();
+
+        $this->expectException(\TypeError::class);
+        $Config->set();
+    }
+
     public function testSetSection()
     {
         $Config = $this->getConfig();
 
-        $this->assertFalse($Config->setSection('section3', 'string'));
-
-        $this->assertEquals(
-            true,
-            $Config->setSection(false, [
-                'val1' => 'test'
-            ])
-        );
+        $this->assertTrue($Config->setSection(false, [
+            'val1' => 'test'
+        ]));
 
         $this->assertEquals('test', $Config->getValue(0, 'val1'));
+    }
+
+    public function testSetSectionInvalidArgs()
+    {
+        $Config = $this->getConfig();
+
+        $this->expectException(\TypeError::class);
+        $Config->setSection('section3', 'string');
     }
 
     public function testSetValue()

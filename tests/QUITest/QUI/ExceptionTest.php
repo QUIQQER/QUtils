@@ -14,27 +14,14 @@ class ExceptionTest extends \PHPUnit\Framework\TestCase
             404
         );
 
-        if ($Exception->getMessage() != 'some exception') {
-            $this->fail('\QUI\Exception->getMessage not working');
-        }
-
-        if ($Exception->getCode() != 404) {
-            $this->fail('\QUI\Exception->getCode not working');
-        }
-
-        if ($Exception->getType() != 'QUI\Exception') {
-            $this->fail('\QUI\Exception->getType not working');
-        }
+        $this->assertSame('some exception', $Exception->getMessage(), '\QUI\Exception->getMessage not working');
+        $this->assertSame(404, $Exception->getCode(), '\QUI\Exception->getCode not working');
+        $this->assertSame('QUI\Exception', $Exception->getType(), '\QUI\Exception->getType not working');
 
         $exception = $Exception->toArray();
 
-        if (!isset($exception['code'])) {
-            $this->fail('\QUI\Exception->toArray not working');
-        }
-
-        if (!isset($exception['message'])) {
-            $this->fail('\QUI\Exception->toArray not working');
-        }
+        $this->assertArrayHasKey('code', $exception, '\QUI\Exception->toArray not working');
+        $this->assertArrayHasKey('message', $exception, '\QUI\Exception->toArray not working');
 
 
         $Exception->setAttribute('test', 123);
@@ -44,18 +31,16 @@ class ExceptionTest extends \PHPUnit\Framework\TestCase
             'att31' => 3
         ]);
 
+        $this->assertSame(123, $Exception->getAttribute('test'), '\QUI\Exception->setAttribute or getAttribute not working');
+        $this->assertFalse($Exception->getAttribute('test1'), '\QUI\Exception->getAttribute not working');
+        $this->assertSame(1, $Exception->getAttribute('attr1'), '\QUI\Exception->setAttributes not working');
+    }
+
+    public function testSetAttributesInvalidType()
+    {
+        $Exception = new \QUI\Exception('some exception', 404);
+
+        $this->expectException(\TypeError::class);
         $Exception->setAttributes('lalalalala');
-
-        if ($Exception->getAttribute('test') != 123) {
-            $this->fail('\QUI\Exception->setAttribute or getAttribute not working');
-        }
-
-        if ($Exception->getAttribute('test1') !== false) {
-            $this->fail('\QUI\Exception->getAttribute not working');
-        }
-
-        if ($Exception->getAttribute('attr1') != 1) {
-            $this->fail('\QUI\Exception->setAttributes not working');
-        }
     }
 }

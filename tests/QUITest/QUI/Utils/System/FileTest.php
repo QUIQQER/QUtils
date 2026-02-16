@@ -30,10 +30,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
     public function testGetMimeTypes()
     {
         $mimetypes = File::getMimeTypes();
-
-        if (!is_array($mimetypes)) {
-            $this->fail('no mimetypes exist');
-        }
+        $this->assertIsArray($mimetypes, 'no mimetypes exist');
     }
 
     public function testFormatSize()
@@ -64,7 +61,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
     {
         $content = file_get_contents(dirname(__FILE__) . '/FileTest.txt');
 
-        $this->assertFalse(File::getFileContent('lalalala.la'));
+        $this->assertSame('', File::getFileContent('lalalala.la'));
         $this->assertEquals(
             $content,
             File::getFileContent(

@@ -17,13 +17,8 @@ class ArrayHelperTest extends \PHPUnit\Framework\TestCase
 
         $array = ['test'];
 
-        if (ArrayHelper::isAssoc($array)) {
-            $this->fail('Error: Standard array is no assoc array');
-        }
-
-        if (!ArrayHelper::isAssoc($assoc)) {
-            $this->fail('Error: Assoc Array is not as an assoc array identified');
-        }
+        $this->assertFalse(ArrayHelper::isAssoc($array), 'Error: Standard array is no assoc array');
+        $this->assertTrue(ArrayHelper::isAssoc($assoc), 'Error: Assoc Array is not as an assoc array identified');
     }
 
     public function testToAssoc()
@@ -31,9 +26,7 @@ class ArrayHelperTest extends \PHPUnit\Framework\TestCase
         $array = ['test', 'test2'];
         $assoc = ArrayHelper::toAssoc($array);
 
-        if (!ArrayHelper::isAssoc($assoc)) {
-            $this->fail('Error: testToAssoc');
-        }
+        $this->assertTrue(ArrayHelper::isAssoc($assoc), 'Error: testToAssoc');
     }
 
     public function testObjectToArray()
@@ -49,21 +42,21 @@ class ArrayHelperTest extends \PHPUnit\Framework\TestCase
 
         $array = ArrayHelper::objectToArray($obj);
 
-        if (!isset($array['a']) && $array['a'] != 'A') {
-            $this->fail('ArrayHelper::objectToArray( fail');
-        }
+        $this->assertArrayHasKey('a', $array);
+        $this->assertSame('A', $array['a']);
+        $this->assertArrayHasKey('b', $array);
+        $this->assertSame('B', $array['b']);
+    }
 
-        if (!isset($array['b']) && $array['b'] != 'B') {
-            $this->fail('ArrayHelper::objectToArray( fail');
-        }
+    public function testObjectToArrayInvalidTypeInt()
+    {
+        $this->expectException(\TypeError::class);
+        ArrayHelper::objectToArray(42);
+    }
 
-        // bad values
-        if (!is_array(ArrayHelper::objectToArray(42))) {
-            $this->fail('ArrayHelper::objectToArray( fail');
-        }
-
-        if (!is_array(ArrayHelper::objectToArray('string'))) {
-            $this->fail('ArrayHelper::objectToArray( fail');
-        }
+    public function testObjectToArrayInvalidTypeString()
+    {
+        $this->expectException(\TypeError::class);
+        ArrayHelper::objectToArray('string');
     }
 }

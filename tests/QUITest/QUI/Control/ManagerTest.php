@@ -12,6 +12,6 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     public function testGetCSSFile()
     {
         $result = QUI\Control\Manager::getCSSFiles();
-        //$this->assertNotEmpty($result);
+        $this->assertIsArray($result);
     }
 }

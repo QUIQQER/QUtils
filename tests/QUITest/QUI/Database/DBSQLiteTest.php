@@ -13,6 +13,11 @@ require_once __DIR__ . '/DBHelper.php';
 
 class DBSQLiteTest extends DBHelper
 {
+    public function testPlaceholder(): void
+    {
+        $this->markTestSkipped('Legacy DBSQLite tests are not implemented yet.');
+    }
+
 //    public function getDBConection()
 //    {
 //        // pdo db

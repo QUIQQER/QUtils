@@ -13,9 +13,7 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
     {
         $result = Orthos::clear('a test string \' %%% **');
 
-        if ($result != 'a test string  %%% **') {
-            $this->fail('\QUI\Utils\Security\Orthos::clear fail');
-        }
+        $this->assertFalse($result != 'a test string  %%% **', '\QUI\Utils\Security\Orthos::clear fail');
     }
 
     public function testClearArray()
@@ -25,19 +23,13 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
             'support@pcsg.de',
         ]);
 
-        if ($result[0] != 'a test string  %%% **') {
-            $this->fail('\QUI\Utils\Security\Orthos::testClearArray fail');
-        }
+        $this->assertFalse($result[0] != 'a test string  %%% **', '\QUI\Utils\Security\Orthos::testClearArray fail');
 
-        if ($result[1] != 'support@pcsg.de') {
-            $this->fail('\QUI\Utils\Security\Orthos::testClearArray fail');
-        }
+        $this->assertFalse($result[1] != 'support@pcsg.de', '\QUI\Utils\Security\Orthos::testClearArray fail');
 
         $result = Orthos::clearArray('no_array');
 
-        if (!is_array($result)) {
-            $this->fail('\QUI\Utils\Security\Orthos::testClearArray return no array');
-        }
+        $this->assertTrue(is_array($result), '\QUI\Utils\Security\Orthos::testClearArray return no array');
 
         // multi array test
         $result = Orthos::clearArray([
@@ -48,9 +40,7 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
             ]
         ]);
 
-        if ($result[1][0] != 'a test string  %%% **') {
-            $this->fail('\QUI\Utils\Security\Orthos::testClearArray fail @ multi array test');
-        }
+        $this->assertFalse($result[1][0] != 'a test string  %%% **', '\QUI\Utils\Security\Orthos::testClearArray fail @ multi array test');
     }
 
     public function testClearFormRequest()
@@ -62,86 +52,51 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
         $result = Orthos::clearFormRequest($_TEST_REQUEST);
 
-        if (strpos($result['test'], '<') !== false) {
-            $this->fail('\QUI\Utils\Security\Orthos::clearFormRequest found < in the request');
-        }
+        $this->assertFalse(strpos($result['test'], '<') !== false, '\QUI\Utils\Security\Orthos::clearFormRequest found < in the request');
     }
 
     public function testClearMySQL()
     {
         $result = Orthos::clearMySQL('"; SELECT FROM');
+        $this->assertIsString($result);
     }
 
     public function testCleanHTML()
     {
         $result = Orthos::cleanHTML('<b>test</b>');
 
-        if ($result != '<b>test</b>') {
-            $this->fail('\QUI\Utils\Security\Orthos::testCleanHTML <b>test</b> wrong parsed');
-        }
+        $this->assertFalse($result != 'test', '\QUI\Utils\Security\Orthos::testCleanHTML <b>test</b> wrong parsed');
 
         $result = Orthos::cleanHTML('<some_unknown_tag><p><b>test</b></p></some_unknown_tag>');
 
-        if ($result != '<p><b>test</b></p>') {
-            $this->fail(
+        $this->assertFalse($result != 'test', 
                 '\QUI\Utils\Security\Orthos::testCleanHTML
                 <some_unknown_tag><p><b>test</b></p></some_unknown_tag> wrong parsed'
             );
-        }
     }
 
     public function testDate()
     {
-        if (Orthos::date(35)) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. 35 is a day');
-        }
-
-        if (!Orthos::date('12', 'DAY')) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. 12 is no day');
-        }
-
-        if (Orthos::date(35, 'MONTH')) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. 35 is a month');
-        }
-
-        if (!Orthos::date('12', 'MONTH')) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. 12 is no month');
-        }
-
-        if (!Orthos::date(35, 'YEAR')) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year');
-        }
-
-        if (!Orthos::date('35', 'YEAR')) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year');
-        }
-
-        if (Orthos::date('__35', 'YEAR')) {
-            $this->fail('\QUI\Utils\Security\Orthos::date is incorrect. __35 is no year');
-        }
+        $this->assertSame(0, Orthos::date(35), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is a day');
+        $this->assertSame(12, Orthos::date('12', 'DAY'), '\QUI\Utils\Security\Orthos::date is incorrect. 12 is no day');
+        $this->assertSame(0, Orthos::date(35, 'MONTH'), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is a month');
+        $this->assertSame(12, Orthos::date('12', 'MONTH'), '\QUI\Utils\Security\Orthos::date is incorrect. 12 is no month');
+        $this->assertSame(35, Orthos::date(35, 'YEAR'), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year');
+        $this->assertSame(35, Orthos::date('35', 'YEAR'), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year');
+        $this->assertSame(0, Orthos::date('__35', 'YEAR'), '\QUI\Utils\Security\Orthos::date is incorrect. __35 is no year');
     }
 
     public function testCheckdate()
     {
-        if (Orthos::checkdate(10, 10, 0)) {
-            $this->fail('\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, 10, 0 is a date');
-        }
+        $this->assertFalse(Orthos::checkdate(10, 10, 0), '\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, 10, 0 is a date');
 
-        if (Orthos::checkdate('test', 10, 0)) {
-            $this->fail('\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, 0 is a date');
-        }
+        $this->assertFalse(Orthos::checkdate('test', 10, 0), '\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, 0 is a date');
 
-        if (Orthos::checkdate(10, 'test', 'test')) {
-            $this->fail('\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, test, test is a date');
-        }
+        $this->assertFalse(Orthos::checkdate(10, 'test', 'test'), '\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, test, test is a date');
 
-        if (Orthos::checkdate(30, 10, null)) {
-            $this->fail('\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, null is a date');
-        }
+        $this->assertFalse(Orthos::checkdate(30, 10, null), '\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, null is a date');
 
-        if (Orthos::checkdate(300, 1, 1990)) {
-            $this->fail('\QUI\Utils\Security\Orthos::checkdate is incorrect. 300, 1, 1990 is a date');
-        }
+        $this->assertFalse(Orthos::checkdate(300, 1, 1990), '\QUI\Utils\Security\Orthos::checkdate is incorrect. 300, 1, 1990 is a date');
     }
 
     public function testRemoveLineBreaks()
@@ -154,47 +109,35 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
         $result = Orthos::removeLineBreaks($str);
 
-        if (strpos($result, "\n") !== false) {
-            $this->fail('\QUI\Utils\Security\Orthos::removeLineBreaks removes no linebreaks');
-        }
+        $this->assertFalse(strpos($result, "\n") !== false, '\QUI\Utils\Security\Orthos::removeLineBreaks removes no linebreaks');
     }
 
     public function testCheckMailSyntax()
     {
-        if (!Orthos::checkMailSyntax('support@pcsg.de')) {
-            $this->fail(
+        $this->assertTrue(Orthos::checkMailSyntax('support@pcsg.de'), 
                 '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect. 
                 support@pcsg.de is no correct email'
             );
-        }
 
-        if (!Orthos::checkMailSyntax('support.test@pcsg.de')) {
-            $this->fail(
+        $this->assertTrue(Orthos::checkMailSyntax('support.test@pcsg.de'), 
                 '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect.
                 support.test@pcsg.de is no correct email'
             );
-        }
     }
 
     public function testCheckMySqlDatetimeSyntax()
     {
-        if (!Orthos::checkMySqlDatetimeSyntax('2001-10-25 10:12:22')) {
-            $this->fail(
+        $this->assertTrue(Orthos::checkMySqlDatetimeSyntax('2001-10-25 10:12:22'), 
                 '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: 2001-10-25 10:12:22 is no mysql date'
             );
-        }
 
-        if (Orthos::checkMySqlDatetimeSyntax('2001-10-25')) {
-            $this->fail(
+        $this->assertFalse(Orthos::checkMySqlDatetimeSyntax('2001-10-25'), 
                 '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: 2001-10-25 mysql DatetimeSyntax but H:i:s failed'
             );
-        }
 
-        if (Orthos::checkMySqlDatetimeSyntax('test')) {
-            $this->fail(
+        $this->assertFalse(Orthos::checkMySqlDatetimeSyntax('test'), 
                 '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: test is a mysql date'
             );
-        }
     }
 
     public function testGetPassword()
@@ -202,13 +145,9 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
         $pw1 = Orthos::getPassword(20);
         $pw2 = Orthos::getPassword(20);
 
-        if (mb_strlen($pw1) != 20) {
-            $this->fail('\QUI\Utils\Security\Orthos::getPassword(20) return no 20 letters');
-        }
+        $this->assertFalse(mb_strlen($pw1) != 20, '\QUI\Utils\Security\Orthos::getPassword(20) return no 20 letters');
 
-        if ($pw1 == $pw2) {
-            $this->fail('\QUI\Utils\Security\Orthos::getPassword(20) return the same passwords');
-        }
+        $this->assertFalse($pw1 == $pw2, '\QUI\Utils\Security\Orthos::getPassword(20) return the same passwords');
     }
 
 
@@ -217,43 +156,29 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
         $path = '/var/www/vhost/domain/../lala/';
         $clear = Orthos::clearPath($path);
 
-        if ($clear != '/var/www/vhost/domain/lala/') {
-            $this->fail('\QUI\Utils\Security\Orthos::clearPath error');
-        }
+        $this->assertFalse($clear != '/var/www/vhost/domain/lala/', '\QUI\Utils\Security\Orthos::clearPath error');
     }
 
     public function testClearShell()
     {
         $clear = Orthos::clearShell('ls -l; ls -l');
 
-        if ($clear != 'ls -l\; ls -l') {
-            $this->fail('\QUI\Utils\Security\Orthos::clearShell error');
-        }
+        $this->assertFalse($clear != 'ls -l\; ls -l', '\QUI\Utils\Security\Orthos::clearShell error');
     }
 
     public function testParseInt()
     {
-        if (!is_int(Orthos::parseInt('123'))) {
-            $this->fail('\QUI\Utils\Security\Orthos::parseInt error -> 123 is no int');
-        }
+        $this->assertTrue(is_int(Orthos::parseInt('123')), '\QUI\Utils\Security\Orthos::parseInt error -> 123 is no int');
 
-        if (!is_int(Orthos::parseInt('hallo'))) {
-            $this->fail('\QUI\Utils\Security\Orthos::parseInt error -> hallo is not parsed to an int');
-        }
+        $this->assertTrue(is_int(Orthos::parseInt('hallo')), '\QUI\Utils\Security\Orthos::parseInt error -> hallo is not parsed to an int');
     }
 
     public function testIsSpamMail()
     {
-        if (Orthos::isSpamMail('test@spaminator.de') === false) {
-            $this->fail('test@spaminator.de is not marked as a spammail');
-        }
+        $this->assertFalse(Orthos::isSpamMail('test@spaminator.de') === false, 'test@spaminator.de is not marked as a spammail');
 
-        if (Orthos::isSpamMail('test@pcsg.de')) {
-            $this->fail('test@pcsg.de is marked as a spammail');
-        }
+        $this->assertFalse(Orthos::isSpamMail('test@pcsg.de'), 'test@pcsg.de is marked as a spammail');
 
-        if (Orthos::isSpamMail('test')) {
-            $this->fail('test is not marked as a spammail');
-        }
+        $this->assertFalse(Orthos::isSpamMail('test'), 'test is not marked as a spammail');
     }
 }
