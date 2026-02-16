@@ -13,9 +13,9 @@ use function round;
 /**
  * A timer
  * measures the length of time between measurement points
- *
- * @author  www.pcsg.de (Henning Leutz)
  */
+
+
 class Timer
 {
     /**

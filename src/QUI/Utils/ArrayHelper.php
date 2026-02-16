@@ -18,9 +18,9 @@ use function is_string;
 
 /**
  * Helper for array handling
- *
- * @author  www.pcsg.de (Henning Leutz
  */
+
+
 class ArrayHelper
 {
     /**
@@ -70,10 +70,6 @@ class ArrayHelper
     {
         $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
         $arr = [];
-
-        if (!is_array($_arr)) {
-            return $arr;
-        }
 
         foreach ($_arr as $key => $val) {
             if (is_array($val) || is_object($val)) {

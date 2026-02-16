@@ -11,9 +11,9 @@ use function is_integer;
 
 /**
  * Helper for bool type handling
- *
- * @author  www.pcsg.de (Henning Leutz
  */
+
+
 class BoolHelper
 {
     /**

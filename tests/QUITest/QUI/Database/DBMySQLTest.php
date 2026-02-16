@@ -2,14 +2,21 @@
 
 namespace QUITest\QUI\Database;
 
+require_once __DIR__ . '/DBHelper.php';
+
 /**
  * Class DBMySQLTest
  * @todo test muss geschrieben werden
- *
- * @package QUITest\Database
  */
+
+
 class DBMySQLTest extends DBHelper
 {
+    public function testPlaceholder(): void
+    {
+        $this->markTestSkipped('Legacy DBMySQL tests are not implemented yet.');
+    }
+
 //    public function getDBConection()
 //    {
 //        return new DB(array(

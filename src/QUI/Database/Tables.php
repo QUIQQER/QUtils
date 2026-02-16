@@ -24,9 +24,6 @@ use function trim;
 
 /**
  * QUIQQER DataBase Layer for table operations
- *
- * @uses    PDO
- * @author  www.pcsg.de (Henning Leutz)
  */
 class Tables
 {
@@ -83,9 +80,9 @@ class Tables
     }
 
     /**
-     * Exist the table?
+     * There exists the table?
      *
-     * @param string $table - Tabellenname welcher gesucht wird
+     * @param string $table - Tabellenname, welcher gesucht wird
      *
      * @return boolean
      */
@@ -270,16 +267,16 @@ class Tables
     }
 
     /**
-     * Erweitert Tabellen mit den Feldern
-     * Wenn die Tabelle nicht existiert wird diese erstellt
+     * Erweitert Tabellen mit den Feldern.
+     * Wenn die Tabelle nicht existiert, wird diese erstellt
      *
      * @param string $table
      * @param array $fields
      * @param string $engine - optional, is only used when the table is created
      *
+     * @return void
      * @throws Exception
-     * @deprecated ->addColumn
-     *
+     * @deprecated Use addColumn()
      */
     public function appendFields(string $table, array $fields, string $engine = 'InnoDB'): void
     {
@@ -291,8 +288,6 @@ class Tables
      *
      * @param string $table
      * @param array $fields
-     *
-     * @return void
      */
     public function deleteFields(string $table, array $fields): void
     {
@@ -303,7 +298,7 @@ class Tables
         $tbl_fields = $this->getColumns($table);
         $table_fields = QUI\Utils\ArrayHelper::toAssoc($tbl_fields);
 
-        // prüfen ob die Tabelle leer wäre wenn alle Felder gelöscht werden
+        // prüfen, ob die Tabelle leer wäre, wenn alle Felder gelöscht werden,
         // wenn ja, Tabelle löschen
         foreach ($fields as $field => $type) {
             if (isset($table_fields[$field])) {
@@ -412,7 +407,7 @@ class Tables
     }
 
     /**
-     * Prüft ob eine Spalte in der Tabelle existiert
+     * Prüft, ob eine Spalte in der Tabelle existiert
      *
      * @param string $table
      * @param string $row
@@ -458,7 +453,7 @@ class Tables
     }
 
     /**
-     * Return the informations of a column
+     * Return the information of a column
      *
      * @param string $table - Table name
      * @param string $column - Row name
@@ -508,9 +503,9 @@ class Tables
      * Schlüssel der Tabelle bekommen
      *
      * @param string $table
-     * @param boolean $keyNamesOnly (optional) - Nur die Namen der Schlüssel
+     * @param boolean $keyNamesOnly (optional) - nur die Namen der Schlüssel
      *                                           (sonst alle Spalten-Informationen) [default: true]
-     * @param boolean $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
+     * @param boolean $primaryKeysOnly (optional) - nur Primärschlüssel [default: false]
      *
      * @return array
      */
@@ -562,7 +557,6 @@ class Tables
      *
      * @return boolean
      * @see issetPrimaryKey
-     *
      */
     protected function issetPrimaryKeyHelper(string $table, string $key): bool
     {
@@ -570,9 +564,9 @@ class Tables
 
         foreach ($keys as $entry) {
             if (
-                isset($entry['Column_name'])
-                && $entry['Column_name'] == $key
-                && $entry['Key_name'] === 'PRIMARY'
+                isset($entry['Column_name']) &&
+                $entry['Column_name'] == $key &&
+                $entry['Key_name'] === 'PRIMARY'
             ) {
                 return true;
             }
@@ -583,11 +577,6 @@ class Tables
 
     /**
      * Setzt ein PrimaryKey einer Tabelle
-     *
-     * @param string $table
-     * @param array|string $key
-     *
-     * @return boolean
      */
     public function setPrimaryKey(string $table, array | string $key): bool
     {
@@ -708,20 +697,19 @@ class Tables
     }
 
     /**
-     * Helper for issetPrimaryKey
+     * Helper for issetUniqueColumn
      *
      * @param string $table
      * @param string $unique
      *
      * @return boolean
-     * @see issetPrimaryKey
-     *
+     * @see issetUniqueColumn
      */
     protected function issetUniqueColumnHelper(string $table, string $unique): bool
     {
         $uniques = $this->getUniqueColumns($table);
 
-        return in_array($unique, $uniques);
+        return in_array($unique, $uniques, true);
     }
 
     /**

@@ -20,7 +20,6 @@ use function unlink;
 /**
  * Converts a pdf to text
  *
- * @author   www.pcsg.de (Henning Leutz)
  *
  * @requires pdftotext (for ubuntu: sudo apt-get install poppler-utils)
  */

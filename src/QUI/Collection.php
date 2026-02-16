@@ -343,13 +343,13 @@ class Collection implements IteratorAggregate, ArrayAccess
     protected function isAllowed(mixed $Child): bool
     {
         $allowed = $this->allowed;
-        $key = array_keys($this->allowed);
+        $allowedClasses = array_keys($allowed);
 
         if (empty($allowed)) {
             return true;
         }
 
-        if (isset($key[get_class($Child)])) {
+        if (in_array(get_class($Child), $allowedClasses, true)) {
             return true;
         }
 

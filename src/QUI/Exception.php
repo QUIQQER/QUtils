@@ -15,9 +15,9 @@ use function is_array;
 
 /**
  * The Main Exception class for QUIQQER CMS and QUI Utils
- *
- * @author  www.pcsg.de (Henning Leutz)
  */
+
+
 class Exception extends \Exception
 {
     /**

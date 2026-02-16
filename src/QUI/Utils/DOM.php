@@ -40,7 +40,6 @@ use function trim;
  *
  * QUI\Utils\DOM helps with quiqqer .xml files and DOMNode Elements
  *
- * @author  www.pcsg.de (Henning Leutz)
  * @licence For copyright and license information, please view the /README.md
  */
 class DOM
@@ -491,42 +490,40 @@ class DOM
                     USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
                 );
             } else {
-                if ($Object instanceof QUI\Interfaces\Projects\Site) {
-                    /* @var $Object QUI\Projects\Site */
-                    /* @var $Tab DOMElement */
-                    $TabBar = QUI\Projects\Sites::getTabs($Object);
-                    $Tab = $TabBar->getElementByName($name);
+                /* @var $Object QUI\Projects\Site */
+                /* @var $Tab DOMElement */
+                $TabBar = QUI\Projects\Sites::getTabs($Object);
+                $Tab = $TabBar->getElementByName($name);
 
-                    if ($Tab->getAttribute('template')) {
-                        $file = self::parseVar($Tab->getAttribute('template'));
+                if ($Tab->getAttribute('template')) {
+                    $file = self::parseVar($Tab->getAttribute('template'));
 
-                        if (file_exists($file)) {
-                            // site extra settings
-                            $extra = '';
+                    if (file_exists($file)) {
+                        // site extra settings
+                        $extra = '';
 
-                            if ($file == SYS_DIR . 'template/site/settings.html') {
-                                $extra = Utils::getExtraSettingsForSite($Object, $current);
-                            }
-
-                            // generate html
-                            $Engine = QUI::getTemplateManager()->getEngine(true);
-                            $Engine->assign($engineParams);
-
-                            $QUI = new QUI();
-                            $QUI::getLocale()->setCurrent($current);
-
-                            $Engine->assign([
-                                'Site' => $Object,
-                                'Project' => $Object->getProject(),
-                                'QUI' => $QUI
-                            ]);
-
-                            return $Engine->fetch($file) . $extra;
+                        if ($file == SYS_DIR . 'template/site/settings.html') {
+                            $extra = Utils::getExtraSettingsForSite($Object, $current);
                         }
-                    }
 
-                    return '';
+                        // generate html
+                        $Engine = QUI::getTemplateManager()->getEngine(true);
+                        $Engine->assign($engineParams);
+
+                        $QUI = new QUI();
+                        $QUI::getLocale()->setCurrent($current);
+
+                        $Engine->assign([
+                            'Site' => $Object,
+                            'Project' => $Object->getProject(),
+                            'QUI' => $QUI
+                        ]);
+
+                        return $Engine->fetch($file) . $extra;
+                    }
                 }
+
+                return '';
             }
         }
 

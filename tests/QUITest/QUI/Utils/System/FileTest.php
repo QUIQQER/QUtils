@@ -5,7 +5,7 @@ namespace QUITest\QUI\Control;
 use QUI\Utils\StringHelper as StringHelper;
 use QUI\Utils\System\File as File;
 
-class FileTest extends \PHPUnit_Framework_TestCase
+class FileTest extends \PHPUnit\Framework\TestCase
 {
     public function testFile()
     {
@@ -14,7 +14,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         File::unlink($filename);
 
         $test = File::mkfile('test.txt');
-        $this->assertEquals(true, file_exists($filename));
+        $this->assertTrue(file_exists($filename));
 
         File::putLineToFile($filename, 'one line');
 
@@ -24,16 +24,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
         );
 
         File::unlink($filename);
-        $this->assertEquals(false, file_exists($filename));
+        $this->assertFalse(file_exists($filename));
     }
 
     public function testGetMimeTypes()
     {
         $mimetypes = File::getMimeTypes();
-
-        if (!is_array($mimetypes)) {
-            $this->fail('no mimetypes exist');
-        }
+        $this->assertIsArray($mimetypes, 'no mimetypes exist');
     }
 
     public function testFormatSize()
@@ -64,7 +61,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $content = file_get_contents(dirname(__FILE__) . '/FileTest.txt');
 
-        $this->assertEquals(false, File::getFileContent('lalalala.la'));
+        $this->assertSame('', File::getFileContent('lalalala.la'));
         $this->assertEquals(
             $content,
             File::getFileContent(
