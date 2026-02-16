@@ -4,6 +4,7 @@ namespace QUITest\QUI\Utils\XML;
 
 use DOMDocument;
 use QUI\Utils\XML\Settings;
+
 class SettingsTest extends \PHPUnit\Framework\TestCase
 {
     protected function createSettings(): Settings
