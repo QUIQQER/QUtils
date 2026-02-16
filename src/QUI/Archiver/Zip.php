@@ -72,10 +72,6 @@ class Zip
             throw new Exception('cannot open ' . $zipFile);
         }
 
-        if (!is_array($ignore)) {
-            $ignore = [];
-        }
-
         if (!str_ends_with($folder, '/')) {
             $folder .= '/';
         }

@@ -24,7 +24,6 @@ use function str_replace;
 /**
  * Class for handling ini files
  */
-
 class Config
 {
     /**
@@ -58,11 +57,13 @@ class Config
         }
 
         $this->iniFilename = $filename;
-        $this->iniParsedArray = @parse_ini_file($filename, true);
+        $parsed = @parse_ini_file($filename, true);
 
-        if ($this->iniParsedArray === false) {
+        if ($parsed === false) {
             throw new QUI\Exception('Can\'t parse ini file ' . $filename);
         }
+
+        $this->iniParsedArray = $parsed;
     }
 
     /**
@@ -71,7 +72,13 @@ class Config
      */
     public function reload(): void
     {
-        $this->iniParsedArray = @parse_ini_file($this->iniFilename, true);
+        $parsed = @parse_ini_file($this->iniFilename, true);
+
+        if ($parsed === false) {
+            return;
+        }
+
+        $this->iniParsedArray = $parsed;
     }
 
     /**
@@ -85,7 +92,7 @@ class Config
     }
 
     /**
-     * Return the ini as json encode
+     * Return the ini as JSON encode
      *
      * @return string
      */
@@ -137,7 +144,7 @@ class Config
      *
      * @return mixed
      */
-    public function get(string $section, null|string $key = null): mixed
+    public function get(string $section, null | string $key = null): mixed
     {
         if ($key === null) {
             return $this->getSection($section);
@@ -164,12 +171,8 @@ class Config
      *
      * @return boolean
      */
-    public function setSection(bool|string $section = false, array $array = []): bool
+    public function setSection(bool | string $section = false, array $array = []): bool
     {
-        if (!is_array($array)) {
-            return false;
-        }
-
         if ($section) {
             $this->iniParsedArray[$section] = $array;
 
@@ -193,7 +196,7 @@ class Config
      * @example QConfig->setValue('section', null, 'something');
      * @example QConfig->setValue('section', 'entry', 'something');
      */
-    public function setValue(string $section, null|string $key = null, string|int|float $value = ''): bool
+    public function setValue(string $section, null | string $key = null, string | int | float $value = ''): bool
     {
         if ($key === null) {
             if ($this->iniParsedArray[$section] = $value) {
@@ -209,14 +212,14 @@ class Config
     }
 
     /**
-     * exist the section or value?
+     * there exists the section or value?
      *
      * @param string $section
      * @param string|null $key - (optional)
      *
      * @return boolean
      */
-    public function existValue(string $section, null|string $key = null): bool
+    public function existValue(string $section, null | string $key = null): bool
     {
         if ($key === null) {
             return isset($this->iniParsedArray[$section]);
@@ -239,9 +242,9 @@ class Config
      * @return bool
      */
     public function set(
-        bool|string $section = false,
-        null|string|array $key = null,
-        null|string|int|float $value = null
+        bool | string $section = false,
+        null | string | array $key = null,
+        null | string | int | float $value = null
     ): bool {
         if (is_array($key) && $value === null) {
             return $this->setSection($section, $key);
@@ -254,11 +257,11 @@ class Config
      * Deletes a section or key in the section
      *
      * @param string $section
-     * @param string|null $key - optional, If indicated Key deleted otherwise complete section
+     * @param string|null $key - optional, If indicated Key deleted an otherwise complete section
      *
      * @return boolean
      */
-    public function del(string $section, null|string $key = null): bool
+    public function del(string $section, null | string $key = null): bool
     {
         if (!isset($this->iniParsedArray[$section])) {
             return true;
@@ -288,7 +291,7 @@ class Config
      *
      * @throws Exception
      */
-    public function save(null|string $filename = null): void
+    public function save(null | string $filename = null): void
     {
         if ($filename === null) {
             $filename = $this->iniFilename;
@@ -335,7 +338,7 @@ class Config
      * @param mixed $value
      * @return string|int
      */
-    protected function clean(mixed $value): string|int
+    protected function clean(mixed $value): string | int
     {
         if (is_bool($value)) {
             return $value ? 1 : 0;
