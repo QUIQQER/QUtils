@@ -14,9 +14,9 @@ use function strrpos;
 use function substr_replace;
 
 /**
- *
- * @author www.pcsg.de (Henning Leutz)
  */
+
+
 class Manager
 {
     /**

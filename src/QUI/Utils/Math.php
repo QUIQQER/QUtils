@@ -13,9 +13,9 @@ use function round;
 
 /**
  * Commonly used mathematical functions
- *
- * @author  www.pcsg.de (Henning Leutz)
  */
+
+
 class Math
 {
     /**

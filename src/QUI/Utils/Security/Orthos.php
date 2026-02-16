@@ -15,7 +15,6 @@ use function class_exists;
 use function escapeshellarg;
 use function escapeshellcmd;
 use function explode;
-use function floatval;
 use function htmlspecialchars;
 use function htmlspecialchars_decode;
 use function implode;
@@ -24,25 +23,18 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_string;
-use function microtime;
-use function mt_rand;
-use function mt_srand;
 use function preg_match;
 use function preg_replace;
 use function str_replace;
 use function strip_tags;
 use function strlen;
-use function substr;
 use function trim;
 
 /**
  * Orthos - Security class
  *
- * Has different methods in order to examine variables on their correctness
+ * Has different methods to examine variables on their correctness
  * Should be used to validate user input
- *
- * @author www.pcsg.de (Henning Leutz)
- * @author www.pcsg.de (Moritz Scholz)
  */
 class Orthos
 {
@@ -68,7 +60,7 @@ class Orthos
 
     /**
      * Remove all none characters in the string.
-     * none characters are no a-z A-Z or 0-9
+     * None characters are no a-z or 0-9
      *
      * @param string $str
      * @param array $allowedList - list of allowed signs
@@ -78,10 +70,7 @@ class Orthos
     public static function clearNoneCharacters(string $str = '', array $allowedList = []): string
     {
         $chars = 'a-zA-Z0-9';
-
-        if (is_array($allowedList)) {
-            $chars .= implode($allowedList);
-        }
+        $chars .= implode($allowedList);
 
         return preg_replace("/[^$chars]/", "", $str);
     }
@@ -135,7 +124,7 @@ class Orthos
      *
      * @return array|string|string[]
      */
-    public static function clearPath(array|string $path): array|string
+    public static function clearPath(array | string $path): array | string
     {
         $path = str_replace('\\', '', $path);
 
@@ -144,12 +133,12 @@ class Orthos
 
     /**
      * cleans a file name
-     * characters that may become dangerous for file names, will be removed
+     * character that may become dangerous for file names, will be removed
      *
      * @param $filename
      * @return array|string|string[]
      */
-    public static function clearFilename($filename): array|string
+    public static function clearFilename($filename): array | string
     {
         return str_replace(
             [" ", '"', "'", "&", "/", "\\", "?", "#"],
@@ -203,7 +192,7 @@ class Orthos
     }
 
     /**
-     * Remove signs which can cause sql injections
+     * Remove signs which can cause SQL injections
      * This method should only be used for table names in order, group, from, select
      *
      * @param string $str
@@ -229,7 +218,7 @@ class Orthos
     /**
      * Cleans a shell command string from malicious code
      *
-     * Do not use for commands with special characters
+     * Do not use it for commands with special characters
      * (for this, clean individual arguments with Orthos::clearShellArg()).
      *
      * @param string $str - Command
@@ -266,7 +255,7 @@ class Orthos
 
     /**
      * Cleans out "bad" HTML
-     * You can use this for example for wiki text
+     * You can use this, for example, for wiki text
      *
      * @param string $str
      *
@@ -287,7 +276,7 @@ class Orthos
      *
      * @return integer
      */
-    public static function date(int|string $val, string $type = 'DAY'): int
+    public static function date(int | string $val, string $type = 'DAY'): int
     {
         if ($type == 'MONTH') {
             $val = self::parseInt($val);
@@ -308,7 +297,7 @@ class Orthos
 
         $val = self::parseInt($val);
 
-        // Wenn Tag nicht zwischen 1 und 31 liegt
+        // Wenn der Tag nicht zwischen 1 und 31 liegt
         if ($val < 1 || $val > 31) {
             return 0;
         }
@@ -351,7 +340,7 @@ class Orthos
      * @see        StringHelper::removeLineBreaks
      * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      */
-    public static function removeLineBreaks(array|string $text): string
+    public static function removeLineBreaks(array | string $text): string
     {
         return StringHelper::removeLineBreaks($text);
     }
@@ -541,7 +530,7 @@ class Orthos
      *
      * @return string|array
      */
-    public static function clearFormRequest(string|array $value): array|string
+    public static function clearFormRequest(string | array $value): array | string
     {
         if (is_array($value)) {
             foreach ($value as $key => $entry) {
@@ -551,13 +540,9 @@ class Orthos
             return $value;
         }
 
-        if (!is_string($value)) {
-            return '';
-        }
-
         $value = htmlspecialchars_decode($value);
 
-        // alle zeichen und HEX codes werden mit leer ersetzt
+        // alle Zeichen und HEX codes werden mit leer ersetzt
         $value = str_replace(
             [
                 '<',
@@ -587,10 +572,6 @@ class Orthos
      */
     public static function urlEncodeString(string $str, string $replace = "-"): string
     {
-        if (!is_string($replace)) {
-            $replace = "-";
-        }
-
         // special reserved url characters
         // @see https://de.wikipedia.org/wiki/URL-Encoding#Relevante_ASCII-Zeichen_in_.25-Darstellung
         $reservedChars = [

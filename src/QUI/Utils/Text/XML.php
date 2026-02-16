@@ -44,7 +44,6 @@ use const XML_TEXT_NODE;
  *
  * Provides methods to read and work with QUIQQER XML files
  *
- * @author  www.pcsg.de (Henning Leutz)
  * @licence For copyright and license information, please view the /README.md
  */
 class XML

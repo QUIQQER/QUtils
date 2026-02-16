@@ -28,7 +28,7 @@ class DOMParser
      * @param DOMNode|DOMElement $Input
      * @return string
      */
-    public static function inputDomToString(DOMNode | DOMElement $Input): string
+    public static function inputDomToString(DOMNode $Input): string
     {
         if ($Input->nodeName != 'input') {
             return '';
@@ -99,7 +99,7 @@ class DOMParser
      *
      * @return string
      */
-    public static function textareaDomToString(DOMNode | DOMElement $TextArea): string
+    public static function textareaDomToString(DOMNode $TextArea): string
     {
         if ($TextArea->nodeName != 'textarea') {
             return '';
@@ -134,7 +134,7 @@ class DOMParser
      * @param DOMNode|DOMElement $Select
      * @return string
      */
-    public static function selectDomToString(DOMNode | DOMElement $Select): string
+    public static function selectDomToString(DOMNode $Select): string
     {
         if ($Select->nodeName != 'select') {
             return '';
@@ -186,7 +186,7 @@ class DOMParser
      * @param DOMNode|DOMElement $Group
      * @return string
      */
-    public static function groupDomToString(DOMNode | DOMElement $Group): string
+    public static function groupDomToString(DOMNode $Group): string
     {
         if ($Group->nodeName != 'group') {
             return '';
@@ -212,7 +212,7 @@ class DOMParser
      *
      * @return string
      */
-    public static function buttonDomToString(DOMNode | DOMElement $Button): string
+    public static function buttonDomToString(DOMNode $Button): string
     {
         if (!method_exists($Button, 'getAttribute')) {
             return '';
@@ -245,7 +245,7 @@ class DOMParser
      * @param DOMNode|DOMElement $Node
      * @return array
      */
-    public static function getAttributes(DOMNode | DOMElement $Node): array
+    public static function getAttributes(DOMNode $Node): array
     {
         if (!method_exists($Node, 'getAttribute')) {
             return [];

@@ -3,11 +3,17 @@
 namespace QUITest\QUI;
 
 use QUI\Config as Config;
+use PHPUnit\Framework\TestCase;
+
+use function file_put_contents;
+use function sys_get_temp_dir;
+use function unlink;
+use function uniqid;
 
 /**
  * Class ConfigTest
  */
-class ConfigTest extends \PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     public function getConfig()
     {
@@ -46,7 +52,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(3, $section['var3']);
 
-        $this->assertEquals(false, $Config->getSection('unknown'));
+        $this->assertFalse($Config->getSection('unknown'));
     }
 
     public function testGetValue()
@@ -55,8 +61,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $Config->getValue('section1', 'var1'));
 
-        $this->assertEquals(false, $Config->getValue('unknown', 'unknown'));
-        $this->assertEquals(false, $Config->getValue('section1', 'unknown'));
+        $this->assertFalse($Config->getValue('unknown', 'unknown'));
+        $this->assertFalse($Config->getValue('section1', 'unknown'));
     }
 
     public function testGet()
@@ -84,40 +90,49 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $Config = $this->getConfig();
 
 
-        $this->assertEquals(true, $Config->existValue('section1'));
-        $this->assertEquals(false, $Config->existValue('unknown'));
+        $this->assertTrue($Config->existValue('section1'));
+        $this->assertFalse($Config->existValue('unknown'));
 
-        $this->assertEquals(true, $Config->existValue('section1', 'var1'));
-        $this->assertEquals(false, $Config->existValue('unknown', 'var1'));
+        $this->assertTrue($Config->existValue('section1', 'var1'));
+        $this->assertFalse($Config->existValue('unknown', 'var1'));
     }
 
     public function testSet()
     {
         $Config = $this->getConfig();
 
-        $this->assertEquals(false, $Config->set());
+        $this->assertTrue($Config->set('section3', 'val1', 'test'));
+        $this->assertTrue($Config->existValue('section3'));
 
-        $this->assertEquals(true, $Config->set('section3', 'val1', 'test'));
-        $this->assertEquals(true, $Config->existValue('section3'));
-
-        $this->assertEquals(true, $Config->set('section4', 'val1', 'test'));
+        $this->assertTrue($Config->set('section4', 'val1', 'test'));
         $this->assertEquals('test', $Config->get('section4', 'val1'));
+    }
+
+    public function testSetInvalidArgs()
+    {
+        $Config = $this->getConfig();
+
+        $this->expectException(\TypeError::class);
+        $Config->set();
     }
 
     public function testSetSection()
     {
         $Config = $this->getConfig();
 
-        $this->assertEquals(false, $Config->setSection('section3', 'string'));
-
-        $this->assertEquals(
-            true,
-            $Config->setSection(false, [
-                'val1' => 'test'
-            ])
-        );
+        $this->assertTrue($Config->setSection(false, [
+            'val1' => 'test'
+        ]));
 
         $this->assertEquals('test', $Config->getValue(0, 'val1'));
+    }
+
+    public function testSetSectionInvalidArgs()
+    {
+        $Config = $this->getConfig();
+
+        $this->expectException(\TypeError::class);
+        $Config->setSection('section3', 'string');
     }
 
     public function testSetValue()
@@ -135,15 +150,15 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $Config = $this->getConfig();
 
-        $this->assertEquals(true, $Config->set('section3', 'val1', 'test'));
-        $this->assertEquals(true, $Config->existValue('section3'));
+        $this->assertTrue($Config->set('section3', 'val1', 'test'));
+        $this->assertTrue($Config->existValue('section3'));
 
         $Config->del('section3', 'val1');
-        $this->assertEquals(false, $Config->existValue('section3', 'val1'));
+        $this->assertFalse($Config->existValue('section3', 'val1'));
 
         $Config->del('section3');
-        $this->assertEquals(false, $Config->existValue('section3'));
-        $this->assertEquals(false, $Config->existValue('section3', 'val1'));
+        $this->assertFalse($Config->existValue('section3'));
+        $this->assertFalse($Config->existValue('section3', 'val1'));
 
         $Config->del('section3ss');
     }
@@ -163,6 +178,38 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $Config2->save();
 
         $Config3 = $this->getConfig();
-        $this->assertEquals(false, $Config3->existValue('section3'));
+        $this->assertFalse($Config3->existValue('section3'));
+    }
+
+    public function testSetWithArrayCreatesSection(): void
+    {
+        $Config = $this->getConfig();
+
+        $this->assertTrue($Config->set('new_section', ['a' => 'b']));
+        $this->assertSame('b', $Config->getValue('new_section', 'a'));
+    }
+
+    public function testConstructorWithMissingFileKeepsConfigEmpty(): void
+    {
+        $Config = new Config('/tmp/this-file-should-not-exist-' . uniqid('', true));
+
+        $this->assertSame([], $Config->toArray());
+        $this->assertSame('', $Config->getFilename());
+    }
+
+    public function testReloadKeepsCurrentDataWhenFileBecomesInvalid(): void
+    {
+        $file = sys_get_temp_dir() . '/qui-config-test-' . uniqid('', true) . '.ini.php';
+
+        file_put_contents($file, ";<?php exit; ?>\n[section]\nkey=\"value\"\n");
+        $Config = new Config($file);
+        $this->assertSame('value', $Config->getValue('section', 'key'));
+
+        file_put_contents($file, "[section\nkey=\"broken\"\n");
+        $Config->reload();
+
+        $this->assertSame('value', $Config->getValue('section', 'key'));
+
+        unlink($file);
     }
 }

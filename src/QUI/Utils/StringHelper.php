@@ -25,6 +25,7 @@ use function function_exists;
 use function is_float;
 use function is_string;
 use function localeconv;
+use function mb_detect_encoding;
 use function mb_strlen;
 use function mb_strtolower;
 use function mb_strtoupper;
@@ -59,8 +60,6 @@ if (!function_exists('fnmatch')) {
 
 /**
  * Helper for string handling
- *
- * @author  www.pcsg.de (Henning Leutz
  */
 class StringHelper
 {
@@ -306,8 +305,17 @@ class StringHelper
     public static function toUTF8(string $str): string
     {
         if (!self::isValidUTF8($str)) {
-            return mb_convert_encoding($str, 'UTF-8', 'auto');
-            //return utf8_encode($str);
+            $sourceEncoding = mb_detect_encoding(
+                $str,
+                ['UTF-8', 'ISO-8859-1', 'Windows-1252', 'ASCII'],
+                true
+            );
+
+            if ($sourceEncoding === false) {
+                $sourceEncoding = 'ISO-8859-1';
+            }
+
+            return mb_convert_encoding($str, 'UTF-8', $sourceEncoding);
         }
 
         return $str;
@@ -423,7 +431,6 @@ class StringHelper
      *
      * @return string
      * @deprecated
-     *
      */
     public static function tagCloud(array $tags, int $start = 26, int $min = 10): string
     {
@@ -482,8 +489,6 @@ class StringHelper
      * @param $parsedUrl
      *
      * @return string
-     *
-     * @author "thomas at gielfeldt dot com" on php.net (https://www.php.net/manual/de/function.parse-url.php#106731)
      */
     public static function unparseUrl($parsedUrl): string
     {
@@ -499,7 +504,6 @@ class StringHelper
 
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
-
 
     /**
      * Returns the attributes of an HTML string

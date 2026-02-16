@@ -7,59 +7,33 @@ use QUI\Utils\StringHelper as StringHelper;
 /**
  * Class StringTest
  */
-class StringTest extends \PHPUnit_Framework_TestCase
+class StringTest extends \PHPUnit\Framework\TestCase
 {
     public function testJSString()
     {
+        $this->markTestSkipped('Legacy test without assertions.');
     }
 
     public function testPathinfo()
     {
-        try {
-            $test = StringHelper::pathinfo('nothing');
+        $this->expectException(\QUI\Exception::class);
+        StringHelper::pathinfo('nothing');
+    }
 
-            $this->fail(
-                'QUI\Utils\StringHelper::pathinfo throws no exception on a none existing file'
-            );
-        } catch (\QUI\Exception $Exception) {
-        }
-
-
+    public function testPathinfoValid()
+    {
         $path = StringHelper::pathinfo(__FILE__);
-
-        if (!isset($path['dirname'])) {
-            $this->fail('no dir name');
-        }
-
-        if (
-            !isset($path['basename'])
-            || $path['basename'] != 'StringTest.php'
-        ) {
-            $this->fail('basename is wrong');
-        }
-
-        if (!isset($path['filename']) || $path['filename'] != 'StringTest') {
-            $this->fail('filename is wrong');
-        }
-
-
-        if (StringHelper::pathinfo(__FILE__, PATHINFO_BASENAME) != 'StringTest.php') {
-            $this->fail('PATHINFO_BASENAME is wrong');
-        }
-
-        if (StringHelper::pathinfo(__FILE__, PATHINFO_EXTENSION) != 'php') {
-            $this->fail('PATHINFO_EXTENSION is wrong');
-        }
-
-        if (StringHelper::pathinfo(__FILE__, PATHINFO_FILENAME) != 'StringTest') {
-            $this->fail('PATHINFO_FILENAME is wrong');
-        }
+        $this->assertArrayHasKey('dirname', $path, 'no dir name');
+        $this->assertArrayHasKey('basename', $path);
+        $this->assertSame('StringTest.php', $path['basename'], 'basename is wrong');
+        $this->assertArrayHasKey('filename', $path);
+        $this->assertSame('StringTest', $path['filename'], 'filename is wrong');
+        $this->assertSame('StringTest.php', StringHelper::pathinfo(__FILE__, PATHINFO_BASENAME), 'PATHINFO_BASENAME is wrong');
+        $this->assertSame('php', StringHelper::pathinfo(__FILE__, PATHINFO_EXTENSION), 'PATHINFO_EXTENSION is wrong');
+        $this->assertSame('StringTest', StringHelper::pathinfo(__FILE__, PATHINFO_FILENAME), 'PATHINFO_FILENAME is wrong');
 
         $dirname = StringHelper::pathinfo(__FILE__, PATHINFO_DIRNAME);
-
-        if ($path['dirname'] != $dirname) {
-            $this->fail('PATHINFO_DIRNAME is wrong');
-        }
+        $this->assertSame($dirname, $path['dirname'], 'PATHINFO_DIRNAME is wrong');
     }
 
     public function testReplaceDblSlashes()
@@ -189,12 +163,12 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $no_utf8 = utf8_decode('müll');
 
-        $this->assertEquals(false, StringHelper::isValidUTF8(utf8_decode('müll')));
-        $this->assertEquals(true, StringHelper::isValidUTF8(utf8_encode('müll')));
+        $this->assertFalse(StringHelper::isValidUTF8(utf8_decode('müll')));
+        $this->assertTrue(StringHelper::isValidUTF8(utf8_encode('müll')));
 
         $this->assertEquals(
             'müll',
-            StringHelper::toUTF8(utf8_decode('müll'))
+            StringHelper::toUTF8($no_utf8)
         );
 
         $this->assertEquals(

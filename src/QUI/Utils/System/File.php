@@ -73,10 +73,8 @@ use function usleep;
 /**
  * File Object
  * Contains methods for file operations
- *
- * @author  www.pcsg.de (Henning Leutz)
- * @author  www.pcsg.de (Moritz Leutz)
  */
+
 class File
 {
     /**
@@ -759,7 +757,7 @@ class File
             try {
                 $r = getimagesize($file);
 
-                if ($r && is_array($r)) {
+                if ($r) {
                     $info['width'] = $r[0];
                     $info['height'] = $r[1];
                 }
@@ -1025,8 +1023,7 @@ class File
      * @param $path
      * @return int
      * @deprecated Use `QUI\Utils\System\Folder::getFolderSize($path)` instead.
-     *
-     */
+
     public static function getDirectorySize($path): int
     {
         return Folder::getFolderSize($path, true);
