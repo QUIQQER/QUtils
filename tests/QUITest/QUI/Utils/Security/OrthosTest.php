@@ -40,7 +40,10 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
             ]
         ]);
 
-        $this->assertFalse($result[1][0] != 'a test string  %%% **', '\QUI\Utils\Security\Orthos::testClearArray fail @ multi array test');
+        $this->assertFalse(
+            $result[1][0] != 'a test string  %%% **',
+            '\QUI\Utils\Security\Orthos::testClearArray fail @ multi array test'
+        );
     }
 
     public function testClearFormRequest()
@@ -52,7 +55,10 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
         $result = Orthos::clearFormRequest($_TEST_REQUEST);
 
-        $this->assertFalse(strpos($result['test'], '<') !== false, '\QUI\Utils\Security\Orthos::clearFormRequest found < in the request');
+        $this->assertFalse(
+            strpos($result['test'], '<') !== false,
+            '\QUI\Utils\Security\Orthos::clearFormRequest found < in the request'
+        );
     }
 
     public function testClearMySQL()
@@ -69,10 +75,11 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
         $result = Orthos::cleanHTML('<some_unknown_tag><p><b>test</b></p></some_unknown_tag>');
 
-        $this->assertFalse($result != 'test', 
-                '\QUI\Utils\Security\Orthos::testCleanHTML
+        $this->assertFalse(
+            $result != 'test',
+            '\QUI\Utils\Security\Orthos::testCleanHTML
                 <some_unknown_tag><p><b>test</b></p></some_unknown_tag> wrong parsed'
-            );
+        );
     }
 
     public function testDate()
@@ -80,23 +87,50 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(0, Orthos::date(35), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is a day');
         $this->assertSame(12, Orthos::date('12', 'DAY'), '\QUI\Utils\Security\Orthos::date is incorrect. 12 is no day');
         $this->assertSame(0, Orthos::date(35, 'MONTH'), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is a month');
-        $this->assertSame(12, Orthos::date('12', 'MONTH'), '\QUI\Utils\Security\Orthos::date is incorrect. 12 is no month');
+        $this->assertSame(
+            12,
+            Orthos::date('12', 'MONTH'),
+            '\QUI\Utils\Security\Orthos::date is incorrect. 12 is no month'
+        );
         $this->assertSame(35, Orthos::date(35, 'YEAR'), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year');
-        $this->assertSame(35, Orthos::date('35', 'YEAR'), '\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year');
-        $this->assertSame(0, Orthos::date('__35', 'YEAR'), '\QUI\Utils\Security\Orthos::date is incorrect. __35 is no year');
+        $this->assertSame(
+            35,
+            Orthos::date('35', 'YEAR'),
+            '\QUI\Utils\Security\Orthos::date is incorrect. 35 is no year'
+        );
+        $this->assertSame(
+            0,
+            Orthos::date('__35', 'YEAR'),
+            '\QUI\Utils\Security\Orthos::date is incorrect. __35 is no year'
+        );
     }
 
     public function testCheckdate()
     {
-        $this->assertFalse(Orthos::checkdate(10, 10, 0), '\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, 10, 0 is a date');
+        $this->assertFalse(
+            Orthos::checkdate(10, 10, 0),
+            '\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, 10, 0 is a date'
+        );
 
-        $this->assertFalse(Orthos::checkdate('test', 10, 0), '\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, 0 is a date');
+        $this->assertFalse(
+            Orthos::checkdate('test', 10, 0),
+            '\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, 0 is a date'
+        );
 
-        $this->assertFalse(Orthos::checkdate(10, 'test', 'test'), '\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, test, test is a date');
+        $this->assertFalse(
+            Orthos::checkdate(10, 'test', 'test'),
+            '\QUI\Utils\Security\Orthos::checkdate is incorrect. 10, test, test is a date'
+        );
 
-        $this->assertFalse(Orthos::checkdate(30, 10, null), '\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, null is a date');
+        $this->assertFalse(
+            Orthos::checkdate(30, 10, null),
+            '\QUI\Utils\Security\Orthos::checkdate is incorrect. test, 10, null is a date'
+        );
 
-        $this->assertFalse(Orthos::checkdate(300, 1, 1990), '\QUI\Utils\Security\Orthos::checkdate is incorrect. 300, 1, 1990 is a date');
+        $this->assertFalse(
+            Orthos::checkdate(300, 1, 1990),
+            '\QUI\Utils\Security\Orthos::checkdate is incorrect. 300, 1, 1990 is a date'
+        );
     }
 
     public function testRemoveLineBreaks()
@@ -109,35 +143,43 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
         $result = Orthos::removeLineBreaks($str);
 
-        $this->assertFalse(strpos($result, "\n") !== false, '\QUI\Utils\Security\Orthos::removeLineBreaks removes no linebreaks');
+        $this->assertFalse(
+            strpos($result, "\n") !== false,
+            '\QUI\Utils\Security\Orthos::removeLineBreaks removes no linebreaks'
+        );
     }
 
     public function testCheckMailSyntax()
     {
-        $this->assertTrue(Orthos::checkMailSyntax('support@pcsg.de'), 
-                '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect. 
+        $this->assertTrue(
+            Orthos::checkMailSyntax('support@pcsg.de'),
+            '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect. 
                 support@pcsg.de is no correct email'
-            );
+        );
 
-        $this->assertTrue(Orthos::checkMailSyntax('support.test@pcsg.de'), 
-                '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect.
+        $this->assertTrue(
+            Orthos::checkMailSyntax('support.test@pcsg.de'),
+            '\QUI\Utils\Security\Orthos::checkMailSyntax is incorrect.
                 support.test@pcsg.de is no correct email'
-            );
+        );
     }
 
     public function testCheckMySqlDatetimeSyntax()
     {
-        $this->assertTrue(Orthos::checkMySqlDatetimeSyntax('2001-10-25 10:12:22'), 
-                '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: 2001-10-25 10:12:22 is no mysql date'
-            );
+        $this->assertTrue(
+            Orthos::checkMySqlDatetimeSyntax('2001-10-25 10:12:22'),
+            '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: 2001-10-25 10:12:22 is no mysql date'
+        );
 
-        $this->assertFalse(Orthos::checkMySqlDatetimeSyntax('2001-10-25'), 
-                '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: 2001-10-25 mysql DatetimeSyntax but H:i:s failed'
-            );
+        $this->assertFalse(
+            Orthos::checkMySqlDatetimeSyntax('2001-10-25'),
+            '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: 2001-10-25 mysql DatetimeSyntax but H:i:s failed'
+        );
 
-        $this->assertFalse(Orthos::checkMySqlDatetimeSyntax('test'), 
-                '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: test is a mysql date'
-            );
+        $this->assertFalse(
+            Orthos::checkMySqlDatetimeSyntax('test'),
+            '\QUI\Utils\Security\Orthos::checkMySqlDatetimeSyntax: test is a mysql date'
+        );
     }
 
     public function testGetPassword()
@@ -168,14 +210,23 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
     public function testParseInt()
     {
-        $this->assertTrue(is_int(Orthos::parseInt('123')), '\QUI\Utils\Security\Orthos::parseInt error -> 123 is no int');
+        $this->assertTrue(
+            is_int(Orthos::parseInt('123')),
+            '\QUI\Utils\Security\Orthos::parseInt error -> 123 is no int'
+        );
 
-        $this->assertTrue(is_int(Orthos::parseInt('hallo')), '\QUI\Utils\Security\Orthos::parseInt error -> hallo is not parsed to an int');
+        $this->assertTrue(
+            is_int(Orthos::parseInt('hallo')),
+            '\QUI\Utils\Security\Orthos::parseInt error -> hallo is not parsed to an int'
+        );
     }
 
     public function testIsSpamMail()
     {
-        $this->assertFalse(Orthos::isSpamMail('test@spaminator.de') === false, 'test@spaminator.de is not marked as a spammail');
+        $this->assertFalse(
+            Orthos::isSpamMail('test@spaminator.de') === false,
+            'test@spaminator.de is not marked as a spammail'
+        );
 
         $this->assertFalse(Orthos::isSpamMail('test@pcsg.de'), 'test@pcsg.de is marked as a spammail');
 

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace QUI\Utils;
 
 use FilesystemIterator;
