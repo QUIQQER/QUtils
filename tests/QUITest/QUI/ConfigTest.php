@@ -5,6 +5,11 @@ namespace QUITest\QUI;
 use QUI\Config as Config;
 use PHPUnit\Framework\TestCase;
 
+use function file_put_contents;
+use function sys_get_temp_dir;
+use function unlink;
+use function uniqid;
+
 /**
  * Class ConfigTest
  */
@@ -174,5 +179,37 @@ class ConfigTest extends TestCase
 
         $Config3 = $this->getConfig();
         $this->assertFalse($Config3->existValue('section3'));
+    }
+
+    public function testSetWithArrayCreatesSection(): void
+    {
+        $Config = $this->getConfig();
+
+        $this->assertTrue($Config->set('new_section', ['a' => 'b']));
+        $this->assertSame('b', $Config->getValue('new_section', 'a'));
+    }
+
+    public function testConstructorWithMissingFileKeepsConfigEmpty(): void
+    {
+        $Config = new Config('/tmp/this-file-should-not-exist-' . uniqid('', true));
+
+        $this->assertSame([], $Config->toArray());
+        $this->assertSame('', $Config->getFilename());
+    }
+
+    public function testReloadKeepsCurrentDataWhenFileBecomesInvalid(): void
+    {
+        $file = sys_get_temp_dir() . '/qui-config-test-' . uniqid('', true) . '.ini.php';
+
+        file_put_contents($file, ";<?php exit; ?>\n[section]\nkey=\"value\"\n");
+        $Config = new Config($file);
+        $this->assertSame('value', $Config->getValue('section', 'key'));
+
+        file_put_contents($file, "[section\nkey=\"broken\"\n");
+        $Config->reload();
+
+        $this->assertSame('value', $Config->getValue('section', 'key'));
+
+        unlink($file);
     }
 }

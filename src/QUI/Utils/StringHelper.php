@@ -422,7 +422,6 @@ class StringHelper
      * @return string
      * @deprecated
      */
-
     public static function tagCloud(array $tags, int $start = 26, int $min = 10): string
     {
         for ($i = 0, $len = count($tags); $i < $len; $i++) {

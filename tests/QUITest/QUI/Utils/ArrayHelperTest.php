@@ -59,4 +59,29 @@ class ArrayHelperTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\TypeError::class);
         ArrayHelper::objectToArray('string');
     }
+
+    public function testArrayToObject()
+    {
+        $result = ArrayHelper::arrayToObject([
+            'a' => 'A',
+            'b' => 'B'
+        ]);
+
+        $this->assertIsObject($result);
+        $this->assertSame('A', $result->a);
+        $this->assertSame('B', $result->b);
+    }
+
+    public function testCleanupFromString()
+    {
+        $result = ArrayHelper::cleanup('a,b,b,,0,c');
+        $result = array_values($result);
+
+        $this->assertSame(['a', 'b', 'c'], $result);
+    }
+
+    public function testCleanupFromInvalidValue()
+    {
+        $this->assertSame([], ArrayHelper::cleanup(42));
+    }
 }

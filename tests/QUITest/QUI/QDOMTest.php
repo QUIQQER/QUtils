@@ -71,6 +71,18 @@ class QDOMTest extends \PHPUnit\Framework\TestCase
         $Test->setAttributes(false);
     }
 
+    public function testSetAttributesWithNull(): void
+    {
+        $Test = new QDOM();
+        $Test->setAttributes([
+            'var1' => 123
+        ]);
+
+        $Test->setAttributes(null);
+
+        $this->assertSame(123, $Test->getAttribute('var1'));
+    }
+
     public function testRemoveAttribute()
     {
         $Test = new QDOM();
@@ -111,5 +123,13 @@ class QDOMTest extends \PHPUnit\Framework\TestCase
         $type = $Test->getType();
 
         $this->assertIsString($type, get_class($Test) . '->getType');
+    }
+
+    public function testIsInstanceOf(): void
+    {
+        $Test = new QDOM();
+
+        $this->assertTrue($Test->isInstanceOf(QDOM::class));
+        $this->assertFalse($Test->isInstanceOf(\stdClass::class));
     }
 }
