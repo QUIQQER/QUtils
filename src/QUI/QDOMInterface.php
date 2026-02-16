@@ -11,9 +11,7 @@ namespace QUI;
  *
  * The QDOM class emulate similar methods
  * like a DOMNode, it's the main parent factory class
- *
- * @author www.pcsg.de (Henning Leutz)
- */
+
 interface QDOMInterface
 {
     /**

@@ -24,9 +24,7 @@ use function substr;
 
 /**
  * Convert class, helper for converting different values
- *
- * @author  www.pcsg.de (Henning Leutz)
- */
+
 class Convert
 {
     /**

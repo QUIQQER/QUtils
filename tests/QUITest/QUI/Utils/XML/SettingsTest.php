@@ -6,7 +6,6 @@ use QUI\Utils\XML\Settings;
 
 /**
  * Class QUIUtilsTextWordTest
- * @package QUITest\QUI\Utils\WordTest
  */
 class SettingsTest extends \PHPUnit_Framework_TestCase
 {

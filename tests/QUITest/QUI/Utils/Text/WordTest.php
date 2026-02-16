@@ -6,7 +6,6 @@ use QUI\Utils\Text\Word as Word;
 
 /**
  * Class QUIUtilsTextWordTest
- * @package QUITest\QUI\Utils\WordTest
  */
 class QUIUtilsTextWordTest extends \PHPUnit_Framework_TestCase
 {

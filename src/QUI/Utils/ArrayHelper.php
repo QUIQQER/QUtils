@@ -18,9 +18,7 @@ use function is_string;
 
 /**
  * Helper for array handling
- *
- * @author  www.pcsg.de (Henning Leutz
- */
+
 class ArrayHelper
 {
     /**

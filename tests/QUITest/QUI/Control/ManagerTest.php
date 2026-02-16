@@ -6,7 +6,6 @@ use QUI;
 
 /**
  * Class ManagerTest
- * @package QUITest\Control
  */
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {

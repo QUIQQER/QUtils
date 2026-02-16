@@ -23,10 +23,7 @@ use function str_replace;
 
 /**
  * Class for handling ini files
- *
- * @author  www.pcsg.de (Moritz Scholz)
- * @author  www.pcsg.de (Henning Leutz)
- */
+
 class Config
 {
     /**

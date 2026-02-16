@@ -23,7 +23,6 @@ use function trim;
  *
  * Easier access to gettext for QUIQQER
  *
- * @author  www.pcsg.de (Henning Leutz)
  *
  * @uses    gettext
  */

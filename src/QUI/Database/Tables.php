@@ -26,7 +26,6 @@ use function trim;
  * QUIQQER DataBase Layer for table operations
  *
  * @uses    PDO
- * @author  www.pcsg.de (Henning Leutz)
  */
 class Tables
 {
@@ -279,8 +278,7 @@ class Tables
      *
      * @throws Exception
      * @deprecated ->addColumn
-     *
-     */
+
     public function appendFields(string $table, array $fields, string $engine = 'InnoDB'): void
     {
         $this->addColumn($table, $fields, $engine);
@@ -562,8 +560,7 @@ class Tables
      *
      * @return boolean
      * @see issetPrimaryKey
-     *
-     */
+
     protected function issetPrimaryKeyHelper(string $table, string $key): bool
     {
         $keys = $this->getKeys($table);
@@ -715,8 +712,7 @@ class Tables
      *
      * @return boolean
      * @see issetPrimaryKey
-     *
-     */
+
     protected function issetUniqueColumnHelper(string $table, string $unique): bool
     {
         $uniques = $this->getUniqueColumns($table);

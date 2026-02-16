@@ -19,9 +19,7 @@ use function strtolower;
 
 /**
  * Helper class for the system variables
- *
- * @author  www.pcsg.de (Henning Leutz)
- */
+
 class System
 {
     /**

@@ -4,7 +4,6 @@ namespace QUITest\QUI;
 
 /**
  * Class SystemTest
- * @package QUITests\QUI
  */
 class SystemTest extends \PHPUnit_Framework_TestCase
 {

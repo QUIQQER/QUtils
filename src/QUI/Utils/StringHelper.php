@@ -59,9 +59,7 @@ if (!function_exists('fnmatch')) {
 
 /**
  * Helper for string handling
- *
- * @author  www.pcsg.de (Henning Leutz
- */
+
 class StringHelper
 {
     /**
@@ -423,8 +421,7 @@ class StringHelper
      *
      * @return string
      * @deprecated
-     *
-     */
+
     public static function tagCloud(array $tags, int $start = 26, int $min = 10): string
     {
         for ($i = 0, $len = count($tags); $i < $len; $i++) {
@@ -482,9 +479,7 @@ class StringHelper
      * @param $parsedUrl
      *
      * @return string
-     *
-     * @author "thomas at gielfeldt dot com" on php.net (https://www.php.net/manual/de/function.parse-url.php#106731)
-     */
+
     public static function unparseUrl($parsedUrl): string
     {
         $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';

@@ -26,9 +26,7 @@ use function trim;
 
 /**
  * Executes a request to a URL
- *
- * @author  www.pcsg.de (Henning Leutz)
- */
+
 class Url
 {
     /**

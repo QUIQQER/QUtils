@@ -6,7 +6,6 @@ use QUI\Utils\ArrayHelper as ArrayHelper;
 
 /**
  * Class ArrayHelperTest
- * @package QUITests\QUI\Utils
  */
 class ArrayHelperTest extends \PHPUnit_Framework_TestCase
 {

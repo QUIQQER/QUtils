@@ -6,7 +6,6 @@ use QUI\QDOM as QDOM;
 
 /**
  * Class QDOMTest
- * @package QUITest\QUI
  */
 class QDOMTest extends \PHPUnit_Framework_TestCase
 {

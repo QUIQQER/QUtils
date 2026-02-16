@@ -19,7 +19,6 @@ use function pspell_suggest;
 /**
  * Easier Access to pspell
  *
- * @author  www.pcsg.de (Henning Leutz)
  *
  * @uses    pspell
  * @todo    check it, class is at the moment not in use

@@ -15,7 +15,6 @@ use function is_array;
 /**
  * Helper for the javascript controls/grid/Grid
  *
- * @author  www.pcsg.de (Henning Leutz)
  * @licence For copyright and license information, please view the /README.md
  */
 class Grid extends QUI\QDOM

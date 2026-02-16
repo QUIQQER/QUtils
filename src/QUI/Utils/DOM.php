@@ -40,7 +40,6 @@ use function trim;
  *
  * QUI\Utils\DOM helps with quiqqer .xml files and DOMNode Elements
  *
- * @author  www.pcsg.de (Henning Leutz)
  * @licence For copyright and license information, please view the /README.md
  */
 class DOM

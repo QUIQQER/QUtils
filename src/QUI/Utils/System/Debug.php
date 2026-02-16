@@ -15,9 +15,7 @@ use function sprintf;
  * Debug
  *
  * Log the system memory usage
- *
- * @author  www.pcsg.de (Henning Leutz)
- */
+
 class Debug
 {
     /**

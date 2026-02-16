@@ -5,9 +5,7 @@ namespace QUITest\QUI\Database;
 /**
  * Class DBMySQLTest
  * @todo test muss geschrieben werden
- *
- * @package QUITest\Database
- */
+
 class DBMySQLTest extends DBHelper
 {
 //    public function getDBConection()

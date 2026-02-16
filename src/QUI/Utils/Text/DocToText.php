@@ -28,9 +28,7 @@ use const LIBXML_XINCLUDE;
  *
  * @uses     ZipArchive
  * @requires ZipArchive
- *
- * @author   www.pcsg.de (Henning Leutz)
- */
+
 class DocToText
 {
     /**
