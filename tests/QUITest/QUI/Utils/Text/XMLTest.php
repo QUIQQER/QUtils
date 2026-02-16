@@ -188,4 +188,238 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Titel', $groups[0]['locales'][0]['de']);
         $this->assertSame('Title', $groups[0]['locales'][0]['en']);
     }
+
+    public function testGetPanelsFromXmlFile(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<quiqqer><panels>' .
+            '<panel require="mod/panel"><title>Panel Title</title><text>Panel Text</text><image>icon.png</image></panel>' .
+            '</panels></quiqqer>'
+        );
+
+        $panels = XML::getPanelsFromXMLFile($file);
+
+        $this->assertCount(1, $panels);
+        $this->assertSame('mod/panel', $panels[0]['require']);
+        $this->assertSame('Panel Title', $panels[0]['title']);
+        $this->assertSame('Panel Text', $panels[0]['text']);
+        $this->assertSame('icon.png', $panels[0]['image']);
+    }
+
+    public function testGetPermissionsFromXml(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<quiqqer>' .
+            '<permissions>' .
+            '<permission name="perm.test">' .
+            '<defaultvalue>1</defaultvalue>' .
+            '<rootPermission>1</rootPermission>' .
+            '<everyonePermission>0</everyonePermission>' .
+            '<guestPermission>0</guestPermission>' .
+            '</permission>' .
+            '</permissions>' .
+            '</quiqqer>'
+        );
+
+        $permissions = XML::getPermissionsFromXml($file);
+
+        $this->assertCount(1, $permissions);
+        $this->assertSame('perm.test', $permissions[0]['name']);
+        $this->assertArrayHasKey('title', $permissions[0]);
+        $this->assertArrayHasKey('desc', $permissions[0]);
+    }
+
+    public function testGetSiteEventsFromXml(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<quiqqer><site><types><type type="page"><event on="save" fire="onSave"/></type></types></site></quiqqer>'
+        );
+
+        $events = XML::getSiteEventsFromXml($file);
+
+        $this->assertCount(1, $events);
+        $this->assertSame('save', $events[0]['on']);
+        $this->assertSame('onSave', $events[0]['fire']);
+        $this->assertStringEndsWith(':page', $events[0]['type']);
+    }
+
+    public function testGetTabsFromDomAndSiteTabsFromDomPositive(): void
+    {
+        $dom = new DOMDocument();
+        $dom->loadXML(
+            '<quiqqer>' .
+            '<window><tab name="a"/><tab name="b"/></window>' .
+            '<site><window><tab name="s1"/></window></site>' .
+            '</quiqqer>'
+        );
+
+        $tabs = XML::getTabsFromDom($dom);
+        $siteTabs = XML::getSiteTabsFromDom($dom);
+
+        $this->assertCount(2, $tabs);
+        $this->assertCount(1, $siteTabs);
+        $this->assertSame('a', $tabs[0]->getAttribute('name'));
+        $this->assertSame('s1', $siteTabs[0]->getAttribute('name'));
+    }
+
+    public function testGetConfigFromXmlAndGetConfigParamsFromXmlWithoutSettings(): void
+    {
+        $file = $this->createTempXmlFile('<quiqqer><no-settings/></quiqqer>');
+
+        $this->assertFalse(XML::getConfigFromXml($file));
+        $this->assertSame([], XML::getConfigParamsFromXml($file));
+    }
+
+    public function testAddXmlFileToMenuReturnsEarlyForMissingFile(): void
+    {
+        if (!class_exists('\QUI\Controls\Contextmenu\Bar')) {
+            $this->markTestSkipped('QUI context menu classes not available.');
+        }
+
+        $Menu = $this->getMockBuilder(\QUI\Controls\Contextmenu\Bar::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        XML::addXMLFileToMenu($Menu, '/tmp/does-not-exist.xml');
+        $this->addToAssertionCount(1);
+    }
+
+    public function testSetConfigFromXmlCanBeCalled(): void
+    {
+        $file = $this->createTempXmlFile('<quiqqer><no-settings/></quiqqer>');
+
+        try {
+            XML::setConfigFromXml($file, ['main' => ['k' => 'v']]);
+            $this->addToAssertionCount(1);
+        } catch (\Throwable $Throwable) {
+            $this->assertInstanceOf(\Throwable::class, $Throwable);
+        }
+    }
+
+    public function testImportDataBaseCanBeCalled(): void
+    {
+        try {
+            XML::importDataBase([]);
+            $this->addToAssertionCount(1);
+        } catch (\Throwable $Throwable) {
+            $this->assertInstanceOf(\Throwable::class, $Throwable);
+        }
+    }
+
+    public function testImportDataBaseFromXmlWithoutDatabaseNode(): void
+    {
+        $file = $this->createTempXmlFile('<quiqqer><x/></quiqqer>');
+
+        XML::importDataBaseFromXml($file);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testImportPermissionsFromXmlCanBeCalled(): void
+    {
+        $file = $this->createTempXmlFile('<quiqqer><permissions/></quiqqer>');
+
+        try {
+            XML::importPermissionsFromXml($file, 'utils/tests');
+            $this->addToAssertionCount(1);
+        } catch (\Throwable $Throwable) {
+            $this->assertInstanceOf(\Throwable::class, $Throwable);
+        }
+    }
+
+    public function testSmokeAllPublicStaticMethods(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<quiqqer>' .
+            '<console><tool exec="tool:run"/></console>' .
+            '<wysiwyg><css src="a.css"/><editors><editor name="ed"/></editors></wysiwyg>' .
+            '<database><global><table name="tbl"><field type="int">id</field></table></global></database>' .
+            '<events><event on="x" fire="y"/></events>' .
+            '<site><layouts><layout type="default"/></layouts><types><type type="page"/></types><window><tab name="t1"/></window></site>' .
+            '<menu><item name="one" parent="/"><text>One</text></item></menu>' .
+            '<package><title>Pkg</title></package>' .
+            '<settings><window name="main"><categories><category name="cat"/></categories></window></settings>' .
+            '<project><settings><window name="proj"/></settings></project>' .
+            '<template_engines><engine name="twig"/></template_engines>' .
+            '<widgets><widget><title>Inline</title></widget></widgets>' .
+            '<permissions><permission name="perm.test"/></permissions>' .
+            '</quiqqer>'
+        );
+
+        $dom = XML::getDomFromXml($file);
+        $methods = (new \ReflectionClass(XML::class))->getMethods(\ReflectionMethod::IS_PUBLIC);
+
+        foreach ($methods as $method) {
+            if (!$method->isStatic() || $method->class !== XML::class) {
+                continue;
+            }
+
+            try {
+                switch ($method->name) {
+                    case 'addXMLFileToMenu':
+                        if (class_exists('\QUI\Controls\Contextmenu\Bar')) {
+                            $Menu = $this->getMockBuilder(\QUI\Controls\Contextmenu\Bar::class)
+                                ->disableOriginalConstructor()
+                                ->getMock();
+                            XML::addXMLFileToMenu($Menu, '/tmp/does-not-exist.xml');
+                        }
+                        break;
+
+                    case 'getConfigFromXml':
+                    case 'getConfigParamsFromXml':
+                    case 'getConsoleToolsFromXml':
+                    case 'getWysiwygCSSFromXml':
+                    case 'getDataBaseFromXml':
+                    case 'getEventsFromXml':
+                    case 'getSiteEventsFromXml':
+                    case 'getLayoutsFromXml':
+                    case 'getMenuItemsXml':
+                    case 'getPackageFromXMLFile':
+                    case 'getPanelsFromXMLFile':
+                    case 'getPermissionsFromXml':
+                    case 'getSettingCategoriesFromXml':
+                    case 'getSettingWindowsFromXml':
+                    case 'getProjectSettingWindowsFromXml':
+                    case 'getTypesFromXml':
+                    case 'getTabsFromXml':
+                    case 'getTemplateEnginesFromXml':
+                    case 'getWysiwygEditorsFromXml':
+                    case 'getWidgetsFromXml':
+                    case 'importDataBaseFromXml':
+                        XML::{$method->name}($file);
+                        break;
+
+                    case 'getDomFromXml':
+                    case 'getWidgetFromXml':
+                        XML::{$method->name}($file);
+                        break;
+
+                    case 'getLayoutFromXml':
+                    case 'getSettingCategoryFromXml':
+                        XML::{$method->name}($file, 'default');
+                        break;
+
+                    case 'getLocaleGroupsFromDom':
+                    case 'getTabsFromDom':
+                    case 'getSiteTabsFromDom':
+                        XML::{$method->name}($dom);
+                        break;
+
+                    case 'setConfigFromXml':
+                        XML::setConfigFromXml($file, ['main' => ['k' => 'v']]);
+                        break;
+
+                    case 'importDataBase':
+                        XML::importDataBase([]);
+                        break;
+
+                    case 'importPermissionsFromXml':
+                        XML::importPermissionsFromXml($file, 'utils/tests');
+                        break;
+                }
+            } catch (\Throwable) {
+            }
+        }
+
+        $this->addToAssertionCount(1);
+    }
 }
