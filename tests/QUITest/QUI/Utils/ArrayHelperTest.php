@@ -7,7 +7,7 @@ use QUI\Utils\ArrayHelper as ArrayHelper;
 /**
  * Class ArrayHelperTest
  */
-class ArrayHelperTest extends \PHPUnit_Framework_TestCase
+class ArrayHelperTest extends \PHPUnit\Framework\TestCase
 {
     public function testIsAssoc()
     {

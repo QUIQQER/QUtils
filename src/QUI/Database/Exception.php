@@ -8,6 +8,8 @@ namespace QUI\Database;
 
 /**
  * The Exception class for database operations
+ */
+
 
 class Exception extends \QUI\Exception
 {

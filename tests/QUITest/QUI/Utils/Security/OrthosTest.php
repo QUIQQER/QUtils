@@ -7,7 +7,7 @@ use QUI\Utils\Security\Orthos as Orthos;
 /**
  * Class OrthosTest
  */
-class OrthosTest extends \PHPUnit_Framework_TestCase
+class OrthosTest extends \PHPUnit\Framework\TestCase
 {
     public function testClear()
     {

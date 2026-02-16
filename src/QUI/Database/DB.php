@@ -575,7 +575,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      * @throws QUI\Database\Exception
-
+     */
     public function fetch(
         array $params = [],
         int $FETCH_STYLE = PDO::FETCH_ASSOC
@@ -610,7 +610,7 @@ class DB extends QUI\QDOM
      * @param $query
      * @return PDOStatement|false
      * @throws Exception
-
+     */
     public function execSQL($query): bool|PDOStatement
     {
         $Statement = $this->getPDO()->prepare($query);
@@ -637,7 +637,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      * @throws QUI\Database\Exception
-
+     */
     public function fetchSQL(string $query, int $FETCH_STYLE = PDO::FETCH_ASSOC): array
     {
         $this->reconnectCheck();
@@ -669,7 +669,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
-
+     */
     public function update(string $table, array $data, array|string $where): PDOStatement
     {
         return $this->exec([
@@ -687,7 +687,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
-
+     */
     public function insert(string $table, array $data): PDOStatement
     {
         return $this->exec([
@@ -705,7 +705,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
-
+     */
     public function replace(string $table, array $data): PDOStatement
     {
         return $this->exec([
@@ -722,7 +722,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
-
+     */
     public function delete(string $table, array $where): PDOStatement
     {
         return $this->exec([

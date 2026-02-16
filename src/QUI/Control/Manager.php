@@ -14,6 +14,8 @@ use function strrpos;
 use function substr_replace;
 
 /**
+ */
+
 
 class Manager
 {

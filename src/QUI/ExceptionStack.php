@@ -7,6 +7,8 @@
 namespace QUI;
 
 /**
+ */
+
 
 class ExceptionStack extends Exception
 {

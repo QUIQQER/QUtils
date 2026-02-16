@@ -19,6 +19,8 @@ use function strtolower;
 
 /**
  * Helper class for the system variables
+ */
+
 
 class System
 {

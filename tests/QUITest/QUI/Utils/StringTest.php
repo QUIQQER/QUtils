@@ -7,7 +7,7 @@ use QUI\Utils\StringHelper as StringHelper;
 /**
  * Class StringTest
  */
-class StringTest extends \PHPUnit_Framework_TestCase
+class StringTest extends \PHPUnit\Framework\TestCase
 {
     public function testJSString()
     {
@@ -189,8 +189,8 @@ class StringTest extends \PHPUnit_Framework_TestCase
     {
         $no_utf8 = utf8_decode('müll');
 
-        $this->assertEquals(false, StringHelper::isValidUTF8(utf8_decode('müll')));
-        $this->assertEquals(true, StringHelper::isValidUTF8(utf8_encode('müll')));
+        $this->assertFalse(StringHelper::isValidUTF8(utf8_decode('müll')));
+        $this->assertTrue(StringHelper::isValidUTF8(utf8_encode('müll')));
 
         $this->assertEquals(
             'müll',

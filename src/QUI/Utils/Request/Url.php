@@ -26,6 +26,8 @@ use function trim;
 
 /**
  * Executes a request to a URL
+ */
+
 
 class Url
 {

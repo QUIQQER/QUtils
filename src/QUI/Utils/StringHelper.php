@@ -59,6 +59,8 @@ if (!function_exists('fnmatch')) {
 
 /**
  * Helper for string handling
+ */
+
 
 class StringHelper
 {

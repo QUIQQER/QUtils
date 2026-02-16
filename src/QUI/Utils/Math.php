@@ -13,6 +13,8 @@ use function round;
 
 /**
  * Commonly used mathematical functions
+ */
+
 
 class Math
 {

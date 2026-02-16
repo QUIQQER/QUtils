@@ -24,6 +24,8 @@ use function substr;
 
 /**
  * Convert class, helper for converting different values
+ */
+
 
 class Convert
 {

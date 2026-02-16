@@ -2,9 +2,13 @@
 
 namespace QUITest\QUI\Database;
 
+require_once __DIR__ . '/DBHelper.php';
+
 /**
  * Class DBMySQLTest
  * @todo test muss geschrieben werden
+ */
+
 
 class DBMySQLTest extends DBHelper
 {

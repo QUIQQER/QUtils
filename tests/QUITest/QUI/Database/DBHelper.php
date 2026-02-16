@@ -5,8 +5,10 @@ namespace QUITest\QUI\Database;
 /**
  * Class DB_Test_Methods
  * @todo test muss gescrieben, problem -> zugangsdaten
+ */
 
-abstract class DBHelper extends \PHPUnit_Framework_TestCase
+
+abstract class DBHelper extends \PHPUnit\Framework\TestCase
 {
 //    public function testDB()
 //    {

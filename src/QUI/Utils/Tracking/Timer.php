@@ -13,6 +13,8 @@ use function round;
 /**
  * A timer
  * measures the length of time between measurement points
+ */
+
 
 class Timer
 {

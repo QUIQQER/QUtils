@@ -18,6 +18,8 @@ use function is_string;
 
 /**
  * Helper for array handling
+ */
+
 
 class ArrayHelper
 {

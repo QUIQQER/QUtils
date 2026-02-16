@@ -28,6 +28,8 @@ use const LIBXML_XINCLUDE;
  *
  * @uses     ZipArchive
  * @requires ZipArchive
+ */
+
 
 class DocToText
 {

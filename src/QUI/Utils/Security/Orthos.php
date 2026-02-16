@@ -40,6 +40,8 @@ use function trim;
  *
  * Has different methods in order to examine variables on their correctness
  * Should be used to validate user input
+ */
+
 
 class Orthos
 {

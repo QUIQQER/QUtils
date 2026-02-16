@@ -14,6 +14,8 @@ use function is_array;
  *
  * The QDOM class emulate similar methods
  * like a DOMNode, it's the main parent factory class
+ */
+
 
 class QDOM
 {

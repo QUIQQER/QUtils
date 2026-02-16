@@ -7,7 +7,7 @@ use QUI\QDOM as QDOM;
 /**
  * Class QDOMTest
  */
-class QDOMTest extends \PHPUnit_Framework_TestCase
+class QDOMTest extends \PHPUnit\Framework\TestCase
 {
     public function testToString()
     {

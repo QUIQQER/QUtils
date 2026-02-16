@@ -23,6 +23,7 @@ use function str_replace;
 
 /**
  * Class for handling ini files
+ */
 
 class Config
 {

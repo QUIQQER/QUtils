@@ -11,6 +11,8 @@ use function is_integer;
 
 /**
  * Helper for bool type handling
+ */
+
 
 class BoolHelper
 {
