@@ -7,8 +7,6 @@
 namespace QUI\Database;
 
 use DateTime;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -41,6 +39,7 @@ use function trim;
 /**
  * QUIQQER DataBase Layer
  *
+ * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
  * @uses    PDO
  */
 class DB extends QUI\QDOM
@@ -98,7 +97,9 @@ class DB extends QUI\QDOM
      * - options (optional)
      * - driver (optional)
      *
-     * @throws Exception
+     * @throws QUI\Database\Exception
+     * @throws \Doctrine\DBAL\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function __construct(array $attributes = [])
     {
@@ -144,6 +145,7 @@ class DB extends QUI\QDOM
      *
      * @throws \Exception
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function getNewPDO(): PDO
     {
@@ -216,6 +218,7 @@ class DB extends QUI\QDOM
      * Return the internal PDO Object
      *
      * @return PDO|null
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function getPDO(): ?PDO
     {
@@ -227,7 +230,8 @@ class DB extends QUI\QDOM
     /**
      * Reconnect the pdo connection to the sql server
      *
-     * @throws Exception
+     * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function reconnect(): void
     {
@@ -246,6 +250,7 @@ class DB extends QUI\QDOM
      * Set the reconnect timeout
      *
      * @param int $time - seconds
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function setReconnectTimeout(int $time): void
     {
@@ -255,7 +260,8 @@ class DB extends QUI\QDOM
     /**
      * Reconnect the connection if needed
      *
-     * @throws Exception
+     * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     protected function reconnectCheck(): void
     {
@@ -272,6 +278,7 @@ class DB extends QUI\QDOM
      * Return the server version of the database
      *
      * @return string|bool
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function getVersion(): string | bool
     {
@@ -290,6 +297,7 @@ class DB extends QUI\QDOM
      * Database object for tables
      *
      * @return Tables|null
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function table(): ?Tables
     {
@@ -304,6 +312,7 @@ class DB extends QUI\QDOM
      * Is the DB a sqlite db?
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function isSQLite(): bool
     {
@@ -350,6 +359,7 @@ class DB extends QUI\QDOM
      *        'query'   => string  - SQL String
      *        'prepare' => array() - Prepared Statement Vars
      *    )
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function createQuery(array $params = []): array
     {
@@ -468,6 +478,7 @@ class DB extends QUI\QDOM
      * @return PDOStatement
      *
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function exec(array $params = []): PDOStatement
     {
@@ -575,6 +586,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function fetch(
         array $params = [],
@@ -605,11 +617,12 @@ class DB extends QUI\QDOM
     }
 
     /**
-     * Execute the query and dont execute a fetch
+     * Execute the query and don't execute a fetch
      *
      * @param $query
      * @return PDOStatement|false
-     * @throws Exception
+     * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function execSQL($query): bool | PDOStatement
     {
@@ -637,6 +650,7 @@ class DB extends QUI\QDOM
      *
      * @return array
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function fetchSQL(string $query, int $FETCH_STYLE = PDO::FETCH_ASSOC): array
     {
@@ -669,6 +683,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function update(string $table, array $data, array | string $where): PDOStatement
     {
@@ -687,6 +702,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function insert(string $table, array $data): PDOStatement
     {
@@ -705,6 +721,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function replace(string $table, array $data): PDOStatement
     {
@@ -722,6 +739,7 @@ class DB extends QUI\QDOM
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public function delete(string $table, array $where): PDOStatement
     {
@@ -758,6 +776,7 @@ class DB extends QUI\QDOM
      * ]
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQuerySelect(array $params): string
     {
@@ -822,6 +841,7 @@ class DB extends QUI\QDOM
      * @param string $params
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryInsert(string $params): string
     {
@@ -834,6 +854,7 @@ class DB extends QUI\QDOM
      * @param string $params
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryReplace(string $params): string
     {
@@ -846,6 +867,7 @@ class DB extends QUI\QDOM
      * @param string $params
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryUpdate(string $params): string
     {
@@ -856,6 +878,7 @@ class DB extends QUI\QDOM
      * Delete Query
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryDelete(): string
     {
@@ -868,6 +891,7 @@ class DB extends QUI\QDOM
      * @param array|string $params
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryCount(array | string $params): string
     {
@@ -898,6 +922,7 @@ class DB extends QUI\QDOM
      * @param array|string $params
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryFrom(array | string $params): string
     {
@@ -927,6 +952,7 @@ class DB extends QUI\QDOM
      *         'param' => value
      *     )
      * );
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryWhere(array | string $params, string $type = 'AND'): array
     {
@@ -938,7 +964,6 @@ class DB extends QUI\QDOM
         }
 
         $prepare = [];
-        $sql = '';
 
         $i = 0;
         $inKey = 0;
@@ -1122,6 +1147,7 @@ class DB extends QUI\QDOM
      * @param array $params
      *
      * @return array
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryWhereOr(array $params): array
     {
@@ -1135,6 +1161,7 @@ class DB extends QUI\QDOM
      * @param boolean|string $driver - deprecated
      *
      * @return array
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQuerySet(array | string $params, bool | string $driver = false): array
     {
@@ -1214,7 +1241,7 @@ class DB extends QUI\QDOM
      * @param array $params - the set params
      *
      * @return array
-     * @deprecated
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQuerySQLiteInsert(array $params): array
     {
@@ -1280,6 +1307,7 @@ class DB extends QUI\QDOM
      * ]
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryOrder(array | string $params): string
     {
@@ -1389,6 +1417,7 @@ class DB extends QUI\QDOM
      * ]
      *
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     protected static function createQueryOrderFromArray(array $params): string
     {
@@ -1429,6 +1458,7 @@ class DB extends QUI\QDOM
      *
      * @param $params
      * @return string
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryGroupBy($params): string
     {
@@ -1472,6 +1502,7 @@ class DB extends QUI\QDOM
      * @param integer|string $params
      *
      * @return array
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryLimit(int | string $params): array
     {
@@ -1524,6 +1555,7 @@ class DB extends QUI\QDOM
      * @param array $allowed - allowed fields
      *
      * @return bool
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function isOrderValid(string $value, array $allowed = []): bool
     {
@@ -1562,6 +1594,7 @@ class DB extends QUI\QDOM
      * @param array $allowed - allowed fields
      *
      * @return bool
+     * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function isWhereValid(array $where, array $allowed = []): bool
     {
