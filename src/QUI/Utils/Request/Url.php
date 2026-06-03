@@ -11,7 +11,6 @@ use QUI;
 use QUI\Exception;
 
 use function array_pop;
-use function curl_close;
 use function curl_copy_handle;
 use function curl_errno;
 use function curl_error;
@@ -77,8 +76,6 @@ class Url
             throw new Exception('Error at request: ' . $error . ' -> ' . $url);
         }
 
-        curl_close($Curl);
-
         return $data;
     }
 
@@ -130,8 +127,6 @@ class Url
             throw new Exception('Error at request: ' . $error . ' -> ' . $url);
         }
 
-        curl_close($Curl);
-
         return $result;
     }
 
@@ -174,7 +169,7 @@ class Url
                 }
             } while ($code && --$mr);
 
-            curl_close($rch);
+            unset($rch);
             curl_setopt($Curl, CURLOPT_URL, $newUrl);
         }
 
