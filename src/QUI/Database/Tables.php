@@ -24,6 +24,8 @@ use function trim;
 
 /**
  * QUIQQER DataBase Layer for table operations
+ *
+ * @deprecated Use Doctrine DBAL Schema APIs instead.
  */
 class Tables
 {
@@ -38,6 +40,7 @@ class Tables
      * Konstruktor
      *
      * @param DB $DB
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function __construct(DB $DB)
     {
@@ -48,6 +51,7 @@ class Tables
      * Returns all tables in the database
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getTables(): array
     {
@@ -70,6 +74,7 @@ class Tables
      * @param array|string $tables
      *
      * @return void
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function optimize(array | string $tables): void
     {
@@ -85,6 +90,7 @@ class Tables
      * @param string $table - Tabellenname, welcher gesucht wird
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function exist(string $table): bool
     {
@@ -107,6 +113,7 @@ class Tables
      * @param string $table
      *
      * @return void
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function delete(string $table): void
     {
@@ -125,6 +132,7 @@ class Tables
      * empties a table completely
      *
      * @param string $table
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function truncate(string $table): void
     {
@@ -149,6 +157,7 @@ class Tables
      * @throws QUI\Database\Exception
      * @throws Exception
      * @todo check mysql injection
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function create(string $table, array $fields, string $engine = 'InnoDB'): bool
     {
@@ -213,6 +222,7 @@ class Tables
      *
      * @param string $table
      * @param string $comment
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setComment(string $table, string $comment): void
     {
@@ -255,6 +265,7 @@ class Tables
      * @param string $table - Tabelle
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getFieldsInfos(string $table): array
     {
@@ -288,6 +299,7 @@ class Tables
      *
      * @param string $table
      * @param array $fields
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function deleteFields(string $table, array $fields): void
     {
@@ -332,6 +344,7 @@ class Tables
      * @param string $engine
      * @throws Exception
      * @throws \Exception
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function addColumn(string $table, array $fields, string $engine = 'InnoDB'): void
     {
@@ -413,6 +426,7 @@ class Tables
      * @param string $row
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function existColumnInTable(string $table, string $row): bool
     {
@@ -434,6 +448,7 @@ class Tables
      * @param string $table
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getColumns(string $table): array
     {
@@ -459,6 +474,7 @@ class Tables
      * @param string $column - Row name
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getColumn(string $table, string $column): array
     {
@@ -479,6 +495,7 @@ class Tables
      * @param string $row
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function deleteColumn(string $table, string $row): bool
     {
@@ -515,6 +532,7 @@ class Tables
      * @param string $table
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getKeys(string $table): array
     {
@@ -533,6 +551,7 @@ class Tables
      * @param array|string $key
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function issetPrimaryKey(string $table, array | string $key): bool
     {
@@ -557,6 +576,7 @@ class Tables
      *
      * @return boolean
      * @see issetPrimaryKey
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function issetPrimaryKeyHelper(string $table, string $key): bool
     {
@@ -577,6 +597,7 @@ class Tables
 
     /**
      * Setzt ein PrimaryKey einer Tabelle
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setPrimaryKey(string $table, array | string $key): bool
     {
@@ -622,6 +643,7 @@ class Tables
      * @param string $table
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getUniqueColumns(string $table): array
     {
@@ -653,6 +675,7 @@ class Tables
      * @param array|string $unique
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setUniqueColumns(string $table, array | string $unique): bool
     {
@@ -680,6 +703,7 @@ class Tables
      * @param array|string $unique
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function issetUniqueColumn(string $table, array | string $unique): bool
     {
@@ -704,6 +728,7 @@ class Tables
      *
      * @return boolean
      * @see issetUniqueColumn
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function issetUniqueColumnHelper(string $table, string $unique): bool
     {
@@ -723,6 +748,7 @@ class Tables
      * @param int|string|array $key
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function issetIndex(string $table, int | string | array $key): bool
     {
@@ -746,6 +772,7 @@ class Tables
      * @param string $key
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function issetIndexHelper(string $table, string $key): bool
     {
@@ -770,6 +797,7 @@ class Tables
      * @param string $table
      * @return int
      * @throws Exception|\Doctrine\DBAL\Exception
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getAutoIncrementIndex(string $table): int
     {
@@ -819,6 +847,7 @@ class Tables
      * @param string $table
      *
      * @return array
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getIndex(string $table): array
     {
@@ -837,6 +866,7 @@ class Tables
      * @param array|string $index - Array not working on SQLite
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setIndex(string $table, array | string $index): bool
     {
@@ -859,6 +889,7 @@ class Tables
      *
      * @param string $table
      * @param string $index
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setAutoIncrement(string $table, string $index): void
     {
@@ -903,6 +934,7 @@ class Tables
      * @param array|string $index
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setFulltext(string $table, array | string $index): bool
     {
@@ -931,6 +963,7 @@ class Tables
      * @param int|string|array $key
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function issetFulltext(string $table, int | string | array $key): bool
     {
@@ -954,6 +987,7 @@ class Tables
      * @param string $key
      *
      * @return boolean
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function issetFulltextHelper(string $table, string $key): bool
     {
@@ -978,6 +1012,7 @@ class Tables
      * @param string $str
      *
      * @return string
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function clear(string $str): string
     {
@@ -990,6 +1025,7 @@ class Tables
      * @param string $fieldType
      *
      * @return string
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function parseFieldType(string $fieldType): string
     {
@@ -1004,6 +1040,7 @@ class Tables
      * @param array|string $index
      *
      * @return string
+     * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     protected function inList(array | string $index): string
     {

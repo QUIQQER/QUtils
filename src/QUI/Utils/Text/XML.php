@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Text;
 
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Types;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -15,10 +17,12 @@ use QUI;
 use QUI\Utils\DOM;
 use QUI\Utils\Security\Orthos;
 
+use function array_filter;
 use function array_keys;
 use function call_user_func;
 use function class_exists;
 use function count;
+use function in_array;
 use function dirname;
 use function explode;
 use function file_exists;
@@ -32,7 +36,9 @@ use function mb_strpos;
 use function md5;
 use function method_exists;
 use function preg_match;
+use function preg_replace;
 use function realpath;
+use function strtolower;
 use function str_replace;
 use function trim;
 
@@ -1308,7 +1314,6 @@ class XML
      */
     public static function importDataBase(array $dbFields): void
     {
-        $Table = QUI::getDataBase()->table();
         $projects = QUI\Projects\Manager::getConfig()->toArray();
 
         // globale tabellen erweitern / anlegen
@@ -1316,43 +1321,7 @@ class XML
             foreach ($dbFields['globals'] as $table) {
                 $tbl = QUI::getDBTableName($table['suffix']);
 
-                $Table->addColumn($tbl, $table['fields'], $table['engine']);
-
-                if (isset($table['primary'])) {
-                    $Table->setPrimaryKey($tbl, $table['primary']);
-                }
-
-                if (isset($table['unique'])) {
-                    $Table->setUniqueColumns($tbl, $table['unique']);
-                }
-
-                if (!empty($table['comment']) && method_exists($Table, 'setComment')) {
-                    $Table->setComment($tbl, $table['comment']);
-                }
-
-                $index = [];
-
-                if (isset($table['index']) && !is_array($table['index'])) {
-                    $index[] = $table['index'];
-                } elseif (isset($table['index']) && is_array($table['index'])) {
-                    $index = $table['index'];
-                }
-
-                foreach ($index as $ind) {
-                    if (str_contains($ind, ',')) {
-                        $Table->setIndex($tbl, explode(',', $ind));
-                    } else {
-                        $Table->setIndex($tbl, $ind);
-                    }
-                }
-
-                if (isset($table['auto_increment'])) {
-                    $Table->setAutoIncrement($tbl, $table['auto_increment']);
-                }
-
-                if (isset($table['fulltext'])) {
-                    $Table->setFulltext($tbl, $table['fulltext']);
-                }
+                self::importDataBaseTable($tbl, $table);
             }
         }
 
@@ -1393,37 +1362,11 @@ class XML
                             $tbl = QUI::getDBTableName($name . '_' . $suffix);
                         }
 
-                        $Table->addColumn($tbl, $fields, $engine);
-
-                        if (isset($table['primary'])) {
-                            $Table->setPrimaryKey($tbl, $table['primary']);
-                        }
-
-                        if (isset($table['index'])) {
-                            $index = [];
-
-                            if (isset($table['index']) && !is_array($table['index'])) {
-                                $index[] = $table['index'];
-                            } elseif (isset($table['index']) && is_array($table['index'])) {
-                                $index = $table['index'];
-                            }
-
-                            foreach ($index as $ind) {
-                                if (str_contains($ind, ',')) {
-                                    $Table->setIndex($tbl, explode(',', $ind));
-                                } else {
-                                    $Table->setIndex($tbl, $ind);
-                                }
-                            }
-                        }
-
-                        if (isset($table['auto_increment'])) {
-                            $Table->setAutoIncrement($tbl, $table['auto_increment']);
-                        }
-
-                        if (isset($table['fulltext'])) {
-                            $Table->setFulltext($tbl, $table['fulltext']);
-                        }
+                        self::importDataBaseTable($tbl, [
+                            ...$table,
+                            'fields' => $fields,
+                            'engine' => $engine
+                        ]);
                     }
                 }
             }
@@ -1442,6 +1385,190 @@ class XML
                 call_user_func($exec);
             }
         }
+    }
+
+    protected static function importDataBaseTable(string $tableName, array $definition): void
+    {
+        $SchemaManager = QUI::getSchemaManager();
+        $tableExists = $SchemaManager->tableExists($tableName);
+        $OldTable = null;
+
+        if ($tableExists) {
+            $OldTable = $SchemaManager->introspectTable($tableName);
+            $NewTable = clone $OldTable;
+        } else {
+            $NewTable = new Table($tableName);
+        }
+
+        if (!empty($definition['comment'])) {
+            $NewTable->setComment($definition['comment']);
+        }
+
+        $autoIncrement = $definition['auto_increment'] ?? null;
+        $inlinePrimary = [];
+
+        foreach ($definition['fields'] ?? [] as $field => $type) {
+            if (str_contains(strtolower((string)$type), 'primary key')) {
+                $inlinePrimary[] = $field;
+            }
+
+            if ($NewTable->hasColumn($field)) {
+                continue;
+            }
+
+            [$dbalType, $options] = self::parseDatabaseXmlFieldType((string)$type);
+
+            if ($autoIncrement === $field) {
+                $options['autoincrement'] = true;
+                $options['notnull'] = true;
+            }
+
+            $NewTable->addColumn($field, $dbalType, $options);
+        }
+
+        $primary = [];
+
+        if (!empty($definition['primary'])) {
+            $primary = self::normalizeDatabaseXmlColumns($definition['primary']);
+        } elseif (!empty($inlinePrimary)) {
+            $primary = self::normalizeDatabaseXmlColumns($inlinePrimary);
+        }
+
+        if (!empty($primary) && $NewTable->getPrimaryKey() === null) {
+            $NewTable->setPrimaryKey($primary);
+        }
+
+        if (!empty($definition['unique'])) {
+            $unique = self::normalizeDatabaseXmlColumns($definition['unique']);
+
+            if (!empty($unique) && !$NewTable->columnsAreIndexed($unique)) {
+                $NewTable->addUniqueIndex($unique);
+            }
+        }
+
+        foreach (self::normalizeDatabaseXmlIndexList($definition['index'] ?? []) as $index) {
+            if (!$NewTable->columnsAreIndexed($index)) {
+                $NewTable->addIndex($index);
+            }
+        }
+
+        foreach (self::normalizeDatabaseXmlIndexList($definition['fulltext'] ?? []) as $index) {
+            if (!$NewTable->columnsAreIndexed($index)) {
+                $NewTable->addIndex($index, null, ['fulltext']);
+            }
+        }
+
+        if (!$tableExists) {
+            $SchemaManager->createTable($NewTable);
+            return;
+        }
+
+        $diff = $SchemaManager->createComparator()->compareTables($OldTable, $NewTable);
+
+        if (!$diff->isEmpty()) {
+            $SchemaManager->alterTable($diff);
+        }
+    }
+
+    protected static function normalizeDatabaseXmlIndexList(array | string $indexes): array
+    {
+        if (!is_array($indexes)) {
+            $indexes = [$indexes];
+        }
+
+        $result = [];
+
+        foreach ($indexes as $index) {
+            $columns = self::normalizeDatabaseXmlColumns($index);
+
+            if (!empty($columns)) {
+                $result[] = $columns;
+            }
+        }
+
+        return $result;
+    }
+
+    protected static function normalizeDatabaseXmlColumns(array | string $columns): array
+    {
+        if (!is_array($columns)) {
+            $columns = explode(',', $columns);
+        }
+
+        return array_values(array_filter(array_map(
+            static fn ($column) => trim((string)$column),
+            $columns
+        )));
+    }
+
+    protected static function parseDatabaseXmlFieldType(string $fieldType): array
+    {
+        $type = strtolower(trim($fieldType));
+        $options = [
+            'notnull' => !str_contains($type, ' null') || str_contains($type, 'not null')
+        ];
+
+        if (preg_match('/default\s+([^\s]+)/i', $fieldType, $matches)) {
+            $default = trim($matches[1], "'\"");
+            $options['default'] = strtoupper($default) === 'NULL' ? null : $default;
+        }
+
+        if (str_contains($type, 'auto_increment')) {
+            $options['autoincrement'] = true;
+            $options['notnull'] = true;
+        }
+
+        if (str_contains($type, 'unsigned')) {
+            $options['unsigned'] = true;
+        }
+
+        if (preg_match('/(bigint|int|integer|smallint|tinyint|varchar|char|decimal|float|double)\s*\(([^)]+)\)/i', $type, $matches)) {
+            $baseType = $matches[1];
+            $size = $matches[2];
+
+            if (in_array($baseType, ['varchar', 'char'], true)) {
+                $options['length'] = (int)$size;
+            }
+
+            if ($baseType === 'decimal') {
+                $parts = array_map('trim', explode(',', $size));
+                $options['precision'] = (int)($parts[0] ?? 10);
+                $options['scale'] = (int)($parts[1] ?? 0);
+            }
+        }
+
+        $normalized = preg_replace('/\s+/', ' ', $type);
+
+        $dbalType = match (true) {
+            str_starts_with($normalized, 'bigint') => Types::BIGINT,
+            str_starts_with($normalized, 'smallint') => Types::SMALLINT,
+            str_starts_with($normalized, 'tinyint(1)'),
+            str_starts_with($normalized, 'boolean'),
+            str_starts_with($normalized, 'bool') => Types::BOOLEAN,
+            str_starts_with($normalized, 'int'),
+            str_starts_with($normalized, 'integer'),
+            str_starts_with($normalized, 'mediumint'),
+            str_starts_with($normalized, 'tinyint') => Types::INTEGER,
+            str_starts_with($normalized, 'varchar'),
+            str_starts_with($normalized, 'char') => Types::STRING,
+            str_starts_with($normalized, 'tinytext'),
+            str_starts_with($normalized, 'mediumtext'),
+            str_starts_with($normalized, 'longtext'),
+            str_starts_with($normalized, 'text') => Types::TEXT,
+            str_starts_with($normalized, 'datetime'),
+            str_starts_with($normalized, 'timestamp') => Types::DATETIME_MUTABLE,
+            str_starts_with($normalized, 'date') => Types::DATE_MUTABLE,
+            str_starts_with($normalized, 'time') => Types::TIME_MUTABLE,
+            str_starts_with($normalized, 'decimal') => Types::DECIMAL,
+            str_starts_with($normalized, 'float'),
+            str_starts_with($normalized, 'double') => Types::FLOAT,
+            str_starts_with($normalized, 'blob'),
+            str_starts_with($normalized, 'binary') => Types::BLOB,
+            str_starts_with($normalized, 'json') => Types::JSON,
+            default => Types::STRING
+        };
+
+        return [$dbalType, $options];
     }
 
     /**
