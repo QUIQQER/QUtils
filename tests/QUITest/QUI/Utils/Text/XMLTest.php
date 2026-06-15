@@ -296,6 +296,45 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testDatabaseXmlFieldTypeMapping(): void
+    {
+        $Method = new \ReflectionMethod(XML::class, 'parseDatabaseXmlFieldType');
+        $Method->setAccessible(true);
+
+        [$type, $options] = $Method->invoke(null, 'VARCHAR(255) NOT NULL');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::STRING, $type);
+        $this->assertSame(255, $options['length']);
+        $this->assertTrue($options['notnull']);
+
+        [$type, $options] = $Method->invoke(null, 'INT NULL');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::INTEGER, $type);
+        $this->assertFalse($options['notnull']);
+
+        [$type, $options] = $Method->invoke(null, 'INT(3) NOT NULL AUTO_INCREMENT PRIMARY KEY');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::INTEGER, $type);
+        $this->assertTrue($options['autoincrement']);
+        $this->assertTrue($options['notnull']);
+
+        [$type, $options] = $Method->invoke(null, 'TINYINT(1)');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::BOOLEAN, $type);
+        $this->assertTrue($options['notnull']);
+
+        [$type] = $Method->invoke(null, 'MEDIUMINT NULL');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::INTEGER, $type);
+
+        [$type] = $Method->invoke(null, 'TINYTEXT NULL');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::TEXT, $type);
+    }
+
+    public function testDatabaseXmlColumnNormalization(): void
+    {
+        $Method = new \ReflectionMethod(XML::class, 'normalizeDatabaseXmlColumns');
+        $Method->setAccessible(true);
+
+        $this->assertSame(['id', 'title'], $Method->invoke(null, 'id,title'));
+        $this->assertSame(['project', 'lang'], $Method->invoke(null, ['project', ' lang ', '']));
+    }
+
     public function testImportDataBaseCanBeCalled(): void
     {
         try {

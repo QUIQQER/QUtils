@@ -1379,16 +1379,22 @@ class DOM
         }
 
         $Text = $TextArea->getElementsByTagName('text');
-        $dataQui = '';
+        $data = '';
 
-        if ($TextArea->getAttribute('data-qui')) {
-            $dataQui = 'data-qui="' . $TextArea->getAttribute('data-qui') . '"';
+        foreach ($TextArea->attributes as $Attribute) {
+            /* @var $Attribute DOMAttr */
+            $name = htmlspecialchars($Attribute->name);
+            $value = htmlspecialchars($Attribute->value);
+
+            if (str_contains($name, 'data-')) {
+                $data .= " $name=\"$value\"";
+            }
         }
 
         $textarea = '<textarea
             class="field-container-field"
             name="' . $TextArea->getAttribute('conf') . '"
-            ' . $dataQui . '
+            ' . $data . '
             ></textarea>';
 
 
@@ -1541,16 +1547,22 @@ class DOM
             return '';
         }
 
-        $dataQui = '';
+        $data = '';
 
-        if ($Select->getAttribute('data-qui')) {
-            $dataQui = ' data-qui="' . $Select->getAttribute('data-qui') . '"';
+        foreach ($Select->attributes as $Attribute) {
+            /* @var $Attribute DOMAttr */
+            $name = htmlspecialchars($Attribute->name);
+            $value = htmlspecialchars($Attribute->value);
+
+            if (str_contains($name, 'data-')) {
+                $data .= " $name=\"$value\"";
+            }
         }
 
         $select = '<select
                   class="field-container-field"
                   name="' . $Select->getAttribute('conf') . '"' .
-            $dataQui . '
+            $data . '
         >';
 
         // Options
