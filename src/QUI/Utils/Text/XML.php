@@ -1510,6 +1510,12 @@ class XML
 
         if (preg_match('/default\s+([^\s]+)/i', $fieldType, $matches)) {
             $default = trim($matches[1], "'\"");
+            $normalizedDefault = strtoupper($default);
+
+            if (in_array($normalizedDefault, ['NOW()', 'CURRENT_TIMESTAMP()'], true)) {
+                $default = 'CURRENT_TIMESTAMP';
+            }
+
             $options['default'] = strtoupper($default) === 'NULL' ? null : $default;
         }
 
@@ -1538,6 +1544,12 @@ class XML
         }
 
         $normalized = preg_replace('/\s+/', ' ', $type);
+
+        if (preg_match('/\bon\s+update\b/i', $fieldType)) {
+            $columnDefinition = preg_replace('/\bNOW\s*\(\s*\)/i', 'CURRENT_TIMESTAMP', $fieldType);
+            $columnDefinition = preg_replace('/\bCURRENT_TIMESTAMP\s*\(\s*\)/i', 'CURRENT_TIMESTAMP', $columnDefinition);
+            $options['columnDefinition'] = $columnDefinition;
+        }
 
         $dbalType = match (true) {
             str_starts_with($normalized, 'bigint') => Types::BIGINT,

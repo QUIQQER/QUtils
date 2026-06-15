@@ -324,6 +324,14 @@ class XMLTest extends \PHPUnit\Framework\TestCase
 
         [$type] = $Method->invoke(null, 'TINYTEXT NULL');
         $this->assertSame(\Doctrine\DBAL\Types\Types::TEXT, $type);
+
+        [$type, $options] = $Method->invoke(null, 'timestamp DEFAULT NOW() ON UPDATE NOW()');
+        $this->assertSame(\Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, $type);
+        $this->assertSame('CURRENT_TIMESTAMP', $options['default']);
+        $this->assertSame(
+            'timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            $options['columnDefinition']
+        );
     }
 
     public function testDatabaseXmlColumnNormalization(): void
