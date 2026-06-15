@@ -1408,7 +1408,12 @@ class XML
         $inlinePrimary = [];
 
         foreach ($definition['fields'] ?? [] as $field => $type) {
-            if (str_contains(strtolower((string)$type), 'primary key')) {
+            $fieldAttributes = $definition['field_attributes'][$field] ?? [];
+
+            if (
+                str_contains(strtolower((string)$type), 'primary key')
+                || self::databaseXmlAttributeEnabled($fieldAttributes['primary'] ?? null)
+            ) {
                 $inlinePrimary[] = $field;
             }
 
@@ -1417,6 +1422,7 @@ class XML
             }
 
             [$dbalType, $options] = self::parseDatabaseXmlFieldType((string)$type);
+            $options = self::applyDatabaseXmlFieldAttributes($dbalType, $options, $fieldAttributes);
 
             if ($autoIncrement === $field) {
                 $options['autoincrement'] = true;
@@ -1501,6 +1507,78 @@ class XML
         )));
     }
 
+
+    /**
+     * @param array<string, mixed> $options
+     * @param array<string, mixed> $attributes
+     * @return array<string, mixed>
+     */
+    protected static function applyDatabaseXmlFieldAttributes(string $dbalType, array $options, array $attributes): array
+    {
+        if (array_key_exists('nullable', $attributes)) {
+            $options['notnull'] = !self::databaseXmlAttributeEnabled($attributes['nullable']);
+        }
+
+        if (array_key_exists('null', $attributes)) {
+            $options['notnull'] = !self::databaseXmlAttributeEnabled($attributes['null']);
+        }
+
+        if (array_key_exists('notnull', $attributes)) {
+            $options['notnull'] = self::databaseXmlAttributeEnabled($attributes['notnull']);
+        }
+
+        if (array_key_exists('default', $attributes)) {
+            $default = trim((string)$attributes['default'], "'\"");
+            $normalizedDefault = strtoupper($default);
+
+            if ($normalizedDefault === 'NULL') {
+                $options['default'] = null;
+            } elseif (in_array($normalizedDefault, ['NOW()', 'CURRENT_TIMESTAMP()'], true)) {
+                $options['default'] = 'CURRENT_TIMESTAMP';
+            } else {
+                $options['default'] = $default;
+            }
+        }
+
+        if (isset($attributes['length']) && is_numeric($attributes['length'])) {
+            $options['length'] = (int)$attributes['length'];
+        }
+
+        if (isset($attributes['precision']) && is_numeric($attributes['precision'])) {
+            $options['precision'] = (int)$attributes['precision'];
+        }
+
+        if (isset($attributes['scale']) && is_numeric($attributes['scale'])) {
+            $options['scale'] = (int)$attributes['scale'];
+        }
+
+        if (self::databaseXmlAttributeEnabled($attributes['autoincrement'] ?? $attributes['auto_increment'] ?? null)) {
+            $options['autoincrement'] = true;
+            $options['notnull'] = true;
+        }
+
+        if (array_key_exists('unsigned', $attributes)) {
+            $options['unsigned'] = self::databaseXmlAttributeEnabled($attributes['unsigned']);
+        }
+
+        if (isset($attributes['comment']) && $attributes['comment'] !== '') {
+            $options['comment'] = (string)$attributes['comment'];
+        }
+
+        return $options;
+    }
+
+    protected static function databaseXmlAttributeEnabled(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        $value = strtolower(trim((string)$value));
+
+        return in_array($value, ['1', 'true', 'yes', 'on'], true);
+    }
+
     protected static function parseDatabaseXmlFieldType(string $fieldType): array
     {
         $type = strtolower(trim($fieldType));
@@ -1508,7 +1586,7 @@ class XML
             'notnull' => !str_contains($type, ' null') || str_contains($type, 'not null')
         ];
 
-        if (preg_match('/default\s+([^\s]+)/i', $fieldType, $matches)) {
+        if (preg_match('/default\s+((?:\'[^\']*\')|(?:"[^"]*")|[^\s]+)/i', $fieldType, $matches)) {
             $default = trim($matches[1], "'\"");
             $normalizedDefault = strtoupper($default);
 

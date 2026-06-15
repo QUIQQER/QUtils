@@ -241,6 +241,7 @@ class DOM
         }
 
         $_fields = [];
+        $fieldAttributes = [];
 
         // table fields
         $comments = $Table->getElementsByTagName('comment');
@@ -256,10 +257,23 @@ class DOM
         $fields = $Table->getElementsByTagName('field');
 
         for ($i = 0; $i < $fields->length; $i++) {
-            $_fields = array_merge(
-                $_fields,
-                self::dbFieldDomToArray($fields->item($i))
-            );
+            $Field = $fields->item($i);
+            $fieldData = self::dbFieldDomToArray($Field);
+            $_fields = array_merge($_fields, $fieldData);
+
+            if (!$Field instanceof DOMElement) {
+                continue;
+            }
+
+            $fieldName = trim($Field->nodeValue);
+
+            if ($fieldName === '') {
+                continue;
+            }
+
+            foreach ($Field->attributes ?? [] as $Attribute) {
+                $fieldAttributes[$fieldName][$Attribute->nodeName] = $Attribute->nodeValue;
+            }
         }
 
         // primary key
@@ -315,6 +329,9 @@ class DOM
 
         $result['fields'] = $_fields;
 
+        if (!empty($fieldAttributes)) {
+            $result['field_attributes'] = $fieldAttributes;
+        }
 
         return $result;
     }
