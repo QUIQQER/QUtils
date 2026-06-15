@@ -4,7 +4,9 @@ namespace QUITest\QUI\Utils\Text;
 
 use DOMDocument;
 use DOMElement;
+use Doctrine\DBAL\Types\Types;
 use QUI\Utils\Text\XML;
+use ReflectionMethod;
 
 use function md5;
 use function sys_get_temp_dir;
@@ -147,6 +149,144 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         $dom = XML::getDomFromXml($file);
         $this->assertSame([], XML::getTabsFromDom($dom));
         $this->assertSame([], XML::getSiteTabsFromDom($dom));
+    }
+
+
+    public function testDatabaseXmlKeepsLegacyMysqlLikeDefinitionsForImporter(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<database>' .
+            '<global>' .
+            '<table name="cron">' .
+            '<field type="INT(3) NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>' .
+            '<field type="TINYINT(1)">active</field>' .
+            '<field type="VARCHAR(1000) NOT NULL">title</field>' .
+            '<field type="DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP">createDate</field>' .
+            '<primary>id</primary>' .
+            '</table>' .
+            '</global>' .
+            '</database>'
+        );
+
+        $db = XML::getDataBaseFromXml($file);
+        $table = $db['globals'][0];
+
+        $this->assertSame('cron', $table['suffix']);
+        $this->assertSame(['id'], $table['primary']);
+        $this->assertSame('INT(3) NOT NULL AUTO_INCREMENT PRIMARY KEY', trim($table['fields']['id']));
+    }
+
+    public function testDatabaseXmlFieldTypeMappingUsesDbalOptions(): void
+    {
+        $parse = new ReflectionMethod(XML::class, 'parseDatabaseXmlFieldType');
+        $parse->setAccessible(true);
+
+        [$type, $options] = $parse->invoke(null, 'INT(3) NOT NULL AUTO_INCREMENT PRIMARY KEY');
+        $this->assertSame(Types::INTEGER, $type);
+        $this->assertTrue($options['autoincrement']);
+        $this->assertTrue($options['notnull']);
+        $this->assertArrayNotHasKey('length', $options);
+
+        [$type, $options] = $parse->invoke(null, 'TINYINT(1)');
+        $this->assertSame(Types::BOOLEAN, $type);
+        $this->assertTrue($options['notnull']);
+
+        [$type, $options] = $parse->invoke(null, 'BIGINT(20) NOT NULL');
+        $this->assertSame(Types::BIGINT, $type);
+        $this->assertTrue($options['notnull']);
+        $this->assertArrayNotHasKey('length', $options);
+
+        [$type, $options] = $parse->invoke(null, 'VARCHAR(1000) NOT NULL');
+        $this->assertSame(Types::STRING, $type);
+        $this->assertSame(1000, $options['length']);
+        $this->assertTrue($options['notnull']);
+
+        [$type, $options] = $parse->invoke(null, 'DATETIME NULL DEFAULT NULL');
+        $this->assertSame(Types::DATETIME_MUTABLE, $type);
+        $this->assertFalse($options['notnull']);
+        $this->assertNull($options['default']);
+
+        [$type, $options] = $parse->invoke(null, 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $this->assertSame(Types::DATETIME_MUTABLE, $type);
+        $this->assertSame('CURRENT_TIMESTAMP', $options['default']);
+        $this->assertSame(
+            'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            $options['columnDefinition']
+        );
+    }
+
+
+    public function testDatabaseXmlFieldAttributesAreParsedWithoutChangingLegacyFields(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<database>' .
+            '<global>' .
+            '<table name="cron">' .
+            '<field type="integer" autoincrement="true" primary="true">id</field>' .
+            '<field type="string" length="1000" nullable="false" default="title" comment="Title column">title</field>' .
+            '<field type="decimal" precision="10" scale="2" nullable="true">price</field>' .
+            '</table>' .
+            '</global>' .
+            '</database>'
+        );
+
+        $db = XML::getDataBaseFromXml($file);
+        $table = $db['globals'][0];
+
+        $this->assertSame('integer NOT NULL', trim($table['fields']['id']));
+        $this->assertSame('string(1000) NOT NULL', trim($table['fields']['title']));
+        $this->assertSame('decimal NOT NULL', trim($table['fields']['price']));
+        $this->assertSame('true', $table['field_attributes']['id']['autoincrement']);
+        $this->assertSame('true', $table['field_attributes']['id']['primary']);
+        $this->assertSame('1000', $table['field_attributes']['title']['length']);
+        $this->assertSame('false', $table['field_attributes']['title']['nullable']);
+        $this->assertSame('Title column', $table['field_attributes']['title']['comment']);
+        $this->assertSame('10', $table['field_attributes']['price']['precision']);
+        $this->assertSame('2', $table['field_attributes']['price']['scale']);
+    }
+
+    public function testDatabaseXmlFieldAttributesOverrideLegacyTypeOptions(): void
+    {
+        $parse = new ReflectionMethod(XML::class, 'parseDatabaseXmlFieldType');
+        $parse->setAccessible(true);
+        $apply = new ReflectionMethod(XML::class, 'applyDatabaseXmlFieldAttributes');
+        $apply->setAccessible(true);
+
+        [$type, $options] = $parse->invoke(null, 'INT(11) NOT NULL');
+        $options = $apply->invoke(null, $type, $options, [
+            'nullable' => 'true',
+            'autoincrement' => 'true',
+            'unsigned' => 'false',
+            'comment' => 'Primary id'
+        ]);
+
+        $this->assertSame(Types::INTEGER, $type);
+        $this->assertTrue($options['autoincrement']);
+        $this->assertTrue($options['notnull']);
+        $this->assertFalse($options['unsigned']);
+        $this->assertSame('Primary id', $options['comment']);
+
+        [$type, $options] = $parse->invoke(null, 'VARCHAR(255) NOT NULL DEFAULT old');
+        $options = $apply->invoke(null, $type, $options, [
+            'length' => '1000',
+            'nullable' => 'true',
+            'default' => 'new'
+        ]);
+
+        $this->assertSame(Types::STRING, $type);
+        $this->assertSame(1000, $options['length']);
+        $this->assertFalse($options['notnull']);
+        $this->assertSame('new', $options['default']);
+
+        [$type, $options] = $parse->invoke(null, 'DECIMAL(8,3) NOT NULL');
+        $options = $apply->invoke(null, $type, $options, [
+            'precision' => '12',
+            'scale' => '4'
+        ]);
+
+        $this->assertSame(Types::DECIMAL, $type);
+        $this->assertSame(12, $options['precision']);
+        $this->assertSame(4, $options['scale']);
     }
 
     public function testGetWidgetFromXmlAndWidgetsWithSrc(): void
