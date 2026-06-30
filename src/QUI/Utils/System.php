@@ -9,12 +9,14 @@ namespace QUI\Utils;
 use QUI\Utils\System\File;
 
 use function explode;
+use function escapeshellarg;
 use function filter_var;
 use function in_array;
 use function ini_get;
 use function is_callable;
 use function memory_get_usage;
 use function min;
+use function preg_match;
 use function strtolower;
 
 /**
@@ -192,7 +194,15 @@ class System
             return false;
         }
 
-        exec("command -v $function", $output, $returnCode);
+        if (!preg_match('/^[a-zA-Z0-9._+-]+$/', $function)) {
+            return false;
+        }
+
+        try {
+            @exec('command -v -- ' . escapeshellarg($function), $output, $returnCode);
+        } catch (\Throwable) {
+            return false;
+        }
 
         return $returnCode == 0;
     }
