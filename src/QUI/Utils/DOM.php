@@ -1608,6 +1608,14 @@ class DOM
         $result .= $select;
         $result .= '</label>';
 
+        $Desc = $Select->getElementsByTagName('description');
+
+        if ($Desc->length) {
+            $result .= '<div class="description">';
+            $result .= self::getTextFromNode($Desc->item(0));
+            $result .= '</div>';
+        }
+
         return $result;
     }
 }
