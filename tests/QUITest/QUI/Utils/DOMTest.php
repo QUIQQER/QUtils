@@ -192,6 +192,21 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('<option value="2">Two</option>', $selectHtml);
     }
 
+    public function testSelectDomToStringRendersDescription(): void
+    {
+        $dom = $this->loadXml(
+            '<select conf="field4">' .
+            '<text>Select Label</text>' .
+            '<description>Helpful hint</description>' .
+            '<option value="1">One</option>' .
+            '</select>'
+        );
+        $html = DOM::selectDomToString($dom->documentElement);
+
+        $this->assertStringContainsString('<div class="description">Helpful hint</div>', $html);
+        $this->assertStringNotContainsString('Helpful hint</option>', $html);
+    }
+
     public function testButtonDomToString(): void
     {
         $dom = $this->loadXml('<button onclick="doIt()" image="icon.png"><text>Click</text></button>');
