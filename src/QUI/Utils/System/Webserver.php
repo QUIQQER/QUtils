@@ -64,15 +64,19 @@ class Webserver
             }
         }
 
-        # Attempt detection by system shell
-        if (System::isShellFunctionEnabled("shell_exec") && !empty(shell_exec("which apache2"))) {
-            $version = shell_exec('apache2 -v');
-            $regex = "/Apache\\/([0-9\\.]*)/i";
-            $res = preg_match($regex, $version, $matches);
-            if ($res && isset($matches[1])) {
-                $version = $matches[1];
+        if (System::isShellFunctionEnabled("shell_exec")) {
+            $apacheBinary = self::detectApacheBinary();
 
-                return explode(".", $version);
+            if ($apacheBinary !== null) {
+                $version = shell_exec($apacheBinary . ' -v');
+                $regex = "/Apache\\/([0-9\\.]*)/i";
+                $res = preg_match($regex, $version, $matches);
+
+                if ($res && isset($matches[1])) {
+                    $version = $matches[1];
+
+                    return explode(".", $version);
+                }
             }
         }
 
@@ -116,7 +120,7 @@ class Webserver
             throw new Exception("Could not retrieve server data");
         }
 
-        if (!empty(shell_exec("which apache2"))) {
+        if (self::detectApacheBinary() !== null) {
             return self::WEBSERVER_APACHE;
         }
 
@@ -125,5 +129,19 @@ class Webserver
         }
 
         throw new Exception("Could not retrieve server data");
+    }
+
+    /**
+     * Detects an available Apache CLI binary.
+     */
+    protected static function detectApacheBinary(): ?string
+    {
+        foreach (['apache2', 'httpd'] as $binary) {
+            if (!empty(shell_exec('which ' . $binary))) {
+                return $binary;
+            }
+        }
+
+        return null;
     }
 }
