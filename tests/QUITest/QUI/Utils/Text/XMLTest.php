@@ -289,6 +289,30 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(4, $options['scale']);
     }
 
+    public function testDatabaseXmlForeignKeysAreNormalized(): void
+    {
+        $Method = new ReflectionMethod(XML::class, 'normalizeDatabaseXmlForeignKeys');
+        $Method->setAccessible(true);
+
+        $foreignKeys = $Method->invoke(null, [[
+            'localColumns' => 'userUuid, groupUuid',
+            'foreignTable' => 'users_groups',
+            'foreignColumns' => 'userUuid, groupUuid',
+            'name' => 'fk_users_groups',
+            'onDelete' => 'CASCADE',
+            'onUpdate' => 'RESTRICT',
+            'deferrable' => 'true'
+        ]]);
+
+        $this->assertSame('fk_users_groups', $foreignKeys[0]['name']);
+        $this->assertSame(['userUuid', 'groupUuid'], $foreignKeys[0]['localColumns']);
+        $this->assertSame('users_groups', $foreignKeys[0]['foreignTable']);
+        $this->assertSame(['userUuid', 'groupUuid'], $foreignKeys[0]['foreignColumns']);
+        $this->assertSame('CASCADE', $foreignKeys[0]['options']['onDelete']);
+        $this->assertSame('RESTRICT', $foreignKeys[0]['options']['onUpdate']);
+        $this->assertTrue($foreignKeys[0]['options']['deferrable']);
+    }
+
     public function testGetWidgetFromXmlAndWidgetsWithSrc(): void
     {
         $widgetSourceFile = $this->createTempXmlFile('<widget><title>External</title></widget>');
