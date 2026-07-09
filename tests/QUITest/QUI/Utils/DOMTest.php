@@ -35,6 +35,7 @@ class DOMTest extends \PHPUnit\Framework\TestCase
             '<unique>slug</unique>' .
             '<index>idx_slug</index>' .
             '<auto_increment>id</auto_increment>' .
+            '<foreign-key name="fk_user" foreignTable="users" foreignColumns="uuid" onDelete="CASCADE">userUuid</foreign-key>' .
             '<fulltext>title</fulltext>' .
             '</root>'
         );
@@ -44,6 +45,15 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['unique' => ['slug']], DOM::dbUniqueDomToArray($dom->getElementsByTagName('unique')->item(0)));
         $this->assertSame(['index' => ['idx_slug']], DOM::dbIndexDomToArray($dom->getElementsByTagName('index')->item(0)));
         $this->assertSame(['auto_increment' => 'id'], DOM::dbAutoIncrementDomToArray($dom->getElementsByTagName('auto_increment')->item(0)));
+        $this->assertSame([
+            'foreign-key' => [[
+                'localColumns' => 'userUuid',
+                'foreignTable' => 'users',
+                'foreignColumns' => 'uuid',
+                'name' => 'fk_user',
+                'onDelete' => 'CASCADE'
+            ]]
+        ], DOM::dbForeignKeyDomToArray($dom->getElementsByTagName('foreign-key')->item(0)));
         $this->assertSame(['fulltext' => 'title'], DOM::dbAutoFullextDomToArray($dom->getElementsByTagName('fulltext')->item(0)));
     }
 
@@ -58,6 +68,7 @@ class DOMTest extends \PHPUnit\Framework\TestCase
             '<unique>slug</unique>' .
             '<index>idx_slug</index>' .
             '<auto_increment>id</auto_increment>' .
+            '<foreign-key name="fk_user" foreignTable="users" foreignColumns="uuid">userUuid</foreign-key>' .
             '<fulltext>title</fulltext>' .
             '</table>' .
             '</root>'
@@ -77,6 +88,14 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['slug'], $result['unique']);
         $this->assertContains('idx_slug', $result['index']);
         $this->assertSame('id', $result['auto_increment']);
+        $this->assertSame([
+            [
+                'localColumns' => 'userUuid',
+                'foreignTable' => 'users',
+                'foreignColumns' => 'uuid',
+                'name' => 'fk_user'
+            ]
+        ], $result['foreign-key']);
         $this->assertSame('title', $result['fulltext']);
     }
 
@@ -190,6 +209,21 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Select Label', $selectHtml);
         $this->assertStringContainsString('<option value="1">One</option>', $selectHtml);
         $this->assertStringContainsString('<option value="2">Two</option>', $selectHtml);
+    }
+
+    public function testSelectDomToStringRendersDescription(): void
+    {
+        $dom = $this->loadXml(
+            '<select conf="field4">' .
+            '<text>Select Label</text>' .
+            '<description>Helpful hint</description>' .
+            '<option value="1">One</option>' .
+            '</select>'
+        );
+        $html = DOM::selectDomToString($dom->documentElement);
+
+        $this->assertStringContainsString('<div class="description">Helpful hint</div>', $html);
+        $this->assertStringNotContainsString('Helpful hint</option>', $html);
     }
 
     public function testButtonDomToString(): void

@@ -306,6 +306,17 @@ class DOM
             );
         }
 
+        // foreign keys
+        $foreignKeys = $Table->getElementsByTagName('foreign-key');
+
+        for ($i = 0; $i < $foreignKeys->length; $i++) {
+            $result = array_merge_recursive(
+                $result,
+                self::dbForeignKeyDomToArray($foreignKeys->item($i))
+            );
+        }
+
+
         // auto increment
         $autoincrement = $Table->getElementsByTagName('auto_increment');
 
@@ -417,6 +428,40 @@ class DOM
     {
         return [
             'index' => [trim($Index->nodeValue)]
+        ];
+    }
+
+    /**
+     * Foreign key Datenbank DOMNode Objekt in ein Array umwandeln
+     *
+     * @param DOMNode|DOMElement $ForeignKey
+     *
+     * @return array
+     */
+    public static function dbForeignKeyDomToArray(DOMNode | DOMElement $ForeignKey): array
+    {
+        if (!method_exists($ForeignKey, 'getAttribute')) {
+            return [];
+        }
+
+        $data = [
+            'localColumns' => trim($ForeignKey->nodeValue),
+            'foreignTable' => trim($ForeignKey->getAttribute('foreignTable')),
+            'foreignColumns' => trim($ForeignKey->getAttribute('foreignColumns'))
+        ];
+
+        foreach (['name', 'onDelete', 'onUpdate', 'match', 'deferrable', 'deferred'] as $attribute) {
+            $value = trim($ForeignKey->getAttribute($attribute));
+
+            if ($value === '') {
+                continue;
+            }
+
+            $data[$attribute] = $value;
+        }
+
+        return [
+            'foreign-key' => [$data]
         ];
     }
 
@@ -1607,6 +1652,14 @@ class DOM
 
         $result .= $select;
         $result .= '</label>';
+
+        $Desc = $Select->getElementsByTagName('description');
+
+        if ($Desc->length) {
+            $result .= '<div class="description">';
+            $result .= self::getTextFromNode($Desc->item(0));
+            $result .= '</div>';
+        }
 
         return $result;
     }

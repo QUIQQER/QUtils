@@ -23,6 +23,7 @@ use function call_user_func;
 use function class_exists;
 use function count;
 use function in_array;
+use function implode;
 use function dirname;
 use function explode;
 use function file_exists;
@@ -1321,7 +1322,9 @@ class XML
             foreach ($dbFields['globals'] as $table) {
                 $tbl = QUI::getDBTableName($table['suffix']);
 
-                self::importDataBaseTable($tbl, $table);
+                self::importDataBaseTable($tbl, $table, static function (string $table): string {
+                    return QUI::getDBTableName($table);
+                });
             }
         }
 
@@ -1362,11 +1365,15 @@ class XML
                             $tbl = QUI::getDBTableName($name . '_' . $suffix);
                         }
 
+                        $foreignTableResolver = static function (string $table): string {
+                            return QUI::getDBTableName($table);
+                        };
+
                         self::importDataBaseTable($tbl, [
                             ...$table,
                             'fields' => $fields,
                             'engine' => $engine
-                        ]);
+                        ], $foreignTableResolver);
                     }
                 }
             }
@@ -1387,7 +1394,7 @@ class XML
         }
     }
 
-    protected static function importDataBaseTable(string $tableName, array $definition): void
+    protected static function importDataBaseTable(string $tableName, array $definition, ?callable $foreignTableResolver = null): void
     {
         $SchemaManager = QUI::getSchemaManager();
         $tableExists = $SchemaManager->tableExists($tableName);
@@ -1464,6 +1471,22 @@ class XML
             }
         }
 
+        foreach (self::normalizeDatabaseXmlForeignKeys($definition['foreign-key'] ?? []) as $foreignKey) {
+            $foreignKey['foreignTable'] = $foreignTableResolver
+                ? $foreignTableResolver($foreignKey['foreignTable'])
+                : $foreignKey['foreignTable'];
+
+            if (!$NewTable->hasForeignKey($foreignKey['name'])) {
+                $NewTable->addForeignKeyConstraint(
+                    $foreignKey['foreignTable'],
+                    $foreignKey['localColumns'],
+                    $foreignKey['foreignColumns'],
+                    $foreignKey['options'],
+                    $foreignKey['name']
+                );
+            }
+        }
+
         if (!$tableExists) {
             $SchemaManager->createTable($NewTable);
             return;
@@ -1507,6 +1530,67 @@ class XML
         )));
     }
 
+    protected static function normalizeDatabaseXmlForeignKeys(array $foreignKeys): array
+    {
+        if (isset($foreignKeys['localColumns'])) {
+            $foreignKeys = [$foreignKeys];
+        }
+
+        $result = [];
+
+        foreach ($foreignKeys as $foreignKey) {
+            if (!is_array($foreignKey)) {
+                continue;
+            }
+
+            $localColumns = self::normalizeDatabaseXmlColumns($foreignKey['localColumns'] ?? []);
+            $foreignColumns = self::normalizeDatabaseXmlColumns($foreignKey['foreignColumns'] ?? []);
+            $foreignTable = trim((string)($foreignKey['foreignTable'] ?? ''));
+
+            if (empty($localColumns) || empty($foreignColumns) || $foreignTable === '') {
+                continue;
+            }
+
+            $options = [];
+
+            foreach (['onDelete', 'onUpdate', 'match'] as $option) {
+                if (empty($foreignKey[$option])) {
+                    continue;
+                }
+
+                $options[$option] = trim((string)$foreignKey[$option]);
+            }
+
+            foreach (['deferrable', 'deferred'] as $option) {
+                if (!array_key_exists($option, $foreignKey)) {
+                    continue;
+                }
+
+                $options[$option] = self::databaseXmlAttributeEnabled($foreignKey[$option]);
+            }
+
+            $name = trim((string)($foreignKey['name'] ?? ''));
+
+            if ($name === '') {
+                $name = self::buildDatabaseXmlForeignKeyName($foreignTable, $localColumns);
+            }
+
+            $result[] = [
+                'name' => $name,
+                'localColumns' => $localColumns,
+                'foreignTable' => $foreignTable,
+                'foreignColumns' => $foreignColumns,
+                'options' => $options
+            ];
+        }
+
+        return $result;
+    }
+
+    protected static function buildDatabaseXmlForeignKeyName(string $foreignTable, array $localColumns): string
+    {
+        return 'fk_' . md5($foreignTable . ':' . implode(',', $localColumns));
+    }
 
     /**
      * @param array<string, mixed> $options
