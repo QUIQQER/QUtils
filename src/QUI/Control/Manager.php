@@ -80,14 +80,19 @@ class Manager
      */
     public static function setCSSToHead(string $html): string
     {
-        $string = $html;
         $search = '</head>';
+        $position = strrpos($html, $search);
+
+        if ($position === false) {
+            return self::getCSS() . $html;
+        }
+
         $replace = self::getCSS();
 
         return substr_replace(
             $html,
             $replace . '</head>',
-            strrpos($string, $search),
+            $position,
             strlen($search)
         );
     }

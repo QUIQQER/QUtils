@@ -57,6 +57,7 @@ class Tables
     {
         $tables = [];
         $PDO = $this->DB->getPDO();
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $result = $PDO->query("SHOW tables")->fetchAll();
 
         foreach ($result as $entry) {
@@ -98,6 +99,7 @@ class Tables
         $table = $this->clear($table);
         $dbname = $this->DB->getAttribute('dbname');
 
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW TABLES FROM `$dbname` LIKE :table");
         $Stmnt->bindParam(':table', $table);
         $Stmnt->execute();
@@ -201,6 +203,7 @@ class Tables
             }
         }
 
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $sql .= ') ENGINE = ' . $engine . ' DEFAULT CHARSET = utf8;';
 
         try {
@@ -271,6 +274,7 @@ class Tables
     {
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table`");
         $Stmnt->execute();
 
@@ -433,6 +437,7 @@ class Tables
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
 
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table` WHERE `Field` = :row");
         $Stmnt->bindParam(':row', $row);
         $Stmnt->execute();
@@ -454,6 +459,7 @@ class Tables
     {
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table`");
         $Stmnt->execute();
 
@@ -481,6 +487,7 @@ class Tables
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
 
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table` LIKE :column");
         $Stmnt->bindParam(':column', $column);
         $Stmnt->execute();
@@ -853,6 +860,7 @@ class Tables
     {
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW INDEX FROM `$table`");
         $Stmnt->execute();
 
@@ -911,11 +919,13 @@ class Tables
             $columnValue = '';
         }
 
-        $query = "
-            ALTER TABLE `$table`
-            MODIFY COLUMN `$index`
-            $columnType $columnValue AUTO_INCREMENT
-        ";
+        $query =
+            // nosemgrep: quiqqer.forbid-mysql-specific-sql
+            "ALTER TABLE `$table` "
+            // nosemgrep: quiqqer.forbid-mysql-specific-sql
+            . "MODIFY COLUMN `$index` "
+            // nosemgrep: quiqqer.forbid-mysql-specific-sql
+            . "$columnType $columnValue AUTO_INCREMENT";
 
         $PDO = $this->DB->getPDO();
         $Stmnt = $PDO->prepare($query);
