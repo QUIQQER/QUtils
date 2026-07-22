@@ -73,4 +73,18 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
 
         unlink($file);
     }
+
+    public function testSetCSSToHeadLeavesHtmlWithoutHeadUnchanged(): void
+    {
+        $file = sys_get_temp_dir() . '/qui-manager-test-' . uniqid('', true) . '.css';
+        file_put_contents($file, '.a{color:red;}');
+        QUI\Control\Manager::addCSSFile($file);
+
+        $html = '<div class="body-container"></div>';
+        $result = QUI\Control\Manager::setCSSToHead($html);
+
+        $this->assertSame($html, $result);
+
+        unlink($file);
+    }
 }
