@@ -84,7 +84,7 @@ class Manager
         $position = strrpos($html, $search);
 
         if ($position === false) {
-            return $html;
+            return self::getCSS() . $html;
         }
 
         $replace = self::getCSS();

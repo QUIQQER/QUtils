@@ -74,7 +74,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         unlink($file);
     }
 
-    public function testSetCSSToHeadLeavesHtmlWithoutHeadUnchanged(): void
+    public function testSetCSSToHeadPrependsCSSWithoutHead(): void
     {
         $file = sys_get_temp_dir() . '/qui-manager-test-' . uniqid('', true) . '.css';
         file_put_contents($file, '.a{color:red;}');
@@ -83,7 +83,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $html = '<div class="body-container"></div>';
         $result = QUI\Control\Manager::setCSSToHead($html);
 
-        $this->assertSame($html, $result);
+        $this->assertSame('<style>.a{color:red;}</style>' . $html, $result);
+        $this->assertStringNotContainsString('</head>', $result);
 
         unlink($file);
     }
