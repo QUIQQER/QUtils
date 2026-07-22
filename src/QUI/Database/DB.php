@@ -858,6 +858,8 @@ class DB extends QUI\QDOM
      */
     public static function createQueryReplace(string $params): string
     {
+        // Legacy DB compatibility requires MySQL REPLACE syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         return 'REPLACE INTO ' . Orthos::cleanupDatabaseFieldName($params);
     }
 
@@ -1018,6 +1020,8 @@ class DB extends QUI\QDOM
 
                         $sql .= $key . ' != :wherev' . $prepareKey;
                     }
+                // Legacy DB compatibility requires the historic MySQL REGEXP operator.
+                // nosemgrep: quiqqer.forbid-mysql-specific-sql
                 } elseif (isset($value['type']) && $value['type'] == 'REGEXP') {
                     $sql .= $key . ' REGEXP :wherev' . $prepareKey;
 

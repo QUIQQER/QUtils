@@ -57,6 +57,8 @@ class Tables
     {
         $tables = [];
         $PDO = $this->DB->getPDO();
+        // Legacy DB compatibility requires MySQL SHOW TABLES syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $result = $PDO->query("SHOW tables")->fetchAll();
 
         foreach ($result as $entry) {
@@ -98,6 +100,8 @@ class Tables
         $table = $this->clear($table);
         $dbname = $this->DB->getAttribute('dbname');
 
+        // Legacy DB compatibility requires MySQL SHOW TABLES syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW TABLES FROM `$dbname` LIKE :table");
         $Stmnt->bindParam(':table', $table);
         $Stmnt->execute();
@@ -201,6 +205,8 @@ class Tables
             }
         }
 
+        // Legacy DB compatibility requires MySQL table options.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $sql .= ') ENGINE = ' . $engine . ' DEFAULT CHARSET = utf8;';
 
         try {
@@ -271,6 +277,8 @@ class Tables
     {
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
+        // Legacy DB compatibility requires MySQL SHOW COLUMNS syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table`");
         $Stmnt->execute();
 
@@ -433,6 +441,8 @@ class Tables
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
 
+        // Legacy DB compatibility requires MySQL SHOW COLUMNS syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table` WHERE `Field` = :row");
         $Stmnt->bindParam(':row', $row);
         $Stmnt->execute();
@@ -454,6 +464,8 @@ class Tables
     {
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
+        // Legacy DB compatibility requires MySQL SHOW COLUMNS syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table`");
         $Stmnt->execute();
 
@@ -481,6 +493,8 @@ class Tables
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
 
+        // Legacy DB compatibility requires MySQL SHOW COLUMNS syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW COLUMNS FROM `$table` LIKE :column");
         $Stmnt->bindParam(':column', $column);
         $Stmnt->execute();
@@ -853,6 +867,8 @@ class Tables
     {
         $PDO = $this->DB->getPDO();
         $table = $this->clear($table);
+        // Legacy DB compatibility requires MySQL SHOW INDEX syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("SHOW INDEX FROM `$table`");
         $Stmnt->execute();
 
@@ -911,6 +927,8 @@ class Tables
             $columnValue = '';
         }
 
+        // Legacy DB compatibility requires MySQL ALTER TABLE syntax.
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $query = "
             ALTER TABLE `$table`
             MODIFY COLUMN `$index`
