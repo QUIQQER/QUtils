@@ -7,6 +7,7 @@
 namespace QUI\Utils\Text;
 
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use DOMDocument;
 use DOMElement;
@@ -1399,20 +1400,9 @@ class XML
         $SchemaManager = QUI::getSchemaManager();
         $tableExists = $SchemaManager->tableExists($tableName);
         $OldTable = null;
-
-        if ($tableExists) {
-            $OldTable = $SchemaManager->introspectTable($tableName);
-            $NewTable = clone $OldTable;
-        } else {
-            $NewTable = new Table($tableName);
-        }
-
-        if (!empty($definition['comment'])) {
-            $NewTable->setComment($definition['comment']);
-        }
-
         $autoIncrement = $definition['auto_increment'] ?? null;
         $inlinePrimary = [];
+        $fieldDefinitions = [];
 
         foreach ($definition['fields'] ?? [] as $field => $type) {
             $fieldAttributes = $definition['field_attributes'][$field] ?? [];
@@ -1424,10 +1414,6 @@ class XML
                 $inlinePrimary[] = $field;
             }
 
-            if ($NewTable->hasColumn($field)) {
-                continue;
-            }
-
             [$dbalType, $options] = self::parseDatabaseXmlFieldType((string)$type);
             $options = self::applyDatabaseXmlFieldAttributes($dbalType, $options, $fieldAttributes);
 
@@ -1436,7 +1422,59 @@ class XML
                 $options['notnull'] = true;
             }
 
-            $NewTable->addColumn($field, $dbalType, $options);
+            $fieldDefinitions[$field] = [
+                'type' => $dbalType,
+                'options' => $options
+            ];
+        }
+
+        if ($tableExists) {
+            $OldTable = $SchemaManager->introspectTable($tableName);
+            $ColumnTable = clone $OldTable;
+
+            foreach ($fieldDefinitions as $field => $fieldDefinition) {
+                if (
+                    !$ColumnTable->hasColumn($field)
+                    || !self::canAlterDatabaseXmlColumn($OldTable, $field)
+                ) {
+                    continue;
+                }
+
+                $ColumnTable->modifyColumn($field, [
+                    'type' => Type::getType($fieldDefinition['type']),
+                    ...$fieldDefinition['options']
+                ]);
+            }
+
+            $columnDiff = $SchemaManager->createComparator()->compareTables(
+                $OldTable,
+                $ColumnTable
+            );
+
+            if (!$columnDiff->isEmpty()) {
+                $SchemaManager->alterTable($columnDiff);
+            }
+
+            $OldTable = $SchemaManager->introspectTable($tableName);
+            $NewTable = clone $OldTable;
+        } else {
+            $NewTable = new Table($tableName);
+        }
+
+        foreach ($fieldDefinitions as $field => $fieldDefinition) {
+            if ($NewTable->hasColumn($field)) {
+                continue;
+            }
+
+            $NewTable->addColumn(
+                $field,
+                $fieldDefinition['type'],
+                $fieldDefinition['options']
+            );
+        }
+
+        if (!empty($definition['comment'])) {
+            $NewTable->setComment($definition['comment']);
         }
 
         $primary = [];
@@ -1492,11 +1530,32 @@ class XML
             return;
         }
 
+        if ($OldTable === null) {
+            return;
+        }
+
         $diff = $SchemaManager->createComparator()->compareTables($OldTable, $NewTable);
 
         if (!$diff->isEmpty()) {
             $SchemaManager->alterTable($diff);
         }
+    }
+
+    protected static function canAlterDatabaseXmlColumn(Table $Table, string $field): bool
+    {
+        foreach ($Table->getIndexes() as $Index) {
+            if (in_array($field, $Index->getColumns(), true)) {
+                return false;
+            }
+        }
+
+        foreach ($Table->getForeignKeys() as $ForeignKey) {
+            if (in_array($field, $ForeignKey->getLocalColumns(), true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected static function normalizeDatabaseXmlIndexList(array | string $indexes): array

@@ -4,6 +4,8 @@ namespace QUITest\QUI\Utils\Text;
 
 use DOMDocument;
 use DOMElement;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Types;
 use QUI\Utils\Text\XML;
 use ReflectionMethod;
@@ -287,6 +289,74 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(Types::DECIMAL, $type);
         $this->assertSame(12, $options['precision']);
         $this->assertSame(4, $options['scale']);
+    }
+
+    public function testDatabaseXmlAltersOnlyUnindexedColumnsBeforeAddingKeys(): void
+    {
+        $SchemaManager = \QUI::getSchemaManager();
+        $tableName = \QUI::getDBTableName(
+            'utils_xml_migration_' . uniqid()
+        );
+        $LegacyTable = new Table($tableName);
+
+        $LegacyTable->addColumn('scope', Types::TEXT, [
+            'length' => 65535,
+            'notnull' => false
+        ]);
+        $LegacyTable->addColumn('indexed_value', Types::STRING, [
+            'length' => 40,
+            'notnull' => true
+        ]);
+        $LegacyTable->addIndex(['indexed_value'], 'indexed_value');
+        $SchemaManager->createTable($LegacyTable);
+
+        try {
+            \QUI::getDataBaseConnection()->insert(
+                \QUI\Utils\Doctrine::quoteIdentifier($tableName),
+                [
+                    'scope' => '/quiqqer_test',
+                    'indexed_value' => 'unchanged'
+                ]
+            );
+
+            $Method = new ReflectionMethod(XML::class, 'importDataBaseTable');
+            $definition = [
+                'fields' => [
+                    'scope' => 'VARCHAR(80) NOT NULL',
+                    'indexed_value' => 'VARCHAR(120) NOT NULL'
+                ],
+                'primary' => ['scope']
+            ];
+
+            $Method->invoke(null, $tableName, $definition);
+            $Method->invoke(null, $tableName, $definition);
+
+            $MigratedTable = $SchemaManager->introspectTable($tableName);
+            $Scope = $MigratedTable->getColumn('scope');
+
+            $this->assertInstanceOf(StringType::class, $Scope->getType());
+            $this->assertSame(80, $Scope->getLength());
+            $this->assertTrue($Scope->getNotnull());
+            $this->assertSame(
+                ['scope'],
+                $MigratedTable->getPrimaryKey()?->getColumns()
+            );
+            $this->assertSame(
+                40,
+                $MigratedTable->getColumn('indexed_value')->getLength()
+            );
+            $this->assertSame(
+                '/quiqqer_test',
+                \QUI::getDataBaseConnection()
+                    ->createQueryBuilder()
+                    ->select('scope')
+                    ->from(\QUI\Utils\Doctrine::quoteIdentifier($tableName))
+                    ->executeQuery()
+                    ->fetchOne()
+            );
+        } finally {
+            $SchemaManager->dropTable($tableName);
+        }
     }
 
     public function testDatabaseXmlForeignKeysAreNormalized(): void
