@@ -359,6 +359,40 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testDatabaseXmlCreatesMissingUnquotedTableAndCanImportItAgain(): void
+    {
+        $SchemaManager = \QUI::getSchemaManager();
+        $tableName = \QUI::getDBTableName(
+            'utils_xml_NewTable_' . uniqid()
+        );
+        $CreatedTable = null;
+        $Method = new ReflectionMethod(XML::class, 'importDataBaseTable');
+        $definition = [
+            'fields' => [
+                'id' => 'INT NOT NULL',
+                'title' => 'VARCHAR(120) NULL'
+            ],
+            'primary' => ['id']
+        ];
+
+        try {
+            $Method->invoke(null, $tableName, $definition);
+            $CreatedTable = $SchemaManager->introspectTableByUnquotedName($tableName);
+
+            $Method->invoke(null, $tableName, $definition);
+
+            $ImportedTable = $SchemaManager->introspectTableByUnquotedName($tableName);
+
+            $this->assertTrue($ImportedTable->hasColumn('id'));
+            $this->assertSame(120, $ImportedTable->getColumn('title')->getLength());
+            $this->assertTrue($ImportedTable->getPrimaryKey()?->spansColumns(['id']));
+        } finally {
+            if ($CreatedTable !== null) {
+                $SchemaManager->dropTable($CreatedTable->getName());
+            }
+        }
+    }
+
     public function testDatabaseXmlForeignKeysAreNormalized(): void
     {
         $Method = new ReflectionMethod(XML::class, 'normalizeDatabaseXmlForeignKeys');
