@@ -6,6 +6,7 @@
 
 namespace QUI\Utils\Text;
 
+use Doctrine\DBAL\Schema\Exception\TableDoesNotExist;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
@@ -1399,8 +1400,14 @@ class XML
     protected static function importDataBaseTable(string $tableName, array $definition, ?callable $foreignTableResolver = null): void
     {
         $SchemaManager = QUI::getSchemaManager();
-        $tableExists = $SchemaManager->tableExists($tableName);
-        $OldTable = null;
+
+        try {
+            $OldTable = $SchemaManager->introspectTableByUnquotedName($tableName);
+        } catch (TableDoesNotExist) {
+            $OldTable = null;
+        }
+
+        $tableExists = $OldTable !== null;
         $autoIncrement = $definition['auto_increment'] ?? null;
         $inlinePrimary = [];
         $fieldDefinitions = [];
@@ -1430,7 +1437,6 @@ class XML
         }
 
         if ($tableExists) {
-            $OldTable = $SchemaManager->introspectTableByUnquotedName($tableName);
             $ColumnTable = clone $OldTable;
 
             foreach ($fieldDefinitions as $field => $fieldDefinition) {
