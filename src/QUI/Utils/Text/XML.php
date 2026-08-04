@@ -6,6 +6,8 @@
 
 namespace QUI\Utils\Text;
 
+use Doctrine\DBAL\Schema\Exception\TableDoesNotExist;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
@@ -1398,8 +1400,14 @@ class XML
     protected static function importDataBaseTable(string $tableName, array $definition, ?callable $foreignTableResolver = null): void
     {
         $SchemaManager = QUI::getSchemaManager();
-        $tableExists = $SchemaManager->tableExists($tableName);
-        $OldTable = null;
+
+        try {
+            $OldTable = $SchemaManager->introspectTableByUnquotedName($tableName);
+        } catch (TableDoesNotExist) {
+            $OldTable = null;
+        }
+
+        $tableExists = $OldTable !== null;
         $autoIncrement = $definition['auto_increment'] ?? null;
         $inlinePrimary = [];
         $fieldDefinitions = [];
@@ -1429,7 +1437,6 @@ class XML
         }
 
         if ($tableExists) {
-            $OldTable = $SchemaManager->introspectTable($tableName);
             $ColumnTable = clone $OldTable;
 
             foreach ($fieldDefinitions as $field => $fieldDefinition) {
@@ -1455,7 +1462,7 @@ class XML
                 $SchemaManager->alterTable($columnDiff);
             }
 
-            $OldTable = $SchemaManager->introspectTable($tableName);
+            $OldTable = $SchemaManager->introspectTableByUnquotedName($tableName);
             $NewTable = clone $OldTable;
         } else {
             $NewTable = new Table($tableName);
@@ -1485,26 +1492,30 @@ class XML
             $primary = self::normalizeDatabaseXmlColumns($inlinePrimary);
         }
 
-        if (!empty($primary) && $NewTable->getPrimaryKey() === null) {
-            $NewTable->setPrimaryKey($primary);
+        if (!empty($primary) && $NewTable->getPrimaryKeyConstraint() === null) {
+            $PrimaryKey = PrimaryKeyConstraint::editor()
+                ->setUnquotedColumnNames(...$primary)
+                ->create();
+
+            $NewTable->addPrimaryKeyConstraint($PrimaryKey);
         }
 
         if (!empty($definition['unique'])) {
             $unique = self::normalizeDatabaseXmlColumns($definition['unique']);
 
-            if (!empty($unique) && !$NewTable->columnsAreIndexed($unique)) {
+            if (!empty($unique) && !self::areDatabaseXmlColumnsIndexed($NewTable, $unique)) {
                 $NewTable->addUniqueIndex($unique);
             }
         }
 
         foreach (self::normalizeDatabaseXmlIndexList($definition['index'] ?? []) as $index) {
-            if (!$NewTable->columnsAreIndexed($index)) {
+            if (!self::areDatabaseXmlColumnsIndexed($NewTable, $index)) {
                 $NewTable->addIndex($index);
             }
         }
 
         foreach (self::normalizeDatabaseXmlIndexList($definition['fulltext'] ?? []) as $index) {
-            if (!$NewTable->columnsAreIndexed($index)) {
+            if (!self::areDatabaseXmlColumnsIndexed($NewTable, $index)) {
                 $NewTable->addIndex($index, null, ['fulltext']);
             }
         }
@@ -1544,18 +1555,48 @@ class XML
     protected static function canAlterDatabaseXmlColumn(Table $Table, string $field): bool
     {
         foreach ($Table->getIndexes() as $Index) {
-            if (in_array($field, $Index->getColumns(), true)) {
-                return false;
+            foreach ($Index->getIndexedColumns() as $IndexedColumn) {
+                if ($field === $IndexedColumn->getColumnName()->getIdentifier()->getValue()) {
+                    return false;
+                }
             }
         }
 
         foreach ($Table->getForeignKeys() as $ForeignKey) {
-            if (in_array($field, $ForeignKey->getLocalColumns(), true)) {
-                return false;
+            foreach ($ForeignKey->getReferencingColumnNames() as $ColumnName) {
+                if ($field === $ColumnName->getIdentifier()->getValue()) {
+                    return false;
+                }
             }
         }
 
         return true;
+    }
+
+    protected static function areDatabaseXmlColumnsIndexed(Table $Table, array $columns): bool
+    {
+        foreach ($Table->getIndexes() as $Index) {
+            $columnsMatch = true;
+
+            foreach ($Index->getIndexedColumns() as $offset => $IndexedColumn) {
+                if (
+                    isset($columns[$offset])
+                    && strtolower($IndexedColumn->getColumnName()->getIdentifier()->getValue())
+                    === strtolower(str_replace(['`', '"', '[', ']'], '', (string)$columns[$offset]))
+                ) {
+                    continue;
+                }
+
+                $columnsMatch = false;
+                break;
+            }
+
+            if ($columnsMatch) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected static function normalizeDatabaseXmlIndexList(array | string $indexes): array
