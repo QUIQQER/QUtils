@@ -120,9 +120,9 @@ class Orthos
     /**
      * Clears a path of possible changes to the path
      *
-     * @param array|string $path
+     * @param array<array-key, mixed>|string $path
      *
-     * @return array|string|string[]
+     * @return ($path is string ? string : array<array-key, mixed>)
      */
     public static function clearPath(array | string $path): array | string
     {
