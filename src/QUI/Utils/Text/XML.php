@@ -176,11 +176,11 @@ class XML
      * @param string $file - path to the xml file
      * @param bool $withCustomParams - Should custom parameters be considered?
      *
-     * @return QUI\Config|boolean - Config | false
+     * @return QUI\Config|false
      *
      * @throws QUi\Exception
      */
-    public static function getConfigFromXml(string $file, bool $withCustomParams = false): QUI\Config | bool
+    public static function getConfigFromXml(string $file, bool $withCustomParams = false): QUI\Config | false
     {
         $Dom = self::getDomFromXml($file);
         $settings = $Dom->getElementsByTagName('settings');
