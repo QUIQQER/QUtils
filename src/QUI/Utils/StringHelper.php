@@ -102,7 +102,7 @@ class StringHelper
      * @param string $path - path to file
      * @param bool|integer $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      *
-     * @return array|string
+     * @return ($options is 1|2|4|8|true ? string : array<string, string>)
      * @throws Exception
      */
     public static function pathinfo(string $path, bool | int $options = false): array | string
