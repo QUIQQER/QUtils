@@ -22,7 +22,7 @@ class QDOM
     /**
      * Internal list of attributes
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $attributes = [];
 
@@ -67,7 +67,7 @@ class QDOM
     /**
      * If you want to set more than one attribute
      *
-     * @param array|null $attributes
+     * @param array<array-key, mixed>|null $attributes
      */
     public function setAttributes(?array $attributes): void
     {
@@ -98,7 +98,7 @@ class QDOM
     /**
      * Return all attributes
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function getAttributes(): array
     {

@@ -34,7 +34,7 @@ class Url
      * Get the Curl Object
      *
      * @param string $url - Url
-     * @param array $curlParams - Curl parameter
+     * @param array<array-key, mixed> $curlParams - Curl parameter
      *
      * @return CurlHandle|false
      * @see http://www.php.net/manual/de/function.curl-setopt.php
@@ -60,7 +60,7 @@ class Url
      * Get the content from an url
      *
      * @param string $url
-     * @param array $curlParams - see Utils_Request_Url::Curl (optional)
+     * @param array<array-key, mixed> $curlParams - see Utils_Request_Url::Curl (optional)
      *
      * @return string|bool
      * @throws Exception
@@ -84,7 +84,7 @@ class Url
      *
      * @param string $url
      * @param string $search
-     * @param array $curlParams - see Utils_Request_Url::Curl (optional)
+     * @param array<array-key, mixed> $curlParams - see Utils_Request_Url::Curl (optional)
      *
      * @return boolean
      */
@@ -104,7 +104,7 @@ class Url
      *
      * @param string $url
      * @param bool $info
-     * @param array $curlParams - see Utils_Request_Url::Curl (optional)
+     * @param array<array-key, mixed> $curlParams - see Utils_Request_Url::Curl (optional)
      *
      * @return mixed
      * @throws Exception
@@ -180,7 +180,7 @@ class Url
      * Returns if a given URL is reachable.
      * Reachable means that the return code equals 200.
      *
-     * @param $url
+     * @param string $url
      *
      * @return bool
      */

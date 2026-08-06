@@ -63,7 +63,7 @@ class Orthos
      * None characters are no a-z or 0-9
      *
      * @param string $str
-     * @param array $allowedList - list of allowed signs
+     * @param array<array-key, mixed> $allowedList - list of allowed signs
      *
      * @return string
      */
@@ -78,9 +78,9 @@ class Orthos
     /**
      * Cleans an array from all possible malicious code
      *
-     * @param array|mixed $data
+     * @param mixed $data
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function clearArray(mixed $data): array
     {
@@ -135,8 +135,8 @@ class Orthos
      * cleans a file name
      * character that may become dangerous for file names, will be removed
      *
-     * @param $filename
-     * @return array|string|string[]
+     * @param array<array-key, string>|string $filename
+     * @return array<array-key, string>|string
      */
     public static function clearFilename($filename): array | string
     {
@@ -334,7 +334,7 @@ class Orthos
     /**
      * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @param array|string $text
+     * @param array<array-key, mixed>|string $text
      *
      * @return string
      * @see        StringHelper::removeLineBreaks
@@ -526,9 +526,9 @@ class Orthos
     /**
      * Deletes all characters from a request that could be used for an XSS.
      *
-     * @param string|array $value
+     * @param string|array<array-key, mixed> $value
      *
-     * @return string|array
+     * @return string|array<array-key, mixed>
      */
     public static function clearFormRequest(string | array $value): array | string
     {

@@ -259,7 +259,7 @@ class XML
      * @param string $file - path to xml file
      * @param bool $withCustomParams - Should custom parameters be considered?
      *
-     * @return array - DOMElement | false
+     * @return array<array-key, mixed> - DOMElement | false
      */
     public static function getConfigParamsFromXml(string $file, bool $withCustomParams = false): array
     {
@@ -274,7 +274,7 @@ class XML
      *
      * @param string $file - path to xml file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getConsoleToolsFromXml(string $file): array
     {
@@ -321,7 +321,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getWysiwygCSSFromXml(string $file): array
     {
@@ -345,7 +345,7 @@ class XML
      *
      * @param string $file - path to the xml file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getDataBaseFromXml(string $file): array
     {
@@ -429,7 +429,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getEventsFromXml(string $file): array
     {
@@ -457,7 +457,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getSiteEventsFromXml(string $file): array
     {
@@ -496,7 +496,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getLayoutsFromXml(string $file): array
     {
@@ -537,7 +537,7 @@ class XML
      *
      * @param DOMDocument $Dom
      *
-     * @return array array(
+     * @return array<array-key, mixed> array(
      *      array(
      *            'groups'   => 'group.name',
      *            'locales'  => array(),
@@ -626,7 +626,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getMenuItemsXml(string $file): array
     {
@@ -665,7 +665,7 @@ class XML
      *
      * @param string $file - path to the xml file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getPackageFromXMLFile(string $file): array
     {
@@ -751,7 +751,7 @@ class XML
      *
      * @param string $file - path to the xml file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getPanelsFromXMLFile(string $file): array
     {
@@ -778,7 +778,7 @@ class XML
      *
      * @param string $file - path to the xml file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getPermissionsFromXml(string $file): array
     {
@@ -822,7 +822,7 @@ class XML
      * Reads the settings window from an *.xml and search all categories
      *
      * @param string $file - path to xml file
-     * @return array - List of DOMElements
+     * @return array<array-key, mixed> - List of DOMElements
      */
     public static function getSettingCategoriesFromXml(string $file): array
     {
@@ -876,7 +876,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getSettingWindowsFromXml(string $file): array
     {
@@ -903,7 +903,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getProjectSettingWindowsFromXml(string $file): array
     {
@@ -931,7 +931,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getTypesFromXml(string $file): array
     {
@@ -972,7 +972,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getTabsFromXml(string $file): array
     {
@@ -986,7 +986,7 @@ class XML
      *
      * @param DOMDocument $Dom
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getTabsFromDom(DOMDocument $Dom): array
     {
@@ -1001,7 +1001,7 @@ class XML
 
     /**
      * @param DOMDocument $Dom
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getSiteTabsFromDom(DOMDocument $Dom): array
     {
@@ -1020,7 +1020,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getTemplateEnginesFromXml(string $file): array
     {
@@ -1058,7 +1058,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getWysiwygEditorsFromXml(string $file): array
     {
@@ -1096,7 +1096,7 @@ class XML
      *
      * @param string $file
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getWidgetsFromXml(string $file): array
     {
@@ -1173,7 +1173,7 @@ class XML
      * Save the setting to a xml specified config file
      *
      * @param string $file
-     * @param array $params
+     * @param array<array-key, mixed> $params
      *
      * @throws QUI\Exception
      */
@@ -1311,7 +1311,7 @@ class XML
      * Import a xml array to the database
      * the Array must come from self::getDataBaseFromXml
      *
-     * @param array $dbFields - array with db fields
+     * @param array<array-key, mixed> $dbFields - array with db fields
      *
      * @throws QUI\Exception
      * @throws Exception
@@ -1397,6 +1397,9 @@ class XML
         }
     }
 
+    /**
+     * @param array<array-key, mixed> $definition
+     */
     protected static function importDataBaseTable(string $tableName, array $definition, ?callable $foreignTableResolver = null): void
     {
         $SchemaManager = QUI::getSchemaManager();
@@ -1573,6 +1576,9 @@ class XML
         return true;
     }
 
+    /**
+     * @param array<array-key, mixed> $columns
+     */
     protected static function areDatabaseXmlColumnsIndexed(Table $Table, array $columns): bool
     {
         foreach ($Table->getIndexes() as $Index) {
@@ -1599,6 +1605,10 @@ class XML
         return false;
     }
 
+    /**
+     * @param array<array-key, mixed>|string $indexes
+     * @return array<int, array<int, string>>
+     */
     protected static function normalizeDatabaseXmlIndexList(array | string $indexes): array
     {
         if (!is_array($indexes)) {
@@ -1618,6 +1628,10 @@ class XML
         return $result;
     }
 
+    /**
+     * @param array<array-key, mixed>|string $columns
+     * @return array<int, string>
+     */
     protected static function normalizeDatabaseXmlColumns(array | string $columns): array
     {
         if (!is_array($columns)) {
@@ -1630,6 +1644,10 @@ class XML
         )));
     }
 
+    /**
+     * @param array<array-key, mixed> $foreignKeys
+     * @return array<int, array<string, mixed>>
+     */
     protected static function normalizeDatabaseXmlForeignKeys(array $foreignKeys): array
     {
         if (isset($foreignKeys['localColumns'])) {
@@ -1687,6 +1705,9 @@ class XML
         return $result;
     }
 
+    /**
+     * @param array<array-key, string> $localColumns
+     */
     protected static function buildDatabaseXmlForeignKeyName(string $foreignTable, array $localColumns): string
     {
         return 'fk_' . md5($foreignTable . ':' . implode(',', $localColumns));
@@ -1763,6 +1784,9 @@ class XML
         return in_array($value, ['1', 'true', 'yes', 'on'], true);
     }
 
+    /**
+     * @return array{string, array<string, mixed>}
+     */
     protected static function parseDatabaseXmlFieldType(string $fieldType): array
     {
         $type = strtolower(trim($fieldType));

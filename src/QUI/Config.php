@@ -36,7 +36,7 @@ class Config
     /**
      * ini entries
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     private array $iniParsedArray = [];
 
@@ -84,7 +84,7 @@ class Config
     /**
      * Ini entries get as array
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function toArray(): array
     {
@@ -122,7 +122,7 @@ class Config
      * @param string $section
      * @param string $key
      *
-     * @return string|array|boolean
+     * @return string|array<array-key, mixed>|boolean
      */
     public function getValue(string $section, string $key): mixed
     {
@@ -167,7 +167,7 @@ class Config
      * Sets a complete section
      *
      * @param boolean|string $section
-     * @param array $array
+     * @param array<array-key, mixed> $array
      *
      * @return boolean
      */
@@ -236,7 +236,7 @@ class Config
      * Sets a new value in a section or a whole new section
      *
      * @param bool|string $section - (optional)
-     * @param string|array|null $key - (optional)
+     * @param string|array<array-key, mixed>|null $key - (optional)
      * @param string|int|float|null $value - (optional)
      *
      * @return bool

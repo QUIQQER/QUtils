@@ -47,7 +47,7 @@ class DOM
     /**
      * Converts an array into an QUI\QDOM object
      *
-     * @param array $array
+     * @param array<array-key, mixed> $array
      *
      * @return QUI\QDOM
      */
@@ -62,7 +62,7 @@ class DOM
     /**
      * Fügt DOM XML Tabs in eine Toolbar ein
      *
-     * @param DOMNodeList|array $tabs
+     * @param DOMNodeList<DOMElement>|array<array-key, DOMElement> $tabs
      * @param QUI\Controls\Toolbar\Bar $TabBar
      * @param string $plugin - optional
      */
@@ -204,7 +204,7 @@ class DOM
      * Table Datenbank DOmNode Objekt in ein Array umwandeln
      *
      * @param DOMNode|DOMElement $Table
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbTableDomToArray(DOMNode | DOMElement $Table): array
     {
@@ -351,7 +351,7 @@ class DOM
      * Field Datenbank DOmNode Objekt in ein Array umwandeln
      *
      * @param DOMNode|DOMElement $Field
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbFieldDomToArray(DOMNode | DOMElement $Field): array
     {
@@ -394,7 +394,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $Primary
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbPrimaryDomToArray(DOMNode | DOMElement $Primary): array
     {
@@ -408,7 +408,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $Unique
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbUniqueDomToArray(DOMNode | DOMElement $Unique): array
     {
@@ -422,7 +422,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $Index
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbIndexDomToArray(DOMNode | DOMElement $Index): array
     {
@@ -436,7 +436,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $ForeignKey
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbForeignKeyDomToArray(DOMNode | DOMElement $ForeignKey): array
     {
@@ -470,7 +470,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $AI
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbAutoIncrementDomToArray(DOMNode | DOMElement $AI): array
     {
@@ -484,7 +484,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $Fulltext
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function dbAutoFullextDomToArray(DOMNode | DOMElement $Fulltext): array
     {
@@ -497,7 +497,7 @@ class DOM
      * Return the tabs
      *
      * @param DOMNode|DOMElement $DOMNode $DOMNode
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getTabs(DOMNode | DOMElement $DOMNode): array
     {
@@ -531,7 +531,7 @@ class DOM
      *
      * @param string $name
      * @param string|Edit|Project|Site $Object - string = path to user.xml File
-     * @param array $engineParams
+     * @param array<array-key, mixed> $engineParams
      * @return string
      */
     public static function getTabHTML(
@@ -607,7 +607,7 @@ class DOM
      * Return the buttons from <categories>
      *
      * @param DomDocument|DomElement $Dom
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getButtonsFromWindow(DomDocument | DOMElement $Dom): array
     {
@@ -707,7 +707,7 @@ class DOM
      * @param DOMNode|DOMElement $Node
      * @param boolean $translate - direct translation? default = true
      *
-     * @return string|array
+     * @return string|array<array-key, mixed>
      */
     public static function getTextFromNode(DOMNode | DOMElement $Node, bool $translate = true): array | string
     {
@@ -742,7 +742,7 @@ class DOM
      * @param DOMDocument $Dom
      * @param boolean $translate
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getWysiwygStyles(DOMDocument $Dom, bool $translate = true): array
     {
@@ -860,7 +860,7 @@ class DOM
      *
      * @param DOMNode|DOMDocument $Dom
      * @param bool $withCustomParams - Should custom parameters be considered?
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getConfigParamsFromDOM(DOMNode | DomDocument $Dom, bool $withCustomParams = false): array
     {
@@ -999,7 +999,7 @@ class DOM
      *
      * @param DOMNode|DOMElement $Node
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function parsePanelToArray(DOMNode | DOMElement $Node): array
     {
@@ -1047,7 +1047,7 @@ class DOM
      * Parse a DOMNode permission to an array
      *
      * @param DOMNode|DOMElement $Node
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function parsePermissionToArray(DOMNode | DOMElement $Node): array
     {
@@ -1478,9 +1478,9 @@ class DOM
     /**
      * Parse config entries to an array
      *
-     * @param DOMNodeList $configurations
+     * @param DOMNodeList<DOMElement> $configurations
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function parseConfs(DOMNodeList $configurations): array
     {

@@ -49,7 +49,7 @@ class Math
      * @param integer $var2 - number two
      * @param integer $max - maximal number limit of each number
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function resize(int $var1, int $var2, int $max): array
     {
