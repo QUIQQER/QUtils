@@ -22,7 +22,7 @@ class Grid extends QUI\QDOM
     /**
      * constructor
      *
-     * @param array $params - optional
+     * @param array<array-key, mixed> $params - optional
      */
     public function __construct(array $params = [])
     {
@@ -38,7 +38,7 @@ class Grid extends QUI\QDOM
      *
      * @param mixed $params
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function parseDBParams(mixed $params = []): array
     {
@@ -88,10 +88,10 @@ class Grid extends QUI\QDOM
     /**
      * Prepares the result for the Grid
      *
-     * @param array $data
+     * @param array<array-key, mixed> $data
      * @param boolean|integer $count
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function parseResult(array $data, bool|int $count = false): array
     {
@@ -109,11 +109,11 @@ class Grid extends QUI\QDOM
     /**
      * Parse a result array in a grid array
      *
-     * @param array $data
+     * @param array<array-key, mixed> $data
      * @param integer $page
      * @param integer $limit
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getResult(array $data, int $page, int $limit): array
     {

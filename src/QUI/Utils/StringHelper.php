@@ -102,7 +102,7 @@ class StringHelper
      * @param string $path - path to file
      * @param bool|integer $options - PATHINFO_DIRNAME, PATHINFO_BASENAME, PATHINFO_EXTENSION
      *
-     * @return array|string
+     * @return ($options is 1|2|4|8|true ? string : array<string, string>)
      * @throws Exception
      */
     public static function pathinfo(string $path, bool | int $options = false): array | string
@@ -404,7 +404,7 @@ class StringHelper
      *
      * @param mixed $value
      *
-     * @return array|string|string[]
+     * @return array<array-key, mixed>|string
      */
     public static function number2db(mixed $value): array | string
     {
@@ -425,7 +425,7 @@ class StringHelper
 
     /**
      * Enter description here...
-     * @param array $tags
+     * @param array<array-key, mixed> $tags
      * @param integer $start
      * @param integer $min
      *
@@ -460,7 +460,7 @@ class StringHelper
      *
      * @param string $url - ?id=1&project=demo
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getUrlAttributes(string $url): array
     {
@@ -486,7 +486,7 @@ class StringHelper
     /**
      * Turns a URL parsed via parse_url back into a string.
      *
-     * @param $parsedUrl
+     * @param array<string, mixed> $parsedUrl
      *
      * @return string
      */
@@ -510,7 +510,7 @@ class StringHelper
      *
      * @param string $html - <img * />
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getHTMLAttributes(string $html): array
     {
@@ -535,7 +535,7 @@ class StringHelper
      *
      * @param string $style - "width:200px; height:200px"
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function splitStyleAttributes(string $style): array
     {

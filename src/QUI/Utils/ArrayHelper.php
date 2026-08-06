@@ -26,7 +26,7 @@ class ArrayHelper
     /**
      * Checks if the array is associative
      *
-     * @param array $array
+     * @param array<array-key, mixed> $array
      *
      * @return boolean
      */
@@ -44,9 +44,9 @@ class ArrayHelper
     /**
      * Converts an index array in an associative array
      *
-     * @param array $array
+     * @param array<array-key, mixed> $array
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function toAssoc(array $array): array
     {
@@ -62,9 +62,9 @@ class ArrayHelper
     /**
      * Converts an object to an array
      *
-     * @param object|array $obj
+     * @param object|array<array-key, mixed> $obj
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function objectToArray(object|array $obj): array
     {
@@ -85,7 +85,7 @@ class ArrayHelper
     /**
      * Converts an array to an object
      *
-     * @param array $array
+     * @param array<array-key, mixed> $array
      *
      * @return Object
      */
@@ -97,9 +97,9 @@ class ArrayHelper
     /**
      * Cleanup an array
      *
-     * @param array|string $array
+     * @param array<array-key, mixed>|string $array
      * @param string $delimiter - default = ,
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function cleanup(mixed $array, string $delimiter = ','): array
     {

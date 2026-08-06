@@ -27,13 +27,16 @@ use function usort;
  * Collects children from a specific class / classes
  * To specify allowed types you should extend this class.
  * Then set the $allowed variable there.
+ *
+ * @implements IteratorAggregate<int, mixed>
+ * @implements ArrayAccess<int, mixed>
  */
 class Collection implements IteratorAggregate, ArrayAccess
 {
     /**
      * List of children
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $children = [];
 
@@ -41,14 +44,14 @@ class Collection implements IteratorAggregate, ArrayAccess
      * List of allowed children classes.
      * You have to extend this class to set the allowed types.
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $allowed = [];
 
     /**
      * Collection constructor.
      *
-     * @param array $children - list of children
+     * @param array<array-key, mixed> $children - list of children
      */
     public function __construct(array $children = [])
     {
@@ -58,7 +61,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     }
 
     /**
-     * @param array $params
+     * @param array<array-key, mixed> $params
      * @return Collection
      */
     public static function getInstance(array $params = []): Collection
@@ -235,7 +238,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     /**
      * Returns true if an element is set at the given key.
      *
-     * @param $key
+     * @param array-key $key
      *
      * @return boolean
      */
@@ -275,7 +278,7 @@ class Collection implements IteratorAggregate, ArrayAccess
      * Applies the callback to each child of the collection
      *
      * @param callable $function
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function map(callable $function): array
     {
@@ -296,7 +299,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     /**
      * Returns whether the collection contains the given child or not.
      *
-     * @param $Child
+     * @param mixed $Child
      * @return bool
      */
     public function contains($Child): bool
@@ -307,7 +310,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     /**
      * Converts the collection to an array
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function toArray(): array
     {
@@ -367,7 +370,7 @@ class Collection implements IteratorAggregate, ArrayAccess
     //region interfaces API
 
     /**
-     * @return ArrayIterator
+     * @return ArrayIterator<int, mixed>
      */
     public function getIterator(): ArrayIterator
     {

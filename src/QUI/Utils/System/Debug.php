@@ -23,7 +23,7 @@ class Debug
     /**
      * marker lists
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     public static array $times = [];
 

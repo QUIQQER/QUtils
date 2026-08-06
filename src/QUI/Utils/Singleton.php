@@ -14,7 +14,7 @@ use function get_called_class;
 abstract class Singleton
 {
     /**
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected static array $instances = [];
 

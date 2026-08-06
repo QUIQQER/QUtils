@@ -20,6 +20,7 @@ class Log
      *
      * @param string $message - String to write
      * @param string $filename - Filename (eq: messages, error, database)
+     * @return void
      */
     public static function write($message, $filename = 'messages')
     {
@@ -43,6 +44,7 @@ class Log
      *
      * @param mixed $object
      * @param string $filename
+     * @return void
      */
     public static function writeRecursive($object, $filename = 'messages')
     {
@@ -54,6 +56,7 @@ class Log
      *
      * @param \Exception|\QUI\Exception $Exception
      * @param string $filename
+     * @return void
      */
     public static function writeException($Exception, $filename = 'error')
     {

@@ -23,23 +23,23 @@ class Exception extends \Exception
     /**
      * Internal list of attributes
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $attributes = [];
 
     /**
      * context data
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $context = [];
 
     /**
      * Constructor
      *
-     * @param string|array $message - Text der Exception
+     * @param string|array<array-key, mixed> $message - Text der Exception
      * @param integer $code - Error code der Exception
-     * @param array $context - [optional] Context data, which data
+     * @param array<array-key, mixed> $context - [optional] Context data, which data
      */
     public function __construct(
         $message = null,
@@ -89,7 +89,7 @@ class Exception extends \Exception
     /**
      * Return the context data
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function getContext(): array
     {
@@ -99,7 +99,7 @@ class Exception extends \Exception
     /**
      * Return the Exception as an array
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function toArray(): array
     {
@@ -144,7 +144,7 @@ class Exception extends \Exception
     /**
      * If you want to set more than one attribute
      *
-     * @param array $attributes
+     * @param array<array-key, mixed> $attributes
      * @return void
      */
     public function setAttributes(array $attributes): void

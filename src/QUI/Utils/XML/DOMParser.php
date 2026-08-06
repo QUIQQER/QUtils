@@ -243,7 +243,7 @@ class DOMParser
      * Return needle DOMNode Attributes
      *
      * @param DOMNode|DOMElement $Node
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getAttributes(DOMNode $Node): array
     {
@@ -329,7 +329,7 @@ class DOMParser
 
     /**
      * @param string $fieldHTML
-     * @param array $attributes
+     * @param array<array-key, mixed> $attributes
      * @return string
      */
     protected static function createHTML(string $fieldHTML, array $attributes): string

@@ -50,7 +50,7 @@ class Tables
     /**
      * Returns all tables in the database
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getTables(): array
@@ -72,7 +72,7 @@ class Tables
     /**
      * Optimiert Tabellen
      *
-     * @param array|string $tables
+     * @param array<array-key, mixed>|string $tables
      *
      * @return void
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -152,7 +152,7 @@ class Tables
      * Creates a table with the specific fields
      *
      * @param string $table
-     * @param array $fields
+     * @param array<array-key, mixed> $fields
      * @param string $engine
      *
      * @return boolean - if table exists or not
@@ -254,7 +254,7 @@ class Tables
      *
      * @param string $table
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated use ->getColumns
      */
     public function getFields(string $table): array
@@ -267,7 +267,7 @@ class Tables
      *
      * @param string $table - Tabelle
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getFieldsInfos(string $table): array
@@ -286,7 +286,7 @@ class Tables
      * Wenn die Tabelle nicht existiert, wird diese erstellt
      *
      * @param string $table
-     * @param array $fields
+     * @param array<array-key, mixed> $fields
      * @param string $engine - optional, is only used when the table is created
      *
      * @return void
@@ -302,7 +302,7 @@ class Tables
      * Löscht ein Feld / Spalte aus der Tabelle
      *
      * @param string $table
-     * @param array $fields
+     * @param array<array-key, mixed> $fields
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function deleteFields(string $table, array $fields): void
@@ -344,7 +344,7 @@ class Tables
      * Extend the table
      *
      * @param string $table
-     * @param array $fields
+     * @param array<array-key, mixed> $fields
      * @param string $engine
      * @throws Exception
      * @throws \Exception
@@ -452,7 +452,7 @@ class Tables
      *
      * @param string $table
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getColumns(string $table): array
@@ -479,7 +479,7 @@ class Tables
      * @param string $table - Table name
      * @param string $column - Row name
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getColumn(string $table, string $column): array
@@ -531,14 +531,14 @@ class Tables
      *                                           (sonst alle Spalten-Informationen) [default: true]
      * @param boolean $primaryKeysOnly (optional) - nur Primärschlüssel [default: false]
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     /**
      * Schlüssel der Tabelle bekommen
      *
      * @param string $table
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getKeys(string $table): array
@@ -555,7 +555,7 @@ class Tables
      * Prüft ob der PrimaryKey gesetzt ist
      *
      * @param string $table
-     * @param array|string $key
+     * @param array<array-key, mixed>|string $key
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -604,6 +604,9 @@ class Tables
 
     /**
      * Setzt ein PrimaryKey einer Tabelle
+     *
+     * @param array<array-key, string>|string $key
+     *
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function setPrimaryKey(string $table, array | string $key): bool
@@ -642,14 +645,14 @@ class Tables
      *                                           (sonst alle Spalten-Informationen) [default: true]
      * @param boolean $primaryKeysOnly (optional) - Nur Primärschlüssel [default: false]
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     /**
      * Schlüssel der Tabelle bekommen
      *
      * @param string $table
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getUniqueColumns(string $table): array
@@ -679,7 +682,7 @@ class Tables
      * Setzt ein UNIQUE-Spalten einer Tabelle
      *
      * @param string $table
-     * @param array|string $unique
+     * @param array<array-key, mixed>|string $unique
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -707,7 +710,7 @@ class Tables
      * Prüft ob UNIQUE-Spalten gesetzt sind
      *
      * @param string $table
-     * @param array|string $unique
+     * @param array<array-key, mixed>|string $unique
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -752,7 +755,7 @@ class Tables
      * Prüft ob ein Index gesetzt ist
      *
      * @param string $table
-     * @param int|string|array $key
+     * @param int|string|array<array-key, mixed> $key
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -853,7 +856,7 @@ class Tables
      *
      * @param string $table
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
     public function getIndex(string $table): array
@@ -871,7 +874,7 @@ class Tables
      * Setzt einen Index
      *
      * @param string $table
-     * @param array|string $index - Array not working on SQLite
+     * @param array<array-key, mixed>|string $index - Array not working on SQLite
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -941,7 +944,7 @@ class Tables
      * Setzt einen Fulltext
      *
      * @param string $table
-     * @param array|string $index
+     * @param array<array-key, mixed>|string $index
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -970,7 +973,7 @@ class Tables
      * Prüft ob ein Fulltext auf das Feld gesetzt ist
      *
      * @param string $table
-     * @param int|string|array $key
+     * @param int|string|array<array-key, mixed> $key
      *
      * @return boolean
      * @deprecated Use Doctrine DBAL Schema APIs instead.
@@ -1047,7 +1050,7 @@ class Tables
     /**
      * Prepare a array or a string for an IN LIST() argument
      *
-     * @param array|string $index
+     * @param array<array-key, mixed>|string $index
      *
      * @return string
      * @deprecated Use Doctrine DBAL Schema APIs instead.

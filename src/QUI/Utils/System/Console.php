@@ -51,7 +51,7 @@ class Console
 
     /**
      * Prints a line on the console.
-     * @param $msg
+     * @param mixed $msg
      */
     public static function writeLn($msg): void
     {
@@ -60,7 +60,7 @@ class Console
 
     /**
      * Prints the message on the console.
-     * @param $msg
+     * @param mixed $msg
      */
     public static function write($msg): void
     {
@@ -71,8 +71,8 @@ class Console
      * Gets the colored version of the given String
      * Color codes are available as Constants
      *
-     * @param $text - The base string
-     * @param $color - The color code which should be applied
+     * @param mixed $text - The base string
+     * @param mixed $color - The color code which should be applied
      * @param bool $background - (optional) The color code for the background.
      * @return string The color encoded string
      * @see Console::COLOR_YELLOW
