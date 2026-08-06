@@ -15,7 +15,7 @@ class ExceptionStack extends Exception
     /**
      * Container for exceptions
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $list = [];
 
@@ -42,7 +42,7 @@ class ExceptionStack extends Exception
     /**
      * Returns current list with collected exceptions
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function getExceptionList(): array
     {
@@ -62,7 +62,7 @@ class ExceptionStack extends Exception
     /**
      * Return the context data
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function getContext(): array
     {

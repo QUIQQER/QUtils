@@ -78,7 +78,7 @@ use function usleep;
 class File
 {
     /**
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $files;
 
@@ -90,7 +90,7 @@ class File
     /**
      * Return an array with all available mime types and their endings
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getMimeTypes(): array
     {
@@ -702,12 +702,12 @@ class File
      * Get information about the file
      *
      * @param string $file - Path to file
-     * @param array $params - (optional) ->
+     * @param array<array-key, mixed> $params - (optional) ->
      *                       filesize=Dateigrösse;
      *                       imagesize=Bildgrösse;
      *                       mime_type=mime_type
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @throws QUI\Exception
      */
     public static function getInfo(string $file, array $params = []): array
@@ -825,7 +825,7 @@ class File
      * @param string $path
      * @param string $find
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function find(string $path, string $find): array
     {
@@ -864,7 +864,7 @@ class File
      * @param string $folder - Pfad zum Ordner
      * @param boolean $flatten - no assoziativ folder array, return the array as flat array
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function readDirRecursiv(string $folder, bool $flatten = false): array
     {
@@ -931,7 +931,7 @@ class File
      * @param boolean $only_files - Nur Dateien auslesen
      * @param boolean $order_by_date - Nach Daum sortiert zurück geben
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function readDir(
         string $folder,
@@ -1181,7 +1181,7 @@ class File
      * @param string $srcDir
      * @param string $dstDir
      *
-     * @return boolean|array
+     * @return boolean|array<array-key, mixed>
      */
     public static function dircopy(string $srcDir, string $dstDir): bool | array
     {

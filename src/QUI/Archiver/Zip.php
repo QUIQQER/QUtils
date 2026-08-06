@@ -58,7 +58,7 @@ class Zip
      *
      * @param string $folder - Folder which is to be packed
      * @param string $zipFile - Name of new Zipfiles
-     * @param array $ignore - Folder to be ignored
+     * @param array<array-key, mixed> $ignore - Folder to be ignored
      *
      * @throws Exception
      */

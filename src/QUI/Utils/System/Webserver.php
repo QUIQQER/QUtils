@@ -47,7 +47,7 @@ class Webserver
      * Attempts to detect the Apache webservers version
      * Return format: array("major","minor","point")
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @throws Exception
      */
     public static function detectApacheVersion(): array

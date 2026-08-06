@@ -22,14 +22,14 @@ class Manager
     /**
      * Lst of CSS Files
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected static array $cssFilesLoaded = [];
 
     /**
      * Return the CSS Files from the loaded Controls
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public static function getCSSFiles(): array
     {

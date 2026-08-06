@@ -89,7 +89,7 @@ class DB extends QUI\QDOM
     /**
      * Constructor
      *
-     * @param array $attributes
+     * @param array<array-key, mixed> $attributes
      * - host
      * - user
      * - password
@@ -322,7 +322,7 @@ class DB extends QUI\QDOM
     /**
      * Creates a query
      *
-     * @param array $params
+     * @param array<array-key, mixed> $params
      *        array(
      *        'insert'  => 'table'
      *        'replace' => 'table'
@@ -354,7 +354,7 @@ class DB extends QUI\QDOM
      *        'debug' => true // write the query into the log
      * )
      *
-     * @return array
+     * @return array<array-key, mixed>
      *    array(
      *        'query'   => string  - SQL String
      *        'prepare' => array() - Prepared Statement Vars
@@ -473,7 +473,7 @@ class DB extends QUI\QDOM
      * Execute query and returned a PDOStatement
      * (Prepare Statement)
      *
-     * @param array $params (see at createQuery())
+     * @param array<array-key, mixed> $params (see at createQuery())
      *
      * @return PDOStatement
      *
@@ -581,10 +581,10 @@ class DB extends QUI\QDOM
     /**
      * Execute query and get as the results
      *
-     * @param array $params (see at createQuery())
+     * @param array<array-key, mixed> $params (see at createQuery())
      * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @throws QUI\Database\Exception
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
@@ -619,7 +619,7 @@ class DB extends QUI\QDOM
     /**
      * Execute the query and don't execute a fetch
      *
-     * @param $query
+     * @param string $query
      * @return PDOStatement|false
      * @throws QUI\Database\Exception
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
@@ -648,7 +648,7 @@ class DB extends QUI\QDOM
      * @param string $query
      * @param integer $FETCH_STYLE - \PDO::FETCH*
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @throws QUI\Database\Exception
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
@@ -678,8 +678,8 @@ class DB extends QUI\QDOM
      * Updates a record
      *
      * @param string $table
-     * @param array $data
-     * @param array|string $where
+     * @param array<array-key, mixed> $data
+     * @param array<array-key, mixed>|string $where
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
@@ -698,7 +698,7 @@ class DB extends QUI\QDOM
      * Insert a record
      *
      * @param string $table
-     * @param array $data
+     * @param array<array-key, mixed> $data
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
@@ -717,7 +717,7 @@ class DB extends QUI\QDOM
      * If the dataset does not exist yet, the dataset is inserted.
      *
      * @param string $table
-     * @param array $data
+     * @param array<array-key, mixed> $data
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
@@ -735,7 +735,7 @@ class DB extends QUI\QDOM
      * Deletes a record
      *
      * @param string $table - Name of the Database Table
-     * @param array $where - data field, where statement
+     * @param array<array-key, mixed> $where - data field, where statement
      *
      * @return PDOStatement
      * @throws QUI\Database\Exception
@@ -753,7 +753,7 @@ class DB extends QUI\QDOM
     /**
      * SELECT Query
      *
-     * @param array $params
+     * @param array<array-key, mixed> $params
      *
      * 'select' => 'field'
      *
@@ -889,7 +889,7 @@ class DB extends QUI\QDOM
     /**
      * COUNT() Query
      *
-     * @param array|string $params
+     * @param array<array-key, mixed>|string $params
      *
      * @return string
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
@@ -920,7 +920,7 @@ class DB extends QUI\QDOM
     /**
      * FROM Query
      *
-     * @param array|string $params
+     * @param array<array-key, mixed>|string $params
      *
      * @return string
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
@@ -943,10 +943,10 @@ class DB extends QUI\QDOM
     /**
      * WHERE Query
      *
-     * @param array|string $params
+     * @param array<array-key, mixed>|string $params
      * @param string $type - if more than one where, you can specify the where typ (OR, AND)
      *
-     * @return array
+     * @return array<array-key, mixed>
      * array(
      *     'where' => 'WHERE param = :param',
      *     'prepare' => array(
@@ -1147,9 +1147,9 @@ class DB extends QUI\QDOM
     /**
      * Where Statement with OR
      *
-     * @param array $params
+     * @param array<array-key, mixed> $params
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryWhereOr(array $params): array
@@ -1160,10 +1160,10 @@ class DB extends QUI\QDOM
     /**
      * SET Query
      *
-     * @param array|string $params
+     * @param array<array-key, mixed>|string $params
      * @param boolean|string $driver - deprecated
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQuerySet(array | string $params, bool | string $driver = false): array
@@ -1241,9 +1241,9 @@ class DB extends QUI\QDOM
     /**
      * The insert for SQLite
      *
-     * @param array $params - the set params
+     * @param array<array-key, mixed> $params - the set params
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQuerySQLiteInsert(array $params): array
@@ -1284,7 +1284,7 @@ class DB extends QUI\QDOM
     /**
      * Order Query
      *
-     * @param array|string $params
+     * @param array<array-key, mixed>|string $params
      *
      * 'order' => 'field DESC'
      *
@@ -1398,7 +1398,7 @@ class DB extends QUI\QDOM
     /**
      * Return the sql query for an order array
      *
-     * @param array $params
+     * @param array<array-key, mixed> $params
      *
      * 'order' => [
      *      'field'    => 'fieldName'
@@ -1459,7 +1459,7 @@ class DB extends QUI\QDOM
     /**
      * Group By Query
      *
-     * @param $params
+     * @param array<array-key, string>|string $params
      * @return string
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
@@ -1504,7 +1504,7 @@ class DB extends QUI\QDOM
      *
      * @param integer|string $params
      *
-     * @return array
+     * @return array<array-key, mixed>
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
      */
     public static function createQueryLimit(int | string $params): array
@@ -1555,7 +1555,7 @@ class DB extends QUI\QDOM
      * Is order clause valid?
      *
      * @param string $value
-     * @param array $allowed - allowed fields
+     * @param array<array-key, mixed> $allowed - allowed fields
      *
      * @return bool
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.
@@ -1593,8 +1593,8 @@ class DB extends QUI\QDOM
     /**
      * Is where clause valid?
      *
-     * @param array $where - where clause
-     * @param array $allowed - allowed fields
+     * @param array<array-key, mixed> $where - where clause
+     * @param array<array-key, mixed> $allowed - allowed fields
      *
      * @return bool
      * @deprecated Use Doctrine DBAL connection, QueryBuilder and Schema APIs instead.

@@ -42,7 +42,7 @@ class PSpell extends QUI\QDOM
     /**
      * Constructor
      *
-     * @param array $settings - array(
+     * @param array<array-key, mixed> $settings - array(
      *                        lang
      *                        dialect
      *                        personal
@@ -94,7 +94,7 @@ class PSpell extends QUI\QDOM
      *
      * @param string $word
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function translate(string $word): array
     {

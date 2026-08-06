@@ -45,7 +45,7 @@ interface QDOMInterface
     /**
      * If you want to set more than one attribute
      *
-     * @param array $attributes
+     * @param array<array-key, mixed> $attributes
      */
     public function setAttributes(array $attributes): void;
 
@@ -60,7 +60,7 @@ interface QDOMInterface
     /**
      * Return all attributes
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function getAttributes(): array;
 }

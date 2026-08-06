@@ -21,7 +21,7 @@ class Timer
     /**
      * All time milstones
      *
-     * @var array
+     * @var array<array-key, mixed>
      */
     protected array $milestones;
 
@@ -50,7 +50,7 @@ class Timer
     /**
      * Returns the time measurement result as an array
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function result(): array
     {
@@ -90,7 +90,7 @@ class Timer
     /**
      * Returns the time measurement result for the bash / console
      *
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function resultConsole(): array
     {

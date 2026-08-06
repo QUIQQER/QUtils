@@ -79,9 +79,9 @@ class Settings
 
     /**
      *
-     * @param $xmlFiles
+     * @param array<array-key, string>|string $xmlFiles
      * @param bool|string $windowName
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function getPanel($xmlFiles, bool | string $windowName = false): array
     {
@@ -160,7 +160,7 @@ class Settings
     /**
      * Parse a list of xml files to collections
      *
-     * @param array|string $xmlFiles
+     * @param array<array-key, mixed>|string $xmlFiles
      * @return Collection
      */
     public function getCategories(array | string $xmlFiles): Collection
@@ -258,7 +258,7 @@ class Settings
      * Parse <category> DOMElement and return it as an array
      *
      * @param DOMNode|DOMElement $Category
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function parseCategory(DOMNode | DOMElement $Category): array
     {
@@ -312,7 +312,7 @@ class Settings
      * Parse a <setting> DOM node and return it as an array
      *
      * @param DOMNode|DOMElement $Setting
-     * @return array
+     * @return array<array-key, mixed>
      */
     public function parseSettings(DOMNode | DOMElement $Setting): array
     {
@@ -409,7 +409,7 @@ class Settings
     /**
      * Return the HTML from a category or from multiple categories
      *
-     * @param array|string $files
+     * @param array<array-key, mixed>|string $files
      * @param bool|string $categoryName
      * @return string
      */
