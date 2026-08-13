@@ -117,6 +117,7 @@ class Tables
      * @return void
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
+    // nosemgrep: quiqqer.forbid-mysql-specific-sql
     public function delete(string $table): void
     {
         if (!$this->exist($table)) {
@@ -126,7 +127,6 @@ class Tables
         $table = $this->clear($table);
         $PDO = $this->DB->getPDO();
 
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $PDO->prepare("DROP TABLE `$table`")->execute();
     }
 
@@ -184,7 +184,6 @@ class Tables
                 break;
         }
 
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $sql = 'CREATE TABLE `' . $this->DB->getAttribute('dbname') . '`.`' . $_table . '` (';
 
         if (QUI\Utils\ArrayHelper::isAssoc($fields)) {
@@ -376,7 +375,6 @@ class Tables
             $type = $this->parseFieldType($type);
 
             if (!in_array($field, $tblFields)) {
-                // nosemgrep: quiqqer.forbid-mysql-specific-sql
                 $query = "ALTER TABLE `$table` ADD `$field` $type";
                 $Stmnt = $PDO->prepare($query);
 
@@ -407,7 +405,6 @@ class Tables
             return;
         }
 
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $query = "ALTER TABLE `$table` ";
         $query .= implode(",\n", $change);
 
@@ -518,7 +515,6 @@ class Tables
 
         $table = $this->clear($table);
         $row = $this->clear($row);
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("ALTER TABLE `$table` DROP `$row`");
 
         return $Stmnt->execute();
@@ -624,14 +620,12 @@ class Tables
         $queryTable = $this->clear($table);
 
         $PDO = $this->DB->getPDO();
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $query = "ALTER TABLE `$queryTable` ADD PRIMARY KEY($queryKeys)";
 
         // if key exists, drop it
         if (is_array($key)) {
             foreach ($key as $k) {
                 if ($this->issetPrimaryKey($table, $k)) {
-                    // nosemgrep: quiqqer.forbid-mysql-specific-sql
                     $query = "ALTER TABLE  `$queryTable` DROP PRIMARY KEY , ADD PRIMARY KEY($queryKeys);";
                     break;
                 }
@@ -706,7 +700,6 @@ class Tables
         $PDO = $this->DB->getPDO();
 
         $Stmnt = $PDO->prepare(
-            // nosemgrep: quiqqer.forbid-mysql-specific-sql
             "ALTER TABLE `$queryTable` ADD UNIQUE($queryKeys)"
         );
         $Stmnt->execute();
@@ -897,7 +890,6 @@ class Tables
         $queryTable = $this->clear($table);
         $inList = $this->inList($index);
 
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $Stmnt = $PDO->prepare("ALTER TABLE `$queryTable` ADD INDEX($inList)");
         $Stmnt->execute();
 
@@ -970,7 +962,6 @@ class Tables
         $table = $this->clear($table);
 
         $Stmnt = $PDO->prepare(
-            // nosemgrep: quiqqer.forbid-mysql-specific-sql
             "ALTER TABLE `$table` ADD FULLTEXT($fulltext)"
         );
 

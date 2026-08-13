@@ -1256,11 +1256,11 @@ class DB extends QUI\QDOM
         $prepare = [];
         $values = [];
 
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $sql = self::createQueryInsert($params['insert']);
         $sql .= ' (';
 
         foreach ($set_params as $key => $value) {
-            // nosemgrep: quiqqer.forbid-mysql-specific-sql
             $sql .= '`' . $key . '`';
 
             if ($max > $i) {

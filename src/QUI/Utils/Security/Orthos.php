@@ -205,6 +205,7 @@ class Orthos
      * @return string
      * @deprecated Use Doctrine DBAL platform identifier quoting instead.
      */
+    // nosemgrep: quiqqer.forbid-mysql-specific-sql
     public static function cleanupDatabaseFieldName(string $str): string
     {
         if (empty($str)) {
@@ -217,7 +218,6 @@ class Orthos
         $str = trim($str, '`');
 
         $str = str_replace('.', '`.`', $str);
-        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $str = '`' . $str . '`';
 
         return $str;
