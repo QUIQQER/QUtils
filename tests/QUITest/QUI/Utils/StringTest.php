@@ -11,7 +11,9 @@ class StringTest extends \PHPUnit\Framework\TestCase
 {
     public function testJSString()
     {
-        $this->markTestSkipped('Legacy test without assertions.');
+        $this->assertSame('value', StringHelper::JSString('value'));
+        $this->assertSame('1', StringHelper::JSString(true));
+        $this->assertSame('', StringHelper::JSString(false));
     }
 
     public function testPathinfo()
@@ -200,5 +202,94 @@ class StringTest extends \PHPUnit\Framework\TestCase
             false,
             StringHelper::sentence('Lorem ipsum dolor sit amet')
         );
+    }
+
+    public function testNumericConversions(): void
+    {
+        $this->assertSame(12.5, StringHelper::parseFloat(12.5));
+        $this->assertSame(0, StringHelper::parseFloat(''));
+        $this->assertSame(1234.56, StringHelper::parseFloat('1.234,56 EUR'));
+        $this->assertSame(-12.5, StringHelper::parseFloat('-12.5 EUR'));
+        $this->assertSame(0.0, StringHelper::parseFloat('not a number'));
+        $this->assertIsString(StringHelper::number2db('1,234.56 EUR'));
+    }
+
+    public function testTagCloud(): void
+    {
+        $result = StringHelper::tagCloud([
+            ['url' => '/one', 'tag' => 'One'],
+            ['url' => '/two', 'tag' => 'Two'],
+            ['url' => '/three', 'tag' => 'Three']
+        ], 11, 10);
+
+        $this->assertStringContainsString('href="/one"', $result);
+        $this->assertStringContainsString('href="/two"', $result);
+        $this->assertStringContainsString('font-size: 10px', $result);
+    }
+
+    public function testUrlCanBeReassembled(): void
+    {
+        $parts = parse_url('https://user:pass@example.com:8443/path?q=1#fragment');
+
+        $this->assertIsArray($parts);
+        $this->assertSame(
+            'https://user:pass@example.com:8443/path?q=1#fragment',
+            StringHelper::unparseUrl($parts)
+        );
+        $this->assertSame('/relative', StringHelper::unparseUrl(['path' => '/relative']));
+    }
+
+    public function testAttributeParsingHandlesQuotedAndPlainValues(): void
+    {
+        $attributes = StringHelper::getHTMLAttributes('<input disabled=true data-id="42" title = "Title">');
+
+        $this->assertSame('true', $attributes['disabled']);
+        $this->assertSame('42', $attributes['data-id']);
+        $this->assertSame('Title', $attributes['title']);
+        $this->assertSame(['color' => 'red'], StringHelper::splitStyleAttributes('invalid; COLOR: RED'));
+    }
+
+    public function testMatchingAndReplacementFromEnd(): void
+    {
+        $this->assertTrue(StringHelper::match('*.php', 'index.php'));
+        $this->assertFalse(StringHelper::match('*.js', 'index.php'));
+        $this->assertSame('one two three', StringHelper::strReplaceFromEnd('one', 'three', 'one two one'));
+        $this->assertSame('unchanged', StringHelper::strReplaceFromEnd('missing', 'value', 'unchanged'));
+    }
+
+    public function testStrftimeCompatibility(): void
+    {
+        $result = StringHelper::strftime(
+            '%d %e %j %u %w %U %V %W %m %C %g %G %y %Y ' .
+            '%H %k %I %l %M %p %P %r %R %S %T %z %Z %D %F %s%n%t%%',
+            '2024-02-05 13:04:06'
+        );
+
+        $this->assertStringContainsString('2024-02-05', $result);
+        $this->assertStringContainsString('13:04:06', $result);
+        $this->assertStringContainsString("\n\t%", $result);
+        $this->assertNotEmpty(StringHelper::strftime('%Y', null));
+        $this->assertSame('2024', StringHelper::strftime('%Y', 1707091200));
+    }
+
+    public function testStrftimeRejectsInvalidInput(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        StringHelper::strftime('%Y', 'not a date');
+    }
+
+    public function testStrftimeSupportsLocalizedFormats(): void
+    {
+        $result = StringHelper::strftime('%A %B %c %x %X', '2024-02-05 13:04:06');
+
+        $this->assertNotEmpty($result);
+        $this->assertStringNotContainsString('%A', $result);
+        $this->assertStringNotContainsString('%B', $result);
+    }
+
+    public function testStrftimeRejectsUnknownFormat(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        StringHelper::strftime('%Q', '2024-02-05');
     }
 }

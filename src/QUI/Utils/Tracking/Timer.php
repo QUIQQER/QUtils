@@ -21,9 +21,9 @@ class Timer
     /**
      * All time milstones
      *
-     * @var array<array-key, mixed>
+     * @var array<int, array{0: string, 1: float}>
      */
-    protected array $milestones;
+    protected array $milestones = [];
 
     /**
      * Time calc
@@ -50,7 +50,7 @@ class Timer
     /**
      * Returns the time measurement result as an array
      *
-     * @return array<array-key, mixed>
+     * @return array<int, array{0: string, 1: float}>
      */
     public function result(): array
     {
@@ -77,7 +77,7 @@ class Timer
 
         foreach ($result as $key => $data) {
             $output .= '<tr><td>' . $data[0] . '</td>' .
-                '<td>' . round(($key ? $data[1] - $result[$key - 1][1] : '0'), 5)
+                '<td>' . round(($key ? $data[1] - $result[$key - 1][1] : 0.0), 5)
                 . '</td>' .
                 '<td>' . round(($data[1] - $result[0][1]), 5) . '</td></tr>' . "\n";
         }
@@ -90,7 +90,7 @@ class Timer
     /**
      * Returns the time measurement result for the bash / console
      *
-     * @return array<array-key, mixed>
+     * @return array<int, array{0: string, 1: float, 2?: float, 3?: float}>
      */
     public function resultConsole(): array
     {
@@ -98,7 +98,7 @@ class Timer
 
         foreach ($result as $key => $data) {
             $data[2] = round(
-                ($key ? $data[1] - $result[$key - 1][1] : '0'),
+                ($key ? $data[1] - $result[$key - 1][1] : 0.0),
                 5
             ); // Diff
             $data[3] = round(($data[1] - $result[0][1]), 5); // Cumulative

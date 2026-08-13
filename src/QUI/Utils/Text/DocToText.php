@@ -76,6 +76,12 @@ class DocToText
 
         if (($index = $Zip->locateName($ln)) !== false) {
             $str = $Zip->getFromIndex($index);
+
+            if ($str === false) {
+                $Zip->close();
+                return '';
+            }
+
             $Doc = new DOMDocument();
             $Doc->loadXML(
                 $str,
@@ -84,8 +90,8 @@ class DocToText
             );
 
             // $text = strip_tags($Doc->saveXML());
-            $text = preg_replace('#<[^>]+>#', ' ', $Doc->saveXML());
-            $text = preg_replace('/( ){2,}/', "$1", $text);
+            $text = preg_replace('#<[^>]+>#', ' ', (string)$Doc->saveXML()) ?? '';
+            $text = preg_replace('/( ){2,}/', "$1", $text) ?? '';
             $text = trim($text);
 
             $Zip->close();
@@ -117,6 +123,10 @@ class DocToText
 
         $headers = fread($fh, 0xA00);
 
+        if ($headers === false || strlen($headers) < 0x220) {
+            return '';
+        }
+
         # 1 = (ord(n)*1) ; Document has from 0 to 255 characters
         $n1 = (ord($headers[0x21C]) - 1);
 
@@ -131,8 +141,13 @@ class DocToText
 
         # Total length of text in the document
         $textLength          = ($n1 + $n2 + $n3 + $n4);
+
+        if ($textLength < 1) {
+            return '';
+        }
+
         $extracted_plaintext = fread($fh, $textLength);
 
-        return utf8_encode(nl2br($extracted_plaintext));
+        return utf8_encode(nl2br((string)$extracted_plaintext));
     }
 }

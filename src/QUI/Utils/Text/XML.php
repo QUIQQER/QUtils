@@ -20,6 +20,7 @@ use QUI;
 use QUI\Utils\DOM;
 use QUI\Utils\Security\Orthos;
 
+use function array_key_exists;
 use function array_filter;
 use function array_keys;
 use function call_user_func;
@@ -161,7 +162,11 @@ class XML
                 $MenuItem = new QUI\Controls\Contextmenu\MenuItem($params);
             }
 
-            if ($Item->getAttribute('disabled') == 1) {
+            if (
+                $Item->getAttribute('disabled') == 1
+                && ($MenuItem instanceof QUI\Controls\Contextmenu\BarItem
+                    || $MenuItem instanceof QUI\Controls\Contextmenu\MenuItem)
+            ) {
                 $MenuItem->setDisable();
             }
 
@@ -190,6 +195,11 @@ class XML
         }
 
         $Settings = $settings->item(0);
+
+        if (!$Settings instanceof DOMElement) {
+            return false;
+        }
+
         $configs = $Settings->getElementsByTagName('config');
 
         if (!$configs->length) {
@@ -197,6 +207,11 @@ class XML
         }
 
         $Conf = $configs->item(0);
+
+        if (!$Conf instanceof DOMElement) {
+            return false;
+        }
+
         $name = $Conf->getAttribute('name');
 
         if (empty($name)) {
@@ -230,9 +245,9 @@ class XML
         $params = self::getConfigParamsFromXml($file, $withCustomParams);
 
         foreach ($params as $section => $key) {
-            if (isset($key['default'])) {
+            if (isset($key['type']) && array_key_exists('default', $key)) {
                 if ($Config->existValue($section) === false) {
-                    $Config->setValue($section, $key['default']);
+                    $Config->setValue($section, null, $key['default'] ?? '');
                 }
 
                 continue;
@@ -284,7 +299,7 @@ class XML
         $tools = $Path->query("//console/tool");
         $list = [];
 
-        if (!$tools->length) {
+        if ($tools === false || !$tools->length) {
             return [];
         }
 
@@ -294,16 +309,22 @@ class XML
             $exec = '';
             $file = '';
 
-            if (method_exists($Tool, 'getAttribute')) {
+            if ($Tool instanceof DOMElement) {
                 $exec = $Tool->getAttribute('exec');
                 $file = $Tool->getAttribute('file');
             }
 
             if (!empty($file)) {
                 $file = DOM::parseVar($file);
-                $file = Orthos::clearPath(realpath($file));
+                $realPath = realpath($file);
 
-                if (file_exists($file)) {
+                if ($realPath === false) {
+                    continue;
+                }
+
+                $file = Orthos::clearPath($realPath);
+
+                if (is_string($file) && file_exists($file)) {
                     include_once $file;
                 }
             }
@@ -331,9 +352,15 @@ class XML
         $CSSList = $Path->query("//wysiwyg/css");
         $files = [];
 
+        if ($CSSList === false) {
+            return $files;
+        }
+
         for ($i = 0; $i < $CSSList->length; $i++) {
-            if (method_exists($CSSList->item($i), 'getAttribute')) {
-                $files[] = $CSSList->item($i)->getAttribute('src');
+            $CSS = $CSSList->item($i);
+
+            if ($CSS instanceof DOMElement) {
+                $files[] = $CSS->getAttribute('src');
             }
         }
 
@@ -359,18 +386,29 @@ class XML
         $dbFields = [];
         $Database = $database->item(0);
 
+        if (!$Database instanceof DOMElement) {
+            return $dbFields;
+        }
+
         $global = $Database->getElementsByTagName('global');
         $project = $Database->getElementsByTagName('projects');
 
         // global
         if ($global->length) {
             $Table = $global->item(0);
+
+            if (!$Table instanceof DOMElement) {
+                return $dbFields;
+            }
+
             $tables = $Table->getElementsByTagName('table');
 
             for ($i = 0; $i < $tables->length; $i++) {
-                $dbFields['globals'][] = DOM::dbTableDomToArray(
-                    $tables->item($i)
-                );
+                $TableNode = $tables->item($i);
+
+                if ($TableNode instanceof DOMNode) {
+                    $dbFields['globals'][] = DOM::dbTableDomToArray($TableNode);
+                }
             }
 
             if ($Table->getAttribute('execute')) {
@@ -381,12 +419,19 @@ class XML
         // projects lang tables
         if ($project && $project->length) {
             $Table = $project->item(0);
+
+            if (!$Table instanceof DOMElement) {
+                return $dbFields;
+            }
+
             $tables = $Table->getElementsByTagName('table');
 
             for ($i = 0; $i < $tables->length; $i++) {
-                $dbFields['projects'][] = DOM::dbTableDomToArray(
-                    $tables->item($i)
-                );
+                $TableNode = $tables->item($i);
+
+                if ($TableNode instanceof DOMNode) {
+                    $dbFields['projects'][] = DOM::dbTableDomToArray($TableNode);
+                }
             }
         }
 
@@ -441,6 +486,11 @@ class XML
         }
 
         $Event = $events->item(0);
+
+        if (!$Event instanceof DOMElement) {
+            return [];
+        }
+
         $list = $Event->getElementsByTagName('event');
 
         $result = [];
@@ -469,15 +519,19 @@ class XML
 
         $package = str_replace(OPT_DIR, '', dirname($file));
 
+        if ($types === false) {
+            return $result;
+        }
+
         foreach ($types as $Type) {
-            if (!method_exists($Type, 'getElementsByTagName')) {
+            if (!$Type instanceof DOMElement) {
                 continue;
             }
 
             $events = $Type->getElementsByTagName('event');
 
             foreach ($events as $Event) {
-                if (method_exists($Event, 'getAttribute') && method_exists($Type, 'getAttribute')) {
+                if ($Event instanceof DOMElement) {
                     $result[] = [
                         'on' => $Event->getAttribute('on'),
                         'fire' => $Event->getAttribute('fire'),
@@ -504,8 +558,14 @@ class XML
         $layouts = $Path->query("//site/layouts/layout");
         $result = [];
 
+        if ($layouts === false) {
+            return $result;
+        }
+
         foreach ($layouts as $Layout) {
-            $result[] = $Layout;
+            if ($Layout instanceof DOMElement) {
+                $result[] = $Layout;
+            }
         }
 
         return $result;
@@ -559,6 +619,11 @@ class XML
         }
 
         $Locales = $locales->item(0);
+
+        if (!$Locales instanceof DOMElement) {
+            return [];
+        }
+
         $groups = $Locales->getElementsByTagName('groups');
 
         if (!$groups->length) {
@@ -569,6 +634,11 @@ class XML
 
         for ($g = 0, $glen = $groups->length; $g < $glen; $g++) {
             $Group = $groups->item($g);
+
+            if (!$Group instanceof DOMElement) {
+                continue;
+            }
+
             $localeList = $Group->getElementsByTagName('locale');
 
             $locales = [
@@ -579,6 +649,10 @@ class XML
 
             for ($c = 0; $c < $localeList->length; $c++) {
                 $Locale = $localeList->item($c);
+
+                if (!$Locale instanceof DOMElement) {
+                    continue;
+                }
 
                 if ($Locale->nodeName == '#text') {
                     continue;
@@ -601,11 +675,15 @@ class XML
                 for ($i = 0; $i < $translations->length; $i++) {
                     $Translation = $translations->item($i);
 
+                    if (!$Translation instanceof DOMNode) {
+                        continue;
+                    }
+
                     if ($Translation->nodeName == '#text') {
                         continue;
                     }
 
-                    $params[$Translation->nodeName] = DOM::parseVar($Translation->nodeValue);
+                    $params[$Translation->nodeName] = DOM::parseVar((string)$Translation->nodeValue);
 
                     if (empty($params[$Translation->nodeName])) {
                         $params[$Translation->nodeName] = ' ';
@@ -638,6 +716,11 @@ class XML
         }
 
         $Menu = $menu->item(0);
+
+        if (!$Menu instanceof DOMElement) {
+            return [];
+        }
+
         $items = $Menu->getElementsByTagName('item');
 
         if (!$items->length) {
@@ -648,6 +731,10 @@ class XML
 
         for ($c = 0; $c < $items->length; $c++) {
             $Item = $items->item($c);
+
+            if (!$Item instanceof DOMElement) {
+                continue;
+            }
 
             if ($Item->nodeName == '#text') {
                 continue;
@@ -674,12 +761,17 @@ class XML
 
         $package = $Path->query("//quiqqer/package");
 
-        if (!$package->length) {
+        if ($package === false || !$package->length) {
             return [];
         }
 
         $result = [];
         $Package = $package->item(0);
+
+        if (!$Package instanceof DOMNode) {
+            return $result;
+        }
+
         $childNodes = $Package->childNodes;
 
         foreach ($childNodes as $Node) {
@@ -699,7 +791,7 @@ class XML
             }
 
             if ($Node->nodeName === 'template_parent') {
-                $result['template_parent'] = trim($Node->nodeValue);
+                $result['template_parent'] = trim((string)$Node->nodeValue);
             }
         }
 
@@ -707,8 +799,8 @@ class XML
         $previews = $Path->query("//quiqqer/package/preview/image");
         $result['preview'] = [];
 
-        foreach ($previews as $Image) {
-            if (method_exists($Image, 'getAttribute')) {
+        foreach ($previews ?: [] as $Image) {
+            if ($Image instanceof DOMElement) {
                 $result['preview'][] = DOM::parseVar($Image->getAttribute('src'));
             }
         }
@@ -717,7 +809,11 @@ class XML
         $provider = $Path->query("//quiqqer/package/provider");
         $result['provider'] = [];
 
-        foreach ($provider as $Provider) {
+        foreach ($provider ?: [] as $Provider) {
+            if (!$Provider instanceof DOMNode) {
+                continue;
+            }
+
             foreach ($Provider->childNodes as $Node) {
                 if ($Node->nodeType === XML_COMMENT_NODE) {
                     continue;
@@ -760,14 +856,18 @@ class XML
 
         $panels = $Path->query("//quiqqer/panels/panel");
 
-        if (!$panels->length) {
+        if ($panels === false || !$panels->length) {
             return [];
         }
 
         $result = [];
 
         for ($i = 0, $len = $panels->length; $i < $len; $i++) {
-            $result[] = DOM::parsePanelToArray($panels->item($i));
+            $Panel = $panels->item($i);
+
+            if ($Panel instanceof DOMNode) {
+                $result[] = DOM::parsePanelToArray($Panel);
+            }
         }
 
         return $result;
@@ -798,6 +898,11 @@ class XML
         $package = trim($package, '/');
 
         $Permissions = $permissions->item(0);
+
+        if (!$Permissions instanceof DOMElement) {
+            return [];
+        }
+
         $permission = $Permissions->getElementsByTagName('permission');
 
         if (!$permission || !$permission->length) {
@@ -807,7 +912,13 @@ class XML
         $result = [];
 
         for ($i = 0; $i < $permission->length; $i++) {
-            $data = DOM::parsePermissionToArray($permission->item($i));
+            $Permission = $permission->item($i);
+
+            if (!$Permission instanceof DOMNode) {
+                continue;
+            }
+
+            $data = DOM::parsePermissionToArray($Permission);
 
             $data['title'] = $package . ' permission.' . $data['name'];
             $data['desc'] = $package . ' permission.' . $data['name'] . '._desc';
@@ -832,7 +943,7 @@ class XML
 
         $categories = $Path->query("//settings/window/categories/category");
 
-        if (!$categories->length) {
+        if ($categories === false || !$categories->length) {
             return $list;
         }
 
@@ -858,12 +969,12 @@ class XML
 
         $categories = $Path->query("//settings/window/categories/category");
 
-        if (!$categories->length) {
+        if ($categories === false || !$categories->length) {
             return false;
         }
 
         foreach ($categories as $Category) {
-            if (method_exists($Category, 'getAttribute') && (string)$Category->getAttribute('name') == $name) {
+            if ($Category instanceof DOMElement && $Category->getAttribute('name') == $name) {
                 return $Category;
             }
         }
@@ -885,14 +996,18 @@ class XML
 
         $windows = $Path->query("//quiqqer/settings/window");
 
-        if (!$windows->length) {
+        if ($windows === false || !$windows->length) {
             return [];
         }
 
         $result = [];
 
         for ($i = 0, $len = $windows->length; $i < $len; $i++) {
-            $result[] = $windows->item($i);
+            $Window = $windows->item($i);
+
+            if ($Window instanceof DOMElement) {
+                $result[] = $Window;
+            }
         }
 
         return $result;
@@ -912,14 +1027,18 @@ class XML
 
         $windows = $Path->query("//quiqqer/project/settings/window");
 
-        if (!$windows->length) {
+        if ($windows === false || !$windows->length) {
             return [];
         }
 
         $result = [];
 
         for ($i = 0, $len = $windows->length; $i < $len; $i++) {
-            $result[] = $windows->item($i);
+            $Window = $windows->item($i);
+
+            if ($Window instanceof DOMElement) {
+                $result[] = $Window;
+            }
         }
 
         return $result;
@@ -943,6 +1062,11 @@ class XML
         }
 
         $Sites = $sites->item(0);
+
+        if (!$Sites instanceof DOMElement) {
+            return [];
+        }
+
         $types = $Sites->getElementsByTagName('types');
 
         if (!$types->length) {
@@ -950,12 +1074,21 @@ class XML
         }
 
         $Types = $types->item(0);
+
+        if (!$Types instanceof DOMElement) {
+            return [];
+        }
+
         $typeList = $Types->getElementsByTagName('type');
 
         $result = [];
 
         for ($c = 0; $c < $typeList->length; $c++) {
             $Type = $typeList->item($c);
+
+            if (!$Type instanceof DOMElement) {
+                continue;
+            }
 
             if ($Type->nodeName == '#text') {
                 continue;
@@ -996,7 +1129,9 @@ class XML
             return [];
         }
 
-        return DOM::getTabs($window->item(0));
+        $Window = $window->item(0);
+
+        return $Window instanceof DOMNode ? DOM::getTabs($Window) : [];
     }
 
     /**
@@ -1008,11 +1143,13 @@ class XML
         $Path = new DOMXPath($Dom);
         $window = $Path->query("//site/window");
 
-        if (!$window->length) {
+        if ($window === false || !$window->length) {
             return [];
         }
 
-        return DOM::getTabs($window->item(0));
+        $Window = $window->item(0);
+
+        return $Window instanceof DOMNode ? DOM::getTabs($Window) : [];
     }
 
     /**
@@ -1032,6 +1169,11 @@ class XML
         }
 
         $Template = $template->item(0);
+
+        if (!$Template instanceof DOMElement) {
+            return [];
+        }
+
         $engines = $Template->getElementsByTagName('engine');
 
         if (!$engines->length) {
@@ -1042,6 +1184,10 @@ class XML
 
         for ($c = 0; $c < $engines->length; $c++) {
             $Engine = $engines->item($c);
+
+            if (!$Engine instanceof DOMElement) {
+                continue;
+            }
 
             if ($Engine->nodeName == '#text') {
                 continue;
@@ -1070,6 +1216,11 @@ class XML
         }
 
         $Editors = $editors->item(0);
+
+        if (!$Editors instanceof DOMElement) {
+            return [];
+        }
+
         $list = $Editors->getElementsByTagName('editor');
 
         if (!$list->length) {
@@ -1080,6 +1231,10 @@ class XML
 
         for ($c = 0; $c < $list->length; $c++) {
             $Editor = $list->item($c);
+
+            if (!$Editor instanceof DOMElement) {
+                continue;
+            }
 
             if ($Editor->nodeName == '#text') {
                 continue;
@@ -1112,6 +1267,10 @@ class XML
         for ($w = 0; $w < $widgets->length; $w++) {
             $Widgets = $widgets->item($w);
 
+            if (!$Widgets instanceof DOMElement) {
+                continue;
+            }
+
             if ($Widgets->nodeName == '#text') {
                 continue;
             }
@@ -1120,6 +1279,10 @@ class XML
 
             for ($c = 0; $c < $list->length; $c++) {
                 $Widget = $list->item($c);
+
+                if (!$Widget instanceof DOMElement) {
+                    continue;
+                }
 
                 if ($Widget->nodeName == '#text') {
                     continue;
@@ -1164,6 +1327,11 @@ class XML
         }
 
         $Widget = $widget->item(0);
+
+        if (!$Widget instanceof DOMElement) {
+            return false;
+        }
+
         $Widget->setAttribute('name', md5($file));
 
         return $Widget;
@@ -1258,7 +1426,7 @@ class XML
 
                     case 'string':
                         if (!is_string($value)) { // #workaround for quiqqer/erp#29
-                            $value = json_encode($value);
+                            $value = json_encode($value) ?: '';
                         }
 
                         $value = strip_tags($value);
@@ -1402,6 +1570,10 @@ class XML
      */
     protected static function importDataBaseTable(string $tableName, array $definition, ?callable $foreignTableResolver = null): void
     {
+        if ($tableName === '') {
+            throw new QUI\Exception('Database table name must not be empty.');
+        }
+
         $SchemaManager = QUI::getSchemaManager();
 
         try {
@@ -1607,7 +1779,7 @@ class XML
 
     /**
      * @param array<array-key, mixed>|string $indexes
-     * @return array<int, array<int, string>>
+     * @return list<non-empty-list<non-empty-string>>
      */
     protected static function normalizeDatabaseXmlIndexList(array | string $indexes): array
     {
@@ -1630,7 +1802,7 @@ class XML
 
     /**
      * @param array<array-key, mixed>|string $columns
-     * @return array<int, string>
+     * @return list<non-empty-string>
      */
     protected static function normalizeDatabaseXmlColumns(array | string $columns): array
     {
@@ -1829,11 +2001,15 @@ class XML
             }
         }
 
-        $normalized = preg_replace('/\s+/', ' ', $type);
+        $normalized = preg_replace('/\s+/', ' ', $type) ?? $type;
 
         if (preg_match('/\bon\s+update\b/i', $fieldType)) {
             $columnDefinition = preg_replace('/\bNOW\s*\(\s*\)/i', 'CURRENT_TIMESTAMP', $fieldType);
-            $columnDefinition = preg_replace('/\bCURRENT_TIMESTAMP\s*\(\s*\)/i', 'CURRENT_TIMESTAMP', $columnDefinition);
+            $columnDefinition = preg_replace(
+                '/\bCURRENT_TIMESTAMP\s*\(\s*\)/i',
+                'CURRENT_TIMESTAMP',
+                $columnDefinition ?? $fieldType
+            );
             $options['columnDefinition'] = $columnDefinition;
         }
 

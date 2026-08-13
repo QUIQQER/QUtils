@@ -64,6 +64,20 @@ class ExceptionTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(400, $Exception->getCode());
     }
 
+    public function testConstructorWithLocaleMessage(): void
+    {
+        $localeMessage = [
+            'quiqqer/utils',
+            'missing.coverage.key',
+            ['value' => 'test']
+        ];
+        $Exception = new \QUI\Exception($localeMessage, 422);
+
+        $this->assertNotSame('', $Exception->getMessage());
+        $this->assertSame(422, $Exception->getCode());
+        $this->assertSame($localeMessage, $Exception->getContext()['locale']);
+    }
+
     public function testToArrayContainsContext(): void
     {
         $context = ['scope' => 'unit-test'];

@@ -9,6 +9,7 @@ namespace QUI\Utils\Text;
 use QUI;
 
 use function explode;
+use function preg_match;
 use function preg_replace;
 use function preg_replace_callback;
 use function str_replace;
@@ -631,7 +632,7 @@ class BBCode extends QUI\QDOM
 
         $cssclass = 'extern';
 
-        if (strpos($url, 'http://') === false) {
+        if (preg_match('#^https?://#i', $url) !== 1) {
             $cssclass = 'intern';
         }
 

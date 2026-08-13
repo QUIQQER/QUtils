@@ -114,7 +114,7 @@ class StringHelper
         $info = pathinfo($path);
 
         if ($options == PATHINFO_DIRNAME) {
-            return $info['dirname'];
+            return $info['dirname'] ?? '';
         }
 
         if ($options == PATHINFO_BASENAME) {
@@ -122,7 +122,7 @@ class StringHelper
         }
 
         if ($options == PATHINFO_EXTENSION) {
-            return $info['extension'];
+            return $info['extension'] ?? '';
         }
 
         if ($options == PATHINFO_FILENAME) {
@@ -143,7 +143,7 @@ class StringHelper
      */
     public static function replaceDblSlashes(string $path): string
     {
-        return preg_replace('/[\/]{2,}/', "/", $path);
+        return preg_replace('/[\/]{2,}/', "/", $path) ?? $path;
     }
 
     /**
@@ -191,7 +191,7 @@ class StringHelper
 
             $regex = '#([' . $char . ']){2,}#';
 
-            $_str = preg_replace($regex, "$1", $_str);
+            $_str = preg_replace($regex, "$1", $_str) ?? $_str;
         }
 
         return utf8_encode($_str);
@@ -210,7 +210,7 @@ class StringHelper
             '/\/($|\?|\#)/U',
             '\1',
             $str
-        );
+        ) ?? $str;
     }
 
     /**
@@ -315,7 +315,7 @@ class StringHelper
                 $sourceEncoding = 'ISO-8859-1';
             }
 
-            return mb_convert_encoding($str, 'UTF-8', $sourceEncoding);
+            return (string)mb_convert_encoding($str, 'UTF-8', $sourceEncoding);
         }
 
         return $str;
@@ -350,6 +350,10 @@ class StringHelper
 
         if ($q !== false) {
             $_min_vars[] = $q;
+        }
+
+        if ($_min_vars === []) {
+            return '';
         }
 
         return trim(
@@ -514,7 +518,7 @@ class StringHelper
      */
     public static function getHTMLAttributes(string $html): array
     {
-        $cleaned = preg_replace('/\s+=\s+/', '=', $html);
+        $cleaned = preg_replace('/\s+=\s+/', '=', $html) ?? $html;
 
         preg_match_all('/(?:^|\s)([\w|-]+)="([^">]+)"/', $cleaned, $qatts);
         preg_match_all('/(?:^|\s)([\w|-]+)=([^"\s>]+)/', $cleaned, $patts);
@@ -574,10 +578,16 @@ class StringHelper
             return $string;
         }
 
+        $position = strrpos($string, $search);
+
+        if ($position === false) {
+            return $string;
+        }
+
         return substr_replace(
             $string,
             $replace,
-            strrpos($string, $search),
+            $position,
             strlen($search)
         );
     }
@@ -696,7 +706,9 @@ class StringHelper
         }
 
         if (class_exists('QUI')) {
-            $locale = QUI::getLocale()->getLocalesByLang(QUI::getLocale()->getCurrent());
+            $current = QUI::getLocale()->getCurrent();
+            $locales = QUI::getLocale()->getLocalesByLang($current);
+            $locale = $locales[0] ?? $current;
         } else {
             $locale = 'en_EN';
         }
@@ -814,7 +826,7 @@ class StringHelper
             '%x' => $intlFormatter,
         ];
 
-        $out = preg_replace_callback('/(?<!%)(%[a-zA-Z])/', function ($match) use ($translationTable, $timestamp) {
+        $out = preg_replace_callback('/(?<!%)(%[a-zA-Z])/', function (array $match) use ($translationTable, $timestamp): string {
             if ($match[1] == '%n') {
                 return "\n";
             } elseif ($match[1] == '%t') {
@@ -830,10 +842,10 @@ class StringHelper
             if (is_string($replace)) {
                 return $timestamp->format($replace);
             } else {
-                return $replace($timestamp, $match[1]);
+                return (string)$replace($timestamp, $match[1]);
             }
         }, $format);
 
-        return str_replace('%%', '%', $out);
+        return str_replace('%%', '%', $out ?? $format);
     }
 }

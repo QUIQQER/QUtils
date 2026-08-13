@@ -107,15 +107,12 @@ class Settings
             $Path = new DOMXPath($Dom);
             $windows = $Path->query($this->xmlPath);
 
-            if (!$windows->length) {
+            if ($windows === false || !$windows->length) {
                 continue;
             }
 
             foreach ($windows as $Window) {
-                if (
-                    !method_exists($Window, 'getElementsByTagName')
-                    || !method_exists($Window, 'getAttribute')
-                ) {
+                if (!$Window instanceof DOMElement) {
                     continue;
                 }
 
@@ -126,22 +123,31 @@ class Settings
                     continue;
                 }
 
-                if ($Title->length && $Title->item(0)->parentNode === $Window) {
-                    $result['title'] = htmlspecialchars(DOM::getTextFromNode($Title->item(0)));
+                $TitleNode = $Title->item(0);
+
+                if ($TitleNode instanceof DOMNode && $TitleNode->parentNode === $Window) {
+                    $result['title'] = htmlspecialchars(DOM::getTextFromNode($TitleNode));
                 }
 
-                if ($Icon->length && $Icon->item(0) !== '' && $Icon->item(0)->parentNode === $Window) {
-                    $result['icon'] = htmlspecialchars(DOM::getTextFromNode($Icon->item(0)));
+                $IconNode = $Icon->item(0);
+
+                if ($IconNode instanceof DOMNode && $IconNode->parentNode === $Window) {
+                    $result['icon'] = htmlspecialchars(DOM::getTextFromNode($IconNode));
                 }
 
                 // if params exists
                 $Params = $Window->getElementsByTagName('params');
 
                 if ($Params->length) {
-                    $Icon = $Params->item(0)->getElementsByTagName('icon');
+                    $ParamsNode = $Params->item(0);
 
-                    if ($Icon) {
-                        $result['icon'] = DOM::parseVar($Icon->item(0)->nodeValue);
+                    if ($ParamsNode instanceof DOMElement) {
+                        $Icon = $ParamsNode->getElementsByTagName('icon');
+                        $IconNode = $Icon->item(0);
+
+                        if ($IconNode instanceof DOMNode) {
+                            $result['icon'] = DOM::parseVar((string)$IconNode->nodeValue);
+                        }
                     }
                 }
             }
@@ -195,7 +201,15 @@ class Settings
 
             $categories = $Path->query($this->xmlPath . "/categories/category");
 
+            if ($categories === false) {
+                continue;
+            }
+
             foreach ($categories as $Category) {
+                if (!$Category instanceof DOMNode) {
+                    continue;
+                }
+
                 $data = $this->parseCategory($Category);
 
                 if (defined('CMS_DIR')) {
@@ -287,12 +301,12 @@ class Settings
             }
 
             if ($Child->nodeName == 'icon') {
-                $data['icon'] = DOM::parseVar($Child->nodeValue);
+                $data['icon'] = DOM::parseVar((string)$Child->nodeValue);
                 continue;
             }
 
             if ($Child->nodeName == 'image') {
-                $data['icon'] = DOM::parseVar($Child->nodeValue);
+                $data['icon'] = DOM::parseVar((string)$Child->nodeValue);
                 continue;
             }
 
@@ -343,7 +357,7 @@ class Settings
             }
 
             if ($Child->nodeName == 'template') {
-                $data['template'] = QUI\Utils\DOM::parseVar($Child->nodeValue);
+                $data['template'] = QUI\Utils\DOM::parseVar((string)$Child->nodeValue);
                 continue;
             }
 
@@ -438,9 +452,10 @@ class Settings
                 $result .= '<thead><tr><th>';
 
                 if (class_exists('QUI') && is_array($setting['title'])) {
-                    $result .= QUI::getLocale()->get($setting['title'][0], $setting['title'][1]);
+                    $title = QUI::getLocale()->get($setting['title'][0], $setting['title'][1]);
+                    $result .= is_string($title) ? $title : '';
                 } else {
-                    $result .= $setting['title'];
+                    $result .= is_string($setting['title']) ? $setting['title'] : '';
                 }
 
                 $result .= '</th></tr></thead>';

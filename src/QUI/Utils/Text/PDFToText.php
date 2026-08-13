@@ -48,7 +48,7 @@ class PDFToText extends QUI\QDOM
         }
 
 
-        $output = shell_exec('pdftotext 2>&1');
+        $output = (string)shell_exec('pdftotext 2>&1');
 
         if (!str_contains($output, 'pdftotext version')) {
             throw new QUI\Exception('Could not use pdftotext.', 500);
@@ -67,6 +67,6 @@ class PDFToText extends QUI\QDOM
 
         unlink($tmp_file);
 
-        return $content;
+        return $content === false ? '' : $content;
     }
 }
