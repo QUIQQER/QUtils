@@ -109,6 +109,7 @@ class Tables
         return count($data) > 0;
     }
 
+    // nosemgrep: quiqqer.forbid-mysql-specific-sql
     /**
      * Delete a table
      *
@@ -117,7 +118,6 @@ class Tables
      * @return void
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
-    // nosemgrep: quiqqer.forbid-mysql-specific-sql
     public function delete(string $table): void
     {
         if (!$this->exist($table)) {
