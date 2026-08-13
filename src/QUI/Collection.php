@@ -11,6 +11,7 @@ use ArrayIterator;
 use IteratorAggregate;
 
 use function array_filter;
+use function array_key_last;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -20,6 +21,7 @@ use function get_class;
 use function in_array;
 use function is_array;
 use function is_null;
+use function is_object;
 use function usort;
 
 /**
@@ -259,9 +261,9 @@ class Collection implements IteratorAggregate, ArrayAccess
             throw new Exception('Item not found, Collection ist empty');
         }
 
-        $length = $this->length();
+        $key = array_key_last($this->children);
 
-        return $this->children[$length - 1];
+        return $this->children[$key];
     }
 
     /**
@@ -350,6 +352,10 @@ class Collection implements IteratorAggregate, ArrayAccess
 
         if (empty($allowed)) {
             return true;
+        }
+
+        if (!is_object($Child)) {
+            return false;
         }
 
         if (in_array(get_class($Child), $allowedClasses, true)) {

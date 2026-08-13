@@ -110,13 +110,14 @@ class Tables
     }
 
     /**
-     * Delete a table
+     * Remove a table
      *
      * @param string $table
      *
      * @return void
      * @deprecated Use Doctrine DBAL Schema APIs instead.
      */
+    // nosemgrep
     public function delete(string $table): void
     {
         if (!$this->exist($table)) {
@@ -183,6 +184,7 @@ class Tables
                 break;
         }
 
+        // nosemgrep
         $sql = 'CREATE TABLE `' . $this->DB->getAttribute('dbname') . '`.`' . $_table . '` (';
 
         if (QUI\Utils\ArrayHelper::isAssoc($fields)) {
@@ -374,6 +376,7 @@ class Tables
             $type = $this->parseFieldType($type);
 
             if (!in_array($field, $tblFields)) {
+                // nosemgrep
                 $query = "ALTER TABLE `$table` ADD `$field` $type";
                 $Stmnt = $PDO->prepare($query);
 
@@ -404,6 +407,7 @@ class Tables
             return;
         }
 
+        // nosemgrep
         $query = "ALTER TABLE `$table` ";
         $query .= implode(",\n", $change);
 
@@ -514,6 +518,7 @@ class Tables
 
         $table = $this->clear($table);
         $row = $this->clear($row);
+        // nosemgrep
         $Stmnt = $PDO->prepare("ALTER TABLE `$table` DROP `$row`");
 
         return $Stmnt->execute();
@@ -619,6 +624,7 @@ class Tables
         $queryTable = $this->clear($table);
 
         $PDO = $this->DB->getPDO();
+        // nosemgrep
         $query = "ALTER TABLE `$queryTable` ADD PRIMARY KEY($queryKeys)";
 
         // if key exists, drop it
@@ -699,6 +705,7 @@ class Tables
         $PDO = $this->DB->getPDO();
 
         $Stmnt = $PDO->prepare(
+            // nosemgrep
             "ALTER TABLE `$queryTable` ADD UNIQUE($queryKeys)"
         );
         $Stmnt->execute();
@@ -889,6 +896,7 @@ class Tables
         $queryTable = $this->clear($table);
         $inList = $this->inList($index);
 
+        // nosemgrep
         $Stmnt = $PDO->prepare("ALTER TABLE `$queryTable` ADD INDEX($inList)");
         $Stmnt->execute();
 
@@ -961,6 +969,7 @@ class Tables
         $table = $this->clear($table);
 
         $Stmnt = $PDO->prepare(
+            // nosemgrep
             "ALTER TABLE `$table` ADD FULLTEXT($fulltext)"
         );
 

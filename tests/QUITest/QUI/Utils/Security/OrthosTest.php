@@ -232,4 +232,56 @@ class OrthosTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse(Orthos::isSpamMail('test'), 'test is not marked as a spammail');
     }
+
+    public function testAdditionalSanitizers(): void
+    {
+        $this->assertSame('', Orthos::clear(null));
+        $this->assertSame('abc-123', Orthos::clearNoneCharacters('abc-123!?', ['-']));
+        $this->assertSame(['safe', 'file_name'], Orthos::clearFilename(['safe', 'file name']));
+        $this->assertSame('', Orthos::removeHTML(null));
+        $this->assertSame('`tablefield`', Orthos::cleanupDatabaseFieldName('`table..field;`'));
+        $this->assertSame('', Orthos::cleanupDatabaseFieldName(''));
+        $this->assertSame("'one'\\''two'", Orthos::clearShellArg("one'two"));
+        $this->assertSame('&lt;b&gt;&quot;text&quot;&lt;/b&gt;', Orthos::escapeHTML('<b>"text"</b>'));
+    }
+
+    public function testClearArrayPreservesSupportedScalarTypes(): void
+    {
+        $Object = new \stdClass();
+        $result = Orthos::clearArray([
+            'nested' => ['<b>text</b>'],
+            'number' => 12,
+            'boolean' => true,
+            'null' => null,
+            'unsupported' => $Object
+        ]);
+
+        $this->assertSame('text', $result['nested'][0]);
+        $this->assertSame(12, $result['number']);
+        $this->assertTrue($result['boolean']);
+        $this->assertNull($result['null']);
+        $this->assertArrayNotHasKey('unsupported', $result);
+    }
+
+    public function testDateAndAddressValidationEdgeCases(): void
+    {
+        $this->assertTrue(Orthos::checkdate(29, 2, 2024));
+        $this->assertFalse(Orthos::checkdate(29, 2, 2023));
+        $this->assertFalse(Orthos::checkdate(1, '2', 2024));
+        $this->assertFalse(Orthos::checkdate(1, 2, '2024'));
+        $this->assertFalse(Orthos::checkMailSyntax('invalid'));
+        $this->assertTrue(Orthos::checkMySqlDateSyntax('2024-02-29'));
+        $this->assertFalse(Orthos::checkMySqlDateSyntax('2024/02/29'));
+        $this->assertFalse(Orthos::checkMySqlDateSyntax('2024-2-29'));
+        $this->assertTrue(Orthos::checkMySqlTimestampSyntax('2024-02-29 12:13:14'));
+        $this->assertFalse(Orthos::checkMySqlDatetimeSyntax('2024-02-29T12:13:14'));
+    }
+
+    public function testPasswordFallbackLengthAndUrlEncoding(): void
+    {
+        $this->assertSame(10, strlen(Orthos::getPassword(-1)));
+        $this->assertSame('', Orthos::getPassword(0));
+        $this->assertSame('hello-world-test', Orthos::urlEncodeString(' Hello, WORLD & Test '));
+        $this->assertSame('hello_world', Orthos::urlEncodeString('Hello / World', '_'));
+    }
 }

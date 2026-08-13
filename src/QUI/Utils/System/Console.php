@@ -32,7 +32,7 @@ class Console
      */
     public static function read(): string
     {
-        return trim(fgets(STDIN));
+        return trim((string)fgets(STDIN));
     }
 
     /**
@@ -43,7 +43,7 @@ class Console
     public static function readPassword(): string
     {
         system('stty -echo');
-        $result = trim(fgets(STDIN));
+        $result = trim((string)fgets(STDIN));
         system('stty echo');
 
         return $result;
@@ -73,13 +73,13 @@ class Console
      *
      * @param mixed $text - The base string
      * @param mixed $color - The color code which should be applied
-     * @param bool $background - (optional) The color code for the background.
+     * @param string|false $background - (optional) The color code for the background.
      * @return string The color encoded string
      * @see Console::COLOR_YELLOW
      * @see Console::BACKGROUND_BLACK
      * @see https://en.wikipedia.org/wiki/ANSI_escape_code
      */
-    public static function getColoredString($text, $color, bool $background = false): string
+    public static function getColoredString($text, $color, string|false $background = false): string
     {
         if ($background !== false) {
             return "\033[" . $color . ";" . $background . "m" . $text . "\033[0m";

@@ -143,7 +143,7 @@ class Folder
         }
 
         // Canonicalize the path
-        return realpath($path);
+        return realpath($path) ?: '';
     }
 
     /**

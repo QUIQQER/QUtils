@@ -98,7 +98,7 @@ class Config
      */
     public function toJSON(): string
     {
-        return json_encode($this->iniParsedArray);
+        return (string)json_encode($this->iniParsedArray);
     }
 
     /**
@@ -250,6 +250,10 @@ class Config
             return $this->setSection($section, $key);
         }
 
+        if (!is_string($section) || is_array($key) || $value === null) {
+            throw new \TypeError('Invalid arguments for ' . self::class . '::set()');
+        }
+
         return $this->setValue($section, $key, $value);
     }
 
@@ -306,6 +310,10 @@ class Config
         }
 
         $FileDescriptor = fopen($filename, "w");
+
+        if ($FileDescriptor === false) {
+            throw new Exception('Could not open config ' . $filename);
+        }
 
         fwrite($FileDescriptor, ";<?php exit; ?>\n"); // php security
 

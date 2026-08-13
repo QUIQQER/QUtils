@@ -5,6 +5,7 @@ namespace QUITest\QUI\Utils\Text;
 use DOMDocument;
 use DOMElement;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Types;
 use QUI\Utils\Text\XML;
@@ -538,6 +539,26 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], XML::getConfigParamsFromXml($file));
     }
 
+    public function testGetConfigFromXmlHandlesEntryNamedDefault(): void
+    {
+        $configName = 'phpunit-utils-' . md5(uniqid('', true));
+        $configFile = CMS_DIR . 'etc/' . $configName . '.ini.php';
+        $this->tempFiles[] = $configFile;
+        $file = $this->createTempXmlFile(
+            '<quiqqer><settings><config name="' . $configName . '">' .
+            '<section name="general">' .
+            '<conf name="default"><type>string</type><defaultvalue>expected</defaultvalue></conf>' .
+            '<conf name="other"><type>string</type><defaultvalue>value</defaultvalue></conf>' .
+            '</section></config></settings></quiqqer>'
+        );
+
+        $Config = XML::getConfigFromXml($file);
+
+        $this->assertInstanceOf(\QUI\Config::class, $Config);
+        $this->assertSame('expected', $Config->getValue('general', 'default'));
+        $this->assertSame('value', $Config->getValue('general', 'other'));
+    }
+
     public function testAddXmlFileToMenuReturnsEarlyForMissingFile(): void
     {
         if (!class_exists('\QUI\Controls\Contextmenu\Bar')) {
@@ -736,5 +757,130 @@ class XMLTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->addToAssertionCount(1);
+    }
+
+    public function testMenuXmlBuildsNestedContextMenu(): void
+    {
+        $file = $this->createTempXmlFile(
+            '<quiqqer><menu>' .
+            '<item name="root" parent="/" icon="root.png"><text>Root</text></item>' .
+            '<item name="child" parent="/root" require="child/module" exec="run"><text>Child</text></item>' .
+            '<item name="separator" parent="/root" type="separator" disabled="1"><text>Separator</text></item>' .
+            '<item name="disabled" parent="/" disabled="1"><text>Disabled</text></item>' .
+            '<item name="orphan" parent="/missing"><text>Orphan</text></item>' .
+            '<item name="ignored"><text>Ignored</text></item>' .
+            '<item name="root" parent="/"><text>Duplicate</text></item>' .
+            '</menu></quiqqer>'
+        );
+        $Menu = new \QUI\Controls\Contextmenu\Bar(['name' => 'test']);
+
+        XML::addXMLFileToMenu($Menu, $file);
+
+        $this->assertCount(2, $Menu->getChildren());
+        $Root = $Menu->getElementByName('root');
+        $this->assertNotFalse($Root);
+        $this->assertSame('Root', $Root->getAttribute('text'));
+        $this->assertSame('root.png', $Root->getAttribute('icon'));
+        $this->assertNotFalse($Root->getElementByName('child'));
+        $separators = array_values(
+            array_filter(
+                $Root->getChildren(),
+                static fn($Item) => $Item->getName() === 'separator'
+            )
+        );
+        $this->assertCount(1, $separators);
+        $this->assertInstanceOf(\QUI\Controls\Contextmenu\Separator::class, $separators[0]);
+        $this->assertTrue($Menu->getElementByName('disabled')->getAttribute('disabled'));
+    }
+
+    public function testDatabaseXmlNormalizationHelpers(): void
+    {
+        $normalizeColumns = new ReflectionMethod(XML::class, 'normalizeDatabaseXmlColumns');
+        $normalizeIndexes = new ReflectionMethod(XML::class, 'normalizeDatabaseXmlIndexList');
+        $normalizeForeignKeys = new ReflectionMethod(XML::class, 'normalizeDatabaseXmlForeignKeys');
+        $attributeEnabled = new ReflectionMethod(XML::class, 'databaseXmlAttributeEnabled');
+        $applyAttributes = new ReflectionMethod(XML::class, 'applyDatabaseXmlFieldAttributes');
+
+        $this->assertSame(['id', 'title'], $normalizeColumns->invoke(null, ' id, ,title '));
+        $this->assertSame([['id'], ['title', 'lang']], $normalizeIndexes->invoke(null, ['id', 'title,lang', '']));
+        $this->assertTrue($attributeEnabled->invoke(null, true));
+        $this->assertTrue($attributeEnabled->invoke(null, 'yes'));
+        $this->assertFalse($attributeEnabled->invoke(null, 'off'));
+
+        $foreignKeys = $normalizeForeignKeys->invoke(null, [
+            'localColumns' => 'userId',
+            'foreignTable' => 'users',
+            'foreignColumns' => 'id',
+            'onDelete' => 'CASCADE',
+            'deferred' => 'yes'
+        ]);
+        $this->assertCount(1, $foreignKeys);
+        $this->assertStringStartsWith('fk_', $foreignKeys[0]['name']);
+        $this->assertSame(['userId'], $foreignKeys[0]['localColumns']);
+        $this->assertSame('CASCADE', $foreignKeys[0]['options']['onDelete']);
+        $this->assertTrue($foreignKeys[0]['options']['deferred']);
+        $this->assertSame([], $normalizeForeignKeys->invoke(null, ['invalid', []]));
+
+        $options = $applyAttributes->invoke(null, Types::INTEGER, [], [
+            'null' => 'true',
+            'notnull' => 'true',
+            'default' => 'NOW()',
+            'length' => '20',
+            'precision' => '10',
+            'scale' => '2',
+            'auto_increment' => 'yes',
+            'unsigned' => 'true',
+            'comment' => 'Identifier'
+        ]);
+        $this->assertTrue($options['notnull']);
+        $this->assertSame('CURRENT_TIMESTAMP', $options['default']);
+        $this->assertSame(20, $options['length']);
+        $this->assertSame(10, $options['precision']);
+        $this->assertSame(2, $options['scale']);
+        $this->assertTrue($options['autoincrement']);
+        $this->assertTrue($options['unsigned']);
+        $this->assertSame('Identifier', $options['comment']);
+    }
+
+    public function testDatabaseXmlFieldTypeFamilies(): void
+    {
+        $parse = new ReflectionMethod(XML::class, 'parseDatabaseXmlFieldType');
+        $cases = [
+            'SMALLINT' => Types::SMALLINT,
+            'BOOLEAN' => Types::BOOLEAN,
+            'MEDIUMINT' => Types::INTEGER,
+            'CHAR(12)' => Types::STRING,
+            'LONGTEXT' => Types::TEXT,
+            'TIMESTAMP NULL' => Types::DATETIME_MUTABLE,
+            'DATE' => Types::DATE_MUTABLE,
+            'TIME' => Types::TIME_MUTABLE,
+            'DECIMAL(12, 4)' => Types::DECIMAL,
+            'DOUBLE UNSIGNED' => Types::FLOAT,
+            'BINARY' => Types::BLOB,
+            'JSON' => Types::JSON,
+            'UNKNOWN' => Types::STRING
+        ];
+
+        foreach ($cases as $definition => $expectedType) {
+            [$type, $options] = $parse->invoke(null, $definition);
+            $this->assertSame($expectedType, $type, $definition);
+            $this->assertInstanceOf(Type::class, Type::getType($type));
+            $this->assertArrayHasKey('notnull', $options);
+        }
+
+        [, $options] = $parse->invoke(null, "VARCHAR(10) DEFAULT 'hello world'");
+        $this->assertSame('hello world', $options['default']);
+        [, $options] = $parse->invoke(null, 'INT AUTO_INCREMENT UNSIGNED');
+        $this->assertTrue($options['autoincrement']);
+        $this->assertTrue($options['unsigned']);
+    }
+
+    public function testDatabaseImportRejectsEmptyTableNameBeforeSchemaAccess(): void
+    {
+        $importTable = new ReflectionMethod(XML::class, 'importDataBaseTable');
+
+        $this->expectException(\QUI\Exception::class);
+        $this->expectExceptionMessage('Database table name must not be empty.');
+        $importTable->invoke(null, '', []);
     }
 }

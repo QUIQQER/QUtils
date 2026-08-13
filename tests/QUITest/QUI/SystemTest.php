@@ -96,4 +96,24 @@ class SystemTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertFalse(System::isSystemFunctionCallable('definitely_not_a_real_command_name'));
     }
+
+    public function testAdditionalProtocolMemoryIpAndShellBranches(): void
+    {
+        $_SERVER['HTTPS'] = '1';
+        $this->assertTrue(System::isProtocolSecure());
+
+        System::$memory_limit = PHP_INT_MAX;
+        $this->assertFalse(System::memUsageToHigh());
+
+        System::$memory_limit = 1;
+        $this->assertTrue(System::memUsageToHigh());
+
+        unset($_SERVER['HTTP_CLIENT_IP'], $_SERVER['HTTP_CF_CONNECTING_IP']);
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '192.168.0.20';
+        $_SERVER['REMOTE_ADDR'] = '192.168.0.10';
+        $this->assertSame('192.168.0.20', System::getClientIP());
+
+        $this->assertFalse(System::isSystemFunctionCallable('php;invalid'));
+        $this->assertTrue(System::isSystemFunctionCallable('php'));
+    }
 }

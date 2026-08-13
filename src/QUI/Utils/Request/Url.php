@@ -36,13 +36,24 @@ class Url
      * @param string $url - Url
      * @param array<array-key, mixed> $curlParams - Curl parameter
      *
-     * @return CurlHandle|false
+     * @return CurlHandle
+     * @throws Exception
      * @see http://www.php.net/manual/de/function.curl-setopt.php
      */
-    public static function curl(string $url, array $curlParams = []): CurlHandle | bool
+    public static function curl(string $url, array $curlParams = []): CurlHandle
     {
         $url = str_replace(' ', '+', $url); // URL Fix
+
+        if ($url === '') {
+            throw new Exception('URL must not be empty.');
+        }
+
         $Curl = curl_init();
+
+        if ($Curl === false) {
+            throw new Exception('Could not initialize cURL.');
+        }
+
         curl_setopt($Curl, CURLOPT_URL, $url);
         curl_setopt($Curl, CURLOPT_RETURNTRANSFER, true);
 
@@ -96,7 +107,7 @@ class Url
             return false;
         }
 
-        return !(!str_contains($content, $search));
+        return str_contains((string)$content, $search);
     }
 
     /**
@@ -142,9 +153,17 @@ class Url
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
             curl_setopt($Curl, CURLOPT_FOLLOWLOCATION, false);
 
-            $newUrl = curl_getinfo($Curl, CURLINFO_EFFECTIVE_URL);
+            $newUrl = (string)curl_getinfo($Curl, CURLINFO_EFFECTIVE_URL);
             $rch = curl_copy_handle($Curl);
             $mr = 10;
+
+            if ($rch === false) {
+                return curl_exec($Curl);
+            }
+
+            if ($newUrl === '') {
+                return curl_exec($Curl);
+            }
 
             curl_setopt($rch, CURLOPT_HEADER, true);
             curl_setopt($rch, CURLOPT_NOBODY, true);
@@ -152,8 +171,12 @@ class Url
             curl_setopt($rch, CURLOPT_RETURNTRANSFER, true);
 
             do {
+                if ($newUrl === '') {
+                    break;
+                }
+
                 curl_setopt($rch, CURLOPT_URL, $newUrl);
-                $header = curl_exec($rch);
+                $header = (string)curl_exec($rch);
 
                 if (curl_errno($rch)) {
                     $code = 0;
@@ -161,8 +184,11 @@ class Url
                     $code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
 
                     if ($code == 301 || $code == 302) {
-                        preg_match('/Location:(.*?)\n/', $header, $matches);
-                        $newUrl = trim(array_pop($matches));
+                        if (preg_match('/Location:(.*?)\n/', $header, $matches) === 1) {
+                            $newUrl = trim((string)array_pop($matches));
+                        } else {
+                            $code = 0;
+                        }
                     } else {
                         $code = 0;
                     }
@@ -170,7 +196,9 @@ class Url
             } while ($code && --$mr);
 
             unset($rch);
-            curl_setopt($Curl, CURLOPT_URL, $newUrl);
+            if ($newUrl !== '') {
+                curl_setopt($Curl, CURLOPT_URL, $newUrl);
+            }
         }
 
         return curl_exec($Curl);

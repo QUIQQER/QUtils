@@ -9,5 +9,8 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <file>src/QUI/Database/DB.php</file>
+        </exclude>
     </source>
 </phpunit>

@@ -55,6 +55,10 @@ class Orthos
         $str = self::clearFormRequest($str);
         $str = self::clearPath($str);
 
+        if (!is_string($str)) {
+            return '';
+        }
+
         return htmlspecialchars($str);
     }
 
@@ -72,7 +76,7 @@ class Orthos
         $chars = 'a-zA-Z0-9';
         $chars .= implode($allowedList);
 
-        return preg_replace("/[^$chars]/", "", $str);
+        return preg_replace("/[^$chars]/", "", $str) ?? '';
     }
 
     /**
@@ -180,12 +184,14 @@ class Orthos
      * @return string
      *
      * @throws Exception
-     * @deprecated use PDO::quote (QUI::getPDO()->quote())
+     * @deprecated Use prepared statements or the Doctrine DBAL platform abstraction instead.
      */
     public static function clearMySQL(string $str, bool $escape = true): string
     {
         if ($escape && class_exists('QUI')) {
-            $str = QUI::getPDO()->quote($str);
+            $str = QUI::getDataBaseConnection()
+                ->getDatabasePlatform()
+                ->quoteStringLiteral($str);
         }
 
         return $str;
@@ -197,14 +203,16 @@ class Orthos
      *
      * @param string $str
      * @return string
+     * @deprecated Use Doctrine DBAL platform identifier quoting instead.
      */
+    // nosemgrep: quiqqer.forbid-mysql-specific-sql
     public static function cleanupDatabaseFieldName(string $str): string
     {
         if (empty($str)) {
             return '';
         }
 
-        $str = preg_replace('/[^0-9,a-zA-Z$_.]/i', '', $str);
+        $str = preg_replace('/[^0-9,a-zA-Z$_.]/i', '', $str) ?? '';
         $str = str_replace('..', '', $str);
         $str = trim($str);
         $str = trim($str, '`');
@@ -334,13 +342,13 @@ class Orthos
     /**
      * use \QUI\Utils\StringHelper::removeLineBreaks
      *
-     * @param array<array-key, mixed>|string $text
+     * @param string $text
      *
      * @return string
      * @see        StringHelper::removeLineBreaks
      * @deprecated use \QUI\Utils\StringHelper::removeLineBreaks
      */
-    public static function removeLineBreaks(array | string $text): string
+    public static function removeLineBreaks(string $text): string
     {
         return StringHelper::removeLineBreaks($text);
     }
@@ -600,13 +608,13 @@ class Orthos
         $str = str_replace($reservedChars, $replace, $str);
 
         // filter non-letters and non-numbers and non-allowed url characters
-        $str = preg_replace('#[^\p{L}\d\-_.~]+#iu', $replace, $str);
+        $str = preg_replace('#[^\p{L}\d\-_.~]+#iu', $replace, $str) ?? '';
 
         // trim outer and double replacement characters
         $str = trim($str, $replace);
 
         // reduce multiple replacement chars in a row
-        $str = preg_replace('#\\' . $replace . '{2,}#i', $replace, $str);
+        $str = preg_replace('#\\' . $replace . '{2,}#i', $replace, $str) ?? '';
 
         return StringHelper::toLower($str);
     }

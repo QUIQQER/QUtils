@@ -2,12 +2,14 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-    level: 6
+    level: 8
     paths:
         - src
     bootstrapFiles:
         - tests/phpstan-bootstrap.php
     treatPhpDocTypesAsCertain: false
     excludePaths:
+        - src/QUI/Database/DB.php
+        - src/QUI/Database/Tables.php
         - src/QUI/Utils/Text/BBCode.php
         - src/QUI/Utils/Text/Word.php

@@ -175,7 +175,7 @@ class System
             return false;
         }
 
-        $disabledFunctions = explode(',', ini_get('disable_functions'));
+        $disabledFunctions = explode(',', (string)ini_get('disable_functions'));
 
         return !in_array($function, $disabledFunctions);
     }

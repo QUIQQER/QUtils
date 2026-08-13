@@ -98,6 +98,10 @@ class PSpell extends QUI\QDOM
      */
     public function translate(string $word): array
     {
-        return pspell_suggest($this->Spell, $word);
+        if ($this->Spell === false) {
+            return [];
+        }
+
+        return pspell_suggest($this->Spell, $word) ?: [];
     }
 }
