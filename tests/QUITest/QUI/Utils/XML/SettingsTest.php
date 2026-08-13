@@ -84,4 +84,49 @@ class SettingsTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Section Title', $result['title']);
         $this->assertNotEmpty($result['items']);
     }
+
+    public function testPanelWindowFilterAndMissingFiles(): void
+    {
+        $Settings = $this->createSettings();
+
+        $missing = $Settings->getPanel('/file/that/does/not/exist.xml', 'missing');
+        $this->assertSame('', $missing['title']);
+        $this->assertSame('missing', $missing['name']);
+        $this->assertSame(0, $missing['categories']->size());
+
+        $panel = $Settings->getPanel(dirname(__DIR__) . '/XML/settings.xml', 'settings');
+        $this->assertSame('settings', $panel['name']);
+    }
+
+    public function testCategoriesCanBeMergedAcrossFiles(): void
+    {
+        $Settings = $this->createSettings();
+        $base = dirname(__DIR__) . '/XML/settings.xml';
+        $second = dirname(__DIR__) . '/XML/settings1.xml';
+        $categories = $Settings->getCategories([$base, $second]);
+
+        $this->assertGreaterThan(1, $categories->size());
+        $this->assertNotEmpty($Settings->getCategoriesHtml([$base, $second]));
+        $this->assertSame('', $Settings->getCategoriesHtml([$base, $second], 'not-existing'));
+    }
+
+    public function testParseCategorySupportsImageAndEmptyNodes(): void
+    {
+        $dom = new DOMDocument();
+        $dom->loadXML(
+            '<category name="cat" custom="value">' .
+            '<text>Title</text><image>image.png</image>' .
+            '<settings name="entry"><template>/missing/template.html</template></settings>' .
+            '</category>'
+        );
+
+        $Settings = $this->createSettings();
+        $category = $Settings->parseCategory($dom->documentElement);
+        $this->assertSame('Title', $category['title']);
+        $this->assertSame('image.png', $category['icon']);
+
+        $setting = $category['items']->toArray()[0];
+        $this->assertSame('/missing/template.html', $setting['template']);
+        $this->assertArrayNotHasKey('items', $setting);
+    }
 }

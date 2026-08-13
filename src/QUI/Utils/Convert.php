@@ -47,7 +47,7 @@ class Convert
         return match ($type) {
             2 => number_format(round($price, 2), 2, ',', '.'),
             3 => number_format(round($price, 2), 2, '.', ','),
-            default => round($price, 2),
+            default => (string)round($price, 2),
         };
     }
 
@@ -65,7 +65,7 @@ class Convert
         }
 
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+        $power = $bytes > 0 ? (int)floor(log($bytes, 1024)) : 0;
 
         return number_format($bytes / pow(1024, $power), 2, '.', ',') . ' ' . $units[$power];
     }
@@ -106,7 +106,7 @@ class Convert
         [$year, $month, $day] = explode('-', $date);
         [$hour, $minute, $second] = explode(':', $time);
 
-        return mktime((int)$hour, (int)$minute, (int)$second, (int)$month, (int)$day, (int)$year);
+        return (int)mktime((int)$hour, (int)$minute, (int)$second, (int)$month, (int)$day, (int)$year);
     }
 
     /**
@@ -307,7 +307,7 @@ class Convert
 
         for ($i = 0; $i < 3; $i++) {
             // Convert the decimal digit to hex
-            $hexDigit = dechex($rgb[$i]);
+            $hexDigit = dechex((int)$rgb[$i]);
             // Add a leading zero if necessary
             if (strlen($hexDigit) == 1) {
                 $hexDigit = "0" . $hexDigit;

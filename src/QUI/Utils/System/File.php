@@ -774,8 +774,11 @@ class File
                 && function_exists('finfo_file')
             ) { // PECL
                 $finfo = finfo_open(FILEINFO_MIME);
-                $part = explode(';', finfo_file($finfo, $file));
-                $info['mime_type'] = $part[0];
+
+                if ($finfo !== false) {
+                    $part = explode(';', (string)finfo_file($finfo, $file));
+                    $info['mime_type'] = $part[0];
+                }
             }
 
             // Falls beides nicht vorhanden ist
@@ -835,6 +838,10 @@ class File
 
         $dh = opendir($path);
         $result = [];
+
+        if ($dh === false) {
+            return $result;
+        }
 
         while (($file = readdir($dh)) !== false) {
             if (str_starts_with($file, '.')) {
@@ -947,6 +954,10 @@ class File
         $handle = opendir($folder);
         $files = [];
 
+        if ($handle === false) {
+            return $files;
+        }
+
         while ($file = readdir($handle)) {
             if ($file == "." || $file == "..") {
                 continue;
@@ -1020,13 +1031,13 @@ class File
     /**
      * Return the size of a folder
      *
-     * @param $path
+     * @param string $path
      * @return int
      * @deprecated Use `QUI\Utils\System\Folder::getFolderSize($path)` instead.
-
-    public static function getDirectorySize($path): int
+     */
+    public static function getDirectorySize(string $path): int
     {
-        return Folder::getFolderSize($path, true);
+        return Folder::getFolderSize($path, true) ?? 0;
     }
 
     /**
@@ -1098,12 +1109,21 @@ class File
 
         $size = filesize($filePath);
         $fInfo = finfo_open(FILEINFO_MIME);
-        $mimetype = finfo_file($fInfo, realpath($filePath));
+
+        if ($fInfo === false) {
+            throw new QUI\Exception('Could not detect file type.');
+        }
+
+        $mimetype = finfo_file($fInfo, realpath($filePath) ?: $filePath);
 
         finfo_close($fInfo);
 
         // Create file handle
         $fp = fopen($filePath, 'rb');
+
+        if ($fp === false) {
+            throw new QUI\Exception('Could not open file.');
+        }
 
         $seekStart = 0;
         $seekEnd = $size;
@@ -1145,7 +1165,7 @@ class File
         header('Content-Length: ' . ($seekEnd - $seekStart));
         header('Accept-Ranges: bytes');
         header(
-            'Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($filePath))
+            'Last-Modified: ' . gmdate('D, d M Y H:i:s', (int)filemtime($filePath))
             . ' GMT'
         );
 
@@ -1227,11 +1247,11 @@ class File
      * It can be given a complete path
      *
      * @param string $path - Path which is to be created
-     * @param bool|int $mode - Permissions for the folder
+     * @param false|int $mode - Permissions for the folder
      *
      * @return boolean
      */
-    public static function mkdir(string $path, bool | int $mode = false): bool
+    public static function mkdir(string $path, false | int $mode = false): bool
     {
         if (is_dir($path)) {
             return true;
@@ -1266,7 +1286,7 @@ class File
 
         self::mkdir(dirname($file));
 
-        return file_put_contents($file, '');
+        return file_put_contents($file, '') !== false;
     }
 
     /**
@@ -1282,7 +1302,9 @@ class File
             return '';
         }
 
-        return file_get_contents($file);
+        $content = file_get_contents($file);
+
+        return $content === false ? '' : $content;
     }
 
     /**
@@ -1294,6 +1316,10 @@ class File
     public static function putLineToFile(string $file, string $line = ''): void
     {
         $fp = fopen($file, 'a');
+
+        if ($fp === false) {
+            throw new QUI\Exception('Could not open file ' . $file);
+        }
 
         fwrite($fp, $line . "\n");
         fclose($fp);
@@ -1389,7 +1415,13 @@ class File
         header("Connection: Keep-Alive");
 
         $fo_file = fopen($file, "r");
-        $fr_file = fread($fo_file, filesize($file));
+
+        if ($fo_file === false) {
+            throw new QUI\Exception('Could not open file ' . $file, 500);
+        }
+
+        $fileSize = filesize($file);
+        $fr_file = $fileSize === false || $fileSize === 0 ? '' : fread($fo_file, $fileSize);
         fclose($fo_file);
 
         echo $fr_file;
@@ -1405,24 +1437,39 @@ class File
     public static function getFileSize(string $url): int | string
     {
         if (str_starts_with($url, 'http')) {
-            $x = array_change_key_case(
-                get_headers($url, true),
-                CASE_LOWER
-            );
+            $headers = get_headers($url, true);
+
+            if ($headers === false) {
+                return 0;
+            }
+
+            $x = array_change_key_case($headers, CASE_LOWER);
 
             if (!isset($x['content-length'])) {
                 $x['content-length'] = '0';
             }
 
-            if (strcasecmp($x[0], 'HTTP/1.1 200 OK') != 0) {
-                $x = $x['content-length'][1];
+            $status = $x[0];
+
+            if (is_array($status)) {
+                $status = end($status) ?: '';
+            }
+
+            $contentLength = $x['content-length'];
+
+            if (is_array($contentLength)) {
+                $contentLength = end($contentLength) ?: '0';
+            }
+
+            if (strcasecmp($status, 'HTTP/1.1 200 OK') != 0) {
+                $x = $contentLength;
             } else {
-                $x = $x['content-length'];
+                $x = $contentLength;
             }
         } else {
             $x = @filesize($url);
         }
 
-        return $x;
+        return $x === false ? 0 : $x;
     }
 }

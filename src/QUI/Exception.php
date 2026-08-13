@@ -66,6 +66,10 @@ class Exception extends \Exception
                         $params
                     );
                 }
+
+                if (is_array($message)) {
+                    $message = implode(',', $message);
+                }
             }
         }
 

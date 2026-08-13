@@ -26,6 +26,42 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('x', $qdom->getAttribute('b'));
     }
 
+    public function testAddTabsToToolbarMapsTabAttributesAndEvents(): void
+    {
+        $dom = $this->loadXml(
+            '<root>' .
+            '<tab name="general" custom="yes">' .
+            '<image>icon.png</image><text>General</text><category/>' .
+            '<onload require="load/module">load</onload>' .
+            '<onunload require="unload/module">unload</onunload>' .
+            '<template>template.html</template>' .
+            '</tab>' .
+            '<tab name="editor" type="wysiwyg"><text>Editor</text></tab>' .
+            '</root>'
+        );
+        $Toolbar = new \QUI\Controls\Toolbar\Bar(['name' => 'test']);
+
+        DOM::addTabsToToolbar($dom->getElementsByTagName('tab'), $Toolbar, 'vendor/package');
+
+        $this->assertCount(2, $Toolbar->getChildren());
+        $General = $Toolbar->getElementByName('general');
+        $this->assertNotFalse($General);
+        $this->assertSame('General', $General->getAttribute('text'));
+        $this->assertSame('icon.png', $General->getAttribute('image'));
+        $this->assertSame('vendor/package', $General->getAttribute('plugin'));
+        $this->assertSame('xml', $General->getAttribute('type'));
+        $this->assertSame('yes', $General->getAttribute('custom'));
+        $this->assertSame('load', $General->getAttribute('onload'));
+        $this->assertSame('load/module', $General->getAttribute('onload_require'));
+        $this->assertSame('unload', $General->getAttribute('onunload'));
+        $this->assertSame('unload/module', $General->getAttribute('onunload_require'));
+        $this->assertSame('template.html', $General->getAttribute('template'));
+
+        $Editor = $Toolbar->getElementByName('editor');
+        $this->assertNotFalse($Editor);
+        $this->assertTrue($Editor->getAttribute('wysiwyg'));
+    }
+
     public function testDbHelperMethods(): void
     {
         $dom = $this->loadXml(
@@ -235,5 +271,153 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('data-click="doIt()"', $html);
         $this->assertStringContainsString('data-image="icon.png"', $html);
         $this->assertStringContainsString('data-text="Click"', $html);
+    }
+
+    public function testDatabaseFieldVariants(): void
+    {
+        $dom = $this->loadXml(
+            '<root>' .
+            '<field>plain</field>' .
+            '<field type="varchar" length="50" null="1">optional</field>' .
+            '<field type="int" unsigned="true" default="0">amount</field>' .
+            '</root>'
+        );
+        $fields = $dom->getElementsByTagName('field');
+
+        $this->assertSame(['plain' => 'text NOT NULL'], DOM::dbFieldDomToArray($fields->item(0)));
+        $this->assertSame(
+            ['optional' => 'varchar(50) NULL'],
+            DOM::dbFieldDomToArray($fields->item(1))
+        );
+        $this->assertSame(
+            ['amount' => 'int NOT NULL'],
+            DOM::dbFieldDomToArray($fields->item(2))
+        );
+    }
+
+    public function testConfigParamsFromDom(): void
+    {
+        $dom = $this->loadXml(
+            '<root><settings><config>' .
+            '<section name="general">' .
+            '<conf name="enabled"><type>bool</type><defaultvalue>1</defaultvalue></conf>' .
+            '<custom>customValue</custom>' .
+            '</section>' .
+            '</config></settings></root>'
+        );
+
+        $result = DOM::getConfigParamsFromDOM($dom, true);
+        $this->assertSame('bool', $result['general']['enabled']['type']);
+        $this->assertSame('1', $result['general']['enabled']['default']);
+        $this->assertSame(['type' => 'string', 'default' => ''], $result['general']['customValue']);
+
+        $this->assertSame([], DOM::getConfigParamsFromDOM($this->loadXml('<root/>')));
+        $this->assertSame([], DOM::getConfigParamsFromDOM($this->loadXml('<settings/>')));
+    }
+
+    public function testPanelAndPermissionParsing(): void
+    {
+        $panel = $this->loadXml(
+            '<panel require="controls/panel"><title>Panel title</title><text>Panel text</text><image>icon.png</image></panel>'
+        );
+        $this->assertSame([
+            'image' => 'icon.png',
+            'title' => 'Panel title',
+            'text' => 'Panel text',
+            'require' => 'controls/panel'
+        ], DOM::parsePanelToArray($panel->documentElement));
+        $this->assertSame([], DOM::parsePanelToArray($this->loadXml('<root/>')->documentElement));
+
+        $permission = $this->loadXml(
+            '<permission name="package.action" type="bool" area="system">' .
+            '<defaultvalue>0</defaultvalue><rootPermission>1</rootPermission>' .
+            '<everyonePermission>0</everyonePermission><guestPermission>0</guestPermission>' .
+            '</permission>'
+        );
+        $result = DOM::parsePermissionToArray($permission->documentElement);
+        $this->assertSame('package.action', $result['name']);
+        $this->assertSame('0', $result['defaultvalue']);
+        $this->assertSame('1', $result['rootPermission']);
+        $this->assertSame('0', $result['everyonePermission']);
+        $this->assertSame('0', $result['guestPermission']);
+    }
+
+    public function testButtonsAndWindowParsing(): void
+    {
+        $dom = $this->loadXml(
+            '<settings><title>Window title</title><window name="test-window">' .
+            '<params><icon>icon.png</icon></params>' .
+            '<categories><category name="save" require="controls/save" index="2">' .
+            '<text>Save</text><title>Save title</title><onclick>save()</onclick><icon>save.png</icon>' .
+            '</category></categories>' .
+            '</window></settings>'
+        );
+
+        $buttons = DOM::getButtonsFromWindow($dom);
+        $this->assertCount(1, $buttons);
+        $this->assertSame('save', $buttons[0]->getAttribute('name'));
+        $this->assertSame('Save', $buttons[0]->getAttribute('text'));
+        $this->assertSame('save()', $buttons[0]->getAttribute('onclick'));
+
+        $Window = DOM::parseDomToWindow($dom);
+        $this->assertNotFalse($Window);
+        $this->assertSame('test-window', $Window->getAttribute('name'));
+        $this->assertSame('Window title', $Window->getAttribute('title'));
+        $this->assertSame('icon.png', $Window->getAttribute('icon'));
+
+        $this->assertFalse(DOM::parseDomToWindow($this->loadXml('<root/>')));
+        $this->assertFalse(DOM::parseDomToWindow($this->loadXml('<settings/>')));
+    }
+
+    public function testCategoryRendersAllSupportedEntryTypes(): void
+    {
+        $dom = $this->loadXml(
+            '<category name="general">' .
+            '<title>General</title>' .
+            '<input conf="username" type="text" class="wide" data-extra="value" placeholder="Name">' .
+            '<text>User</text><description>User description</description></input>' .
+            '<input conf="enabled" type="checkbox"><text>Enabled</text><description>Enable it</description></input>' .
+            '<input conf="owner" type="user"><text>Owner</text></input>' .
+            '<textarea conf="notes" data-mode="large"><text>Notes</text></textarea>' .
+            '<select conf="choice"><text>Choice</text><description>Choose</description>' .
+            '<option value="one">One</option></select>' .
+            '<group conf="group"><text>Group</text><description>Group description</description></group>' .
+            '<button onclick="run()" image="run.png"><text>Run</text></button>' .
+            '<settings name="nested"><title>Nested</title>' .
+            '<text>Introduction</text>' .
+            '<input conf="nestedInput"><text>Nested input</text></input>' .
+            '<textarea conf="nestedText"><text>Nested text</text></textarea>' .
+            '<select conf="nestedSelect"><text>Nested select</text><option value="1">One</option></select>' .
+            '<group conf="nestedGroup"><text>Nested group</text></group>' .
+            '<button onclick="nested()"><text>Nested button</text></button>' .
+            '</settings>' .
+            '</category>'
+        );
+
+        $html = DOM::parseCategoryToHTML($dom->documentElement, 'en');
+
+        $this->assertStringContainsString('data-name="general"', $html);
+        $this->assertStringContainsString('name="username"', $html);
+        $this->assertStringContainsString('type="checkbox"', $html);
+        $this->assertStringContainsString('class="user field-container-field"', $html);
+        $this->assertStringContainsString('name="notes"', $html);
+        $this->assertStringContainsString('name="choice"', $html);
+        $this->assertStringContainsString('btn-groups', $html);
+        $this->assertStringContainsString('data-click="run()"', $html);
+        $this->assertStringContainsString('data-name="nested"', $html);
+        $this->assertStringContainsString('Nested input', $html);
+    }
+
+    public function testInvalidNodesReturnEmptyResults(): void
+    {
+        $root = $this->loadXml('<root/>')->documentElement;
+
+        $this->assertSame('', DOM::buttonDomToString($root));
+        $this->assertSame('', DOM::groupDomToString($root));
+        $this->assertSame('', DOM::inputDomToString($root));
+        $this->assertSame('', DOM::textareaDomToString($root));
+        $this->assertSame('', DOM::selectDomToString($root));
+        $this->assertSame([], DOM::getButtonsFromWindow($this->loadXml('<window/>')));
+        $this->assertSame([], DOM::getWysiwygStyles($this->loadXml('<root/>')));
     }
 }

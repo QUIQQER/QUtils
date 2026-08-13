@@ -1256,6 +1256,7 @@ class DB extends QUI\QDOM
         $prepare = [];
         $values = [];
 
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $sql = self::createQueryInsert($params['insert']);
         $sql .= ' (';
 

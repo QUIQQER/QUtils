@@ -262,7 +262,7 @@ class DOMParser
         $label = true;
         $data = '';
 
-        foreach ($Node->attributes as $Attribute) {
+        foreach ($Node->attributes ?? [] as $Attribute) {
             /* @var $Attribute DOMAttr */
             $name = htmlspecialchars($Attribute->name);
             $value = htmlspecialchars($Attribute->value);

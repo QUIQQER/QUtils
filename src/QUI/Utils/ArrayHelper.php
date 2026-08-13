@@ -104,6 +104,10 @@ class ArrayHelper
     public static function cleanup(mixed $array, string $delimiter = ','): array
     {
         if (is_string($array)) {
+            if ($delimiter === '') {
+                throw new \ValueError('Delimiter must not be empty.');
+            }
+
             $array = explode($delimiter, $array);
         }
 

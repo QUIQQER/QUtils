@@ -82,7 +82,7 @@ class DOM
             $Template = $Tab->getElementsByTagName('template');
 
             if ($Images && $Images->item(0)) {
-                $image = self::parseVar($Images->item(0)->nodeValue);
+                $image = self::parseVar((string)$Images->item(0)->nodeValue);
             }
 
             if ($Texts && $Texts->item(0)) {
@@ -135,7 +135,7 @@ class DOM
             }
 
             if ($OnUnload && $OnUnload->item(0)) {
-                $Element = $Onload->item(0);
+                $Element = $OnUnload->item(0);
                 /* @var $Element DOMElement */
 
                 $ToolbarTab->setAttribute(
@@ -265,7 +265,7 @@ class DOM
                 continue;
             }
 
-            $fieldName = trim($Field->nodeValue);
+            $fieldName = trim((string)$Field->nodeValue);
 
             if ($fieldName === '') {
                 continue;
@@ -359,7 +359,7 @@ class DOM
             return [];
         }
 
-        $str = $Field->getAttribute('type');
+        $str = (string)$Field->getAttribute('type');
 
         if (empty($str)) {
             $str .= 'text';
@@ -385,7 +385,7 @@ class DOM
         }
 
         return [
-            trim($Field->nodeValue) => $str
+            trim((string)$Field->nodeValue) => $str
         ];
     }
 
@@ -399,7 +399,7 @@ class DOM
     public static function dbPrimaryDomToArray(DOMNode | DOMElement $Primary): array
     {
         return [
-            'primary' => explode(',', $Primary->nodeValue)
+            'primary' => explode(',', (string)$Primary->nodeValue)
         ];
     }
 
@@ -413,7 +413,7 @@ class DOM
     public static function dbUniqueDomToArray(DOMNode | DOMElement $Unique): array
     {
         return [
-            'unique' => explode(',', $Unique->nodeValue)
+            'unique' => explode(',', (string)$Unique->nodeValue)
         ];
     }
 
@@ -427,7 +427,7 @@ class DOM
     public static function dbIndexDomToArray(DOMNode | DOMElement $Index): array
     {
         return [
-            'index' => [trim($Index->nodeValue)]
+            'index' => [trim((string)$Index->nodeValue)]
         ];
     }
 
@@ -445,7 +445,7 @@ class DOM
         }
 
         $data = [
-            'localColumns' => trim($ForeignKey->nodeValue),
+            'localColumns' => trim((string)$ForeignKey->nodeValue),
             'foreignTable' => trim($ForeignKey->getAttribute('foreignTable')),
             'foreignColumns' => trim($ForeignKey->getAttribute('foreignColumns'))
         ];
@@ -475,7 +475,7 @@ class DOM
     public static function dbAutoIncrementDomToArray(DOMNode | DOMElement $AI): array
     {
         return [
-            'auto_increment' => trim($AI->nodeValue)
+            'auto_increment' => trim((string)$AI->nodeValue)
         ];
     }
 
@@ -489,7 +489,7 @@ class DOM
     public static function dbAutoFullextDomToArray(DOMNode | DOMElement $Fulltext): array
     {
         return [
-            'fulltext' => trim($Fulltext->nodeValue)
+            'fulltext' => trim((string)$Fulltext->nodeValue)
         ];
     }
 
@@ -515,6 +515,10 @@ class DOM
 
         for ($c = 0; $c < $tabList->length; $c++) {
             $Tab = $tabList->item($c);
+
+            if (!$Tab instanceof DOMNode) {
+                continue;
+            }
 
             if ($Tab->nodeName == '#text') {
                 continue;
@@ -548,14 +552,24 @@ class DOM
             }
         } else {
             if ($Object instanceof Project) {
+                $projectName = $Object->getAttribute('name');
+
+                if (!is_string($projectName)) {
+                    return '';
+                }
+
                 $tabs = Text\XML::getTabsFromXml(
-                    USR_DIR . 'lib/' . $Object->getAttribute('name') . '/user.xml'
+                    USR_DIR . 'lib/' . $projectName . '/user.xml'
                 );
             } else {
                 /* @var $Object QUI\Projects\Site */
                 /* @var $Tab DOMElement */
                 $TabBar = QUI\Projects\Sites::getTabs($Object);
                 $Tab = $TabBar->getElementByName($name);
+
+                if ($Tab === false) {
+                    return '';
+                }
 
                 if ($Tab->getAttribute('template')) {
                     $file = self::parseVar($Tab->getAttribute('template'));
@@ -618,16 +632,22 @@ class DOM
         }
 
         $result = [];
-        $children = $btnList->item(0)->childNodes;
+        $Categories = $btnList->item(0);
+
+        if (!$Categories instanceof DOMNode) {
+            return $result;
+        }
+
+        $children = $Categories->childNodes;
 
         for ($i = 0; $i < $children->length; $i++) {
             $Param = $children->item($i);
 
-            if ($Param->nodeName != 'category') {
+            if (!$Param instanceof DOMElement) {
                 continue;
             }
 
-            if (!method_exists($Param, 'getAttribute')) {
+            if ($Param->nodeName != 'category') {
                 continue;
             }
 
@@ -645,27 +665,33 @@ class DOM
             $btnParams = $Param->childNodes;
 
             for ($b = 0; $b < $btnParams->length; $b++) {
-                switch ($btnParams->item($b)->nodeName) {
+                $ButtonParam = $btnParams->item($b);
+
+                if (!$ButtonParam instanceof DOMNode) {
+                    continue;
+                }
+
+                switch ($ButtonParam->nodeName) {
                     case 'text':
                     case 'title':
                         $Button->setAttribute(
-                            $btnParams->item($b)->nodeName,
-                            self::getTextFromNode($btnParams->item($b))
+                            $ButtonParam->nodeName,
+                            self::getTextFromNode($ButtonParam)
                         );
                         break;
 
                     case 'onclick':
                         $Button->setAttribute(
-                            $btnParams->item($b)->nodeName,
-                            $btnParams->item($b)->nodeValue
+                            $ButtonParam->nodeName,
+                            $ButtonParam->nodeValue
                         );
                         break;
 
                     case 'icon':
-                        $value = $btnParams->item($b)->nodeValue;
+                        $value = (string)$ButtonParam->nodeValue;
 
                         $Button->setAttribute(
-                            $btnParams->item($b)->nodeName,
+                            $ButtonParam->nodeName,
                             self::parseVar($value)
                         );
                         break;
@@ -678,12 +704,12 @@ class DOM
                 foreach ($projects as $project) {
                     $Button->setAttribute(
                         'text',
-                        str_replace('{$project}', $project, $Button->getAttribute('text'))
+                        str_replace('{$project}', (string)$project, (string)$Button->getAttribute('text'))
                     );
 
                     $Button->setAttribute(
                         'title',
-                        str_replace('{$project}', $project, $Button->getAttribute('title'))
+                        str_replace('{$project}', (string)$project, (string)$Button->getAttribute('title'))
                     );
 
                     $Button->setAttribute('section', $project);
@@ -707,7 +733,7 @@ class DOM
      * @param DOMNode|DOMElement $Node
      * @param boolean $translate - direct translation? default = true
      *
-     * @return string|array<array-key, mixed>
+     * @return ($translate is true ? string : array{0: string, 1: string})
      */
     public static function getTextFromNode(DOMNode | DOMElement $Node, bool $translate = true): array | string
     {
@@ -718,10 +744,14 @@ class DOM
         $loc = $Node->getElementsByTagName('locale');
 
         if (!$loc->length) {
-            return self::parseVar(trim($Node->nodeValue));
+            return self::parseVar(trim((string)$Node->nodeValue));
         }
 
         $Element = $loc->item(0);
+
+        if (!$Element instanceof DOMElement) {
+            return '';
+        }
 
         if ($translate === false) {
             return [
@@ -749,17 +779,14 @@ class DOM
         $Path = new DOMXPath($Dom);
         $Styles = $Path->query("//wysiwyg/styles/style");
 
-        if (!$Styles->length) {
+        if ($Styles === false || !$Styles->length) {
             return [];
         }
 
         $result = [];
 
         foreach ($Styles as $Style) {
-            if (
-                !method_exists($Style, 'getAttribute')
-                || !method_exists($Style, 'getElementsByTagName')
-            ) {
+            if (!$Style instanceof DOMElement) {
                 continue;
             }
 
@@ -767,7 +794,7 @@ class DOM
             $attributes = $Style->getElementsByTagName('attribute');
 
             foreach ($attributes as $Attribute) {
-                $attributeList[$Attribute->getAttribute('name')] = trim($Attribute->nodeValue);
+                $attributeList[$Attribute->getAttribute('name')] = trim((string)$Attribute->nodeValue);
             }
 
             $result[] = [
@@ -832,7 +859,7 @@ class DOM
      */
     public static function getInnerBodyFromHTML(string $html): string
     {
-        return preg_replace('/(.*)<body>(.*)<\/body>(.*)/si', '$2', $html);
+        return preg_replace('/(.*)<body>(.*)<\/body>(.*)/si', '$2', $html) ?? $html;
     }
 
     /**
@@ -852,7 +879,7 @@ class DOM
             $Dom->appendChild($Dom->importNode($Child, true));
         }
 
-        return $Dom->saveHTML();
+        return $Dom->saveHTML() ?: '';
     }
 
     /**
@@ -868,14 +895,15 @@ class DOM
 
         if ($Dom->nodeName != 'settings' && method_exists($Dom, 'getElementsByTagName')) {
             $settings = $Dom->getElementsByTagName('settings');
-            $Settings = $settings->item(0);
 
             if (!$settings->length) {
                 return [];
             }
+
+            $Settings = $settings->item(0);
         }
 
-        if (!method_exists($Settings, 'getElementsByTagName')) {
+        if (!$Settings instanceof DOMElement && !$Settings instanceof DOMDocument) {
             return [];
         }
 
@@ -886,12 +914,22 @@ class DOM
         }
 
         $projects = QUI\Projects\Manager::getProjects();
-        $children = $configs->item(0)->childNodes;
+        $Config = $configs->item(0);
+
+        if (!$Config instanceof DOMElement) {
+            return [];
+        }
+
+        $children = $Config->childNodes;
         $result = [];
 
         for ($i = 0; $i < $children->length; $i++) {
             /* @var $Param DOMElement */
             $Param = $children->item($i);
+
+            if (!$Param instanceof DOMElement) {
+                continue;
+            }
 
             if ($Param->nodeName == '#text') {
                 continue;
@@ -915,7 +953,7 @@ class DOM
                     $custom = $Param->getElementsByTagName('custom');
 
                     foreach ($custom as $Custom) {
-                        $customParam = trim($Custom->nodeValue);
+                        $customParam = trim((string)$Custom->nodeValue);
 
                         $result[$name][$customParam] = [
                             'type' => 'string',
@@ -946,6 +984,11 @@ class DOM
 
         /* @var $Settings DOMElement */
         $Settings = $settings->item(0);
+
+        if (!$Settings instanceof DOMElement) {
+            return false;
+        }
+
         $winList = $Settings->getElementsByTagName('window');
 
         if (!$winList->length) {
@@ -954,6 +997,11 @@ class DOM
 
         /* @var $Window DOMElement */
         $Window = $winList->item(0);
+
+        if (!$Window instanceof DOMElement) {
+            return false;
+        }
+
         $Win = new QUI\Controls\Windows\Window();
 
         // name
@@ -977,12 +1025,20 @@ class DOM
         if ($params->item(0)) {
             /* @var $Element DOMElement */
             $Element = $params->item(0);
-            $icon = $Element->getElementsByTagName('icon');
 
-            $Win->setAttribute(
-                'icon',
-                self::parseVar($icon->item(0)->nodeValue)
-            );
+            if (!$Element instanceof DOMElement) {
+                return $Win;
+            }
+
+            $icon = $Element->getElementsByTagName('icon');
+            $Icon = $icon->item(0);
+
+            if ($Icon instanceof DOMNode) {
+                $Win->setAttribute(
+                    'icon',
+                    self::parseVar((string)$Icon->nodeValue)
+                );
+            }
         }
 
         // Window buttons
@@ -1138,6 +1194,10 @@ class DOM
             /* @var $Entry DOMElement */
             $Entry = $children->item($c);
 
+            if (!$Entry instanceof DOMNode) {
+                continue;
+            }
+
             if (
                 $Entry->nodeName == '#text'
                 || $Entry->nodeName == 'text'
@@ -1147,7 +1207,7 @@ class DOM
             }
 
             if ($Entry->nodeName == 'template') {
-                $file = self::parseVar($Entry->nodeValue);
+                $file = self::parseVar((string)$Entry->nodeValue);
 
                 if (file_exists($file)) {
                     $QUI::getLocale()->setCurrent($current);
@@ -1191,8 +1251,14 @@ class DOM
                     $titles = $Entry->getElementsByTagName('title');
 
                     if ($titles->length) {
+                        $Title = $titles->item(0);
+
+                        if (!$Title instanceof DOMNode) {
+                            continue;
+                        }
+
                         $result .= '<thead><tr><th>';
-                        $result .= self::getTextFromNode($titles->item(0));
+                        $result .= self::getTextFromNode($Title);
                         $result .= '</th></tr></thead>';
                     }
                 }
@@ -1202,6 +1268,10 @@ class DOM
                 // entries
                 for ($s = 0; $s < $settings->length; $s++) {
                     $Set = $settings->item($s);
+
+                    if (!$Set instanceof DOMNode) {
+                        continue;
+                    }
 
                     if (
                         $Set->nodeName == '#text'
@@ -1239,7 +1309,7 @@ class DOM
                             break;
 
                         case 'template':
-                            $file = self::parseVar($Set->nodeValue);
+                            $file = self::parseVar((string)$Set->nodeValue);
 
                             if (file_exists($file)) {
                                 $QUI::getLocale()->setCurrent($current);
@@ -1327,21 +1397,23 @@ class DOM
 
         $attributes = $Input->attributes;
 
-        foreach ($attributes as $Attribute) {
-            /* @var $Attribute DOMAttr */
-            $name = htmlspecialchars($Attribute->name);
-            $value = htmlspecialchars($Attribute->value);
+        if ($attributes !== null) {
+            foreach ($attributes as $Attribute) {
+                /* @var $Attribute DOMAttr */
+                $name = htmlspecialchars($Attribute->name);
+                $value = htmlspecialchars($Attribute->value);
 
-            if (str_contains($name, 'data-')) {
-                $data .= " $name=\"$value\"";
-                continue;
-            }
-
-            switch ($name) {
-                case 'title':
-                case 'placeholder':
+                if (str_contains($name, 'data-')) {
                     $data .= " $name=\"$value\"";
-                    break;
+                    continue;
+                }
+
+                switch ($name) {
+                    case 'title':
+                    case 'placeholder':
+                        $data .= " $name=\"$value\"";
+                        break;
+                }
             }
         }
 
@@ -1443,13 +1515,15 @@ class DOM
         $Text = $TextArea->getElementsByTagName('text');
         $data = '';
 
-        foreach ($TextArea->attributes as $Attribute) {
-            /* @var $Attribute DOMAttr */
-            $name = htmlspecialchars($Attribute->name);
-            $value = htmlspecialchars($Attribute->value);
+        if ($TextArea->attributes !== null) {
+            foreach ($TextArea->attributes as $Attribute) {
+                /* @var $Attribute DOMAttr */
+                $name = htmlspecialchars($Attribute->name);
+                $value = htmlspecialchars($Attribute->value);
 
-            if (str_contains($name, 'data-')) {
-                $data .= " $name=\"$value\"";
+                if (str_contains($name, 'data-')) {
+                    $data .= " $name=\"$value\"";
+                }
             }
         }
 
@@ -1502,13 +1576,13 @@ class DOM
 
             // type
             if ($types && $types->length) {
-                $type = $types->item(0)->nodeValue;
+                $type = (string)$types->item(0)?->nodeValue;
             }
 
             // default
             if ($defaults && $defaults->length) {
                 $default = self::parseVar(
-                    $defaults->item(0)->nodeValue
+                    (string)$defaults->item(0)?->nodeValue
                 );
             }
 
@@ -1611,13 +1685,15 @@ class DOM
 
         $data = '';
 
-        foreach ($Select->attributes as $Attribute) {
-            /* @var $Attribute DOMAttr */
-            $name = htmlspecialchars($Attribute->name);
-            $value = htmlspecialchars($Attribute->value);
+        if ($Select->attributes !== null) {
+            foreach ($Select->attributes as $Attribute) {
+                /* @var $Attribute DOMAttr */
+                $name = htmlspecialchars($Attribute->name);
+                $value = htmlspecialchars($Attribute->value);
 
-            if (str_contains($name, 'data-')) {
-                $data .= " $name=\"$value\"";
+                if (str_contains($name, 'data-')) {
+                    $data .= " $name=\"$value\"";
+                }
             }
         }
 

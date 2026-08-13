@@ -10,6 +10,7 @@ use function explode;
 use function function_exists;
 use function preg_match;
 use function shell_exec;
+use function strtolower;
 
 /**
  * Class Webserver
@@ -54,7 +55,7 @@ class Webserver
     {
         # Attempt detection by apache2 module
         if (function_exists('apache_get_version')) {
-            $version = apache_get_version();
+            $version = (string)apache_get_version();
             $regex = "/Apache\\/([0-9\\.]*)/i";
             $res = preg_match($regex, $version, $matches);
 
@@ -68,7 +69,7 @@ class Webserver
             $apacheBinary = self::detectApacheBinary();
 
             if ($apacheBinary !== null) {
-                $version = shell_exec($apacheBinary . ' -v');
+                $version = (string)shell_exec($apacheBinary . ' -v');
                 $regex = "/Apache\\/([0-9\\.]*)/i";
                 $res = preg_match($regex, $version, $matches);
 
@@ -91,11 +92,11 @@ class Webserver
      */
     protected static function detectInstalledWebserverHeader(): int
     {
-        if (!empty($_SERVER['SERVER_SOFTWARE'])) {
+        if (empty($_SERVER['SERVER_SOFTWARE'])) {
             throw new Exception("Could not retrieve server data");
         }
 
-        $server = $_SERVER['SERVER_SOFTWARE'];
+        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
 
         if (str_contains($server, "apache")) {
             return self::WEBSERVER_APACHE;
