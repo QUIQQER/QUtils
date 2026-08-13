@@ -1260,6 +1260,7 @@ class DB extends QUI\QDOM
         $sql .= ' (';
 
         foreach ($set_params as $key => $value) {
+            // nosemgrep: quiqqer.forbid-mysql-specific-sql
             $sql .= '`' . $key . '`';
 
             if ($max > $i) {

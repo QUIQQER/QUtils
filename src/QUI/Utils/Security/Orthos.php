@@ -184,12 +184,14 @@ class Orthos
      * @return string
      *
      * @throws Exception
-     * @deprecated use PDO::quote (QUI::getPDO()->quote())
+     * @deprecated Use prepared statements or the Doctrine DBAL platform abstraction instead.
      */
     public static function clearMySQL(string $str, bool $escape = true): string
     {
         if ($escape && class_exists('QUI')) {
-            $str = QUI::getPDO()->quote($str);
+            $str = QUI::getDataBaseConnection()
+                ->getDatabasePlatform()
+                ->quoteStringLiteral($str);
         }
 
         return $str;
@@ -201,6 +203,7 @@ class Orthos
      *
      * @param string $str
      * @return string
+     * @deprecated Use Doctrine DBAL platform identifier quoting instead.
      */
     public static function cleanupDatabaseFieldName(string $str): string
     {
@@ -214,6 +217,7 @@ class Orthos
         $str = trim($str, '`');
 
         $str = str_replace('.', '`.`', $str);
+        // nosemgrep: quiqqer.forbid-mysql-specific-sql
         $str = '`' . $str . '`';
 
         return $str;
