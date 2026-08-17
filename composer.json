@@ -22,7 +22,7 @@
         "url": "http://www.pcsg.de"
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "martinvenus/knapsack": "^10",
         "quiqqer/qui-php": "^2.1.0",
         "symfony/polyfill-php81": "*",
