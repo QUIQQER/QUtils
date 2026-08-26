@@ -7,6 +7,7 @@
 namespace QUI\Database;
 
 use DateTime;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -109,6 +110,11 @@ class DB extends QUI\QDOM
             if ($Doctrine instanceof \Doctrine\DBAL\Connection) {
                 $this->Doctrine = $Doctrine;
                 $this->setAttribute('dbname', $this->Doctrine->getDatabase());
+                $this->sqlite = $this->Doctrine->getDatabasePlatform() instanceof SQLitePlatform;
+                $this->setAttribute(
+                    'driver',
+                    $this->sqlite ? 'sqlite' : (string)($this->Doctrine->getParams()['driver'] ?? '')
+                );
                 $Native = $this->Doctrine->getNativeConnection();
 
                 if ($Native instanceof PDO) {
@@ -283,7 +289,8 @@ class DB extends QUI\QDOM
     public function getVersion(): string | bool
     {
         if (!$this->version) {
-            $this->version = $this->PDO->query('select version()')->fetchColumn();
+            $versionQuery = $this->sqlite ? 'select sqlite_version()' : 'select version()';
+            $this->version = $this->PDO->query($versionQuery)->fetchColumn();
 
             preg_match("/^[0-9\.]+/", $this->version, $match);
 
