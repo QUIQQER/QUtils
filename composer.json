@@ -22,6 +22,7 @@
         "url": "http://www.pcsg.de"
     },
     "require": {
+        "enshrined/svg-sanitize": "0.22.*",
         "php": "^8.2",
         "martinvenus/knapsack": "^10",
         "quiqqer/qui-php": "^2.1.0",

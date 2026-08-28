@@ -1513,6 +1513,7 @@ class DOM
         }
 
         $Text = $TextArea->getElementsByTagName('text');
+        $Desc = $TextArea->getElementsByTagName('description');
         $data = '';
 
         if ($TextArea->attributes !== null) {
@@ -1545,6 +1546,12 @@ class DOM
 
         $string .= $textarea;
         $string .= '</label>';
+
+        if ($Desc->length) {
+            $string .= '<div class="description">';
+            $string .= self::getTextFromNode($Desc->item(0));
+            $string .= '</div>';
+        }
 
         return $string;
     }
