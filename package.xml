@@ -1,6 +1,10 @@
 <quiqqer>
     <package>
-        <title>QUIQQER UTILS</title>
-        <description>QUIQQER UTILS</description>
+        <title>
+            <locale group="quiqqer/utils" var="package.title"/>
+        </title>
+        <description>
+            <locale group="quiqqer/utils" var="package.description"/>
+        </description>
     </package>
 </quiqqer>
