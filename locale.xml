@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales>
+    <groups name="quiqqer/utils" datatype="php">
+        <locale name="package.title">
+            <de><![CDATA[QUIQQER Utils]]></de>
+            <en><![CDATA[QUIQQER Utils]]></en>
+            <es><![CDATA[QUIQQER Utils]]></es>
+            <pt><![CDATA[QUIQQER Utils]]></pt>
+            <fr><![CDATA[QUIQQER Utils]]></fr>
+            <it><![CDATA[QUIQQER Utils]]></it>
+            <pl><![CDATA[QUIQQER Utils]]></pl>
+        </locale>
+        <locale name="package.description">
+            <de><![CDATA[PHP-Hilfsklassen für Datenbanken, Dateien, Zeichenketten, Arrays und XML. Für QUIQQER entwickelt und auch unabhängig davon einsetzbar.]]></de>
+            <en><![CDATA[PHP utilities for databases, files, strings, arrays and XML. Developed for QUIQQER and also usable independently.]]></en>
+            <es><![CDATA[Utilidades PHP para bases de datos, archivos, cadenas de texto, arrays y XML. Desarrolladas para QUIQQER y utilizables también de forma independiente.]]></es>
+            <pt><![CDATA[Utilitários PHP para bases de dados, ficheiros, cadeias de texto, arrays e XML. Desenvolvidos para o QUIQQER e também utilizáveis de forma independente.]]></pt>
+            <fr><![CDATA[Utilitaires PHP pour les bases de données, les fichiers, les chaînes de caractères, les tableaux et XML. Développés pour QUIQQER et utilisables également de manière indépendante.]]></fr>
+            <it><![CDATA[Utilità PHP per database, file, stringhe, array e XML. Sviluppate per QUIQQER e utilizzabili anche in modo indipendente.]]></it>
+            <pl><![CDATA[Narzędzia PHP do obsługi baz danych, plików, ciągów znaków, tablic i XML. Opracowane dla QUIQQER, można ich też używać niezależnie.]]></pl>
+        </locale>
+    </groups>
+</locales>
