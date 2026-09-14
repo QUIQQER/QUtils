@@ -408,6 +408,43 @@ class DOMTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('Nested input', $html);
     }
 
+    public function testSettingsDescriptionsRenderAlongsideDeprecatedText(): void
+    {
+        $dom = $this->loadXml(
+            '<category><settings><description>Before heading</description><title>Heading</title>' .
+            '<text>Legacy content</text>' .
+            '<description><locale group="quiqqer/core" var="yes"/></description>' .
+            '<description><![CDATA[<strong>Package help</strong>]]></description>' .
+            '<input conf="sample"><text>Field label</text><description>Field help</description></input>' .
+            '</settings></category>'
+        );
+
+        $html = DOM::parseCategoryToHTML($dom->documentElement);
+        $result = new DOMDocument();
+        $result->loadHTML($html);
+        $xpath = new \DOMXPath($result);
+
+        $this->assertSame('Heading', $xpath->evaluate('string(//thead//th)'));
+        $this->assertSame('Before heading', $xpath->evaluate('string(//tbody/tr[1]/td/div)'));
+        $this->assertStringContainsString('<div>Legacy content</div>', $html);
+        $this->assertStringContainsString(
+            '<div class="description">' . \QUI::getLocale()->get('quiqqer/core', 'yes') . '</div>',
+            $html
+        );
+        $this->assertStringContainsString('<div class="description"><strong>Package help</strong></div>', $html);
+        $this->assertStringContainsString('Field label', $html);
+        $this->assertSame(1, substr_count($html, 'Field help'));
+    }
+
+    public function testSettingsDescriptionWithoutTitleRendersAsContent(): void
+    {
+        $dom = $this->loadXml('<category><settings><description>Help only</description></settings></category>');
+        $html = DOM::parseCategoryToHTML($dom->documentElement);
+
+        $this->assertStringNotContainsString('<thead>', $html);
+        $this->assertStringContainsString('<td><div class="description">Help only</div></td>', $html);
+    }
+
     public function testInvalidNodesReturnEmptyResults(): void
     {
         $root = $this->loadXml('<root/>')->documentElement;
