@@ -98,6 +98,53 @@ class SettingsTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('settings', $panel['name']);
     }
 
+    public function testDescriptionsKeepTheirPositionAndDoNotBecomeTheTitle(): void
+    {
+        $dom = new DOMDocument();
+        $dom->loadXML(
+            '<settings><description>Before heading</description><title>Heading</title>' .
+            '<text>Legacy content</text><description row-style="background:#fff;">After heading</description>' .
+            '</settings>'
+        );
+
+        $result = $this->createSettings()->parseSettings($dom->documentElement);
+
+        $this->assertSame('Heading', $result['title']);
+        $this->assertSame([
+            '<div class="description">Before heading</div>',
+            'Legacy content',
+            ['rowStyle' => 'background:#fff;', 'content' => '<div class="description">After heading</div>']
+        ], $result['items']);
+    }
+
+    public function testDescriptionSupportsLocaleReferencesAndCdataWithoutATitle(): void
+    {
+        $dom = new DOMDocument();
+        $dom->loadXML(
+            '<settings><description><locale group="quiqqer/core" var="yes"/></description>' .
+            '<description><![CDATA[<strong>Package help</strong>]]></description></settings>'
+        );
+
+        $result = $this->createSettings()->parseSettings($dom->documentElement);
+
+        $this->assertSame('', $result['title']);
+        $this->assertSame([
+            '<div class="description">' . \QUI::getLocale()->get('quiqqer/core', 'yes') . '</div>',
+            '<div class="description"><strong>Package help</strong></div>'
+        ], $result['items']);
+    }
+
+    public function testDeprecatedTextRetainsItsTitleFallback(): void
+    {
+        $dom = new DOMDocument();
+        $dom->loadXML('<settings><text>Legacy heading</text><text>Legacy content</text></settings>');
+
+        $result = $this->createSettings()->parseSettings($dom->documentElement);
+
+        $this->assertSame('Legacy heading', $result['title']);
+        $this->assertSame(['Legacy content'], $result['items']);
+    }
+
     public function testCategoriesCanBeMergedAcrossFiles(): void
     {
         $Settings = $this->createSettings();

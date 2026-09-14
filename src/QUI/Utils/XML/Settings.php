@@ -323,7 +323,9 @@ class Settings
     }
 
     /**
-     * Parse a <setting> DOM node and return it as an array
+     * Parse a <settings> DOM node and return it as an array.
+     * Use <title> for its heading and <description> for explanatory content.
+     * Direct <text> children are deprecated but retain their legacy title fallback and content behavior.
      *
      * @param DOMNode|DOMElement $Setting
      * @return array<array-key, mixed>
@@ -365,6 +367,10 @@ class Settings
 
             if ($Child->nodeName == 'text') {
                 $item = DOM::getTextFromNode($Child);
+            }
+
+            if ($Child->nodeName == 'description') {
+                $item = '<div class="description">' . DOM::getTextFromNode($Child) . '</div>';
             }
 
             if ($Child->nodeName == 'input') {

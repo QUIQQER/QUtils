@@ -1285,7 +1285,12 @@ class DOM
 
                     switch ($Set->nodeName) {
                         case 'text':
+                            // Deprecated directly under <settings>; preserve the legacy markup.
                             $result .= '<div>' . self::getTextFromNode($Set) . '</div>';
+                            break;
+
+                        case 'description':
+                            $result .= '<div class="description">' . self::getTextFromNode($Set) . '</div>';
                             break;
 
                         case 'input':
