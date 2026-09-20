@@ -75,7 +75,10 @@ final class SvgSanitizer
         'aria-hidden',
         'aria-label',
         'class',
+        'clip-path',
         'clip-rule',
+        'clipPathUnits',
+        'color',
         'cx',
         'cy',
         'd',
@@ -128,6 +131,7 @@ final class SvgSanitizer
         'stroke-miterlimit',
         'stroke-opacity',
         'stroke-width',
+        'style',
         'text-anchor',
         'text-decoration',
         'text-rendering',
@@ -179,7 +183,10 @@ final class SvgSanitizer
         'aria-hidden',
         'aria-label',
         'class',
+        'clip-path',
         'clip-rule',
+        'clipPathUnits',
+        'color',
         'cx',
         'cy',
         'd',
@@ -231,6 +238,7 @@ final class SvgSanitizer
         'stroke-miterlimit',
         'stroke-opacity',
         'stroke-width',
+        'style',
         'text-anchor',
         'text-decoration',
         'text-rendering',
@@ -253,6 +261,8 @@ final class SvgSanitizer
      *
      * If no explicit allowlists are supplied, comma-separated values from
      * [svgSanitizer] allowedTags / allowedAttributes are used when configured.
+     * Safe presentation CSS is retained in style attributes; simple static
+     * stylesheet selectors are inlined by SvgStyleSanitizer before filtering.
      *
      * @param list<string>|null $allowedTags
      * @param list<string>|null $allowedAttributes
@@ -286,6 +296,21 @@ final class SvgSanitizer
         $allowedAttributes[] = 'xmlns';
         $allowedTags = array_values(array_unique($allowedTags));
         $allowedAttributes = array_values(array_unique($allowedAttributes));
+
+        $allowedTagLookup = array_fill_keys(array_map('strtolower', $allowedTags), true);
+        $allowedAttributeLookup = array_fill_keys(array_map('strtolower', $allowedAttributes), true);
+        $Root = $Document->documentElement;
+
+        if (!$Root instanceof DOMElement) {
+            return '';
+        }
+
+        SvgStyleSanitizer::inlineStyles($Root, $allowedTagLookup, $allowedAttributeLookup);
+        $svg = $Document->saveXML($Root);
+
+        if (!is_string($svg)) {
+            return '';
+        }
 
         try {
             $TagProvider = new class ($allowedTags) implements TagInterface {
@@ -342,8 +367,6 @@ final class SvgSanitizer
             return '';
         }
 
-        $allowedTagLookup = array_fill_keys(array_map('strtolower', $allowedTags), true);
-        $allowedAttributeLookup = array_fill_keys(array_map('strtolower', $allowedAttributes), true);
         $SanitizedRoot = $SanitizedDocument->documentElement;
 
         if (
@@ -515,6 +538,18 @@ final class SvgSanitizer
             foreach (iterator_to_array($Node->attributes) as $Attribute) {
                 $name = strtolower($Attribute->nodeName);
                 $value = strtolower(trim((string)$Attribute->nodeValue));
+
+                if ($name === 'style' && isset($allowedAttributes[$name])) {
+                    $style = SvgStyleSanitizer::sanitizeDeclarations((string)$Attribute->nodeValue, $allowedAttributes);
+
+                    if ($style === '') {
+                        $Node->removeAttributeNode($Attribute);
+                    } else {
+                        $Attribute->nodeValue = $style;
+                    }
+
+                    continue;
+                }
 
                 if (
                     !isset($allowedAttributes[$name])

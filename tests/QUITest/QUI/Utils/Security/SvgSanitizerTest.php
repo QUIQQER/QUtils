@@ -15,6 +15,76 @@ use function trim;
 
 class SvgSanitizerTest extends TestCase
 {
+    public function testInlineStylesAndClippingArePreserved(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">'
+            . '<defs><clipPath id="clip" clipPathUnits="userSpaceOnUse"><rect width="20" height="20"/></clipPath>'
+            . '<radialGradient id="gradient"><stop offset="0" style="stop-color:#aeb2d5;stop-opacity:1"/>'
+            . '</radialGradient></defs>'
+            . '<g clip-path="url(#clip)"><path d="M0 0h20v20H0z" '
+            . 'style="fill:url(#gradient);stroke:#fff;stroke-width:2;opacity:0.5"/></g></svg>'
+        );
+
+        self::assertStringContainsString('clipPathUnits="userSpaceOnUse"', $clean);
+        self::assertStringContainsString('clip-path="url(#clip)"', $clean);
+        self::assertStringContainsString('stop-color:#aeb2d5', $clean);
+        self::assertStringContainsString('fill:url(#gradient)', $clean);
+        self::assertStringContainsString('stroke:#fff', $clean);
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    public function testStylesheetRulesAreScopedToMatchingSvgElements(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><style>'
+            . '.paint, .other {fill:#056268;stroke-width:0px} '
+            . 'path.paint {stroke:#fff} #shape {fill:#777bb3}'
+            . '</style><path id="shape" class="paint" d="M0 0" style="fill:#f47216"/>'
+            . '<circle class="paint" r="1"/><rect class="unrelated" width="1" height="1"/></svg>'
+        );
+        $Document = new DOMDocument();
+        $Document->loadXML($clean, LIBXML_NONET);
+        $path = $Document->getElementsByTagName('path')->item(0);
+        $circle = $Document->getElementsByTagName('circle')->item(0);
+        $rect = $Document->getElementsByTagName('rect')->item(0);
+
+        self::assertInstanceOf(DOMElement::class, $path);
+        self::assertInstanceOf(DOMElement::class, $circle);
+        self::assertInstanceOf(DOMElement::class, $rect);
+        self::assertSame('fill:#056268;stroke-width:0px;stroke:#fff;fill:#777bb3;fill:#f47216', $path->getAttribute('style'));
+        self::assertSame('fill:#056268;stroke-width:0px', $circle->getAttribute('style'));
+        self::assertFalse($rect->hasAttribute('style'));
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    public function testImportantDeclarationsAndPresentationFallbackArePreserved(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><style>'
+            . '#shape {fill:blue} .paint {fill:red !important}'
+            . '</style><path id="shape" class="paint" fill="green" style="fill:orange;fill:invalid-color"/></svg>'
+        );
+
+        self::assertStringContainsString('fill="green"', $clean);
+        self::assertStringContainsString('style="fill:red !important;fill:blue;fill:orange;fill:invalid-color"', $clean);
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+    }
+
+    public function testStylePropertiesRespectTheAttributeAllowlist(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><path style="fill:red;stroke:blue"/></svg>',
+            ['svg', 'path'],
+            ['xmlns', 'style', 'fill']
+        );
+
+        self::assertStringContainsString('style="fill:red"', $clean);
+        self::assertStringNotContainsString('stroke', $clean);
+    }
+
     public function testHarmlessSvgIsPreserved(): void
     {
         $clean = SvgSanitizer::sanitize(
@@ -26,6 +96,106 @@ class SvgSanitizerTest extends TestCase
 
         self::assertNotSame('', $clean);
         self::assertStringContainsString('<title>Safe icon</title>', $clean);
+        self::assertStringContainsString('fill="#123456"', $clean);
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    #[DataProvider('unsafeStyleProvider')]
+    public function testUnsafeStyleDeclarationsAreRemoved(string $declaration): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><style>.paint {' . $declaration . ';stroke:#fff}</style>'
+            . '<path class="paint" style="' . htmlspecialchars($declaration, ENT_QUOTES | ENT_XML1)
+            . ';opacity:0.5"/></svg>'
+        );
+        $Document = new DOMDocument();
+        $Document->loadXML($clean, LIBXML_NONET);
+        $path = $Document->getElementsByTagName('path')->item(0);
+
+        self::assertInstanceOf(DOMElement::class, $path);
+        self::assertSame('stroke:#fff;opacity:0.5', $path->getAttribute('style'));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function unsafeStyleProvider(): array
+    {
+        return [
+            'remote paint' => ['fill:url(https://attacker.invalid/paint.svg#x)'],
+            'quoted remote paint' => ['fill:url("https://attacker.invalid/paint.svg#x")'],
+            'protocol relative paint' => ['fill:url(//attacker.invalid/paint.svg#x)'],
+            'relative paint' => ['fill:url(other.svg#x)'],
+            'data paint' => ['fill:url(data:image/svg+xml,payload)'],
+            'javascript paint' => ['fill:url(javascript:alert(1))'],
+            'escaped url' => ['fill:u\\72l(https://attacker.invalid/a)'],
+            'escaped local reference' => ['fill:url(\\23gradient)'],
+            'comment obfuscation' => ['fill:u/**/rl(https://attacker.invalid/a)'],
+            'expression' => ['fill:expression(alert(1))'],
+            'custom property function' => ['fill:var(--remote-paint)'],
+            'custom property definition' => ['--remote-paint:url(https://attacker.invalid/a)'],
+            'behavior' => ['behavior:url(https://attacker.invalid/a)'],
+            'binding' => ['-moz-binding:url(https://attacker.invalid/a)'],
+            'geometry property' => ['d:path("M0 0")'],
+            'attribute injection' => ['fill:red" onload="alert(1)'],
+            'unsafe clipping' => ['clip-path:url(https://attacker.invalid/a#clip)'],
+            'unsupported function' => ['filter:blur(3px)']
+        ];
+    }
+
+    #[DataProvider('unsupportedStylesheetProvider')]
+    public function testUnsupportedStylesheetsAreNotAppliedUnconditionally(string $stylesheet): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><style>' . htmlspecialchars($stylesheet, ENT_XML1) . '</style>'
+            . '<path id="shape" class="paint" fill="#123456"/></svg>'
+        );
+
+        self::assertStringNotContainsString('style=', $clean);
+        self::assertStringContainsString('fill="#123456"', $clean);
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function unsupportedStylesheetProvider(): array
+    {
+        return [
+            'media rule' => ['@media print {.paint {fill:red}}'],
+            'import' => ['@import url(https://attacker.invalid/a); .paint {fill:red}'],
+            'hover' => ['.paint:hover {fill:red}'],
+            'descendant' => ['g .paint {fill:red}'],
+            'invalid selector list' => ['.paint, #shape:hover {fill:red}'],
+            'attribute selector' => ['[id="shape"] {fill:red}'],
+            'escaped selector' => ['.p\\61int {fill:red}'],
+            'nested rule' => ['.paint {& {fill:red}}']
+        ];
+    }
+
+    public function testPresentationValuesAndQuotedLocalReferencesArePreserved(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg" style="color:rgb(12 34 56 / 50%)">'
+            . '<path style="fill:url(\'#Gradient\');stroke:currentColor;font-family:\'Open Sans\', sans-serif;'
+            . 'opacity:0.5 ! important;stroke-width:2px"/></svg>'
+        );
+
+        self::assertStringContainsString('color:rgb(12 34 56 / 50%)', $clean);
+        self::assertStringContainsString('fill:url(#Gradient)', $clean);
+        self::assertStringContainsString('stroke:currentColor', $clean);
+        self::assertStringContainsString('opacity:0.5 !important', $clean);
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    public function testStyleRulesFromRemovedSubtreesAreIgnored(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><foreignObject>'
+            . '<style>.paint {fill:red}</style></foreignObject>'
+            . '<style media="print">.paint {fill:blue}</style>'
+            . '<path class="paint" fill="#123456"/></svg>'
+        );
+
+        self::assertStringNotContainsString('style=', $clean);
         self::assertStringContainsString('fill="#123456"', $clean);
         self::assertSvgHasNoActiveContent($clean);
     }
@@ -241,10 +411,11 @@ class SvgSanitizerTest extends TestCase
                 $value = strtolower(trim((string)$Attribute->nodeValue));
 
                 self::assertFalse(str_starts_with($name, 'on'));
-                self::assertNotSame('style', $name);
                 self::assertStringNotContainsString('javascript:', $value);
                 self::assertStringNotContainsString('data:', $value);
                 self::assertStringNotContainsString('@import', $value);
+                self::assertStringNotContainsString('expression(', $value);
+                self::assertStringNotContainsString('var(', $value);
                 self::assertStringNotContainsString('/*', $value);
                 self::assertStringNotContainsString('\\', $value);
 
@@ -254,10 +425,14 @@ class SvgSanitizerTest extends TestCase
                     self::assertStringNotContainsString('file:', $value);
                 }
                 if (str_contains($value, 'url(')) {
-                    self::assertMatchesRegularExpression(
-                        '/^url\(\s*#[A-Za-z_][A-Za-z0-9_.:-]*\s*\)$/D',
-                        $value
-                    );
+                    preg_match_all('/url\([^)]*\)/', $value, $references);
+
+                    foreach ($references[0] as $reference) {
+                        self::assertMatchesRegularExpression(
+                            '/^url\(\s*#[A-Za-z_][A-Za-z0-9_.:-]*\s*\)$/D',
+                            $reference
+                        );
+                    }
                 }
 
                 if (str_contains($name, 'href') && $value !== '') {
