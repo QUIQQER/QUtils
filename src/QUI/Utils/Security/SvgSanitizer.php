@@ -102,6 +102,9 @@ final class SvgSanitizer
         'marker-end',
         'marker-mid',
         'marker-start',
+        'mask',
+        'maskContentUnits',
+        'maskUnits',
         'offset',
         'opacity',
         'orient',
@@ -209,6 +212,9 @@ final class SvgSanitizer
         'marker-end',
         'marker-mid',
         'marker-start',
+        'mask',
+        'maskContentUnits',
+        'maskUnits',
         'offset',
         'opacity',
         'orient',
@@ -537,7 +543,6 @@ final class SvgSanitizer
 
             foreach (iterator_to_array($Node->attributes) as $Attribute) {
                 $name = strtolower($Attribute->nodeName);
-                $value = strtolower(trim((string)$Attribute->nodeValue));
 
                 if ($name === 'style' && isset($allowedAttributes[$name])) {
                     $style = SvgStyleSanitizer::sanitizeDeclarations((string)$Attribute->nodeValue, $allowedAttributes);
@@ -550,6 +555,19 @@ final class SvgSanitizer
 
                     continue;
                 }
+
+                $attributeValue = SvgStyleSanitizer::sanitizePresentationAttribute(
+                    $name,
+                    (string)$Attribute->nodeValue
+                );
+
+                if ($attributeValue === null) {
+                    $Node->removeAttributeNode($Attribute);
+                    continue;
+                }
+
+                $Attribute->nodeValue = $attributeValue;
+                $value = strtolower(trim($attributeValue));
 
                 if (
                     !isset($allowedAttributes[$name])

@@ -19,7 +19,7 @@ final class SvgStyleSanitizer
     private const PROPERTIES = [
         'clip-path', 'clip-rule', 'color', 'direction', 'display', 'dominant-baseline',
         'fill', 'fill-opacity', 'fill-rule', 'font-family', 'font-size', 'font-style',
-        'font-weight', 'marker-end', 'marker-mid', 'marker-start', 'opacity', 'overflow',
+        'font-weight', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'overflow',
         'paint-order', 'shape-rendering', 'stop-color', 'stop-opacity', 'stroke',
         'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin',
         'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'text-anchor',
@@ -54,21 +54,9 @@ final class SvgStyleSanitizer
             $important = preg_match('/\s*!\s*important\s*$/i', $value) === 1;
             $value = trim(preg_replace('/\s*!\s*important\s*$/i', '', $value) ?? '');
 
-            if (preg_match('/^url\(\s*([\'"]?)(#[A-Za-z_][A-Za-z0-9_.:-]*)\1\s*\)$/iD', $value, $reference)) {
-                if (!in_array($property, ['fill', 'stroke', 'clip-path', 'marker-end', 'marker-mid', 'marker-start'], true)) {
-                    continue;
-                }
+            $value = self::sanitizeValue($property, $value);
 
-                $value = 'url(' . $reference[2] . ')';
-            } elseif (
-                // No escapes, arbitrary functions, URL schemes or CSS syntax can survive this grammar.
-                preg_match('/^(?:[-a-zA-Z0-9#.,%+\s]|"[a-zA-Z0-9 _-]+"|\'[a-zA-Z0-9 _-]+\')+$/D', $value) !== 1
-                && preg_match('/^(?:rgb|rgba|hsl|hsla)\((?:[-+0-9.,%\s\/]|deg|grad|rad|turn)+\)$/iD', $value) !== 1
-            ) {
-                continue;
-            }
-
-            if (preg_match('/[\x00-\x08\x0B\x0E-\x1F\x7F]/', $value)) {
+            if ($value === null) {
                 continue;
             }
 
@@ -77,6 +65,54 @@ final class SvgStyleSanitizer
         }
 
         return implode(';', $declarations);
+    }
+
+    /**
+     * Apply the same value policy to presentation attributes and CSS declarations.
+     * Non-presentation attributes remain subject to the caller's SVG policy.
+     */
+    public static function sanitizePresentationAttribute(string $name, string $value): ?string
+    {
+        if (!in_array($name, self::PROPERTIES, true)) {
+            return $value;
+        }
+
+        return self::sanitizeValue($name, trim($value));
+    }
+
+    private static function sanitizeValue(string $property, string $value): ?string
+    {
+        if (preg_match('/^url\(\s*([\'"]?)(#[A-Za-z_][A-Za-z0-9_.:-]*)\1\s*\)$/iD', $value, $reference)) {
+            if (
+                !in_array($property, [
+                    'fill',
+                    'stroke',
+                    'clip-path',
+                    'marker-end',
+                    'marker-mid',
+                    'marker-start',
+                    'mask'
+                ], true)
+            ) {
+                return null;
+            }
+
+            return 'url(' . $reference[2] . ')';
+        }
+
+        // No escapes, arbitrary functions, URL schemes or CSS syntax can survive this grammar.
+        if (
+            preg_match('/^(?:[-\p{L}\p{N}\p{M}#.,%+\s]|"[\p{L}\p{N}\p{M} _-]+"|\'[\p{L}\p{N}\p{M} _-]+\')+$/uD', $value) !== 1
+            && preg_match('/^(?:rgb|rgba|hsl|hsla)\((?:[-+0-9.,%\s\/]|deg|grad|rad|turn)+\)$/iD', $value) !== 1
+        ) {
+            return null;
+        }
+
+        if (preg_match('/[\x00-\x08\x0B\x0E-\x1F\x7F]/', $value)) {
+            return null;
+        }
+
+        return $value;
     }
 
     /**
