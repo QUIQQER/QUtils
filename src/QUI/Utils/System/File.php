@@ -6,7 +6,6 @@
 
 namespace QUI\Utils\System;
 
-use Exception;
 use QUI;
 
 use function array_change_key_case;
@@ -754,15 +753,12 @@ class File
         }
 
         if (isset($params['imagesize']) || !$params) {
-            try {
-                $r = getimagesize($file);
+            // Non-image files return false and may emit a warning or notice.
+            $imageSize = @getimagesize($file);
 
-                if ($r) {
-                    $info['width'] = $r[0];
-                    $info['height'] = $r[1];
-                }
-            } catch (Exception) {
-                // ignore if not an image
+            if ($imageSize !== false) {
+                $info['width'] = $imageSize[0];
+                $info['height'] = $imageSize[1];
             }
         }
 
