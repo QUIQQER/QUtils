@@ -129,6 +129,25 @@ class FileOperationsTest extends TestCase
         File::getInfo($this->testDirectory . '/missing.txt');
     }
 
+    public function testGetInfoPreservesImageDimensions(): void
+    {
+        $file = $this->testDirectory . '/pixel.gif';
+        file_put_contents($file, base64_decode('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='));
+
+        $this->assertSame(['width' => 1, 'height' => 1], File::getInfo($file, ['imagesize' => true]));
+    }
+
+    public function testGetInfoOmitsImageDimensionsForNonImages(): void
+    {
+        $info = File::getInfo($this->testDirectory . '/source/root.txt');
+
+        $this->assertSame('root.txt', $info['basename']);
+        $this->assertSame(4, $info['filesize']);
+        $this->assertSame('text/plain', $info['mime_type']);
+        $this->assertArrayNotHasKey('width', $info);
+        $this->assertArrayNotHasKey('height', $info);
+    }
+
     public function testUnlinkHandlesMissingFilesAndRegularFiles(): void
     {
         $file = $this->testDirectory . '/unlink.txt';
