@@ -76,13 +76,14 @@ class SvgSanitizerTest extends TestCase
     public function testStylePropertiesRespectTheAttributeAllowlist(): void
     {
         $clean = SvgSanitizer::sanitize(
-            '<svg xmlns="http://www.w3.org/2000/svg"><path style="fill:red;stroke:blue"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg"><path style="fill:red;stroke:blue;mask:url(#Mask)"/></svg>',
             ['svg', 'path'],
             ['xmlns', 'style', 'fill']
         );
 
         self::assertStringContainsString('style="fill:red"', $clean);
         self::assertStringNotContainsString('stroke', $clean);
+        self::assertStringNotContainsString('mask', $clean);
     }
 
     public function testHarmlessSvgIsPreserved(): void
@@ -376,6 +377,93 @@ class SvgSanitizerTest extends TestCase
 
         self::assertStringContainsString('fill="url(#gradient)"', $clean);
         self::assertSvgHasNoActiveContent($clean);
+    }
+
+    public function testQuotedLocalPresentationReferencesAndMasksArePreserved(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg">'
+            . '<defs><linearGradient id="Gradient"><stop offset="0" stop-color="#fff"/></linearGradient>'
+            . '<mask id="Mask" maskUnits="userSpaceOnUse" maskContentUnits="objectBoundingBox">'
+            . '<rect width="1" height="1" fill="white"/></mask>'
+            . '<clipPath id="Clip"><rect width="10" height="10"/></clipPath></defs>'
+            . '<rect width="10" height="10" fill="url(\'#Gradient\')" '
+            . 'mask="url(&quot;#Mask&quot;)" clip-path="url(\'#Clip\')"/>'
+            . '<path style="mask:url(\'#Mask\');fill:url(\'#Gradient\')"/></svg>'
+        );
+
+        self::assertStringContainsString('fill="url(#Gradient)"', $clean);
+        self::assertStringContainsString('mask="url(#Mask)"', $clean);
+        self::assertStringContainsString('clip-path="url(#Clip)"', $clean);
+        self::assertStringContainsString('maskUnits="userSpaceOnUse"', $clean);
+        self::assertStringContainsString('maskContentUnits="objectBoundingBox"', $clean);
+        self::assertStringContainsString('style="mask:url(#Mask);fill:url(#Gradient)"', $clean);
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    #[DataProvider('unsafePresentationValueProvider')]
+    public function testPresentationAttributesCannotBypassTheCssPolicy(string $value): void
+    {
+        $attributes = ['fill', 'stroke', 'clip-path', 'mask', 'marker-start', 'marker-mid', 'marker-end'];
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"';
+
+        foreach ($attributes as $attribute) {
+            $svg .= ' ' . $attribute . '="' . htmlspecialchars($value, ENT_QUOTES | ENT_XML1) . '"';
+        }
+
+        $clean = SvgSanitizer::sanitize($svg . '/></svg>');
+        $Document = new DOMDocument();
+        self::assertTrue($Document->loadXML($clean, LIBXML_NONET));
+        $Path = $Document->getElementsByTagName('path')->item(0);
+        self::assertInstanceOf(DOMElement::class, $Path);
+
+        foreach ($attributes as $attribute) {
+            self::assertFalse($Path->hasAttribute($attribute), $attribute . ' must reject ' . $value);
+        }
+
+        self::assertSame('M0 0', $Path->getAttribute('d'));
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function unsafePresentationValueProvider(): array
+    {
+        return [
+            'CSS variable' => ['var(--external-paint)'],
+            'environment variable' => ['env(external-paint)'],
+            'remote reference' => ['url(https://attacker.invalid/a.svg#x)'],
+            'quoted remote reference' => ['url("https://attacker.invalid/a.svg#x")'],
+            'protocol relative reference' => ['url(//attacker.invalid/a.svg#x)'],
+            'relative reference' => ['url(other.svg#x)'],
+            'data reference' => ['url(data:image/svg+xml,payload)'],
+            'escaped reference' => ['u\\72l(https://attacker.invalid/a.svg#x)'],
+            'comment obfuscation' => ['u/**/rl(https://attacker.invalid/a.svg#x)'],
+            'expression' => ['expression(alert(1))'],
+            'declaration injection' => ['red;stroke:blue'],
+            'attribute injection' => ['red" onload="alert(1)']
+        ];
+    }
+
+    public function testPresentationColorsAndFontNamesArePreserved(): void
+    {
+        $clean = SvgSanitizer::sanitize(
+            '<svg xmlns="http://www.w3.org/2000/svg"><text fill="rgb(12 34 56 / 50%)" '
+            . 'font-family="\'Open  Sans\', \'游ゴシック\', sans-serif" stroke="currentColor" '
+            . 'stroke-width="2px" opacity="0.5">Text</text></svg>'
+        );
+
+        self::assertStringContainsString('fill="rgb(12 34 56 / 50%)"', $clean);
+        $Document = new DOMDocument();
+        self::assertTrue($Document->loadXML($clean, LIBXML_NONET));
+        $Text = $Document->getElementsByTagName('text')->item(0);
+        self::assertInstanceOf(DOMElement::class, $Text);
+        self::assertSame("'Open  Sans', '游ゴシック', sans-serif", $Text->getAttribute('font-family'));
+        self::assertStringContainsString('stroke="currentColor"', $clean);
+        self::assertStringContainsString('stroke-width="2px"', $clean);
+        self::assertStringContainsString('opacity="0.5"', $clean);
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
     }
 
     private static function assertSvgHasNoActiveContent(string $svg): void
