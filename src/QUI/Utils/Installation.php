@@ -9,6 +9,8 @@ use QUI\System\Log;
 use QUI\Utils\System\Folder;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Process\Exception\ExceptionInterface;
+use Symfony\Component\Process\Process;
 
 use function iterator_count;
 
@@ -125,15 +127,26 @@ class Installation
 
         $fileCount = null;
 
-        if (System::isSystemFunctionCallable('find') && System::isSystemFunctionCallable('wc')) {
-            exec('find ' . CMS_DIR . ' -type f | wc -l', $output);
+        if (System::isSystemFunctionCallable('find')) {
+            try {
+                $Process = new Process(['find', CMS_DIR, '-type', 'f', '-print0'], timeout: 300);
+                $Process->disableOutput();
+                $count = 0;
 
-            if (isset($output[0]) && is_numeric($output[0])) {
-                $fileCount = $output[0];
+                // Count streamed records without buffering every installation path.
+                $Process->mustRun(static function (string $type, string $output) use (&$count): void {
+                    if ($type === Process::OUT) {
+                        $count += substr_count($output, "\0");
+                    }
+                });
+
+                $fileCount = (string)$count;
+            } catch (ExceptionInterface) {
+                // Keep the PHP fallback when find fails or exceeds its timeout.
             }
         }
 
-        if ($fileCount == null) {
+        if ($fileCount === null) {
             $fileCount = iterator_count(
                 new RecursiveIteratorIterator(
                     new RecursiveDirectoryIterator(CMS_DIR, FilesystemIterator::SKIP_DOTS)

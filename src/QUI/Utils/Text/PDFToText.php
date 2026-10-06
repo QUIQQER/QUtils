@@ -7,14 +7,14 @@
 namespace QUI\Utils\Text;
 
 use QUI;
-use QUI\Utils\Security\Orthos;
+use Symfony\Component\Process\Exception\ExceptionInterface;
+use Symfony\Component\Process\Process;
 
 use function file_exists;
 use function file_get_contents;
-use function microtime;
-use function shell_exec;
-use function str_replace;
-use function system;
+use function realpath;
+use function sys_get_temp_dir;
+use function tempnam;
 use function unlink;
 
 /**
@@ -47,26 +47,50 @@ class PDFToText extends QUI\QDOM
             throw new QUI\Exception('File is not a PDF.', 404);
         }
 
+        try {
+            $Version = new Process(['pdftotext', '-v'], timeout: 10);
+            $Version->mustRun();
+        } catch (ExceptionInterface) {
+            throw new QUI\Exception('Could not use pdftotext.', 500);
+        }
 
-        $output = (string)shell_exec('pdftotext 2>&1');
+        $output = $Version->getOutput() . $Version->getErrorOutput();
 
         if (!str_contains($output, 'pdftotext version')) {
             throw new QUI\Exception('Could not use pdftotext.', 500);
         }
 
-        $tmp_file = '/tmp/' . str_replace(['.', ' '], '', microtime()) . '.txt';
-        $exec = 'pdftotext ' . $filename . ' ' . $tmp_file;
+        // An absolute path also prevents filenames starting with '-' becoming options.
+        $inputFile = realpath($filename);
 
-        system(Orthos::clearShell($exec));
+        if ($inputFile === false) {
+            throw new QUI\Exception('File could not be read.', 404);
+        }
 
-        if (!file_exists($tmp_file)) {
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'quiqqer-pdftotext-');
+
+        if ($temporaryFile === false) {
             throw new QUI\Exception('Could not create text from PDF.', 404);
         }
 
-        $content = file_get_contents($tmp_file);
+        try {
+            $Process = new Process(['pdftotext', $inputFile, $temporaryFile], timeout: 300);
+            $Process->disableOutput();
+            $Process->mustRun();
 
-        unlink($tmp_file);
+            if (!file_exists($temporaryFile)) {
+                throw new QUI\Exception('Could not create text from PDF.', 404);
+            }
 
-        return $content === false ? '' : $content;
+            $content = file_get_contents($temporaryFile);
+
+            return $content === false ? '' : $content;
+        } catch (ExceptionInterface) {
+            throw new QUI\Exception('Could not create text from PDF.', 404);
+        } finally {
+            if (file_exists($temporaryFile)) {
+                unlink($temporaryFile);
+            }
+        }
     }
 }
