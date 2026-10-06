@@ -16,18 +16,30 @@ class ProcessUtilitiesTest extends TestCase
 {
     private string $directory;
     private string|false $originalPath;
+    private array $originalEnvironment;
+    private array $originalServer;
 
     protected function setUp(): void
     {
         $this->originalPath = getenv('PATH');
+        $this->originalEnvironment = $_ENV;
+        $this->originalServer = $_SERVER;
         $this->directory = sys_get_temp_dir() . '/quiqqer-process-' . bin2hex(random_bytes(8));
         mkdir($this->directory);
         mkdir($this->directory . '/bin');
-        putenv('PATH=' . $this->directory . '/bin');
+
+        // Symfony also reads the superglobals, depending on PHP's variables_order.
+        $path = $this->directory . '/bin';
+        putenv('PATH=' . $path);
+        $_ENV['PATH'] = $path;
+        $_SERVER['PATH'] = $path;
     }
 
     protected function tearDown(): void
     {
+        $_ENV = $this->originalEnvironment;
+        $_SERVER = $this->originalServer;
+
         if ($this->originalPath === false) {
             putenv('PATH');
         } else {
