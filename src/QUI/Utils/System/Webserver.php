@@ -4,12 +4,13 @@ namespace QUI\Utils\System;
 
 use QUI\Exception;
 use QUI\Utils\System;
+use Symfony\Component\Process\Exception\ExceptionInterface;
+use Symfony\Component\Process\Process;
 
 use function apache_get_version;
 use function explode;
 use function function_exists;
 use function preg_match;
-use function shell_exec;
 use function strtolower;
 
 /**
@@ -65,11 +66,18 @@ class Webserver
             }
         }
 
-        if (System::isShellFunctionEnabled("shell_exec")) {
+        if (System::isShellFunctionEnabled('proc_open')) {
             $apacheBinary = self::detectApacheBinary();
 
             if ($apacheBinary !== null) {
-                $version = (string)shell_exec($apacheBinary . ' -v');
+                try {
+                    $Process = new Process([$apacheBinary, '-v'], timeout: 10);
+                    $Process->mustRun();
+                } catch (ExceptionInterface) {
+                    throw new Exception("Could not detect Apache Version");
+                }
+
+                $version = $Process->getOutput();
                 $regex = "/Apache\\/([0-9\\.]*)/i";
                 $res = preg_match($regex, $version, $matches);
 
@@ -117,7 +125,7 @@ class Webserver
      */
     protected static function detectInstalledWebserverCLI(): int
     {
-        if (!System::isShellFunctionEnabled("shell_exec")) {
+        if (!System::isShellFunctionEnabled('proc_open')) {
             throw new Exception("Could not retrieve server data");
         }
 
@@ -125,7 +133,7 @@ class Webserver
             return self::WEBSERVER_APACHE;
         }
 
-        if (!empty(shell_exec("which nginx"))) {
+        if (System::isSystemFunctionCallable('nginx')) {
             return self::WEBSERVER_NGINX;
         }
 
@@ -138,7 +146,7 @@ class Webserver
     protected static function detectApacheBinary(): ?string
     {
         foreach (['apache2', 'httpd'] as $binary) {
-            if (!empty(shell_exec('which ' . $binary))) {
+            if (System::isSystemFunctionCallable($binary)) {
                 return $binary;
             }
         }

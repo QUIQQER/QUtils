@@ -2,8 +2,9 @@
 
 namespace QUI\Utils\System;
 
+use Symfony\Component\Process\Process;
+
 use function fgets;
-use function system;
 use function trim;
 
 class Console
@@ -42,11 +43,16 @@ class Console
      */
     public static function readPassword(): string
     {
-        system('stty -echo');
-        $result = trim((string)fgets(STDIN));
-        system('stty echo');
+        // Redirect stty's input to the terminal even when stdout is redirected.
+        $DisableEcho = Process::fromShellCommandline('stty -echo < /dev/tty', timeout: 10);
+        $DisableEcho->mustRun();
 
-        return $result;
+        try {
+            return self::read();
+        } finally {
+            $RestoreEcho = Process::fromShellCommandline('stty echo < /dev/tty', timeout: 10);
+            $RestoreEcho->mustRun();
+        }
     }
 
     /**

@@ -7,9 +7,10 @@
 namespace QUI\Utils;
 
 use QUI\Utils\System\File;
+use Symfony\Component\Process\Exception\ExceptionInterface;
+use Symfony\Component\Process\Process;
 
 use function explode;
-use function escapeshellarg;
 use function filter_var;
 use function in_array;
 use function ini_get;
@@ -181,8 +182,8 @@ class System
     }
 
     /**
-     * Returns if a given system function (e.g. 'ls') is callable (via exec).
-     * Requires exec to be enabled. If it's not, false will always be returned.
+     * Returns if a given system function (e.g. 'ls') is available in the shell.
+     * Requires proc_open to be enabled for Symfony Process.
      *
      * @param string $function
      *
@@ -190,7 +191,7 @@ class System
      */
     public static function isSystemFunctionCallable(string $function): bool
     {
-        if (!static::isShellFunctionEnabled('exec')) {
+        if (!static::isShellFunctionEnabled('proc_open')) {
             return false;
         }
 
@@ -199,11 +200,17 @@ class System
         }
 
         try {
-            @exec('command -v -- ' . escapeshellarg($function), $output, $returnCode);
-        } catch (\Throwable) {
+            // command is a shell builtin; Symfony escapes the command name placeholder.
+            $Process = Process::fromShellCommandline(
+                'command -v -- "${:QUIQQER_COMMAND}"',
+                env: ['QUIQQER_COMMAND' => $function],
+                timeout: 10
+            );
+            $Process->disableOutput();
+
+            return $Process->run() === 0;
+        } catch (ExceptionInterface) {
             return false;
         }
-
-        return $returnCode == 0;
     }
 }
