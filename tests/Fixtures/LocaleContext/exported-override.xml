@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiqqer><locales>
+<groups name="vendor/package" datatype="php,js">
+	<locale name="title" context="administration" package="vendor/package">
+		<de><![CDATA[Titel]]></de>
+		<en><![CDATA[Title]]></en>
+	</locale>
+	<locale name="title" priority="10" package="vendor/theme">
+		<de><![CDATA[Individueller Titel]]></de>
+		<en><![CDATA[Custom title]]></en>
+	</locale>
+</groups>
+</locales></quiqqer>
