@@ -418,7 +418,7 @@ class XML
         }
 
         // projects lang tables
-        if ($project && $project->length) {
+        if ($project->length) {
             $Table = $project->item(0);
 
             if (!$Table instanceof DOMElement) {
@@ -897,7 +897,7 @@ class XML
         $Dom = self::getDomFromXml($file);
         $permissions = $Dom->getElementsByTagName('permissions');
 
-        if (!$permissions || !$permissions->length) {
+        if (!$permissions->length) {
             return [];
         }
 
@@ -917,7 +917,7 @@ class XML
 
         $permission = $Permissions->getElementsByTagName('permission');
 
-        if (!$permission || !$permission->length) {
+        if (!$permission->length) {
             return [];
         }
 

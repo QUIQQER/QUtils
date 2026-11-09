@@ -125,7 +125,8 @@ PHP);
         $this->assertSame('converted text', PDFToText::convert($filename));
 
         $arguments = json_decode(file_get_contents($this->directory . '/arguments.json'), true);
-        $this->assertSame($filename, $arguments[1]);
+        // The converter resolves symlinks, including macOS's /var -> /private/var.
+        $this->assertSame(realpath($filename), $arguments[1]);
         $this->assertCount(3, $arguments);
         $this->assertFileDoesNotExist($arguments[2]);
     }
