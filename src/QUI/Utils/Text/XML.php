@@ -18,6 +18,7 @@ use DOMXPath;
 use Exception;
 use QUI;
 use QUI\Utils\DOM;
+use QUI\Utils\LocaleContext;
 use QUI\Utils\Security\Orthos;
 
 use function array_key_exists;
@@ -417,7 +418,7 @@ class XML
         }
 
         // projects lang tables
-        if ($project && $project->length) {
+        if ($project->length) {
             $Table = $project->item(0);
 
             if (!$Table instanceof DOMElement) {
@@ -595,7 +596,10 @@ class XML
     /**
      * Sucht die Übersetzungsgruppe aus einem DOMDocument Objekt
      *
+     * Locale context metadata is included only when explicitly declared.
+     *
      * @param DOMDocument $Dom
+     * @throws \InvalidArgumentException For invalid locale contexts.
      *
      * @return array<array-key, mixed> array(
      *      array(
@@ -669,6 +673,14 @@ class XML
                     'html' => (bool)$Locale->getAttribute('html'),
                     'priority' => $priority
                 ];
+
+                if ($Locale->hasAttribute('context')) {
+                    $params['context'] = LocaleContext::normalize($Locale->getAttribute('context'));
+                }
+
+                if ($Locale->hasAttribute('package')) {
+                    $params['package'] = $Locale->getAttribute('package');
+                }
 
                 $translations = $Locale->childNodes;
 
@@ -885,7 +897,7 @@ class XML
         $Dom = self::getDomFromXml($file);
         $permissions = $Dom->getElementsByTagName('permissions');
 
-        if (!$permissions || !$permissions->length) {
+        if (!$permissions->length) {
             return [];
         }
 
@@ -905,7 +917,7 @@ class XML
 
         $permission = $Permissions->getElementsByTagName('permission');
 
-        if (!$permission || !$permission->length) {
+        if (!$permission->length) {
             return [];
         }
 
