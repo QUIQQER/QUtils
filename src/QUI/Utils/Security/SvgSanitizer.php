@@ -36,6 +36,20 @@ final class SvgSanitizer
 {
     private const CONFIG_SECTION = 'svgSanitizer';
 
+    /** @var array<string, list<string>> */
+    private const STANDARD_SVG_DOCTYPES = [
+        '-//W3C//DTD SVG 1.0//EN' => [
+            'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd',
+            'https://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'
+        ],
+        '-//W3C//DTD SVG 1.1//EN' => [
+            'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd',
+            'https://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd',
+            'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat.dtd',
+            'https://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat.dtd'
+        ]
+    ];
+
     /**
      * Configuration can select from this list, but cannot extend the security
      * boundary with arbitrary SVG/HTML elements.
@@ -409,8 +423,24 @@ final class SvgSanitizer
                 return null;
             }
 
-            if ($Document->doctype !== null) {
-                return null;
+            $Doctype = $Document->doctype;
+
+            if ($Doctype !== null) {
+                // Legacy graphics exports use standard DTD references without depending on them.
+                // Never load those DTDs or accept an internal subset with custom declarations.
+                if (
+                    $Doctype->name !== 'svg'
+                    || $Doctype->internalSubset !== null
+                    || !in_array(
+                        $Doctype->systemId,
+                        self::STANDARD_SVG_DOCTYPES[$Doctype->publicId] ?? [],
+                        true
+                    )
+                ) {
+                    return null;
+                }
+
+                $Document->removeChild($Doctype);
             }
 
             $Root = $Document->documentElement;

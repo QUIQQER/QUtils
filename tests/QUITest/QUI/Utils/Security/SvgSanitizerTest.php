@@ -279,6 +279,118 @@ class SvgSanitizerTest extends TestCase
         self::assertSame('', SvgSanitizer::sanitize($svg));
     }
 
+    /** @return iterable<string, array{string}> */
+    public static function standardDoctypeProvider(): iterable
+    {
+        yield 'Inkscape SVG 1.0' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" '
+            . '"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">'
+        ];
+        yield 'Illustrator and CorelDRAW SVG 1.1' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+        ];
+        yield 'flattened SVG 1.1 DTD' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat.dtd">'
+        ];
+        yield 'HTTPS SVG 1.0' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" '
+            . '"https://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">'
+        ];
+        yield 'HTTPS SVG 1.1' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"https://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+        ];
+        yield 'HTTPS flattened SVG 1.1' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"https://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat.dtd">'
+        ];
+        yield 'single quotes and line breaks' => [
+            "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n"
+            . "'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>"
+        ];
+    }
+
+    #[DataProvider('standardDoctypeProvider')]
+    public function testStandardDoctypeIsRemovedWithoutChangingTheSanitizedGraphic(string $doctype): void
+    {
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">'
+            . '<title>Logo &amp; icon</title><path d="M0 0h20v20H0z" fill="#fff"/>'
+            . '</svg>';
+        $export = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+            . '<!-- Exported by a graphics editor -->' . "\n" . $doctype . "\n" . $svg;
+        $clean = SvgSanitizer::sanitize($export);
+
+        self::assertNotSame('', $clean);
+        self::assertSame(SvgSanitizer::sanitize($svg), $clean);
+        self::assertSame($clean, SvgSanitizer::sanitize($clean));
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function unsafeDoctypeProvider(): iterable
+    {
+        $standard = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"';
+
+        yield 'internal text entity' => [$standard . ' [<!ENTITY color "red">]>'];
+        yield 'external file entity' => [$standard . ' [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>'];
+        yield 'external HTTP entity' => [$standard . ' [<!ENTITY xxe SYSTEM "https://attacker.invalid/a">]>'];
+        yield 'parameter entity' => [$standard . ' [<!ENTITY % external SYSTEM "https://attacker.invalid/a">]>'];
+        yield 'default attribute declaration' => [$standard . ' [<!ATTLIST svg fill CDATA "red">]>'];
+        yield 'unknown public identifier' => [
+            '<!DOCTYPE svg PUBLIC "-//Example//DTD Custom//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+        ];
+        yield 'unknown remote DTD' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "https://attacker.invalid/svg11.dtd">'
+        ];
+        yield 'local DTD' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "file:///tmp/svg11.dtd">'
+        ];
+        yield 'mismatched SVG versions' => [
+            '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+        ];
+        yield 'different document type name' => [
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+        ];
+        yield 'bare doctype' => ['<!DOCTYPE svg>'];
+    }
+
+    #[DataProvider('unsafeDoctypeProvider')]
+    public function testCustomDoctypeDeclarationsRemainRejected(string $doctype): void
+    {
+        $svg = $doctype . '<svg xmlns="http://www.w3.org/2000/svg"><path fill="blue" d="M0 0"/></svg>';
+
+        self::assertSame('', SvgSanitizer::sanitize($svg));
+    }
+
+    public function testStandardDoctypeDoesNotBypassContentSanitization(): void
+    {
+        $svg = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+            . '<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)">'
+            . '<script>alert(1)</script><image href="https://attacker.invalid/tracker.png"/>'
+            . '<path fill="blue" d="M0 0"/></svg>';
+        $clean = SvgSanitizer::sanitize($svg);
+
+        self::assertNotSame('', $clean);
+        self::assertStringContainsString('fill="blue"', $clean);
+        self::assertSvgHasNoActiveContent($clean);
+    }
+
+    public function testStandardDoctypeCannotSupplyUndeclaredEntities(): void
+    {
+        $svg = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+            . '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+            . '<svg xmlns="http://www.w3.org/2000/svg"><text>&custom;</text></svg>';
+
+        self::assertSame('', SvgSanitizer::sanitize($svg));
+    }
+
     public function testMalformedSvgIsRejected(): void
     {
         self::assertSame('', SvgSanitizer::sanitize('<svg><g></svg>'));
